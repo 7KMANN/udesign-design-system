@@ -4,6 +4,8 @@ The single source of truth for UDesign's brand tokens: color, type, spacing, rad
 
 Do not source brand values from "Icitte": that is a separate product line with its own identity, not part of UDesign's brand.
 
+**License:** proprietary, uDesign Productions only. See [LICENSE.md](LICENSE.md). This repository being publicly visible does not grant any right to use it.
+
 ## For AI agents (read this first)
 
 If you are an agent working in a repo that consumes this package:

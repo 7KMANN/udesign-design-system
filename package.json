@@ -2,6 +2,7 @@
   "name": "udesign-design-system",
   "version": "1.0.0",
   "private": true,
+  "license": "SEE LICENSE IN LICENSE.md",
   "description": "UDesign brand design tokens: single source of truth, consumed via git dependency.",
   "type": "module",
   "main": "dist/tokens.css",
@@ -9,7 +10,8 @@
     "dist",
     "tokens",
     "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "LICENSE.md"
   ],
   "scripts": {
     "build": "node scripts/build.mjs",
