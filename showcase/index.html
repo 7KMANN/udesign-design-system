@@ -184,15 +184,21 @@
   function renderVersionSelect() {
     var select = document.getElementById('version-select');
     var versions = window.UD_VERSIONS || [];
-    var options = [{ value: '../dist/tokens.css', label: 'current (unreleased)' }]
-      .concat(versions.map(function (v) { return { value: '../history/' + v + '/tokens.css', label: v }; }));
+    // versions.js lists released versions newest-first; default to the latest
+    // release (not the unreleased working build) so opening this page shows
+    // what's actually shipped, unless no version has been released yet.
+    var options = versions.map(function (v) { return { value: '../history/' + v + '/tokens.css', label: v }; })
+      .concat([{ value: '../dist/tokens.css', label: 'current (unreleased)' }]);
     select.innerHTML = options.map(function (o) {
       return '<option value="' + o.value + '">' + o.label + '</option>';
     }).join('');
-    select.addEventListener('change', function () {
+    function applySelection() {
       document.getElementById('tokens-link').href = select.value;
       setTimeout(function () { renderSwatches(); renderTypeScale(); }, 60);
-    });
+    }
+    if (versions.length) select.value = options[0].value;
+    select.addEventListener('change', applySelection);
+    applySelection();
   }
 
   renderVersionSelect();

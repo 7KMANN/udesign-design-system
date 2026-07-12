@@ -15,7 +15,7 @@ If you are an agent working in a repo that consumes this package:
 3. **Never hand-edit `dist/tokens.css` or anything under `history/`.** Both are generated. The only hand-edited file in this repo is `tokens/udesign.tokens.json`.
 4. **Install via git, not npm registry:** `"udesign-design-system": "github:7KMANN/udesign-design-system"` in `dependencies`, then one `@import "udesign-design-system/dist/tokens.css";` near the app root. There is no published npm package.
 5. **Never source brand values from "Icitte"** — unrelated product line, wrong palette.
-6. **Bumping this package's own version?** Don't hand-edit `package.json` or `CHANGELOG.md`. Run `npm run release -- <patch|minor|major> "what changed and why"` from inside this repo.
+6. **Changing a token value?** Follow the exact steps in [Updating tokens & releasing a version](#updating-tokens--releasing-a-version) below, in order. Don't skip the semver decision, don't skip the showcase check, don't forget the git tag.
 
 ## The token model
 
@@ -78,15 +78,55 @@ Tailwind v4's `@theme` block maps directly onto CSS custom properties: point it 
 
 This gets you Tailwind utilities (`bg-accent`, `text-foreground`, `font-display`) that resolve to the shared brand tokens, while the app's own components stay entirely its own.
 
-## Releasing a new version
+## Updating tokens & releasing a version
 
-Only when the brand itself changes (new accent shade, new type scale value, a renamed token):
+The current released version is **v1.0.0**, tagged in git — that's the official baseline every consuming repo builds against. Every change to the brand follows the same path to become the next official version. Do the steps in this order, every time, and don't skip any of them:
+
+### 1. Decide the semver bump *before* you touch anything
+
+| Bump | When | Example |
+|---|---|---|
+| **patch** | An existing token's *value* changes, meaning stays the same | Nudging `--ud-accent-400`'s hex a few shades warmer |
+| **minor** | A *new* token is added, nothing existing changes or breaks | Adding a `--warning-foreground` semantic role that didn't exist before |
+| **major** | A token is *renamed* or *removed*, or its meaning changes | Renaming `--ud-panel` to `--ud-surface`, or repurposing `--client` |
+
+If you're unsure between two, pick the higher one — consumers can absorb an unnecessary minor bump silently; they can't absorb a missed breaking change.
+
+### 2. Edit the source, and only the source
+
+Hand-edit `tokens/udesign.tokens.json` only. Never touch `dist/tokens.css`, anything under `history/`, or `showcase/versions.js` directly — all three are generated and get overwritten by the next step anyway.
+
+### 3. Build and visually verify
+
+```bash
+npm run build
+```
+
+Then open `showcase/index.html` directly in a browser (no server needed) and check the tokens you changed actually look right against real components — swatches, buttons, type scale, whichever section touches your change.
+
+### 4. Cut the release
 
 ```bash
 npm run release -- <patch|minor|major> "what changed and why"
 ```
 
-This bumps `package.json`'s version, rebuilds `dist/tokens.css`, freezes a copy of it under `history/vX.Y.Z/tokens.css`, appends an entry to `CHANGELOG.md`, and regenerates the showcase page's version list. Semver: patch for a value tweak, minor for an additive token, major for a rename or removal (breaking for consumers).
+This one command: bumps `package.json`'s version, rebuilds `dist/tokens.css` from the token source, freezes a copy of it under `history/vX.Y.Z/tokens.css`, appends a dated entry to `CHANGELOG.md`, and regenerates `showcase/versions.js` so the showcase dropdown lists the new version. It does **not** commit or tag anything — that's steps 5 and 6, on you (or the agent doing this).
+
+### 5. Commit everything the release step touched, in one commit
+
+```bash
+git add tokens/udesign.tokens.json dist/tokens.css package.json CHANGELOG.md history/ showcase/versions.js
+git commit -m "release: vX.Y.Z — what changed and why"
+```
+
+### 6. Tag the commit and push both
+
+```bash
+git tag vX.Y.Z
+git push origin master --tags
+```
+
+The git tag is what makes a version *official* — `package.json`'s number alone is not enough, since it can drift out of sync with what's actually pushed. Every released version must have a matching tag. If a version in `CHANGELOG.md` or `history/` doesn't have one, that's a bug to fix, not a pattern to repeat.
 
 ## Showcase
 
