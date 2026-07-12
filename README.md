@@ -4,6 +4,17 @@ The single source of truth for UDesign's brand tokens: color, type, spacing, rad
 
 Do not source brand values from "Icitte": that is a separate product line with its own identity, not part of UDesign's brand.
 
+## For AI agents (read this first)
+
+If you are an agent working in a repo that consumes this package:
+
+1. **Never hardcode a hex value, an `--ud-*` primitive, or a raw size.** Use a semantic token (`--primary`, `--background`, `--muted-foreground`, `--client`, etc.) in component code.
+2. **No semantic token for what you need?** Don't invent one locally and don't reach for a primitive. Add the semantic token here, in `tokens/udesign.tokens.json`, run `npm run build`, commit, then consume it from the app repo.
+3. **Never hand-edit `dist/tokens.css` or anything under `history/`.** Both are generated. The only hand-edited file in this repo is `tokens/udesign.tokens.json`.
+4. **Install via git, not npm registry:** `"udesign-design-system": "github:7KMANN/udesign-design-system"` in `dependencies`, then one `@import "udesign-design-system/dist/tokens.css";` near the app root. There is no published npm package.
+5. **Never source brand values from "Icitte"** — unrelated product line, wrong palette.
+6. **Bumping this package's own version?** Don't hand-edit `package.json` or `CHANGELOG.md`. Run `npm run release -- <patch|minor|major> "what changed and why"` from inside this repo.
+
 ## The token model
 
 Tokens are layered in three tiers. Consuming code should only ever reach for the top tier.
