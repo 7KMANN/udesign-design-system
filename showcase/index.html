@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UDesign Design System: Kitchen Sink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link id="tokens-link" rel="stylesheet" href="../dist/tokens.css">
+<script src="versions.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; background: var(--background); color: var(--foreground); font-family: var(--font-display); -webkit-font-smoothing: antialiased; }
+  .sink-header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 32px; background:var(--card); border-bottom:1px solid var(--border-color); position:sticky; top:0; z-index:10; }
+  .sink-title { display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:-.01em; font-size:19px; }
+  .sink-title .dot { width:30px; height:30px; border-radius:8px; background:var(--foreground); color:var(--client); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; }
+  select#version-select { font-family:var(--font-data); font-size:13px; padding:7px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-color); background:var(--card); color:var(--foreground); }
+  main { max-width:1100px; margin:0 auto; padding:40px 32px 96px; }
+  section { margin-bottom:64px; }
+  section h2 { font-weight:800; font-size:1.4rem; letter-spacing:-.01em; margin:0 0 6px; }
+  section p.hint { color:var(--muted-foreground); font-size:.9rem; margin:0 0 24px; }
+  .swatch-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+  .swatch { border:1px solid var(--border-color); border-radius:var(--radius); overflow:hidden; background:var(--card); }
+  .swatch-color { height:64px; }
+  .swatch-label { padding:10px 12px; font-family:var(--font-data); font-size:.72rem; color:var(--foreground); }
+  .swatch-label .hex { display:block; color:var(--muted-foreground); margin-top:2px; }
+  .type-row { display:flex; align-items:baseline; gap:24px; padding:16px 0; border-bottom:1px solid var(--border-color); }
+  .type-row:last-child { border-bottom:none; }
+  .type-row .tag { flex:0 0 90px; font-family:var(--font-data); font-size:.72rem; color:var(--muted-foreground); }
+  .btn-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+  .ud-btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-display);font-weight:600;font-size:14.5px;line-height:1;border-radius:var(--radius);padding:11px 20px;border:1.5px solid transparent;cursor:pointer;text-decoration:none;transition:background .17s,color .17s}
+  .ud-btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ud-accent-wash),0 0 0 4.5px var(--ring)}
+  .ud-btn-primary{background:var(--primary);color:var(--primary-foreground)}
+  .ud-btn-primary:hover{background:var(--primary-hover);color:#fff}
+  .ud-btn-secondary{background:var(--secondary);color:var(--secondary-foreground);border-color:var(--border-color)}
+  .ud-btn-secondary:hover{background:var(--ud-panel-2)}
+  .ud-btn-outline{background:transparent;border-color:var(--foreground);color:var(--foreground)}
+  .ud-btn-outline:hover{background:var(--foreground);color:#fff}
+  .ud-badge{display:inline-flex;align-items:center;font-family:var(--font-display);font-weight:600;font-size:11.5px;padding:5px 11px;border-radius:var(--radius-pill);background:var(--foreground);color:var(--client)}
+  .pattern-card { border:1px solid var(--border-color); border-radius:var(--radius); overflow:hidden; background:var(--card); margin-bottom:16px; }
+  .pattern-card .demo { padding:20px; }
+  .pattern-card .caption { padding:8px 20px; font-family:var(--font-data); font-size:.72rem; color:var(--muted-foreground); border-top:1px solid var(--border-color); }
+  .ruler-row { display:flex; align-items:center; gap:16px; padding:8px 0; }
+  .ruler-row .tag { flex:0 0 110px; font-family:var(--font-data); font-size:.75rem; color:var(--muted-foreground); }
+  .ruler-box { background:var(--ud-accent-wash); border:1px solid var(--ud-accent-300); }
+  .radius-box { width:56px; height:56px; background:var(--primary); }
+  .space-box { height:20px; background:var(--primary); }
+  .ud-lock{display:flex;align-items:center;gap:11px;font-family:var(--font-display);font-weight:800;letter-spacing:-.01em;font-size:18px;color:var(--foreground)}
+  .ud-lock .ud-u{width:28px;height:28px;border-radius:8px;background:var(--foreground);color:var(--client);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px}
+  .ud-client-name{font-family:var(--font-display);font-size:13px;font-weight:500;color:var(--muted-foreground)}
+  .ud-footer{border-top:1px solid var(--border-color);padding:28px 24px;text-align:center;background:var(--background)}
+  .ud-conf{font-family:var(--font-display);font-weight:700;font-size:11.5px;letter-spacing:.06em;color:var(--destructive)}
+  .ud-copy{font-family:var(--font-display);font-size:12.5px;color:var(--muted-foreground);margin-top:8px}
+</style>
+</head>
+<body>
+
+<header class="sink-header">
+  <div class="sink-title"><span class="dot">U</span>UDesign Design System</div>
+  <select id="version-select" aria-label="Token version"></select>
+</header>
+
+<main>
+
+  <section>
+    <h2>Color</h2>
+    <p class="hint">Primitives (raw values) and semantic roles (what components should actually use).</p>
+    <div class="swatch-grid" id="swatches-brand"></div>
+  </section>
+
+  <section>
+    <h2>Type scale</h2>
+    <p class="hint">Every typography token, rendered at its real size.</p>
+    <div id="type-scale"></div>
+  </section>
+
+  <section>
+    <h2>Buttons</h2>
+    <div class="btn-row">
+      <a class="ud-btn ud-btn-primary" href="#">Agrandir la référence</a>
+      <a class="ud-btn ud-btn-secondary" href="#">Comparer</a>
+      <a class="ud-btn ud-btn-outline" href="#">Fiche technique</a>
+    </div>
+    <p class="hint">Primary, secondary, outline. Hover and focus-visible states are live, try tabbing to one.</p>
+  </section>
+
+  <section>
+    <h2>Patterns</h2>
+    <div class="pattern-card">
+      <div class="demo">
+        <div class="ud-lock"><span class="ud-u">U</span>UDesign</div>
+      </div>
+      <div class="caption">.ud-lock: header brand lockup</div>
+    </div>
+    <div class="pattern-card">
+      <div class="demo">
+        <span class="ud-badge">Profil</span>
+      </div>
+      <div class="caption">.ud-badge: uses the adaptive --client accent</div>
+    </div>
+    <div class="pattern-card">
+      <div class="demo" style="padding:0">
+        <footer class="ud-footer">
+          <div class="ud-conf">Document Confidentiel</div>
+          <div class="ud-copy">&copy; 2026 UDesign Pages · [Nom du Projet] · Réservé au client.</div>
+        </footer>
+      </div>
+      <div class="caption">.ud-footer: mandatory footer on every client deliverable page</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Radius</h2>
+    <div id="radius-ruler"></div>
+  </section>
+
+  <section>
+    <h2>Space</h2>
+    <div id="space-ruler"></div>
+  </section>
+
+</main>
+
+<script>
+  var BRAND_SWATCHES = [
+    ['--ud-accent-wash', 'wash'], ['--ud-accent-300', '300'], ['--ud-accent-400', '400'],
+    ['--ud-accent', 'accent'], ['--ud-accent-deep', 'accent deep'],
+    ['--ud-cream', 'cream'], ['--ud-ink', 'ink'], ['--ud-white', 'white'],
+    ['--ud-panel', 'panel'], ['--ud-panel-2', 'panel 2'], ['--ud-border', 'border'], ['--ud-border-strong', 'border strong'],
+    ['--ud-muted', 'muted'], ['--ud-muted-soft', 'muted soft'],
+    ['--ud-success', 'success'], ['--ud-warning', 'warning'], ['--ud-danger', 'danger'],
+    ['--primary', 'primary (role)'], ['--background', 'background (role)'], ['--card', 'card (role)'],
+    ['--muted-foreground', 'muted-foreground (role)'], ['--destructive', 'destructive (role)'], ['--client', 'client (adaptive)']
+  ];
+
+  var TYPE_TOKENS = [
+    ['ud-display', 'display'], ['ud-h1', 'h1'], ['ud-h2', 'h2'], ['ud-h3', 'h3'],
+    ['ud-body', 'body'], ['ud-label', 'label'], ['ud-data', 'data']
+  ];
+
+  var RADIUS_TOKENS = [['--radius-sm', 'radius-sm'], ['--radius', 'radius'], ['--radius-lg', 'radius-lg'], ['--radius-pill', 'radius-pill']];
+  var SPACE_TOKENS = [1, 2, 3, 4, 6, 8];
+
+  function hexOf(varName) {
+    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  }
+
+  function renderSwatches() {
+    var el = document.getElementById('swatches-brand');
+    el.innerHTML = BRAND_SWATCHES.map(function (pair) {
+      var varName = pair[0], label = pair[1];
+      return '<div class="swatch"><div class="swatch-color" style="background:var(' + varName + ')"></div>' +
+        '<div class="swatch-label">' + label + '<span class="hex">' + varName + '</span></div></div>';
+    }).join('');
+  }
+
+  function renderTypeScale() {
+    var el = document.getElementById('type-scale');
+    el.innerHTML = TYPE_TOKENS.map(function (pair) {
+      var cls = pair[0], label = pair[1];
+      return '<div class="type-row"><div class="tag">' + label + '</div><div class="' + cls + '">UDesign Productions</div></div>';
+    }).join('');
+  }
+
+  function renderRadiusRuler() {
+    var el = document.getElementById('radius-ruler');
+    el.innerHTML = RADIUS_TOKENS.map(function (pair) {
+      var varName = pair[0], label = pair[1];
+      var pill = varName === '--radius-pill';
+      return '<div class="ruler-row"><div class="tag">' + label + '</div>' +
+        '<div class="radius-box ruler-box" style="border-radius:var(' + varName + ');' + (pill ? 'width:110px' : '') + '"></div></div>';
+    }).join('');
+  }
+
+  function renderSpaceRuler() {
+    var el = document.getElementById('space-ruler');
+    el.innerHTML = SPACE_TOKENS.map(function (n) {
+      return '<div class="ruler-row"><div class="tag">space-' + n + '</div>' +
+        '<div class="space-box ruler-box" style="width:var(--space-' + n + ')"></div></div>';
+    }).join('');
+  }
+
+  function renderVersionSelect() {
+    var select = document.getElementById('version-select');
+    var versions = window.UD_VERSIONS || [];
+    var options = [{ value: '../dist/tokens.css', label: 'current (unreleased)' }]
+      .concat(versions.map(function (v) { return { value: '../history/' + v + '/tokens.css', label: v }; }));
+    select.innerHTML = options.map(function (o) {
+      return '<option value="' + o.value + '">' + o.label + '</option>';
+    }).join('');
+    select.addEventListener('change', function () {
+      document.getElementById('tokens-link').href = select.value;
+      setTimeout(function () { renderSwatches(); renderTypeScale(); }, 60);
+    });
+  }
+
+  renderVersionSelect();
+  renderSwatches();
+  renderTypeScale();
+  renderRadiusRuler();
+  renderSpaceRuler();
+</script>
+
+</body>
+</html>

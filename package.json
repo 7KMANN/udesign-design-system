@@ -1,0 +1,21 @@
+{
+  "name": "udesign-design-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "UDesign brand design tokens: single source of truth, consumed via git dependency.",
+  "type": "module",
+  "main": "dist/tokens.css",
+  "files": [
+    "dist",
+    "tokens",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "release": "node scripts/release.mjs"
+  },
+  "devDependencies": {
+    "style-dictionary": "^4"
+  }
+}
