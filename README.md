@@ -8,6 +8,15 @@ Do not source brand values from "Icitte": that is a separate product line with i
 
 ## For AI agents (read this first)
 
+If you are an agent working directly in this repository:
+
+1. **Read `DESIGN.md` in the root first.** It contains UDesign's core brand rules, typography constraints, and a list of **Banned Design Patterns** (such as a hard ban on cool slate hexes, glassmorphism/translucency, uppercase mono labels, and em-dashes).
+2. **Run validation before completing tasks:** You MUST run the linter to verify `DESIGN.md` spec-compliance:
+   ```bash
+   node scripts/lint-design.mjs
+   ```
+   Ensure it passes with 0 errors. If you change tokens, compile them with `npm run build` and verify they look correct on [showcase/index.html](showcase/index.html).
+
 If you are an agent working in a repo that consumes this package:
 
 1. **Never hardcode a hex value, an `--ud-*` primitive, or a raw size.** Use a semantic token (`--primary`, `--background`, `--muted-foreground`, `--client`, etc.) in component code.
