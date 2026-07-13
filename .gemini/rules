@@ -1,0 +1,42 @@
+# UDesign Design System Agent Rules (Gemini)
+
+This workspace contains the canonical design system specification for the UDesign brand. All AI coding agents making edits to user interface layouts, stylesheets, or styling configurations in this project (or downstream repositories) MUST follow these instructions.
+
+---
+
+## 1. Zero-Variance Style Rules
+
+*   **No Cool Slate Grays:** Never introduce Tailwind slate shades (`#f8fafc`, `#f1f5f9`, `#e2e8f0`, `#cbd5e1`, `#94a3b8`, `#64748b`, `#475569`, `#334155`, `#1e293b`, `#0f172a`). All neutrals must remain warm stone tones (e.g., UDesign cream `--ud-cream`, warm stone `--ud-panel`, ink text `--ud-ink`).
+*   **No Backdrop Filters / Glassmorphism:** Layout panels and card layers must remain solid and flat. Transparent blurs are strictly banned.
+*   **No Uppercase Wide-Tracked Monospace Labels:** Secondary status descriptions and label tags must use Montserrat title-case or sentence-case, never uppercase monospace tracking.
+*   **No Gradient-Clip Headlines:** Do not use clip-to-text background gradients inside typography. Headings must be solid text colors or hollow line strokes.
+*   **No Em-Dashes:** Do not use `—` in any documentation or code formats; use standard hyphens (`-`) or colons (`:`).
+
+---
+
+## 2. Coding Practices
+
+*   **No Hardcoded Styles:** Do not source raw hex codes or direct pixel values for margins/paddings/radii. Always reference the CSS variable tokens (e.g., `var(--primary)`, `var(--background)`, `var(--radius)`, `var(--space-3)`).
+*   **Typography Mappings:**
+    *   *Display Headings:* Montserrat (heavy weights 800/900, tight tracking `-1px`).
+    *   *Normal Copy & Interfaces:* Geist Sans (for high-density forms/tables).
+    *   *Data & Parameters:* JetBrains Mono (for coordinate parameters, SKUs, numbers).
+*   **Elevation Modeling:** Standard cards and content areas must use a flat background layout with a `1px` `var(--border-color)` hairline separator. Drop shadows (`var(--shadow-2)` / `var(--shadow-3)`) are reserved strictly for modal overlays, popup sheets, and selector dropdowns.
+
+---
+
+## 3. Mandatory Verification Pipeline
+
+Before completing any task, compiling design system outputs, or claiming a styling change is ready for review, you **MUST** execute the following verification steps:
+
+1.  Run the validation script to ensure `DESIGN.md` spec alignment:
+    ```bash
+    node scripts/lint-design.mjs
+    ```
+2.  If `DESIGN.md` or `udesign.tokens.json` has changed, compile the styles:
+    ```bash
+    npm run build
+    ```
+3.  Ensure the linter finishes with `Validation PASSED` and **0 errors**.
+
+Do not skip this pipeline. If errors are encountered, resolve them before claiming completion.
