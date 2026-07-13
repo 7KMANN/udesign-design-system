@@ -25,7 +25,7 @@ This workspace contains the canonical design system specification for the UDesig
 
 ---
 
-## 3. Mandatory Verification Pipeline
+## 3. Mandatory Verification Pipeline & Release Workflow
 
 Before completing any task, compiling design system outputs, or claiming a styling change is ready for review, you **MUST** execute the following verification steps:
 
@@ -33,10 +33,23 @@ Before completing any task, compiling design system outputs, or claiming a styli
     ```bash
     node scripts/lint-design.mjs
     ```
-2.  If `DESIGN.md` or `udesign.tokens.json` has changed, compile the styles:
+2.  If `DESIGN.md` or `udesign.tokens.json` has changed, compile the token stylesheet:
     ```bash
     npm run build
     ```
-3.  Ensure the linter finishes with `Validation PASSED` and **0 errors**.
+3.  Confirm that the showcase application compiles cleanly by running:
+    ```bash
+    npm run build-showcase
+    ```
+4.  Run the local showcase preview server using:
+    ```bash
+    npm run dev
+    ```
+    Open `http://localhost:3000/` and verify that color changes, custom React component primitives (Button, Badge, Card), and layouts display correctly.
+5.  If releasing a new version, run the release script to bump the version, write a snapshot copy, and update versions array in the previewer:
+    ```bash
+    npm run release -- <patch|minor|major> "description of what changed"
+    ```
+6.  Ensure all generated files are staged and committed in a single commit (e.g. `release: vX.Y.Z`).
 
 Do not skip this pipeline. If errors are encountered, resolve them before claiming completion.

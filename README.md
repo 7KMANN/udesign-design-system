@@ -15,7 +15,7 @@ If you are an agent working directly in this repository:
    ```bash
    node scripts/lint-design.mjs
    ```
-   Ensure it passes with 0 errors. If you change tokens, compile them with `npm run build` and verify they look correct on [showcase/index.html](showcase/index.html).
+   Ensure it passes with 0 errors. If you change tokens, compile them with `npm run build`, run the React dev server using `npm run dev`, and verify they look correct in the browser at `http://localhost:3000/`.
 
 If you are an agent working in a repo that consumes this package:
 
@@ -109,9 +109,10 @@ Hand-edit `tokens/udesign.tokens.json` only. Never touch `dist/tokens.css`, anyt
 
 ```bash
 npm run build
+npm run dev
 ```
 
-Then open `showcase/index.html` directly in a browser (no server needed) and check the tokens you changed actually look right against real components — swatches, buttons, type scale, whichever section touches your change.
+Run the dev server and visit `http://localhost:3000/` in a browser to check that the tokens you changed render correctly in the React showcase pages (Kitchen Sink, Login, Dashboard, Analytics).
 
 ### 4. Cut the release
 
@@ -139,7 +140,7 @@ The git tag is what makes a version *official* — `package.json`'s number alone
 
 ## Showcase
 
-`showcase/index.html` is a kitchen-sink page: every color, type style, button, badge, and spacing/radius value rendered together as the canonical visual reference. Open it directly in a browser (no build step, no server needed). A version dropdown at the top swaps between every released version's tokens against the same markup, so picking an older version visually replays what the brand looked like then.
+The showcase is a modern React + Vite + TypeScript + Tailwind CSS application located in `showcase/`. To run the preview locally, run `npm run dev` and open `http://localhost:3000/`. To compile the app for production, run `npm run build-showcase`. A dropdown at the top dynamically loads previous token releases from `history/` so you can compare design changes.
 
 ## Out of scope (for now)
 
