@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, cpSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, cpSync, readdirSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
 const ROOT = new URL('../', import.meta.url);
@@ -57,6 +57,9 @@ execSync('node scripts/build.mjs', { stdio: 'inherit', cwd: ROOT });
 const historyDir = new URL(`history/v${next}/`, ROOT);
 mkdirSync(historyDir, { recursive: true });
 cpSync(new URL('dist/tokens.css', ROOT), new URL('tokens.css', historyDir));
+if (existsSync(new URL('dist/tokens-functional.css', ROOT))) {
+  cpSync(new URL('dist/tokens-functional.css', ROOT), new URL('tokens-functional.css', historyDir));
+}
 
 const changelogPath = new URL('CHANGELOG.md', ROOT);
 const changelog = readFileSync(changelogPath, 'utf8');
