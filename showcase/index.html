@@ -7,9 +7,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="versions.js"></script>
-  <!-- Tokens style tag that can be hot-swapped for version testing -->
-  <link id="tokens-link" rel="stylesheet" href="../dist/tokens.css">
+  <!-- Tokens style tag that can be hot-swapped for version testing, dynamically injected to prevent Vite bundling -->
+  <script>
+    (function() {
+      var link = document.createElement('link');
+      link.id = 'tokens-link';
+      link.rel = 'stylesheet';
+      link.href = '../dist/tokens.css';
+      document.head.appendChild(link);
+    })();
+  </script>
 </head>
 <body class="bg-background text-foreground min-h-screen">
   <div id="root"></div>

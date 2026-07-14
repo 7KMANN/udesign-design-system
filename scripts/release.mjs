@@ -10,6 +10,37 @@ if (!['patch', 'minor', 'major'].includes(bumpType) || !description) {
   process.exit(1);
 }
 
+console.log('Running release pre-flight checks...');
+
+// 1. Run design linter
+try {
+  console.log('Verifying DESIGN.md compliance...');
+  execSync('node scripts/lint-design.mjs', { stdio: 'inherit', cwd: ROOT });
+} catch (err) {
+  console.error('\nPre-flight check FAILED: Design linter has errors. Fix them in DESIGN.md before releasing.');
+  process.exit(1);
+}
+
+// 2. Run token builder to ensure style-dictionary compiles
+try {
+  console.log('Building design tokens...');
+  execSync('node scripts/build.mjs', { stdio: 'inherit', cwd: ROOT });
+} catch (err) {
+  console.error('\nPre-flight check FAILED: Token builder failed to compile tokens.');
+  process.exit(1);
+}
+
+// 3. Run showcase compiler check and build
+try {
+  console.log('Verifying showcase app compilation...');
+  execSync('npm run build-showcase', { stdio: 'inherit', cwd: ROOT });
+} catch (err) {
+  console.error('\nPre-flight check FAILED: Showcase compilation or build failed. Check showcase React/TypeScript code.');
+  process.exit(1);
+}
+
+console.log('All pre-flight checks PASSED. Proceeding with release version bump...');
+
 const pkgPath = new URL('package.json', ROOT);
 const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
 const [major, minor, patch] = pkg.version.split('.').map(Number);
@@ -46,6 +77,6 @@ const versions = readdirSync(historyRoot)
 // opened directly via file:// - browsers block fetch() of local files under
 // file://, but a script tag loads fine. Same class of bug as the earlier
 // absolute-vs-relative tokens.css import; not repeating it here.
-writeFileSync(new URL('showcase/versions.js', ROOT), `window.UD_VERSIONS = ${JSON.stringify(versions)};\n`);
+writeFileSync(new URL('showcase/public/versions.js', ROOT), `window.UD_VERSIONS = ${JSON.stringify(versions)};\n`);
 
 console.log(`Released v${next}. Snapshot written to history/v${next}/tokens.css.`);

@@ -21,7 +21,7 @@ If you are an agent working in a repo that consumes this package:
 
 1. **Never hardcode a hex value, an `--ud-*` primitive, or a raw size.** Use a semantic token (`--primary`, `--background`, `--muted-foreground`, `--client`, etc.) in component code.
 2. **No semantic token for what you need?** Don't invent one locally and don't reach for a primitive. Add the semantic token here, in `tokens/udesign.tokens.json`, run `npm run build`, commit, then consume it from the app repo.
-3. **Never hand-edit `dist/tokens.css` or anything under `history/`.** Both are generated. The only hand-edited file in this repo is `tokens/udesign.tokens.json`.
+3. **Never hand-edit `dist/tokens.css`, anything under `history/`, or `showcase/public/versions.js`.** All of them are generated/managed automatically. The only hand-edited source files are `tokens/udesign.tokens.json` and `DESIGN.md`.
 4. **Install via git, not npm registry:** `"udesign-design-system": "github:7KMANN/udesign-design-system"` in `dependencies`, then one `@import "udesign-design-system/dist/tokens.css";` near the app root. There is no published npm package.
 5. **Never source brand values from "Icitte"** — unrelated product line, wrong palette.
 6. **Changing a token value?** Follow the exact steps in [Updating tokens & releasing a version](#updating-tokens--releasing-a-version) below, in order. Don't skip the semver decision, don't skip the showcase check, don't forget the git tag.
@@ -103,16 +103,24 @@ If you're unsure between two, pick the higher one — consumers can absorb an un
 
 ### 2. Edit the source, and only the source
 
-Hand-edit `tokens/udesign.tokens.json` only. Never touch `dist/tokens.css`, anything under `history/`, or `showcase/versions.js` directly — all three are generated and get overwritten by the next step anyway.
+Hand-edit `tokens/udesign.tokens.json` and the brand configuration/prose in `DESIGN.md`. Never touch `dist/tokens.css`, anything under `history/`, or `showcase/public/versions.js` directly — all of these are generated or updated during the build/release process.
 
 ### 3. Build and visually verify
 
+Verify all rules, tokens, and layouts are fully valid and compilable:
 ```bash
+# 1. Compile tokens
 npm run build
+
+# 2. Run design linter to ensure DESIGN.md compliance
+node scripts/lint-design.mjs
+
+# 3. Verify showcase application compiles without errors
+npm run build-showcase
+
+# 4. Spin up the dev server for visual inspection at http://localhost:3000/
 npm run dev
 ```
-
-Run the dev server and visit `http://localhost:3000/` in a browser to check that the tokens you changed render correctly in the React showcase pages (Kitchen Sink, Login, Dashboard, Analytics).
 
 ### 4. Cut the release
 
@@ -120,7 +128,7 @@ Run the dev server and visit `http://localhost:3000/` in a browser to check that
 npm run release -- <patch|minor|major> "what changed and why"
 ```
 
-This one command: bumps `package.json`'s version, rebuilds `dist/tokens.css` from the token source, freezes a copy of it under `history/vX.Y.Z/tokens.css`, appends a dated entry to `CHANGELOG.md`, and regenerates `showcase/versions.js` so the showcase dropdown lists the new version. It does **not** commit or tag anything — that's steps 5 and 6, on you (or the agent doing this).
+This command runs automated pre-flight checks first (design linter, token build, and showcase compilation). If all checks pass, it bumps `package.json`'s version, rebuilds `dist/tokens.css`, freezes a copy under `history/vX.Y.Z/tokens.css`, appends a dated entry to `CHANGELOG.md`, and regenerates the dropdown configurations in `showcase/public/versions.js`. If any pre-flight check fails, the release process aborts immediately. It does **not** commit or tag anything — that's steps 5 and 6, on you (or the agent doing this).
 
 ### 5. Commit everything the release step touched, in one commit
 

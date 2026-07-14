@@ -12,12 +12,20 @@ export default function App() {
 
   // Load versions array defined in history configs
   useEffect(() => {
-    const fetchVersions = () => {
-      // Access standard global versions variable defined inside history scripts if exists
+    const script = document.createElement('script');
+    script.src = 'versions.js';
+    script.onload = () => {
       const globalVersions = (window as any).UD_VERSIONS || [];
       setVersions(globalVersions);
     };
-    fetchVersions();
+    script.onerror = () => {
+      console.warn('Failed to load versions.js');
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
   }, []);
 
   // Update stylesheet href when token version picker is selected
