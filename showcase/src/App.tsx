@@ -9,6 +9,11 @@ export default function App() {
   const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [versions, setVersions] = useState<string[]>([]);
   const [selectedVersionPath, setSelectedVersionPath] = useState('../dist/tokens.css');
+  const [designMode, setDesignMode] = useState<'brand' | 'functional'>('brand');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-design', designMode);
+  }, [designMode]);
 
   // Load versions array defined in history configs
   useEffect(() => {
@@ -57,6 +62,14 @@ export default function App() {
         </div>
         
         <div className="flex flex-wrap items-center gap-4">
+          {/* Design Profile Mode Toggle */}
+          <button
+            onClick={() => setDesignMode(designMode === 'brand' ? 'functional' : 'brand')}
+            className="px-3 py-1.5 text-xs font-bold rounded-[var(--radius-sm)] border border-[#e4ded0] bg-[#1b1b1b] text-[#c79f6b] hover:bg-[#c79f6b] hover:text-[#1b1b1b] transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+          >
+            <span>{designMode === 'brand' ? '✦ Brand Show-Off Mode' : '⚡ Brutalist Wire Mode'}</span>
+          </button>
+
           {/* Page Picker */}
           <div className="flex items-center gap-1.5 text-xs font-semibold text-[#8a8172]">
             <span>Page:</span>
