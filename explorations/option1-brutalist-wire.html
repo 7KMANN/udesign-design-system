@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option 1: Geometric Brutalist Wire (High-Tension Technical ERP)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#f4f1ea',
+            surface: '#ffffff',
+            ink: '#1b1b1b',
+            muted: '#7a7265',
+            hairline: '#d8d2c4',
+            gold: {
+              base: '#c79f6b',
+              deep: '#9e7545',
+              wash: '#f5efe6'
+            },
+            danger: '#b23a2f',
+            success: '#3f7d4e'
+          },
+          fontFamily: {
+            display: ['Montserrat', 'sans-serif'],
+            sans: ['Geist', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Geist', sans-serif; background-color: #f4f1ea; color: #1b1b1b; }
+    .font-display { font-family: 'Montserrat', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    /* Hairline brutalist grid */
+    .brutalist-border { border: 1px solid #d8d2c4; }
+    .brutalist-border-t { border-top: 1px solid #d8d2c4; }
+    .brutalist-border-b { border-bottom: 1px solid #d8d2c4; }
+    .brutalist-border-r { border-right: 1px solid #d8d2c4; }
+    .brutalist-border-l { border-left: 1px solid #d8d2c4; }
+    /* Custom compact scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #f4f1ea; }
+    ::-webkit-scrollbar-thumb { background: #c79f6b; border-radius: 0px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased text-[13px] leading-tight">
+
+  <!-- TOP BAR: High tension, compact, zero padding waste -->
+  <header class="bg-surface brutalist-border-b px-4 h-11 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center gap-4">
+      <!-- UDesign Lockup (Brutalist compact) -->
+      <div class="flex items-center gap-2 font-display font-black text-sm tracking-tight">
+        <span class="bg-ink text-gold-base px-1.5 py-0.5 rounded-[2px] text-xs">U</span>
+        <span>DESIGN // GLOBALVISION</span>
+      </div>
+      <span class="text-hairline">|</span>
+      <span class="font-mono text-xs text-muted">ENV: PRODUCTION // AETHER-01</span>
+      <span class="text-hairline">|</span>
+      <div class="flex items-center gap-1.5 font-mono text-xs text-success font-medium">
+        <span class="w-2 h-2 rounded-full bg-success inline-block animate-pulse"></span>
+        <span>INTELLIGOMETER: ONLINE (74% LOAD)</span>
+      </div>
+    </div>
+
+    <!-- Quick Action Toolbar (Tense, instant accessibility) -->
+    <div class="flex items-center gap-2">
+      <div class="relative">
+        <input type="text" placeholder="CMD+K // Quick Jump (Order, SKU, Lead)..." 
+               class="bg-canvas brutalist-border font-mono text-xs px-2.5 py-1.2 w-64 focus:outline-none focus:border-gold-deep rounded-[2px]" />
+      </div>
+      <button class="bg-gold-base hover:bg-gold-deep text-ink font-display font-extrabold text-xs px-3 py-1.2 rounded-[2px] transition-colors flex items-center gap-1">
+        <span>+ NEW RUN</span>
+      </button>
+      <button class="bg-surface hover:bg-canvas brutalist-border text-ink font-mono text-xs px-2.5 py-1.2 rounded-[2px] transition-colors">
+        <span>⚙ CFG</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE: High density 3-column tense grid -->
+  <div class="flex-1 grid grid-cols-12 gap-0 overflow-hidden">
+    
+    <!-- LEFT NAVIGATION & STATUS (Col 1-2) -->
+    <aside class="col-span-2 bg-canvas brutalist-border-r flex flex-col justify-between">
+      <div>
+        <div class="p-3 brutalist-border-b bg-surface">
+          <div class="font-display font-black text-[11px] text-muted tracking-wider uppercase mb-2">OPERATIONAL MODULES</div>
+          <nav class="space-y-0.5">
+            <a href="#" class="flex items-center justify-between px-2.5 py-1.5 bg-gold-wash brutalist-border border-gold-base text-gold-deep font-semibold rounded-[2px]">
+              <span>⚡ Production & DTF</span>
+              <span class="font-mono text-[10px] bg-gold-base text-ink px-1 rounded-[1px] font-bold">14</span>
+            </a>
+            <a href="#" class="flex items-center justify-between px-2.5 py-1.5 hover:bg-surface text-ink transition-colors rounded-[2px]">
+              <span>💬 Leads & Comms</span>
+              <span class="font-mono text-[10px] text-muted">3 active</span>
+            </a>
+            <a href="#" class="flex items-center justify-between px-2.5 py-1.5 hover:bg-surface text-ink transition-colors rounded-[2px]">
+              <span>📦 Parcel Tracking</span>
+              <span class="font-mono text-[10px] text-success font-semibold">98% ON TIME</span>
+            </a>
+            <a href="#" class="flex items-center justify-between px-2.5 py-1.5 hover:bg-surface text-ink transition-colors rounded-[2px]">
+              <span>📊 Accounting & Quotes</span>
+              <span class="font-mono text-[10px] text-muted">v3.2</span>
+            </a>
+            <a href="#" class="flex items-center justify-between px-2.5 py-1.5 hover:bg-surface text-ink transition-colors rounded-[2px]">
+              <span>🎨 SS Activewear Matrix</span>
+            </a>
+          </nav>
+        </div>
+
+        <!-- Tense Quick Filters Block -->
+        <div class="p-3 brutalist-border-b">
+          <div class="font-display font-black text-[11px] text-muted tracking-wider uppercase mb-2">ACTIVE WORKSTATIONS</div>
+          <div class="space-y-1 font-mono text-xs">
+            <div class="flex items-center justify-between p-1.5 bg-surface brutalist-border rounded-[2px]">
+              <div class="flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 bg-gold-base rounded-full"></span>
+                <span>HEAT PRESS #1</span>
+              </div>
+              <span class="text-gold-deep font-bold">BUSY (04:12)</span>
+            </div>
+            <div class="flex items-center justify-between p-1.5 bg-surface brutalist-border rounded-[2px]">
+              <div class="flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 bg-success rounded-full"></span>
+                <span>HEAT PRESS #2</span>
+              </div>
+              <span class="text-success font-bold">READY // IDLE</span>
+            </div>
+            <div class="flex items-center justify-between p-1.5 bg-surface brutalist-border rounded-[2px]">
+              <div class="flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 bg-gold-base rounded-full"></span>
+                <span>EMBROIDERY (6-HD)</span>
+              </div>
+              <span class="text-gold-deep font-bold">BATCH 4/12</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer system telemetry -->
+      <div class="p-3 brutalist-border-t bg-surface font-mono text-[11px] text-muted space-y-1">
+        <div class="flex justify-between"><span>LATENCY:</span><span class="text-ink">14ms</span></div>
+        <div class="flex justify-between"><span>NOCO V3 SYNC:</span><span class="text-success">OK</span></div>
+        <div class="flex justify-between"><span>OPERATOR LOAD:</span><span class="text-gold-deep font-bold">78% (SAFE)</span></div>
+      </div>
+    </aside>
+
+    <!-- MAIN CENTER WORK AREA (Col 3-9): High density table & scheduler -->
+    <main class="col-span-7 bg-surface flex flex-col justify-between overflow-y-auto">
+      <div>
+        <!-- Toolbar header -->
+        <div class="px-4 py-2.5 brutalist-border-b bg-canvas/40 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="font-display font-black text-sm tracking-tight text-ink">DTF & EMBROIDERY SCHEDULE // TODAY</span>
+            <span class="font-mono text-xs px-1.5 py-0.5 bg-gold-wash text-gold-deep brutalist-border border-gold-base font-bold rounded-[2px]">AUTO-BALANCED (TURBO MODE OFF)</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button class="px-2 py-1 font-mono text-xs brutalist-border bg-surface hover:bg-canvas rounded-[2px]">FILTER: ALL (14)</button>
+            <button class="px-2 py-1 font-mono text-xs brutalist-border bg-surface hover:bg-canvas rounded-[2px]">SORT: PRIORITY</button>
+          </div>
+        </div>
+
+        <!-- Tense Data Grid (Compact, zero padding waste, instant scan) -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-canvas font-mono text-[11px] text-muted uppercase tracking-wider brutalist-border-b">
+                <th class="py-2 px-3 w-20">JOB ID</th>
+                <th class="py-2 px-3">CLIENT / ORG</th>
+                <th class="py-2 px-3">FLOW TYPE</th>
+                <th class="py-2 px-3">LOGOS / QUANTITY</th>
+                <th class="py-2 px-3">NEXT STEP</th>
+                <th class="py-2 px-3">TIMING EST.</th>
+                <th class="py-2 px-3 text-right">ACTION</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-hairline font-sans text-xs">
+              
+              <!-- Row 1: High priority / Rush -->
+              <tr class="hover:bg-gold-wash/30 transition-colors border-l-2 border-l-danger">
+                <td class="py-2 px-3 font-mono font-bold text-ink">#GV-8942</td>
+                <td class="py-2 px-3">
+                  <div class="font-semibold text-ink">Apex Athletics Inc.</div>
+                  <div class="text-[11px] text-muted">Contact: K. Tremblay</div>
+                </td>
+                <td class="py-2 px-3 font-mono">
+                  <span class="px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-[2px] text-[11px] font-semibold">HYBRID (DTF+EMB)</span>
+                </td>
+                <td class="py-2 px-3 font-mono">
+                  <span>2 transfers // 48 pcs</span>
+                </td>
+                <td class="py-2 px-3">
+                  <span class="px-1.5 py-0.5 bg-red-100 text-red-800 border border-red-300 font-mono text-[11px] font-bold rounded-[2px]">PLACEMENT (BLOCKED)</span>
+                </td>
+                <td class="py-2 px-3 font-mono text-ink">
+                  <span>18m 40s</span>
+                </td>
+                <td class="py-2 px-3 text-right">
+                  <button class="bg-ink hover:bg-gold-deep text-gold-base font-display font-bold text-[11px] px-2.5 py-1 rounded-[2px] transition-colors">EXECUTE</button>
+                </td>
+              </tr>
+
+              <!-- Row 2 -->
+              <tr class="hover:bg-gold-wash/30 transition-colors border-l-2 border-l-gold-base">
+                <td class="py-2 px-3 font-mono font-bold text-ink">#GV-8943</td>
+                <td class="py-2 px-3">
+                  <div class="font-semibold text-ink">Montréal Microbrewery</div>
+                  <div class="text-[11px] text-muted">Contact: M. Gagnon</div>
+                </td>
+                <td class="py-2 px-3 font-mono">
+                  <span class="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded-[2px] text-[11px] font-semibold">DTF ONLY</span>
+                </td>
+                <td class="py-2 px-3 font-mono">
+                  <span>1 transfer // 120 pcs</span>
+                </td>
+                <td class="py-2 px-3">
+                  <span class="px-1.5 py-0.5 bg-yellow-100 text-yellow-800 border border-yellow-300 font-mono text-[11px] font-bold rounded-[2px]">COOL OFF (PASSIVE)</span>
+                </td>
+                <td class="py-2 px-3 font-mono text-ink">
+                  <span>08m 15s</span>
+                </td>
+                <td class="py-2 px-3 text-right">
+                  <button class="brutalist-border hover:bg-canvas text-ink font-display font-bold text-[11px] px-2.5 py-1 rounded-[2px] transition-colors">INSPECT</button>
+                </td>
+              </tr>
+
+              <!-- Row 3 -->
+              <tr class="hover:bg-gold-wash/30 transition-colors">
+                <td class="py-2 px-3 font-mono font-bold text-ink">#GV-8944</td>
+                <td class="py-2 px-3">
+                  <div class="font-semibold text-ink">Sûreté Québec / Fleet</div>
+                  <div class="text-[11px] text-muted">Contact: L. Bouchard</div>
+                </td>
+                <td class="py-2 px-3 font-mono">
+                  <span class="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded-[2px] text-[11px] font-semibold">EMBROIDERY</span>
+                </td>
+                <td class="py-2 px-3 font-mono">
+                  <span>Left Chest // 24 pcs</span>
+                </td>
+                <td class="py-2 px-3">
+                  <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 font-mono text-[11px] font-bold rounded-[2px]">HOOPING PREP</span>
+                </td>
+                <td class="py-2 px-3 font-mono text-ink">
+                  <span>42m 00s</span>
+                </td>
+                <td class="py-2 px-3 text-right">
+                  <button class="brutalist-border hover:bg-canvas text-ink font-display font-bold text-[11px] px-2.5 py-1 rounded-[2px] transition-colors">INSPECT</button>
+                </td>
+              </tr>
+
+              <!-- Row 4 -->
+              <tr class="hover:bg-gold-wash/30 transition-colors">
+                <td class="py-2 px-3 font-mono font-bold text-ink">#GV-8945</td>
+                <td class="py-2 px-3">
+                  <div class="font-semibold text-ink">Laval University Esports</div>
+                  <div class="text-[11px] text-muted">Contact: J. Roy</div>
+                </td>
+                <td class="py-2 px-3 font-mono">
+                  <span class="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded-[2px] text-[11px] font-semibold">DTF ONLY</span>
+                </td>
+                <td class="py-2 px-3 font-mono">
+                  <span>3 transfers // 15 pcs</span>
+                </td>
+                <td class="py-2 px-3">
+                  <span class="px-1.5 py-0.5 bg-canvas text-muted brutalist-border font-mono text-[11px] font-bold rounded-[2px]">QUEUED</span>
+                </td>
+                <td class="py-2 px-3 font-mono text-muted">
+                  <span>-- : --</span>
+                </td>
+                <td class="py-2 px-3 text-right">
+                  <button class="brutalist-border hover:bg-canvas text-ink font-display font-bold text-[11px] px-2.5 py-1 rounded-[2px] transition-colors">INSPECT</button>
+                </td>
+              </tr>
+              <!-- More dense rows -->
+              <tr class="hover:bg-gold-wash/30 transition-colors">
+                <td class="py-2 px-3 font-mono font-bold text-ink">#GV-8946</td>
+                <td class="py-2 px-3">
+                  <div class="font-semibold text-ink">Nordic Ski Club 2026</div>
+                  <div class="text-[11px] text-muted">Contact: S. Morin</div>
+                </td>
+                <td class="py-2 px-3 font-mono">
+                  <span class="px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded-[2px] text-[11px] font-semibold">HYBRID (DTF+EMB)</span>
+                </td>
+                <td class="py-2 px-3 font-mono">
+                  <span>1 transfer // 60 pcs</span>
+                </td>
+                <td class="py-2 px-3">
+                  <span class="px-1.5 py-0.5 bg-canvas text-muted brutalist-border font-mono text-[11px] font-bold rounded-[2px]">QUEUED</span>
+                </td>
+                <td class="py-2 px-3 font-mono text-muted">
+                  <span>-- : --</span>
+                </td>
+                <td class="py-2 px-3 text-right">
+                  <button class="brutalist-border hover:bg-canvas text-ink font-display font-bold text-[11px] px-2.5 py-1 rounded-[2px] transition-colors">INSPECT</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bottom inline quick-entry / command strip (Tense, zero steps wasted) -->
+      <div class="p-3 bg-canvas brutalist-border-t flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="font-display font-extrabold text-xs text-ink uppercase">QUICK ENTRY:</span>
+          <input type="text" placeholder="Scan barcode or type SKU+Qty to inject run directly..." 
+                 class="bg-surface brutalist-border font-mono text-xs px-3 py-1.5 w-96 focus:outline-none focus:border-gold-deep rounded-[2px]" />
+          <button class="bg-ink text-gold-base font-display font-bold text-xs px-3 py-1.5 rounded-[2px] hover:bg-gold-deep transition-colors">
+            INJECT + SCHEDULE
+          </button>
+        </div>
+        <div class="font-mono text-xs text-muted">
+          <span>TENSION PROFILE: GEOMETRIC WIRE // 1PX HAIRLINE</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT METRICS & REAL-TIME TELEMETRY (Col 10-12) -->
+    <aside class="col-span-3 bg-canvas brutalist-border-l flex flex-col justify-between">
+      <div class="p-3 space-y-3">
+        <!-- Section title -->
+        <div class="flex items-center justify-between brutalist-border-b pb-2">
+          <span class="font-display font-black text-xs uppercase text-ink">LIVE TELEMETRY // STATS</span>
+          <span class="font-mono text-[11px] bg-surface brutalist-border px-1.5 py-0.5 rounded-[2px]">5s POLL</span>
+        </div>
+
+        <!-- Metric Card 1: Operator Load -->
+        <div class="bg-surface brutalist-border p-3 rounded-[2px] space-y-2">
+          <div class="flex justify-between items-start">
+            <span class="font-mono text-xs text-muted uppercase font-semibold">OPERATOR UTILIZATION</span>
+            <span class="font-display font-black text-lg text-gold-deep">78.4%</span>
+          </div>
+          <!-- Bar -->
+          <div class="w-full bg-canvas h-2 rounded-[1px] overflow-hidden brutalist-border">
+            <div class="bg-gold-base h-full" style="width: 78.4%"></div>
+          </div>
+          <div class="flex justify-between font-mono text-[10px] text-muted">
+            <span>60% target min</span>
+            <span>80% max ceiling</span>
+          </div>
+        </div>
+
+        <!-- Metric Card 2: Intelligometer Timeline Preview -->
+        <div class="bg-surface brutalist-border p-3 rounded-[2px] space-y-2.5">
+          <div class="flex justify-between items-center">
+            <span class="font-mono text-xs text-muted uppercase font-semibold">ACTIVE CYCLE WINDOW</span>
+            <span class="font-mono text-[10px] bg-gold-wash text-gold-deep font-bold px-1 rounded-[1px]">AUTO-ORDERED</span>
+          </div>
+          <div class="space-y-1.5 font-mono text-xs">
+            <div class="flex justify-between items-center p-1 bg-canvas brutalist-border rounded-[2px]">
+              <span class="font-bold text-ink">1. PLACEMENT</span>
+              <span class="text-danger font-bold">BLOCKS PRESS (45s)</span>
+            </div>
+            <div class="flex justify-between items-center p-1 bg-canvas brutalist-border rounded-[2px]">
+              <span class="font-bold text-ink">2. HEAT PRESS #1</span>
+              <span class="text-gold-deep">PRESSING (15s)</span>
+            </div>
+            <div class="flex justify-between items-center p-1 bg-canvas brutalist-border rounded-[2px]">
+              <span class="font-bold text-ink">3. COOL OFF</span>
+              <span class="text-muted">PASSIVE GAP (30s)</span>
+            </div>
+            <div class="flex justify-between items-center p-1 bg-canvas brutalist-border rounded-[2px]">
+              <span class="font-bold text-ink">4. FINAL PRESS</span>
+              <span class="text-gold-deep">PRESSING (10s)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal Log Preview (Dark brutalist console embedded) -->
+        <div class="bg-ink text-canvas brutalist-border p-2.5 rounded-[2px] font-mono text-[11px] space-y-1">
+          <div class="text-gold-base font-bold pb-1 border-b border-zinc-800 flex justify-between">
+            <span>WORKER LOG // SIMULATOR</span>
+            <span>ID #8821</span>
+          </div>
+          <div class="text-zinc-400">&gt; [11:32:04] intelligometer.worker spawned</div>
+          <div class="text-zinc-400">&gt; [11:32:05] calculated efficiency: 94.2%</div>
+          <div class="text-success">&gt; [11:32:05] safety check passed (no seams overlap)</div>
+          <div class="text-gold-base">&gt; [11:32:08] NocoDB V3 records linked (Lead &lt;-&gt; Org)</div>
+        </div>
+      </div>
+
+      <!-- Bottom action buttons (Simplistic: fewer steps to achieve the goal) -->
+      <div class="p-3 brutalist-border-t bg-surface space-y-2">
+        <button class="w-full bg-gold-base hover:bg-gold-deep text-ink font-display font-black text-xs py-2 rounded-[2px] transition-colors uppercase tracking-wider">
+          RE-SIMULATE TIMELINE &amp; BALANCING
+        </button>
+        <button class="w-full bg-canvas hover:bg-hairline brutalist-border text-ink font-mono text-xs py-1.5 rounded-[2px] transition-colors">
+          EXPORT SCHEDULE TO RADICALE / CAL
+        </button>
+      </div>
+    </aside>
+
+  </div>
+
+</body>
+</html>

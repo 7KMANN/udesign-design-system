@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UDesign Functional Exploration Launcher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#f4ece1',
+            surface: '#ffffff',
+            ink: '#1b1b1b',
+            muted: '#8a8172',
+            hairline: '#e4ded0',
+            gold: {
+              base: '#c79f6b',
+              deep: '#9e7545',
+              wash: '#f3ead9'
+            }
+          },
+          fontFamily: {
+            display: ['Montserrat', 'sans-serif'],
+            sans: ['Geist', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-[#f4ece1] text-[#1b1b1b] font-sans antialiased p-8">
+  <div class="max-w-5xl mx-auto space-y-8">
+    
+    <!-- Header -->
+    <div class="border-b border-[#e4ded0] pb-6">
+      <div class="inline-block bg-[#1b1b1b] text-[#c79f6b] font-display font-black text-xs px-2 py-1 rounded-[3px] mb-3 uppercase tracking-wider">
+        UDesign Design System // Exploration
+      </div>
+      <h1 class="font-display font-black text-4xl text-[#1b1b1b] tracking-tight">Functional &amp; Tense UI Prototypes</h1>
+      <p class="font-sans text-base text-[#8a8172] mt-2 max-w-3xl leading-relaxed">
+        Exploring the new **Dual Design Approach** (`Impactful Show-Off` vs `Brutalist Functional`). 
+        These prototypes embody the "Functional" profile: tense, high-density, geometric precision, fewer steps to achieve operational goals, while retaining UDesign's iconic warm stone and gold identity.
+      </p>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Option 1 -->
+      <a href="option1-brutalist-wire.html" target="_blank" class="bg-white border border-[#e4ded0] hover:border-[#c79f6b] rounded-[10px] p-6 transition-all duration-200 group flex flex-col justify-between shadow-sm hover:shadow-md">
+        <div class="space-y-3">
+          <div class="font-mono text-xs text-[#c79f6b] font-bold uppercase tracking-wider">OPTION 01 // LIGHT / WIRE</div>
+          <h2 class="font-display font-black text-xl text-[#1b1b1b] group-hover:text-[#c79f6b] transition-colors">Geometric Brutalist Wire</h2>
+          <p class="font-sans text-xs text-[#8a8172] leading-relaxed">
+            High-tension 1px hairline wireframe grid. Inspired by industrial telemetry and command boards. Uses Geist + JetBrains Mono with Montserrat Black punch accents and zero drop shadows.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-[#e4ded0] flex items-center justify-between font-mono text-xs font-bold text-[#1b1b1b] group-hover:text-[#c79f6b]">
+          <span>LAUNCH PROTOTYPE</span>
+          <span>&rarr;</span>
+        </div>
+      </a>
+
+      <!-- Option 2 -->
+      <a href="option2-velocity-grid.html" target="_blank" class="bg-white border border-[#e4ded0] hover:border-[#c79f6b] rounded-[10px] p-6 transition-all duration-200 group flex flex-col justify-between shadow-sm hover:shadow-md">
+        <div class="space-y-3">
+          <div class="font-mono text-xs text-[#c79f6b] font-bold uppercase tracking-wider">OPTION 02 // ZERO-STEP BENTO</div>
+          <h2 class="font-display font-black text-xl text-[#1b1b1b] group-hover:text-[#c79f6b] transition-colors">High-Velocity Monolithic Grid</h2>
+          <p class="font-sans text-xs text-[#8a8172] leading-relaxed">
+            "Fewer steps, not fewer tools." A 12-column master-detail CRM matrix where clicking a record opens an instant right-hand inspector with 1-click VoIP.ms/Quote execution right on the surface.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-[#e4ded0] flex items-center justify-between font-mono text-xs font-bold text-[#1b1b1b] group-hover:text-[#c79f6b]">
+          <span>LAUNCH PROTOTYPE</span>
+          <span>&rarr;</span>
+        </div>
+      </a>
+
+      <!-- Option 3 -->
+      <a href="option3-obsidian-command.html" target="_blank" class="bg-[#131315] border border-[#26262a] hover:border-[#c79f6b] rounded-[10px] p-6 transition-all duration-200 group flex flex-col justify-between shadow-lg text-white">
+        <div class="space-y-3">
+          <div class="font-mono text-xs text-[#c79f6b] font-bold uppercase tracking-wider">OPTION 03 // DARK OBSIDIAN</div>
+          <h2 class="font-display font-black text-xl text-white group-hover:text-[#c79f6b] transition-colors">Obsidian Command Matrix</h2>
+          <p class="font-sans text-xs text-[#8a8172] leading-relaxed">
+            An ultra-crisp dark-mode production control center for DTF and embroidery shifts. Features glowing gold wire highlights, live telemetry feeds, and dense machine progress metrics.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-[#26262a] flex items-center justify-between font-mono text-xs font-bold text-[#c79f6b]">
+          <span>LAUNCH PROTOTYPE</span>
+          <span>&rarr;</span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Architectural Note -->
+    <div class="bg-white border border-[#e4ded0] rounded-[10px] p-6 font-sans text-xs text-[#8a8172] space-y-2">
+      <div class="font-display font-bold text-sm text-[#1b1b1b] uppercase tracking-wide">How Dual Tokens Will Work Under The Hood</div>
+      <p>
+        Both the <strong>Impactful Show-Off</strong> and <strong>Brutalist Functional</strong> profiles share exactly the same component structure and class names (`bg-background`, `text-primary`, `border-border`). When switching between modes (`[data-design="functional"]`), the CSS variables dynamically adjust radii (`10px` vs `2px`), typography (`Montserrat` vs `Geist`), and contrast ratios while preserving our signature warm stone and metallic gold (`#c79f6b`) identity.
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option 3: Obsidian & Gold Command Matrix (Ultra-Crisp Operational Control)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#0a0a0b',
+            surface: '#131315',
+            ink: '#f5efe6',
+            muted: '#8a8172',
+            hairline: '#26262a',
+            gold: {
+              base: '#c79f6b',
+              deep: '#d2b289',
+              glow: 'rgba(199, 159, 107, 0.15)'
+            },
+            danger: '#ef4444',
+            success: '#10b981'
+          },
+          fontFamily: {
+            display: ['Montserrat', 'sans-serif'],
+            sans: ['Geist', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Geist', sans-serif; background-color: #0a0a0b; color: #f5efe6; }
+    .font-display { font-family: 'Montserrat', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .obsidian-border { border: 1px solid #26262a; }
+    .obsidian-border-t { border-top: 1px solid #26262a; }
+    .obsidian-border-b { border-bottom: 1px solid #26262a; }
+    .obsidian-border-r { border-right: 1px solid #26262a; }
+    .obsidian-border-l { border-left: 1px solid #26262a; }
+    .gold-wire { border: 1px solid #c79f6b; box-shadow: 0 0 12px rgba(199, 159, 107, 0.2); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased text-[13px] leading-tight">
+
+  <!-- TOP BAR: Ultra-tense dark telemetry header -->
+  <header class="bg-surface obsidian-border-b px-5 h-12 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 font-display font-black text-sm tracking-tight text-ink">
+        <span class="bg-gold-base text-black px-2 py-0.5 rounded-[2px] text-xs font-black">UD</span>
+        <span class="text-gold-base">GLOBALVISION // AETHER COMMAND MATRIX</span>
+      </div>
+      <div class="h-4 w-[1px] bg-hairline"></div>
+      <div class="flex items-center gap-2 font-mono text-xs">
+        <span class="text-muted">MODE:</span>
+        <span class="px-2 py-0.5 bg-gold-glow text-gold-base obsidian-border border-gold-base/50 font-bold rounded-[2px]">TURBO PRODUCTION (80% LIMIT)</span>
+      </div>
+    </div>
+
+    <!-- Right Live Telemetry -->
+    <div class="flex items-center gap-4 font-mono text-xs">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-success animate-ping"></span>
+        <span class="text-success font-bold">NTFY WORKER: ACTIVE</span>
+      </div>
+      <div class="flex items-center gap-2 text-muted">
+        <span>REDIS QUEUE:</span>
+        <span class="text-ink font-bold">0 PENDING // 14 DONE</span>
+      </div>
+      <button class="bg-gold-base hover:bg-gold-deep text-black font-display font-black text-xs px-4 py-1.5 rounded-[2px] transition-all shadow-[0_0_15px_rgba(199,159,107,0.3)] flex items-center gap-1.5">
+        <span>⚡ EMERGENCY OVERRIDE</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD: High density 4-Panel Command Center -->
+  <div class="flex-1 grid grid-cols-12 gap-3 p-3 overflow-hidden">
+    
+    <!-- PANEL 1: Workstation Statuses (Col 1-3) -->
+    <section class="col-span-3 bg-surface obsidian-border rounded-[4px] p-3 flex flex-col justify-between">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between obsidian-border-b pb-2">
+          <span class="font-display font-black text-xs text-gold-base uppercase tracking-wider">ACTIVE SHOP FLOOR UNITS</span>
+          <span class="font-mono text-[10px] bg-canvas px-1.5 py-0.5 rounded-[2px] text-muted">3 CONNECTED</span>
+        </div>
+
+        <!-- Machine 1: Heat Press 1 (Active cycle) -->
+        <div class="bg-canvas p-3 rounded-[3px] gold-wire space-y-2">
+          <div class="flex justify-between items-start font-mono">
+            <div>
+              <div class="font-bold text-ink text-sm">HEAT PRESS #1 (STAHLS)</div>
+              <div class="text-[11px] text-gold-base">JOB #GV-8942 // APEX ATHLETICS</div>
+            </div>
+            <span class="px-1.5 py-0.5 bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-bold rounded-[2px]">BLOCKED (PRESSING)</span>
+          </div>
+          <!-- Progress bar -->
+          <div class="space-y-1">
+            <div class="flex justify-between font-mono text-[11px] text-muted">
+              <span>Step 2: Heat Press w/ Transfer</span>
+              <span class="text-ink font-bold">12s / 15s</span>
+            </div>
+            <div class="w-full bg-surface h-2 rounded-[1px] overflow-hidden obsidian-border">
+              <div class="bg-gold-base h-full transition-all duration-300" style="width: 80%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Machine 2: Heat Press 2 -->
+        <div class="bg-canvas p-3 rounded-[3px] obsidian-border space-y-2">
+          <div class="flex justify-between items-start font-mono">
+            <div>
+              <div class="font-bold text-ink text-sm">HEAT PRESS #2 (HOTRONIX)</div>
+              <div class="text-[11px] text-muted">READY FOR NEXT CYCLE</div>
+            </div>
+            <span class="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold rounded-[2px]">IDLE // ONLINE</span>
+          </div>
+          <div class="font-mono text-[11px] text-muted flex justify-between pt-1">
+            <span>Operator Assigned:</span>
+            <span class="text-ink font-bold">Operator #1</span>
+          </div>
+        </div>
+
+        <!-- Machine 3: Embroidery -->
+        <div class="bg-canvas p-3 rounded-[3px] obsidian-border space-y-2">
+          <div class="flex justify-between items-start font-mono">
+            <div>
+              <div class="font-bold text-ink text-sm">EMBROIDERY (TAJIMA 6-HD)</div>
+              <div class="text-[11px] text-purple-400">JOB #GV-8944 // SÛRETÉ QC</div>
+            </div>
+            <span class="px-1.5 py-0.5 bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-bold rounded-[2px]">STITCHING (14,200 ST)</span>
+          </div>
+          <div class="space-y-1">
+            <div class="flex justify-between font-mono text-[11px] text-muted">
+              <span>Batch Run 4 of 12</span>
+              <span class="text-ink font-bold">32m left</span>
+            </div>
+            <div class="w-full bg-surface h-2 rounded-[1px] overflow-hidden obsidian-border">
+              <div class="bg-purple-500 h-full" style="width: 35%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Machine Trigger -->
+      <button class="w-full bg-surface hover:bg-gold-glow obsidian-border hover:border-gold-base text-gold-base font-display font-extrabold text-xs py-2.5 rounded-[3px] transition-all uppercase tracking-wider">
+        + ASSIGN NEW WORKFLOW TO IDLE PRESS
+      </button>
+    </section>
+
+    <!-- PANEL 2: Live Intelligometer Timeline & Scheduler (Col 4-9) -->
+    <section class="col-span-6 bg-surface obsidian-border rounded-[4px] flex flex-col justify-between overflow-hidden">
+      <div>
+        <div class="p-3 obsidian-border-b bg-canvas/40 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="font-display font-black text-sm tracking-tight text-ink uppercase">INTELLIGOMETER // AUTO-BALANCED TIMELINE</span>
+            <span class="font-mono text-xs text-gold-base">100 + (PRESS_WAIT% - OPERATOR_IDLE%)</span>
+          </div>
+          <div class="flex items-center gap-2 font-mono text-xs">
+            <button class="px-2 py-0.5 bg-gold-base text-black font-bold rounded-[2px]">TIMELINE</button>
+            <button class="px-2 py-0.5 hover:bg-canvas rounded-[2px] text-muted">COST CALC</button>
+          </div>
+        </div>
+
+        <!-- High-Density Schedule Rows -->
+        <div class="p-3 space-y-2 font-sans text-xs">
+          <!-- Item 1 -->
+          <div class="bg-canvas obsidian-border p-2.5 rounded-[3px] flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-gold-base font-bold text-sm">14:00</span>
+              <div>
+                <div class="font-display font-bold text-ink">Apex Athletics — 48 DTF Logos (Chest + Back)</div>
+                <div class="font-mono text-[11px] text-muted">Step: Placement -&gt; Heat Press #1 -&gt; Cool Off (30s) -&gt; Final Press</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 font-mono">
+              <span class="text-gold-deep">Est: 18m 40s</span>
+              <button class="bg-gold-base text-black font-display font-bold px-3 py-1 rounded-[2px] text-xs">RUNNING</button>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="bg-canvas obsidian-border p-2.5 rounded-[3px] flex items-center justify-between opacity-80">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-muted font-bold text-sm">14:20</span>
+              <div>
+                <div class="font-display font-bold text-ink">Montréal Microbrewery — 120 Hoodies (Back Transfer)</div>
+                <div class="font-mono text-[11px] text-muted">Step: Grouped cycle (dtfGroupLogos = true) // Heat Press #2</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 font-mono">
+              <span class="text-muted">Est: 45m 00s</span>
+              <button class="obsidian-border hover:border-gold-base text-ink font-display font-bold px-3 py-1 rounded-[2px] text-xs">QUEUED</button>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="bg-canvas obsidian-border p-2.5 rounded-[3px] flex items-center justify-between opacity-80">
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-muted font-bold text-sm">15:05</span>
+              <div>
+                <div class="font-display font-bold text-ink">Laval Esports — 15 Custom Jerseys</div>
+                <div class="font-mono text-[11px] text-muted">Step: Placement -&gt; Heat Press #1</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 font-mono">
+              <span class="text-muted">Est: 12m 15s</span>
+              <button class="obsidian-border hover:border-gold-base text-ink font-display font-bold px-3 py-1 rounded-[2px] text-xs">QUEUED</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Terminal Console Bar -->
+      <div class="p-3 bg-canvas obsidian-border-t font-mono text-[11px] space-y-1.5">
+        <div class="flex justify-between items-center text-gold-base font-bold pb-1 border-b border-hairline">
+          <span>&gt;_ FASTAPI / NOCODB V3 LIVE TELEMETRY</span>
+          <span class="text-success">200 OK // API.UDESIGNPRODUCTIONS.COM</span>
+        </div>
+        <div class="text-zinc-400 flex gap-2">
+          <span class="text-zinc-600">[14:12:01]</span>
+          <span>POST /api/v3/data/wzig54qj/LEADS/records -&gt; linked org `ECQ SPORTS` (24ms)</span>
+        </div>
+        <div class="text-gold-base flex gap-2">
+          <span class="text-zinc-600">[14:12:04]</span>
+          <span>ntfy_worker: job notification_id#889 enqueued to redis (topic: globalvision_prod)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 3: Operator Health & Cost Live Engine (Col 10-12) -->
+    <section class="col-span-3 bg-surface obsidian-border rounded-[4px] p-3 flex flex-col justify-between">
+      <div class="space-y-4">
+        <div class="flex items-center justify-between obsidian-border-b pb-2">
+          <span class="font-display font-black text-xs text-ink uppercase">OPERATOR BENCHMARK 2025</span>
+          <span class="font-mono text-[10px] text-gold-base font-bold">1 OPERATOR</span>
+        </div>
+
+        <div class="bg-canvas p-3 rounded-[3px] obsidian-border space-y-2">
+          <div class="flex justify-between font-mono text-xs">
+            <span class="text-muted">BUSY FACTOR</span>
+            <span class="text-gold-base font-black text-base">74.2%</span>
+          </div>
+          <div class="w-full bg-surface h-3 rounded-[2px] overflow-hidden obsidian-border p-0.5">
+            <div class="bg-gold-base h-full rounded-[1px]" style="width: 74.2%"></div>
+          </div>
+          <p class="font-mono text-[10px] text-muted leading-relaxed pt-1">
+            Within healthy operating range (60%-80%). No fatigue warning triggered. Press cool-off windows actively utilized for garment placement.
+          </p>
+        </div>
+
+        <div class="space-y-2 pt-2">
+          <span class="font-display font-bold text-xs uppercase text-ink">REAL-TIME PRODUCTION COST</span>
+          <div class="bg-canvas p-3 rounded-[3px] obsidian-border space-y-1.5 font-mono text-xs">
+            <div class="flex justify-between"><span>DTF Labor Run:</span><span class="text-ink">$14.20</span></div>
+            <div class="flex justify-between"><span>Transfer Film (48):</span><span class="text-ink">$72.00</span></div>
+            <div class="flex justify-between"><span>Overhead Alloc:</span><span class="text-ink">$8.50</span></div>
+            <div class="obsidian-border-t pt-1.5 flex justify-between font-bold text-gold-base text-sm">
+              <span>TOTAL COST:</span>
+              <span>$94.70</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <button class="w-full bg-surface hover:bg-gold-glow obsidian-border border-gold-base/60 text-gold-base font-mono text-xs py-2 rounded-[2px] transition-colors font-bold">
+          ⚙ CONFIG PRODUCTION COSTS
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>
