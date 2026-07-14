@@ -1,1 +1,1 @@
-window.UD_VERSIONS = ["v1.0.0"];
+window.UD_VERSIONS = ["v1.1.0","v1.0.0"];

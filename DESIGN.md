@@ -105,7 +105,7 @@ components:
 
 ## Overview
 
-UDesign's interface guidelines bridge the gap between B2B dashboard functionality and high-impact visual design. The brand is built on a design philosophy of **"Geometric Brutalism meets Functional Precision."**
+uDesign's interface guidelines bridge the gap between B2B dashboard functionality and high-impact visual design. The brand is built on a design philosophy of **"Geometric Brutalism meets Functional Precision."**
 
 Every page displays a calm, warm-toned canvas of cream `{colors.canvas}`, providing a soft visual environment. Elements stack in flat cards without standard drop shadows, separating themselves from the page via custom `1px` `{colors.hairline}` borders. Hierarchy is set through tight, bold geometric Montserrat titles and dense Geist Sans data layouts, accented by a single high-voltage Gold `{colors.primary}` brand tone.
 
@@ -114,6 +114,17 @@ Every page displays a calm, warm-toned canvas of cream `{colors.canvas}`, provid
 - **Bold/Fine Typographic Contrast:** Geometric headers use heavy weights (Montserrat Black 900) and tight tracking, while data cells and form fields rely on functional interface types (Geist Sans/JetBrains Mono).
 - **Hairline Border Separators:** Components separate using thin lines (`1px {colors.hairline}`), bypassing standard soft shadow elevations.
 - **Contrasting Background Tints:** Low-contrast status badges use transparent backdrops to prevent visual noise.
+
+## Brand Layout Styles: Impactful vs. Functional
+
+Although uDesign uses a single set of design tokens, the layout philosophy splits into two distinct modes:
+
+*   **Impactful Layout Style (Marketing & Presentation)**:
+    *   Designed for public-facing websites (like `udesign-website`).
+    *   Characterized by massive geometric titles, spacious gaps (64px vertical margins), and ultra-bold presentation. It focuses on immediate brand impact over information density.
+*   **Functional Layout Style (Dense Dashboards & Internal Tools)**:
+    *   Designed for transaction-heavy administrative systems (like `globalvision` or `udesignpages`).
+    *   Characterized by dense grids, compact data tables, flexible layouts (collapsible sidebars on desktop, bottom navigation drawers on mobile), and standardized status coloring. It focuses on usability and cognitive speed.
 
 ## Colors
 
@@ -208,15 +219,35 @@ UDesign features a flat design system that relies on borders rather than shadows
 
 ### C. Low-Opacity State Badges
 *   To avoid visual noise, alert levels and status badges use transparent background tints matching the text color role:
-    *   *Warning:* `bg-yellow-100/50 text-yellow-700 border-yellow-200`
-    *   *Critical/Alert:* `bg-red-100/50 text-red-700 border-red-200`
-    *   *Success:* `bg-emerald-100/50 text-emerald-700 border-emerald-200`
+    *   *Warning / Queued:* `bg-yellow-100/50 text-yellow-700 border-yellow-200`
+    *   *Critical / Alert:* `bg-red-100/50 text-red-700 border-red-200`
+    *   *Success / Online / Sent:* `bg-emerald-100/50 text-emerald-700 border-emerald-200`
+    *   *Updating / Working:* `bg-sky-100/50 text-sky-700 border-sky-200`
+    *   *Canceled / Inactive:* `bg-slate-100/50 text-slate-700 border-slate-200`
 
 ### D. Urgent Alerts / "Rush" States
 *   Layout cells flagged as urgent (such as "Rush" orders) get visual overrides:
     *   Card containers receive `border: 2px solid #ef4444` and a subtle red outer glow.
     *   Header nodes append a pulsing red state indicator.
     *   Table rows receive a soft red background tint (`oklch(0.577 0.245 27.325 / 5%)`) and thick top/bottom red borders.
+
+### E. Standardized Entity Color Mappings
+To maintain consistency in relational maps and dashboards, core business entities are color-coded:
+*   **Organizations**: Purple/Violet (`text-purple-600` or `bg-purple-100/50` / `text-purple-700`) representing company/client groups.
+*   **Contacts**: Blue (`text-blue-600` or `bg-blue-100/50` / `text-blue-700`) representing people.
+*   **Leads**: Emerald/Green (`text-emerald-600` or `bg-emerald-100/50` / `text-emerald-700`) representing sales prospects.
+
+### F. Dark Console / Log Cards
+*   Logs, raw output displays, and JSON previews use a dark console theme to distinguish terminal operations from standard app content:
+    *   Background container uses a flat dark theme (`bg-zinc-950`).
+    *   Text uses monospace font (JetBrains Mono) and status-based line colors (red for errors, amber for warnings, emerald for success).
+
+### G. Action Button Standards
+*   Buttons should strictly use standard UI library variants to prevent visual clutter:
+    *   *Primary Actions*: default variant (gold background `{colors.primary}`, dark text).
+    *   *Secondary Actions*: secondary or outline variant (gray/neutral border).
+    *   *Destructive Actions*: red/destructive variant (crimson background).
+    *   Avoid using custom-colored action buttons (like emerald for message sends or blue for standard syncs).
 
 ---
 
