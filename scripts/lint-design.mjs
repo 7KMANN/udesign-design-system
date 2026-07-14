@@ -206,49 +206,58 @@ for (const ref of references) {
 }
 
 // -------------------------------------------------------------
-// 5. Cross-check with tokens/udesign.tokens.json
+// 5. Cross-check with tokens/udesign.tokens.json & functional.tokens.json
 // -------------------------------------------------------------
-console.log('\nCross-checking DESIGN.md colors with tokens source truth (udesign.tokens.json)...');
+console.log('\nCross-checking DESIGN.md colors with tokens source truth...');
 
-if (fs.existsSync(tokensPath)) {
-  try {
-    const tokens = JSON.parse(fs.readFileSync(tokensPath, 'utf8'));
-    
-    // Check that primary hex in DESIGN.md YAML aligns with the DTCG tokens
-    const goldPrimaryHex = yaml.colors?.primary;
-    const jsonGoldHex = tokens.color?.accent?.base?.$value?.hex || tokens.color?.accent?.base?.$value;
-    
-    if (goldPrimaryHex && jsonGoldHex) {
-      if (goldPrimaryHex.toLowerCase() !== jsonGoldHex.toLowerCase()) {
-        reportError(`Accent Gold color mismatch! DESIGN.md has "${goldPrimaryHex}" but tokens source has "${jsonGoldHex}".`);
-      } else {
-        console.log(`  ✓ Accent gold hex match: ${goldPrimaryHex}`);
-      }
-    }
-    
-    // Check cream background floor
-    const canvasHex = yaml.colors?.canvas;
-    const jsonCreamHex = tokens.color?.cream?.$value?.hex || tokens.color?.cream?.$value;
-    if (canvasHex && jsonCreamHex) {
-      if (canvasHex.toLowerCase() !== jsonCreamHex.toLowerCase()) {
-        reportError(`Canvas/Cream color mismatch! DESIGN.md has "${canvasHex}" but tokens source has "${jsonCreamHex}".`);
-      } else {
-        console.log(`  ✓ Canvas cream hex match: ${canvasHex}`);
-      }
-    }
+const tokenFiles = [
+  { path: tokensPath, label: 'udesign.tokens.json' },
+  { path: path.resolve('tokens/functional.tokens.json'), label: 'functional.tokens.json' }
+];
 
-    // Check that all colors in DESIGN.md YAML do not contain slate hexes inside tokens json either
-    const tokensString = JSON.stringify(tokens).toLowerCase();
-    for (const slate of SLATE_HEXES) {
-      if (tokensString.includes(slate)) {
-        reportError(`Found banned slate hex code: ${slate} inside tokens/udesign.tokens.json.`);
+for (const tf of tokenFiles) {
+  if (fs.existsSync(tf.path)) {
+    try {
+      const tokens = JSON.parse(fs.readFileSync(tf.path, 'utf8'));
+      
+      if (tf.label === 'udesign.tokens.json') {
+        const goldPrimaryHex = yaml.colors?.primary;
+        const jsonGoldHex = tokens.color?.accent?.base?.$value?.hex || tokens.color?.accent?.base?.$value;
+        
+        if (goldPrimaryHex && jsonGoldHex) {
+          if (goldPrimaryHex.toLowerCase() !== jsonGoldHex.toLowerCase()) {
+            reportError(`Accent Gold color mismatch! DESIGN.md has "${goldPrimaryHex}" but tokens source has "${jsonGoldHex}".`);
+          } else {
+            console.log(`  ✓ Accent gold hex match (${tf.label}): ${goldPrimaryHex}`);
+          }
+        }
+        
+        const canvasHex = yaml.colors?.canvas;
+        const jsonCreamHex = tokens.color?.cream?.$value?.hex || tokens.color?.cream?.$value;
+        if (canvasHex && jsonCreamHex) {
+          if (canvasHex.toLowerCase() !== jsonCreamHex.toLowerCase()) {
+            reportError(`Canvas/Cream color mismatch! DESIGN.md has "${canvasHex}" but tokens source has "${jsonCreamHex}".`);
+          } else {
+            console.log(`  ✓ Canvas cream hex match (${tf.label}): ${canvasHex}`);
+          }
+        }
       }
+
+      const tokensString = JSON.stringify(tokens).toLowerCase();
+      for (const slate of SLATE_HEXES) {
+        if (tokensString.includes(slate)) {
+          reportError(`Found banned slate hex code: ${slate} inside ${tf.label}.`);
+        }
+      }
+      console.log(`  ✓ Clean slate scan for ${tf.label}`);
+    } catch (e) {
+      reportWarning(`Failed to parse ${tf.label}: ${e.message}`);
     }
-  } catch (e) {
-    reportWarning(`Failed to parse tokens JSON: ${e.message}`);
+  } else {
+    if (tf.label === 'udesign.tokens.json') {
+      reportWarning('udesign.tokens.json not found, skipping DTCG alignment checks.');
+    }
   }
-} else {
-  reportWarning('udesign.tokens.json not found, skipping DTCG alignment checks.');
 }
 
 // -------------------------------------------------------------

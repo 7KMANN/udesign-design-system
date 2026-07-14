@@ -117,14 +117,17 @@ Every page displays a calm, warm-toned canvas of cream `{colors.canvas}`, provid
 
 ## Brand Layout Styles: Impactful vs. Functional
 
-Although uDesign uses a single set of design tokens, the layout philosophy splits into two distinct modes:
+uDesign enforces a **Dual Design Architecture** compiled into `dist/tokens.css` and `dist/tokens-functional.css`, supporting two runtime profiles:
 
-*   **Impactful Layout Style (Marketing & Presentation)**:
-    *   Designed for public-facing websites (like `udesign-website`).
-    *   Characterized by massive geometric titles, spacious gaps (64px vertical margins), and ultra-bold presentation. It focuses on immediate brand impact over information density.
-*   **Functional Layout Style (Dense Dashboards & Internal Tools)**:
-    *   Designed for transaction-heavy administrative systems (like `globalvision` or `udesignpages`).
-    *   Characterized by dense grids, compact data tables, flexible layouts (collapsible sidebars on desktop, bottom navigation drawers on mobile), and standardized status coloring. It focuses on usability and cognitive speed.
+*   **Impactful Layout Style (`[data-design="brand"]` or Default)**:
+    *   Designed for public-facing websites and luxury marketing presentations (`udesign-website`).
+    *   Characterized by massive geometric titles (`Montserrat Black`), spacious gaps (`64px` section margins), curved radii (`10px/16px`), and soft `--shadow-2` overlays on a warm cream canvas floor (`#f4ece1`).
+*   **Functional Layout Style (`[data-design="functional"]` - Geometric Brutalist Wire)**:
+    *   Designed for high-density, transaction-heavy internal ERPs and operational command systems (`GlobalVision`).
+    *   **Tense & Simplistic Philosophy**: Employs fewer steps to achieve operational goals instead of fewer tools (`Option 1 Geometric Wire`).
+    *   **Geometric Wireframe Overrides**: Cards and tables sit inside sharp `1px` hairline boxes (`#d6cdb9`) with tight radii (`2px/3px/4px`) and zero drop-shadows (`none`).
+    *   **Technical Typography**: Maps `--font-display` and `--font-body` to `Geist Sans` to eliminate wide tracking across dense table cells and controls, while `.ud-lock` and `.ud-display` retain `Montserrat Black` for punchy brand headers.
+    *   **Stable Floor**: Shifts the canvas floor to a crisp, high-contrast warm stone panel (`#f4f1ea`) while keeping pure white cards (`#ffffff`) and our iconic **Gold (`#c79f6b`)** primary accent intact.
 
 ## Colors
 
