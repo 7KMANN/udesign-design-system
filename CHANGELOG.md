@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0 (2026-07-15)
+
+Expand semantic tokens and add the UDesign source registry.
+
 ## 1.2.0 (2026-07-14)
 
 - Added the functional design profile with compact Geist typography, sharper geometry, stronger warm-stone borders, and flat operational surfaces.
