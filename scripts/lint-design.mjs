@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { parseFrontmatter } from './design-utils.mjs';
 
 // ANSI terminal colors
 const RED = '\x1b[31m';
@@ -69,62 +70,14 @@ if (designContent.includes('—')) {
 // -------------------------------------------------------------
 console.log('\nParsing DESIGN.md structure...');
 
-const yamlRegex = /^---\r?\n([\s\S]*?)\r?\n---/;
-const match = designContent.match(yamlRegex);
-
-if (!match) {
+let yaml;
+let proseBlock;
+try {
+  ({ metadata: yaml, prose: proseBlock } = parseFrontmatter(designContent));
+} catch {
   reportError('Failed to parse YAML front matter. Make sure it is enclosed between triple hyphens (---).');
   process.exit(1);
 }
-
-const yamlBlock = match[1];
-const proseBlock = designContent.substring(match[0].length);
-
-// Indentation stack-based YAML parser for nested objects
-function parseYaml(yamlStr) {
-  const lines = yamlStr.split('\n');
-  const root = {};
-  const stack = [{ indent: -1, obj: root }];
-
-  for (let line of lines) {
-    // Strip full-line comments
-    if (line.trim().startsWith('#')) continue;
-    // Strip trailing inline comments (only if hash is preceded by whitespace)
-    line = line.replace(/\s+#.*$/, '').trimEnd();
-    if (!line) continue;
-
-    const indent = line.search(/\S/);
-    const trimmed = line.trim();
-
-    const colonIdx = trimmed.indexOf(':');
-    if (colonIdx === -1) continue;
-
-    const key = trimmed.substring(0, colonIdx).trim();
-    const val = trimmed.substring(colonIdx + 1).trim();
-
-    // Pop from stack until we find the parent (indentation less than current indent)
-    while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
-      stack.pop();
-    }
-
-    const parent = stack[stack.length - 1].obj;
-
-    if (val === '') {
-      const newObj = {};
-      parent[key] = newObj;
-      stack.push({ indent, obj: newObj });
-    } else {
-      let cleanVal = val;
-      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-        cleanVal = val.slice(1, -1);
-      }
-      parent[key] = cleanVal;
-    }
-  }
-  return root;
-}
-
-const yaml = parseYaml(yamlBlock);
 
 // Validate key metadata
 if (yaml.version !== 'alpha') {

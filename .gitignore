@@ -1,3 +1,5 @@
 node_modules/
 dist-showcase/
+playwright-report/
+test-results/
 *.png
