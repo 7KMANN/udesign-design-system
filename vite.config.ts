@@ -4,6 +4,12 @@ import path from 'path';
 import fs from 'fs';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@/components/ui': path.resolve(__dirname, 'registry/new-york/ui'),
+      '@/lib/utils': path.resolve(__dirname, 'registry/test-support/utils.ts'),
+    },
+  },
   plugins: [
     react(),
     {

@@ -8,6 +8,11 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@/components/ui/*": ["registry/new-york/ui/*"],
+      "@/lib/utils": ["registry/test-support/utils.ts"]
+    },
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -21,5 +26,5 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["showcase/src", "vite.config.ts"]
+  "include": ["showcase/src", "registry/new-york/ui", "registry/test-support", "vite.config.ts"]
 }

@@ -1,134 +1,141 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Analytics } from './pages/Analytics';
+import { Dashboard } from './pages/Dashboard';
 import { KitchenSink } from './pages/KitchenSink';
 import { Login } from './pages/Login';
-import { Dashboard } from './pages/Dashboard';
-import { Analytics } from './pages/Analytics';
+
+type Page = 'system' | 'login' | 'dashboard' | 'analytics';
+type Viewport = 'desktop' | 'tablet' | 'mobile';
+type Design = 'brand' | 'functional';
+type Theme = 'light' | 'dark';
+
+declare global {
+  interface Window {
+    UD_VERSIONS?: string[];
+  }
+}
+
+const VIEWPORT_WIDTHS: Record<Viewport, string> = {
+  desktop: '1200px',
+  tablet: '768px',
+  mobile: '375px',
+};
+
+const getInitialViewport = (): Viewport => {
+  if (window.innerWidth <= 480) return 'mobile';
+  if (window.innerWidth <= 900) return 'tablet';
+  return 'desktop';
+};
 
 export default function App() {
-  const [activePage, setActivePage] = useState<'kitchen-sink' | 'login' | 'dashboard' | 'analytics'>('kitchen-sink');
-  const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [activePage, setActivePage] = useState<Page>('system');
+  const [viewport, setViewport] = useState<Viewport>(getInitialViewport);
   const [versions, setVersions] = useState<string[]>([]);
   const [selectedVersionPath, setSelectedVersionPath] = useState('../dist/tokens.css');
-  const [designMode, setDesignMode] = useState<'brand' | 'functional'>('brand');
+  const [design, setDesign] = useState<Design>('brand');
+  const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-design', designMode);
-  }, [designMode]);
+    document.documentElement.dataset.design = design;
+    document.documentElement.dataset.theme = theme;
+  }, [design, theme]);
 
-  // Load versions array defined in history configs
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'versions.js';
-    script.onload = () => {
-      const globalVersions = (window as any).UD_VERSIONS || [];
-      setVersions(globalVersions);
-    };
-    script.onerror = () => {
-      console.warn('Failed to load versions.js');
-    };
+    script.onload = () => setVersions(window.UD_VERSIONS ?? []);
+    script.onerror = () => console.warn('Failed to load versions.js');
     document.head.appendChild(script);
-
-    return () => {
-      document.head.removeChild(script);
-    };
+    return () => script.remove();
   }, []);
 
-  // Update stylesheet href when token version picker is selected
-  const handleVersionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const val = e.target.value;
-    setSelectedVersionPath(val);
-    const linkEl = document.getElementById('tokens-link') as HTMLLinkElement;
-    if (linkEl) {
-      linkEl.href = val;
-    }
-  };
-
-  const getViewportMaxWidth = () => {
-    switch (viewport) {
-      case 'mobile': return 'max-w-[375px]';
-      case 'tablet': return 'max-w-[768px]';
-      case 'desktop':
-      default: return 'max-w-[1200px]';
-    }
+  const handleVersionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const path = event.target.value;
+    setSelectedVersionPath(path);
+    const stylesheet = document.getElementById('tokens-link') as HTMLLinkElement | null;
+    if (stylesheet) stylesheet.href = path;
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#fdfaf6] text-[#1b1b1b]">
-      {/* Shell Header */}
-      <header className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 px-6 bg-white border-b border-[#e4ded0] sticky top-0 z-50">
-        <div className="flex items-center gap-2.5 font-display font-black text-[17px] tracking-tight">
-          <span className="w-[26px] h-[26px] rounded bg-[#1b1b1b] text-[#c79f6b] flex items-center justify-center font-black text-[13px]">U</span>
-          UDesign Showcase & Previewer
+    <div className="showcase-shell">
+      <header className="showcase-toolbar">
+        <div className="showcase-lockup">
+          <span className="showcase-mark" aria-hidden="true">U</span>
+          <span>
+            <strong>UDesign</strong>
+            <small>Semantic system preview</small>
+          </span>
         </div>
-        
-        <div className="flex flex-wrap items-center gap-4">
-          {/* Design Profile Mode Toggle */}
+
+        <div className="showcase-controls" aria-label="Preview controls">
           <button
-            onClick={() => setDesignMode(designMode === 'brand' ? 'functional' : 'brand')}
-            className="px-3 py-1.5 text-xs font-bold rounded-[var(--radius-sm)] border border-[#e4ded0] bg-[#1b1b1b] text-[#c79f6b] hover:bg-[#c79f6b] hover:text-[#1b1b1b] transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+            type="button"
+            className="showcase-toggle"
+            data-testid="profile-toggle"
+            aria-label={`Switch to ${design === 'brand' ? 'functional' : 'brand'} profile`}
+            onClick={() => setDesign(design === 'brand' ? 'functional' : 'brand')}
           >
-            <span>{designMode === 'brand' ? '✦ Brand Show-Off Mode' : '⚡ Brutalist Wire Mode'}</span>
+            <span>Profile</span>
+            <strong>{design === 'brand' ? 'Brand' : 'Functional'}</strong>
           </button>
 
-          {/* Page Picker */}
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#8a8172]">
-            <span>Page:</span>
-            <select 
-              value={activePage}
-              onChange={(e) => setActivePage(e.target.value as any)}
-              className="font-data text-[12px] py-1 px-2 border border-[#e4ded0] rounded bg-white text-[#1b1b1b] outline-none cursor-pointer"
-            >
-              <option value="kitchen-sink">Kitchen Sink</option>
-              <option value="login">Login Canvas</option>
-              <option value="dashboard">Admin Dashboard</option>
-              <option value="analytics">Analytics & Charts</option>
-            </select>
-          </div>
+          <button
+            type="button"
+            className="showcase-toggle"
+            data-testid="theme-toggle"
+            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          >
+            <span>Theme</span>
+            <strong>{theme === 'light' ? 'Light' : 'Dark'}</strong>
+          </button>
 
-          {/* Viewport resizing tool */}
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#8a8172]">
-            <span>Viewport:</span>
-            <select
-              value={viewport}
-              onChange={(e) => setViewport(e.target.value as any)}
-              className="font-data text-[12px] py-1 px-2 border border-[#e4ded0] rounded bg-white text-[#1b1b1b] outline-none cursor-pointer"
-            >
-              <option value="desktop">Desktop (1200px)</option>
-              <option value="tablet">Tablet (768px)</option>
-              <option value="mobile">Mobile (375px)</option>
+          <label className="showcase-field">
+            <span>Page</span>
+            <select value={activePage} onChange={(event) => setActivePage(event.target.value as Page)}>
+              <option value="system">System matrix</option>
+              <option value="login">Form and focus</option>
+              <option value="dashboard">Metrics and collection</option>
+              <option value="analytics">Charts and entities</option>
             </select>
-          </div>
+          </label>
 
-          {/* Token version hook */}
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#8a8172]">
-            <span>Version:</span>
-            <select
-              value={selectedVersionPath}
-              onChange={handleVersionChange}
-              className="font-data text-[12px] py-1 px-2 border border-[#e4ded0] rounded bg-white text-[#1b1b1b] outline-none cursor-pointer"
-            >
-              {versions.map((v) => (
-                <option key={v} value={`../history/${v}/tokens.css`}>{v}</option>
+          <label className="showcase-field">
+            <span>Viewport</span>
+            <select value={viewport} onChange={(event) => setViewport(event.target.value as Viewport)}>
+              <option value="desktop">Desktop, 1200px</option>
+              <option value="tablet">Tablet, 768px</option>
+              <option value="mobile">Mobile, 375px</option>
+            </select>
+          </label>
+
+          <label className="showcase-field">
+            <span>Tokens</span>
+            <select value={selectedVersionPath} onChange={handleVersionChange}>
+              <option value="../dist/tokens.css">Current worktree</option>
+              {versions.map((version) => (
+                <option key={version} value={`../history/${version}/tokens.css`}>{version}</option>
               ))}
-              <option value="../dist/tokens.css">current (unreleased)</option>
             </select>
-          </div>
+          </label>
         </div>
       </header>
 
-      {/* Frame wrapper viewport */}
-      <div className="flex-1 p-6 flex justify-center items-start overflow-y-auto">
-        <div 
-          className={`w-full bg-background text-foreground font-display border border-border rounded-lg overflow-hidden shadow-shadow-2 transition-all duration-300 scroll-zone ${getViewportMaxWidth()}`}
+      <main className="showcase-workspace">
+        <p className="showcase-context" aria-live="polite">
+          {design} profile, {theme} theme, {VIEWPORT_WIDTHS[viewport]} preview
+        </p>
+        <div
+          className="showcase-preview"
+          data-preview-viewport={viewport}
+          style={{ maxInlineSize: VIEWPORT_WIDTHS[viewport] }}
         >
-          <div className="p-8">
-            {activePage === 'kitchen-sink' && <KitchenSink />}
-            {activePage === 'login' && <Login />}
-            {activePage === 'dashboard' && <Dashboard />}
-            {activePage === 'analytics' && <Analytics />}
-          </div>
+          {activePage === 'system' && <KitchenSink />}
+          {activePage === 'login' && <Login />}
+          {activePage === 'dashboard' && <Dashboard />}
+          {activePage === 'analytics' && <Analytics />}
         </div>
-      </div>
+      </main>
     </div>
   );
 }

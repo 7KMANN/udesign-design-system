@@ -3,35 +3,12 @@ export default {
   content: [
     "./showcase/index.html",
     "./showcase/src/**/*.{js,ts,jsx,tsx}",
+    "./registry/new-york/ui/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {
       colors: {
-        // Primitives
-        'ud-accent-wash': 'var(--ud-accent-wash)',
-        'ud-accent-300': 'var(--ud-accent-300)',
-        'ud-accent-400': 'var(--ud-accent-400)',
-        'ud-accent': 'var(--ud-accent)',
-        'ud-accent-deep': 'var(--ud-accent-deep)',
-        'ud-cream': 'var(--ud-cream)',
-        'ud-ink': 'var(--ud-ink)',
-        'ud-white': 'var(--ud-white)',
-        
-        'ud-panel': 'var(--ud-panel)',
-        'ud-panel-2': 'var(--ud-panel-2)',
-        'ud-border': 'var(--ud-border)',
-        'ud-border-strong': 'var(--ud-border-strong)',
-        'ud-muted': 'var(--ud-muted)',
-        'ud-muted-soft': 'var(--ud-muted-soft)',
-        
-        'ud-success': 'var(--ud-success)',
-        'ud-success-bg': 'var(--ud-success-bg)',
-        'ud-warning': 'var(--ud-warning)',
-        'ud-warning-bg': 'var(--ud-warning-bg)',
-        'ud-danger': 'var(--ud-danger)',
-        'ud-danger-bg': 'var(--ud-danger-bg)',
-
-        // Functional Roles
+        // Semantic roles only
         background: 'var(--background)',
         foreground: 'var(--foreground)',
         card: {

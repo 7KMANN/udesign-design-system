@@ -1,22 +1,19 @@
 ---
 version: alpha
 name: UDesign
-description: A high-contrast, functionally dense interface where clean geometric 
-  Montserrat display headers meet Geist Sans data grids. Elements float on a 
-  warm cream canvas separated by hairline borders, with all primary brand actions 
-  focusing on a warm, metallic Gold accent.
+description: A semantic design foundation for expressive brand surfaces and dense operational interfaces across light and dark themes.
 
 colors:
-  primary: "#c79f6b"            # The UDesign Gold accent
-  primary-hover: "#9e7545"      # WCAG-safe dark gold accent (3:1 contrast on cream)
-  ink: "#1b1b1b"                # Deep charcoal for text and primary elements
-  body: "#1b1b1b"               # Standard body text
-  muted: "#8a8172"              # Warm stone neutral for secondary details
-  canvas: "#F4ECe1"             # Warm cream page canvas floor
-  surface-card: "#ffffff"       # Pure white for floated cards
-  hairline: "#e4ded0"           # 1px border separator
-  destructive: "#b23a2f"        # Crimson red for warnings/errors
-  on-primary: "#1b1b1b"         # Dark text on top of gold accent
+  primary: "#c79f6b"
+  primary-hover: "#9e7545"
+  ink: "#1b1b1b"
+  body: "#1b1b1b"
+  muted: "#8a8172"
+  canvas: "#F4ECe1"
+  surface-card: "#ffffff"
+  hairline: "#e4ded0"
+  destructive: "#b23a2f"
+  on-primary: "#1b1b1b"
 
 typography:
   display-lg:
@@ -103,172 +100,225 @@ components:
     padding: "20px"
 ---
 
-## Overview
+## Purpose
 
-uDesign's interface guidelines bridge the gap between B2B dashboard functionality and high-impact visual design. The brand is built on a design philosophy of **"Geometric Brutalism meets Functional Precision."**
+UDesign supports two visual jobs with one semantic contract:
 
-Every page displays a calm, warm-toned canvas of cream `{colors.canvas}`, providing a soft visual environment. Elements stack in flat cards without standard drop shadows, separating themselves from the page via custom `1px` `{colors.hairline}` borders. Hierarchy is set through tight, bold geometric Montserrat titles and dense Geist Sans data layouts, accented by a single high-voltage Gold `{colors.primary}` brand tone.
+- Public and presentation surfaces need recognizable brand impact.
+- Operational tools need compact controls, clear state, and dependable information density.
 
-**Key Characteristics:**
-- **Single Brand Accent:** Gold `{colors.primary}` (#c79f6b) is the sole brand highlight. It carries primary buttons, hover/focus rings, and brand logos.
-- **Bold/Fine Typographic Contrast:** Geometric headers use heavy weights (Montserrat Black 900) and tight tracking, while data cells and form fields rely on functional interface types (Geist Sans/JetBrains Mono).
-- **Hairline Border Separators:** Components separate using thin lines (`1px {colors.hairline}`), bypassing standard soft shadow elevations.
-- **Contrasting Background Tints:** Low-contrast status badges use transparent backdrops to prevent visual noise.
+Components must describe intent through semantic variables. Primitive values are token implementation details. Applications do not select a primitive because it happens to look correct in one profile.
 
-## Brand Layout Styles: Impactful vs. Functional
+## Profile matrix
 
-uDesign enforces a **Dual Design Architecture** compiled into `dist/tokens.css` and `dist/tokens-functional.css`, supporting two runtime profiles:
+Two independent attributes create four supported combinations:
 
-*   **Impactful Layout Style (`[data-design="brand"]` or Default)**:
-    *   Designed for public-facing websites and luxury marketing presentations (`udesign-website`).
-    *   Characterized by massive geometric titles (`Montserrat Black`), spacious gaps (`64px` section margins), curved radii (`10px/16px`), and soft `--shadow-2` overlays on a warm cream canvas floor (`#f4ece1`).
-*   **Functional Layout Style (`[data-design="functional"]` - Geometric Brutalist Wire)**:
-    *   Designed for high-density, transaction-heavy internal ERPs and operational command systems (`GlobalVision`).
-    *   **Tense & Simplistic Philosophy**: Employs fewer steps to achieve operational goals instead of fewer tools (`Option 1 Geometric Wire`).
-    *   **Geometric Wireframe Overrides**: Cards and tables sit inside sharp `1px` hairline boxes (`#d6cdb9`) with tight radii (`2px/3px/4px`) and zero drop-shadows (`none`).
-    *   **Technical Typography**: Maps `--font-display` and `--font-body` to `Geist Sans` to eliminate wide tracking across dense table cells and controls, while `.ud-lock` and `.ud-display` retain `Montserrat Black` for punchy brand headers.
-    *   **Stable Floor**: Shifts the canvas floor to a crisp, high-contrast warm stone panel (`#f4f1ea`) while keeping pure white cards (`#ffffff`) and our iconic **Gold (`#c79f6b`)** primary accent intact.
+- `data-design="brand"` with `data-theme="light"`
+- `data-design="brand"` with `data-theme="dark"`
+- `data-design="functional"` with `data-theme="light"`
+- `data-design="functional"` with `data-theme="dark"`
 
-## Colors
+Brand and light are the defaults when attributes are absent.
 
-### Brand & Accent
-- **Gold** (`{colors.primary}` - #c79f6b): The brand accent. Used for primary CTAs, active indicators, and highlight points.
-- **Gold Dark** (`{colors.primary-hover}` - #9e7545): The dark shade used for WCAG-safe link tags and hover states on cream/white canvases.
+### Brand profile
 
-### Surface
-- **Canvas** (`{colors.canvas}` - #F4ECe1): The default page floor. A warm cream color rather than white, which reduces user eye fatigue during long sessions.
-- **Surface Card** (`{colors.surface-card}` - #ffffff): Pure white panels that house widgets, bento layouts, and tables, floating above the cream floor.
+The brand profile uses Montserrat for strong display moments, generous section spacing, the full radius scale, and restrained overlay elevation. It suits marketing, proposals, client portals, and presentation-led screens. Its signature is the contrast between a quiet warm field and a compact geometric UDesign lockup.
 
-### Hairlines
-- **Hairline Border** (`{colors.hairline}` - #e4ded0): The default border separator for panels, table cells, and buttons. Enforces flat layouts.
+### Functional profile
 
-### Text
-- **Ink** (`{colors.ink}` - #1b1b1b): Deep charcoal rather than pure black. Enforced for display titles, default page text, and outlines.
-- **Muted** (`{colors.muted}` - #8a8172): Warm stone color used for description tags, dates, and non-action labels.
+The functional profile uses Geist for dense interface typography, tighter spacing, smaller radii, stronger boundaries, and flat operational surfaces. Montserrat remains reserved for the UDesign lockup and rare display moments. It suits production, scheduling, accounting, and administration.
 
-### Semantic
-- **Destructive** (`{colors.destructive}` - #b23a2f): Deep red color indicating warnings, invalid form fields, or dangerous actions.
+### Theme behavior
 
----
+Theme changes alter semantic color assignments, not component APIs. Dark theme uses solid surfaces with clear separation. Raised, sunken, overlay, and console surfaces remain distinguishable without relying on transparency. Components must work when a profile or theme is nested inside another application surface.
+
+Set both attributes before first paint when server rendering. A theme control must expose its current state, update the document attribute, and preserve the user choice according to the host application's preference policy.
+
+## Semantic color system
+
+### Core roles
+
+Use `--background`, `--foreground`, `--card`, `--card-foreground`, `--primary`, `--primary-foreground`, `--primary-hover`, `--secondary`, `--secondary-foreground`, `--muted`, `--muted-foreground`, `--border-color`, `--border-strong`, `--ring`, `--destructive`, and `--client` for their named purposes.
+
+The accent is not safe as small text merely because it is a brand color. Filled primary controls pair `--primary` with `--primary-foreground`. Links and text must use a semantic foreground whose contrast has been verified against the actual surface.
+
+### Tone roles
+
+Neutral, info, success, warning, danger, progress, and brand tones each provide:
+
+- `foreground` for text and icons on neutral application surfaces.
+- `surface` for a low-emphasis status region.
+- `border` for status boundaries.
+- `solid` for high-emphasis fills.
+- `solid-foreground` for content placed on the solid fill.
+
+The canonical shape is `--tone-{name}-{role}`. Use the full family rather than mixing a surface from one tone with text from another.
+
+Success confirms completion or a healthy condition. Warning identifies a condition that needs attention. Danger identifies failure, destructive action, or an urgent block. Info provides neutral guidance. Progress communicates active work. Brand identifies UDesign or a selected branded action. Neutral covers passive state.
+
+### Metric roles
+
+Metrics describe direction, not general status. Positive, negative, and neutral metric families each expose `foreground`, `surface`, and `border` roles.
+
+- Positive means movement in the desired direction.
+- Negative means movement away from the desired direction.
+- Neutral means unchanged, unknown, or not directionally judged.
+
+Always pair the tone with a signed value, arrow, word, or other non-color cue.
+
+### Data visualization roles
+
+Charts use `--data-1` through `--data-8`. Supporting roles are `--data-muted`, `--data-grid`, `--data-axis`, `--data-tooltip`, and `--data-tooltip-foreground`.
+
+Series order must remain stable within one chart. Do not attach permanent business meaning to a numbered data role. Use direct labels where space allows. Legends, tooltips, and values must make the chart understandable without color perception.
+
+### Entity roles
+
+Entity families `--entity-1-*` through `--entity-4-*` provide `foreground`, `surface`, `border`, and `solid` roles. They distinguish recurring record types such as clients, contacts, orders, or jobs.
+
+An application owns the mapping between a business entity and a numbered family. Keep that mapping stable inside the application and document it near the consuming feature.
+
+### Surface roles
+
+Use `--surface-raised`, `--surface-sunken`, `--surface-overlay`, and `--surface-console` with their matching foreground roles.
+
+- Raised surfaces contain grouped content above the page floor.
+- Sunken surfaces contain wells, tracks, and recessed regions.
+- Overlay surfaces contain dialogs, menus, and popovers.
+- Console surfaces contain preview tools and technical workspaces.
+
+`--backdrop` is the theme-stable scrim base behind dialogs and sheets. Apply opacity to the dedicated overlay element. Do not derive a scrim from `--foreground`, which becomes light in dark themes.
+
+Profile and theme determine the visual treatment. Component code selects only the intent.
+
+## Interaction states
+
+Use `--interactive-hover`, `--interactive-pressed`, `--interactive-selected`, `--interactive-selected-foreground`, `--interactive-selected-border`, `--interactive-focus`, `--interactive-disabled`, and `--interactive-disabled-foreground`.
+
+Hover is supplemental. Every action must also work by keyboard and touch. Selected state needs more than a subtle color shift. Use a clear boundary, marker, or text state. Pressed state should be immediate and should not move surrounding layout.
+
+Focus indicators must remain visible in every profile and theme. Use at least a 2px outline with separation from the component edge when the surrounding colors could merge. Do not remove the browser outline without supplying an equivalent `:focus-visible` treatment.
+
+Disabled controls use the disabled surface and foreground roles, preserve readable labels, and expose native `disabled` or `aria-disabled` semantics. Opacity alone is not a complete disabled treatment.
+
+## Contrast and accessibility
+
+Target WCAG 2.2 AA:
+
+- Normal text needs at least 4.5:1 contrast.
+- Large text and meaningful interface boundaries need at least 3:1.
+- Focus indicators need at least 3:1 against adjacent colors.
+- Status, metrics, entities, and charts need a non-color cue.
+
+Contrast belongs to a foreground and background pair. Do not label one color universally accessible. The darkened accent can support large text and interface boundaries on some light surfaces, but it is not automatically valid for small text in every context.
+
+Controls require accessible names. Form fields require programmatic labels and clear error relationships. Dialogs require a title, description when helpful, focus containment, Escape behavior, and focus restoration. Tables require useful headers and should include a caption when surrounding context does not name the dataset.
+
+Respect `prefers-reduced-motion`. Animation may clarify a transition or progress state, but must not be the only indication that state changed.
 
 ## Typography
 
-### Hierarchy Scale
+Montserrat carries the UDesign lockup, display headings, and high-value calls to action in the brand profile. Geist carries interface text and dense functional layouts. JetBrains Mono is limited to codes, identifiers, timestamps, and aligned numeric readouts.
 
-| Title | Font | Size | Weight | Line Height | Tracking | Usage |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **display-lg** | Montserrat | 48px | 900 | 1.05 | -1px | Huge hero displays & titles |
-| **body-md** | Geist Sans | 14px | 500 | 1.55 | 0px | Paragraphs, tables, sidebars |
-| **data-mono** | JetBrains Mono | 12px | 400 | 1.4 | 0px | SKU codes, coordinates, numbers |
-| **button** | Montserrat | 14.5px | 600 | 1.0 | 0px | Button triggers & badges |
+Labels use sentence case with normal tracking. Do not turn metadata, navigation, or field labels into wide-tracked uppercase mono text. Body copy uses the semantic foreground. Muted foreground is for secondary information only after its contrast has been verified on the selected surface.
 
-### Principles
-Montserrat is used exclusively for headers, titles, metrics, and actions to convey a heavy, bold look. Geist Sans handles body text, menus, and labels to keep them readable at high densities. JetBrains Mono is strictly used for database parameters and raw numbers.
-Labels must stay in title-case or sentence-case. Do not convert secondary labels into wide-tracked, uppercase monospace text.
+Display type may scale fluidly. Controls and body text must remain readable without horizontal zoom at 375px.
 
----
+## Layout and responsive behavior
 
-## Layout
+Use the shared spacing roles for component rhythm. Brand pages can use broader separation. Functional pages can use compact spacing without shrinking touch targets or readable type.
 
-The spacing scale utilizes discrete 4px increments to structure layouts:
-- **xs (4px) / sm (8px):** Padding inside buttons, items inside grid lists.
-- **md (12px) / base (16px):** Padding inside default cards, margins between sections.
-- **lg (24px) / xl (32px):** Padding inside sections, bento gap columns.
-- **section (64px):** Major vertical spacing between distinct blocks.
+The responsive contract includes:
 
-Display text and primary button elements use fluid scaling (`clamp()`) to resize dynamically across screen bounds, while general margins, radii, and grids use fixed tokens.
+- `--touch-target-min`
+- `--control-height`
+- `--control-height-compact`
+- `--content-gutter-mobile`
+- `--dialog-inline-size-mobile`
+- `--dialog-block-size-max`
+- `--safe-area-bottom`
 
----
+Interactive controls need a minimum inline and block target of `--touch-target-min`. Compact controls can reduce their visible field height while preserving the touch area around the trigger.
+
+At narrow widths:
+
+- Multi-column forms collapse to one column.
+- Dense tables switch to a card collection or use deliberate horizontal scrolling with useful sticky context.
+- Dialogs use the mobile inline-size and maximum block-size roles.
+- Bottom actions include the safe-area inset.
+- Primary actions remain reachable without covering required content.
+
+Full-height mobile layouts use small viewport units. Validate at 375px, not only at a desktop browser narrowed by eye.
 
 ## Elevation
 
-UDesign features a flat design system that relies on borders rather than shadows.
-- **Zero-Shadow Rule:** Content cards, sidebars, and panels are flat, separated from the canvas using a solid `1px` `{colors.hairline}` border.
-- **Overlay Exceptions:** Drop shadows (`--shadow-2` and `--shadow-3`) are strictly reserved for modal overlay elements, popover menus, and selector dropdowns that need to float above the canvas.
+Cards and work areas rely primarily on semantic surfaces and borders. Brand overlays may use the elevation scale. Functional content remains flat except for true overlays that need separation from the workspace.
 
----
+Shadows do not replace boundaries or focus treatment. Dark theme overlays must remain distinguishable from both the page floor and raised cards.
 
 ## Components
 
-**`button-primary`** - The primary CTA button. Uses background `{colors.primary}`, text `{colors.on-primary}`, font `{typography.button}`, and rounded `{rounded.md}`. Press state shifts background to `{colors.primary-hover}`.
+**`button-primary`** uses `{colors.primary}` with `{colors.on-primary}` for the main action. It meets the shared control height and touch-target contract, exposes visible focus, and uses the interactive hover, pressed, and disabled roles.
 
-**`button-secondary`** - Used for standard secondary actions. Uses background `{colors.canvas}`, border `1px solid {colors.hairline}`, text `{colors.ink}`, font `{typography.button}`, and rounded `{rounded.md}`. Hover state shifts background to a slightly darker neutral tint.
+**`button-secondary`** uses `{colors.canvas}` with `{colors.ink}` and a `{colors.hairline}` boundary. Runtime components consume the matching semantic roles so the treatment adapts to theme and profile.
 
-**`button-outline`** - Used for optional tech readouts. Uses background `transparent`, border `1.5px solid {colors.ink}`, text `{colors.ink}`, font `{typography.button}`, and rounded `{rounded.md}`. Hover fills background with `{colors.ink}` and flips text color to white.
+**`button-outline`** uses a transparent surface, `{colors.ink}` foreground, and a clear outline. Its hover state uses semantic interaction roles rather than a raw inverse color.
 
-**`header-lockup`** - Mapped to `.ud-lock`. Montserrat font, weight 900. Spells out "UDesign" with a lead geometric box containing the letter "U" styled in `{colors.ink}` background and `{colors.primary}` text.
+**`header-lockup`** keeps the compact UDesign mark and Montserrat weight. It is the main signature element, so surrounding navigation remains visually restrained.
 
-**`status-badge`** - Small state indicator badge. Montserrat font, weight 600, size 11.5px, rounded `{rounded.full}` (pill shape). Background utilizes low-opacity tints (see State Badges below).
+**`status-badge`** uses one complete tone family and includes a readable label. A dot or icon may reinforce meaning, but the label carries the state.
 
-**`confidential-footer`** - Mapped to `.ud-footer`. Page-width footer with background `{colors.canvas}`, text `{colors.muted}`, border top `1px solid {colors.hairline}`. Displays uppercase crimson red `{colors.destructive}` confidentiality labels.
+**`confidential-footer`** uses `{colors.canvas}`, `{colors.muted}`, and a `{colors.hairline}` top boundary. Its label remains sentence case and should only use the destructive role when the content represents a real warning.
 
-**`card`** - Standard card container. Uses background `{colors.surface-card}`, rounded `{rounded.md}`, padding 20px, and a `1px` `{colors.hairline}` border.
+**`card`** uses `{colors.surface-card}`, a `{colors.hairline}` boundary, and `{rounded.md}`. Runtime components use raised or card semantic roles so dark and functional profiles can adapt it.
 
----
+## Registry components
 
-## Functional Layout Patterns
+The source registry includes these base components: button, badge, alert, card, input, textarea, select, checkbox, switch, field, dialog, sheet, tooltip, tabs, and table.
 
-### A. Compact Data Tables
-*   **Grid Structure:** Table grids use compact padding (`py-1.5 px-2`) to maximize information density.
-*   **Sticky headers:** Table heads stick (`sticky top-0`) and separate using a subtle bottom border.
-*   **Highlight marks:** Search results highlight matches using `<mark className="bg-yellow-200/80 dark:bg-yellow-700/60 rounded-[2px] px-0">` with normalized (accents-stripped) strings.
-*   **Scrollbars:** Custom webkit scrollbar overlay: thumb transitions from a muted 20% opacity (`oklch(0.553 0.013 58.071 / 20%)`) to 40% on hover.
+The application patterns are icon-button, status-badge, metric-card, empty-state, and responsive-collection. The `core` registry item installs the recommended set.
 
-### B. Bento Detail Panel
-*   **Grid Allocation:** Complex detail pages employ a 12-column bento system:
-    *   Left main layout spans 8 columns (`col-span-8`), housing high-density description fields.
-    *   Right layout spans 4 columns (`col-span-4`), housing key metadata parameters.
-*   **Separators:** Internal sections divide cleanly using hairline rules.
+Registry components must:
 
-### C. Low-Opacity State Badges
-*   To avoid visual noise, alert levels and status badges use transparent background tints matching the text color role:
-    *   *Warning / Queued:* `bg-yellow-100/50 text-yellow-700 border-yellow-200`
-    *   *Critical / Alert:* `bg-red-100/50 text-red-700 border-red-200`
-    *   *Success / Online / Sent:* `bg-emerald-100/50 text-emerald-700 border-emerald-200`
-    *   *Updating / Working:* `bg-sky-100/50 text-sky-700 border-sky-200`
-    *   *Canceled / Inactive:* `bg-slate-100/50 text-slate-700 border-slate-200`
+- Consume semantic variables only.
+- Forward refs where the underlying element supports a ref.
+- Preserve `className` extension and useful data attributes.
+- Support keyboard operation and visible focus.
+- Keep interactive client boundaries local to the component that needs them.
+- Use native semantics before adding ARIA.
+- Keep touch targets and mobile layout behavior in the source component.
 
-### D. Urgent Alerts / "Rush" States
-*   Layout cells flagged as urgent (such as "Rush" orders) get visual overrides:
-    *   Card containers receive `border: 2px solid #ef4444` and a subtle red outer glow.
-    *   Header nodes append a pulsing red state indicator.
-    *   Table rows receive a soft red background tint (`oklch(0.577 0.245 27.325 / 5%)`) and thick top/bottom red borders.
+Generated registry JSON is not an authoring surface.
 
-### E. Standardized Entity Color Mappings
-To maintain consistency in relational maps and dashboards, core business entities are color-coded:
-*   **Organizations**: Purple/Violet (`text-purple-600` or `bg-purple-100/50` / `text-purple-700`) representing company/client groups.
-*   **Contacts**: Blue (`text-blue-600` or `bg-blue-100/50` / `text-blue-700`) representing people.
-*   **Leads**: Emerald/Green (`text-emerald-600` or `bg-emerald-100/50` / `text-emerald-700`) representing sales prospects.
+## Showcase acceptance
 
-### F. Dark Console / Log Cards
-*   Logs, raw output displays, and JSON previews use a dark console theme to distinguish terminal operations from standard app content:
-    *   Background container uses a flat dark theme (`bg-zinc-950`).
-    *   Text uses monospace font (JetBrains Mono) and status-based line colors (red for errors, amber for warnings, emerald for success).
+The showcase must demonstrate:
 
-### G. Action Button Standards
-*   Buttons should strictly use standard UI library variants to prevent visual clutter:
-    *   *Primary Actions*: default variant (gold background `{colors.primary}`, dark text).
-    *   *Secondary Actions*: secondary or outline variant (gray/neutral border).
-    *   *Destructive Actions*: red/destructive variant (crimson background).
-    *   Avoid using custom-colored action buttons (like emerald for message sends or blue for standard syncs).
+- Light and dark themes in both design profiles.
+- Every tone family in surface and solid treatments.
+- Positive, negative, and neutral metrics.
+- Eight chart series with readable labels and semantic tooltip treatment.
+- Four entity families.
+- Hover, pressed, selected, focus, and disabled states.
+- Responsive collections, mobile dialogs, and minimum touch targets.
+- Empty, loading, error, and populated examples where relevant.
 
----
+The historical version selector may show a reduced matrix for releases that predate a semantic role. Current unreleased output must cover the complete matrix.
 
-## Responsive Behavior
+## Banned design patterns
 
-| Name | Width | Key Changes |
-|---|---|---|
-| Mobile | < 768px | Hamburger mobile toolbar; display headings shrink; layout containers stack 1-up. |
-| Tablet | 768px - 1024px | Dynamic card layouts 2-up; sidebar switches to collapsible overlay mode. |
-| Desktop | > 1024px | Fixed left sidebar visible; multi-column layout grid. |
+- Cool slate neutrals that break the warm UDesign foundation.
+- Translucent frosted panels in place of solid semantic surfaces.
+- Decorative gradients used to manufacture hierarchy.
+- Wide-tracked uppercase utility labels.
+- Raw color literals or primitive token variables in component source.
+- Tiny interactive targets hidden inside visually compact controls.
+- Color-only status, metric, entity, or chart communication.
+- Excessive rounding that makes every container look like a pill.
+- Shadows on ordinary content cards in the functional profile.
 
-### Touch Targets
-- Actionable buttons must maintain height bounds of `≥ 44px` on mobile displays.
-- Input elements default to `md:text-sm text-base` (16px text height on mobile to disable native Safari automatic zoom shifts).
+## Known limits
 
----
-
-## Known Gaps
-
-- **Dark Mode:** Standard design specs cover light theme details only. Dark theme variables exist in the token JSON but layouts are not documented.
-- **Animation curves:** Micro-interactions (hover ease-in curves) are out of scope for this revision.
+- Registry components are source-owned after installation. Consumers are responsible for merging later updates.
+- Automated contrast, interaction, and visual regression coverage must continue to expand alongside the registry.
+- Product-specific maps, editors, charts, and domain workflows remain in their applications.

@@ -1,157 +1,259 @@
 # UDesign Design System
 
-The single source of truth for UDesign's brand tokens: color, type, spacing, radius, shadow. Every repo that renders UDesign-branded UI (`udesignpages`, `globalvision`, `udesign-website`, ...) consumes this package instead of hand-maintaining its own copy of the palette.
+UDesign provides the semantic design foundation and source-owned React components used across UDesign products. The package supplies DTCG tokens and compiled CSS. Its shadcn-compatible registry supplies component source that each application owns after installation.
 
-Do not source brand values from "Icitte": that is a separate product line with its own identity, not part of UDesign's brand.
+Do not source brand values from Icitte. It is a separate product line with its own identity.
 
-**License:** proprietary, uDesign Productions only. See [LICENSE.md](LICENSE.md). This repository being publicly visible does not grant any right to use it.
+**License:** proprietary, uDesign Productions only. See [LICENSE.md](LICENSE.md). Public visibility does not grant permission to use the work.
 
-## For AI agents (read this first)
+## What ships in 1.3.0
 
-If you are an agent working directly in this repository:
+- A semantic token foundation for light and dark themes.
+- Brand and functional density profiles selected at runtime.
+- Tone roles for neutral, info, success, warning, danger, progress, and brand states.
+- Metric, chart, entity, interaction, surface, and responsive roles.
+- A shadcn source registry with 15 base components, five application patterns, and a `core` bundle.
+- A responsive showcase that exercises the full theme and profile matrix.
 
-1. **Read `DESIGN.md` in the root first.** It contains UDesign's core brand rules, typography constraints, and a list of **Banned Design Patterns** (such as a hard ban on cool slate hexes, glassmorphism/translucency, uppercase mono labels, and em-dashes).
-2. **Run validation before completing tasks:** You MUST run the linter to verify `DESIGN.md` spec-compliance:
-   ```bash
-   node scripts/lint-design.mjs
-   ```
-   Ensure it passes with 0 errors. If you change tokens, compile them with `npm run build`, run the React dev server using `npm run dev`, and verify they look correct in the browser at `http://localhost:3000/`.
+This is not a bundled React runtime library. Registry components are copied into the consuming repository so the application can inspect, adapt, and test its own source while the shared semantic contract remains stable.
 
-If you are an agent working in a repo that consumes this package:
+## Rules for contributors and agents
 
-1. **Never hardcode a hex value, an `--ud-*` primitive, or a raw size.** Use a semantic token (`--primary`, `--background`, `--muted-foreground`, `--client`, etc.) in component code.
-2. **No semantic token for what you need?** Don't invent one locally and don't reach for a primitive. Add the semantic token here, in `tokens/udesign.tokens.json`, run `npm run build`, commit, then consume it from the app repo.
-3. **Never hand-edit `dist/tokens.css`, anything under `history/`, or `showcase/public/versions.js`.** All of them are generated/managed automatically. The only hand-edited source files are `tokens/udesign.tokens.json` and `DESIGN.md`.
-4. **Install via git, not npm registry:** `"udesign-design-system": "github:7KMANN/udesign-design-system"` in `dependencies`, then one `@import "udesign-design-system/dist/tokens.css";` near the app root. There is no published npm package.
-5. **Never source brand values from "Icitte"** — unrelated product line, wrong palette.
-6. **Changing a token value?** Follow the exact steps in [Updating tokens & releasing a version](#updating-tokens--releasing-a-version) below, in order. Don't skip the semver decision, don't skip the showcase check, don't forget the git tag.
+Before changing this repository:
 
-## The token model
+1. Read [DESIGN.md](DESIGN.md).
+2. Use semantic variables in component and application code. Primitive `--ud-*` variables belong only to token definitions and generated output.
+3. Do not hardcode colors in components. If the semantic contract is missing a role, add the role here rather than bypassing it in a consumer.
+4. Keep labels in sentence case. Do not use wide-tracked uppercase utility labels.
+5. Do not hand-edit generated token CSS, version snapshots, `showcase/public/versions.js`, or registry JSON under `public/r/`.
+6. Run the complete build, contract, component, registry type, showcase, and Playwright checks before release.
+7. Verify light and dark themes in both brand and functional profiles, including the 375px preview.
 
-Tokens are layered in three tiers. Consuming code should only ever reach for the top tier.
+## Architecture
 
-1. **Primitive**: raw values, no meaning attached (`--ud-accent-400`, `--ud-panel`). Defined once, here, and nowhere else.
-2. **Semantic** (a.k.a. "role"): functional aliases that express intent (`--primary`, `--background`, `--muted-foreground`). These point at primitives and are what components should actually use.
-3. **Component**: a consuming app's own per-component overrides, scoped to that app. Not defined in this package; this is where `globalvision`'s dashboard components and `udesign-website`'s marketing components stay free to differ from each other without touching the shared brand.
+The system has three layers:
 
-**Rule: consume semantic tokens, never primitives, never raw hex.** If a component needs a color the semantic layer doesn't have a name for yet, that's a sign to add a new semantic token here, not to reach for a primitive or a literal hex value.
+1. **Primitive tokens** store raw values. They are implementation details and use the `--ud-*` namespace in compiled CSS.
+2. **Semantic tokens** describe intent, such as `--background`, `--tone-warning-surface`, `--data-3`, or `--interactive-focus`. Product code consumes this layer.
+3. **Registry components** consume semantic roles and are copied into an application through shadcn. Applications can extend those components without changing the shared tokens.
 
-One token is intentionally adaptive: `--client`. It defaults to the UDesign accent but is meant to be overridden per client page/project with that client's own brand color, while every other token stays fixed. This is how `udesignpages` shows each client their own accent without touching UDesign's identity.
+The primitive layer can change while semantic meaning remains stable. A component that reaches through to a primitive defeats that contract.
 
-## Source of truth
+## Install the tagged token package
 
-`tokens/udesign.tokens.json`: [DTCG 2025.10](https://www.designtokens.org/) format. This is the only file you hand-edit. Everything else is generated from it.
-
-## Building
-
-```bash
-npm install
-npm run build
-```
-
-Compiles `tokens/udesign.tokens.json` into `dist/tokens.css` via Style Dictionary. `dist/tokens.css` is committed to git (not gitignored) so consuming apps never need a working Style Dictionary toolchain just to install this package.
-
-## Installing in another repo
-
-No npm registry, no publish step. Add it straight from git:
+Pin the Git dependency to a release tag. Do not install from a moving branch.
 
 ```json
 {
   "dependencies": {
-    "udesign-design-system": "github:7KMANN/udesign-design-system"
+    "udesign-design-system": "github:7KMANN/udesign-design-system#v1.3.0"
   }
 }
 ```
 
-Then import the compiled CSS once, near the root of the app:
+Import the combined stylesheet once near the application root:
 
 ```css
 @import "udesign-design-system/dist/tokens.css";
 ```
 
-### Consuming in a Tailwind v4 app
+`tokens.css` supports all four runtime combinations:
 
-Tailwind v4's `@theme` block maps directly onto CSS custom properties: point it at the token variables instead of re-declaring values:
+```html
+<html data-design="brand" data-theme="light">
+<html data-design="brand" data-theme="dark">
+<html data-design="functional" data-theme="light">
+<html data-design="functional" data-theme="dark">
+```
+
+If the attributes are absent, the stylesheet uses the brand and light defaults. Set both attributes before first paint when possible to avoid a visible theme change during hydration.
+
+`dist/tokens-functional.css` remains available for applications that only need the functional profile. Applications that switch profiles at runtime should use the combined stylesheet.
+
+## Install registry components
+
+Initialize shadcn in the consuming application and add the tagged namespace to `components.json`:
+
+```json
+{
+  "registries": {
+    "@udesign": "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/{name}.json"
+  }
+}
+```
+
+Install the complete supported source set through the public `@udesign/core` item:
+
+```bash
+npx shadcn@latest add @udesign/core
+```
+
+The direct tagged URL remains available when a consumer does not configure a namespace:
+
+```bash
+npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/core.json
+```
+
+Install a single item by replacing `core` with its registry name:
+
+```bash
+npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/button.json
+```
+
+Available base items:
+
+`button`, `badge`, `alert`, `card`, `input`, `textarea`, `select`, `checkbox`, `switch`, `field`, `dialog`, `sheet`, `tooltip`, `tabs`, and `table`.
+
+Available patterns:
+
+`icon-button`, `status-badge`, `metric-card`, `empty-state`, and `responsive-collection`.
+
+Generated JSON under `public/r/` is release output. Edit the registry source and rebuild instead of patching generated JSON.
+
+## Semantic consumption
+
+Use the role that matches the content. Do not choose a token because its current color looks convenient.
+
+```css
+.notice {
+  color: var(--tone-info-foreground);
+  background: var(--tone-info-surface);
+  border-color: var(--tone-info-border);
+}
+
+.notice:focus-visible {
+  outline: 2px solid var(--interactive-focus);
+  outline-offset: 2px;
+}
+```
+
+Tone families use the same shape:
+
+```text
+--tone-{neutral|info|success|warning|danger|progress|brand}-foreground
+--tone-{neutral|info|success|warning|danger|progress|brand}-surface
+--tone-{neutral|info|success|warning|danger|progress|brand}-border
+--tone-{neutral|info|success|warning|danger|progress|brand}-solid
+--tone-{neutral|info|success|warning|danger|progress|brand}-solid-foreground
+```
+
+Use surface roles for elevation and workspace context:
+
+- `--surface-raised` and `--surface-raised-foreground`
+- `--surface-sunken` and `--surface-sunken-foreground`
+- `--surface-overlay` and `--surface-overlay-foreground`
+- `--surface-console` and `--surface-console-foreground`
+- `--backdrop` for modal and sheet scrims
+
+Use interaction roles for state rather than opacity-only feedback:
+
+- `--interactive-hover`
+- `--interactive-pressed`
+- `--interactive-selected`, `--interactive-selected-foreground`, and `--interactive-selected-border`
+- `--interactive-focus`
+- `--interactive-disabled` and `--interactive-disabled-foreground`
+
+## Metrics, charts, and entities
+
+Metrics distinguish direction from status:
+
+- Positive metrics use `--metric-positive-*`.
+- Negative metrics use `--metric-negative-*`.
+- Neutral metrics use `--metric-neutral-*`.
+
+Each family supplies `foreground`, `surface`, and `border` roles.
+
+Charts use `--data-1` through `--data-8`, plus `--data-muted`, `--data-grid`, `--data-axis`, `--data-tooltip`, and `--data-tooltip-foreground`. Always pair chart color with labels, values, patterns, or direct annotations. Color alone must not carry meaning.
+
+Entity families use `--entity-1-*` through `--entity-4-*`, with `foreground`, `surface`, `border`, and `solid` roles. Assign an entity family consistently within a product. Do not assume an entity number has the same business meaning in every application.
+
+## Responsive and mobile contract
+
+Registry controls and patterns use the shared responsive variables:
+
+- `--touch-target-min`
+- `--control-height`
+- `--control-height-compact`
+- `--content-gutter-mobile`
+- `--dialog-inline-size-mobile`
+- `--dialog-block-size-max`
+- `--safe-area-bottom`
+
+Interactive targets must be at least `--touch-target-min`. On narrow screens, collections should switch from dense tables to cards or provide deliberate horizontal scrolling with useful sticky context. Dialogs must respect the mobile inline and block-size roles. Bottom actions must include the safe-area inset.
+
+## Tailwind compatibility
+
+The semantic CSS works without Tailwind. Registry source is compatible with Tailwind 3 and Tailwind 4 because state and color decisions resolve through CSS variables instead of framework palette names.
+
+For Tailwind 4, map only semantic roles:
 
 ```css
 @import "tailwindcss";
 @import "udesign-design-system/dist/tokens.css";
 
 @theme {
-  --color-accent: var(--ud-accent);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-display: var(--font-display);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-border: var(--border-color);
+  --color-focus: var(--interactive-focus);
 }
 ```
 
-This gets you Tailwind utilities (`bg-accent`, `text-foreground`, `font-display`) that resolve to the shared brand tokens, while the app's own components stay entirely its own.
+Do not expose primitives through Tailwind theme aliases.
 
-## Updating tokens & releasing a version
+## Compatibility target
 
-The current released version is **v1.0.0**, tagged in git — that's the official baseline every consuming repo builds against. Every change to the brand follows the same path to become the next official version. Do the steps in this order, every time, and don't skip any of them:
+- React 18 and React 19 source projects.
+- Next.js 15 and 16 App Router projects.
+- Vite React projects.
+- Tailwind CSS 3.4 and 4.x.
+- Modern evergreen browsers with CSS custom properties and container-query support.
 
-### 1. Decide the semver bump *before* you touch anything
+Interactive registry components include their required client boundary. The token package itself is plain CSS and is safe to import from server-rendered applications.
 
-| Bump | When | Example |
-|---|---|---|
-| **patch** | An existing token's *value* changes, meaning stays the same | Nudging `--ud-accent-400`'s hex a few shades warmer |
-| **minor** | A *new* token is added, nothing existing changes or breaks | Adding a `--warning-foreground` semantic role that didn't exist before |
-| **major** | A token is *renamed* or *removed*, or its meaning changes | Renaming `--ud-panel` to `--ud-surface`, or repurposing `--client` |
+The release pipeline compiles the source against React 18 and Tailwind 3, performs a shadcn 3.5 namespaced clean install, and runs browser checks in Chromium. React 19, Tailwind 4, and framework-specific applications remain supported source targets and should run their own production build after installation.
 
-If you're unsure between two, pick the higher one — consumers can absorb an unnecessary minor bump silently; they can't absorb a missed breaking change.
+## Source of truth and generated files
 
-### 2. Edit the source, and only the source
+- `tokens/udesign.tokens.json` defines shared primitives and semantic roles.
+- `tokens/functional.tokens.json` defines functional-profile overrides.
+- `registry.json` defines the shadcn manifest and `registry/new-york/ui/` contains the component and pattern source.
+- `DESIGN.md` defines usage rules and accessibility expectations.
+- `dist/`, `history/`, `public/r/`, and `showcase/public/versions.js` are generated or release-managed output.
 
-Hand-edit `tokens/udesign.tokens.json` and the brand configuration/prose in `DESIGN.md`. Never touch `dist/tokens.css`, anything under `history/`, or `showcase/public/versions.js` directly — all of these are generated or updated during the build/release process.
+## Build and verify
 
-### 3. Build and visually verify
-
-Verify all rules, tokens, and layouts are fully valid and compilable:
 ```bash
-# 1. Compile tokens
+npm install
 npm run build
-
-# 2. Run design linter to ensure DESIGN.md compliance
 node scripts/lint-design.mjs
-
-# 3. Verify showcase application compiles without errors
+npm run build:registry
+npm test
+npm run typecheck:registry
 npm run build-showcase
-
-# 4. Spin up the dev server for visual inspection at http://localhost:3000/
-npm run dev
+npm run test:e2e
 ```
 
-### 4. Cut the release
+Run `npm run dev` for visual review. Check every design and theme combination at desktop, tablet, and 375px mobile widths. Keyboard through all controls and confirm that focus remains visible.
+
+## Versioning and release
+
+Use semantic versioning:
+
+- Patch: fixes that preserve existing semantic meaning and component APIs.
+- Minor: additive tokens, components, variants, or compatible behavior.
+- Major: removed or renamed roles, changed meaning, or breaking component APIs.
+
+Release URLs and Git dependencies must use the same tag as `package.json`, `CHANGELOG.md`, history snapshots, and registry output. The release command prepares artifacts but does not replace the required commit, tag, and push checks.
 
 ```bash
 npm run release -- <patch|minor|major> "what changed and why"
-```
-
-This command runs automated pre-flight checks first (design linter, token build, and showcase compilation). If all checks pass, it bumps `package.json`'s version, rebuilds `dist/tokens.css`, freezes a copy under `history/vX.Y.Z/tokens.css`, appends a dated entry to `CHANGELOG.md`, and regenerates the dropdown configurations in `showcase/public/versions.js`. If any pre-flight check fails, the release process aborts immediately. It does **not** commit or tag anything — that's steps 5 and 6, on you (or the agent doing this).
-
-### 5. Commit everything the release step touched, in one commit
-
-```bash
-git add tokens/udesign.tokens.json dist/tokens.css package.json CHANGELOG.md history/ showcase/versions.js
-git commit -m "release: vX.Y.Z — what changed and why"
-```
-
-### 6. Tag the commit and push both
-
-```bash
 git tag vX.Y.Z
 git push origin master --tags
 ```
 
-The git tag is what makes a version *official* — `package.json`'s number alone is not enough, since it can drift out of sync with what's actually pushed. Every released version must have a matching tag. If a version in `CHANGELOG.md` or `history/` doesn't have one, that's a bug to fix, not a pattern to repeat.
-
 ## Showcase
 
-The showcase is a modern React + Vite + TypeScript + Tailwind CSS application located in `showcase/`. To run the preview locally, run `npm run dev` and open `http://localhost:3000/`. To compile the app for production, run `npm run build-showcase`. A dropdown at the top dynamically loads previous token releases from `history/` so you can compare design changes.
-
-## Out of scope (for now)
-
-- Publishing to npm or GitHub Packages: this stays a git dependency.
-- A shared React component library. Each consuming app keeps its own components; only tokens are shared.
-- Automated visual regression testing. The showcase page is a visual reference, not a test suite.
+The Vite showcase demonstrates tokens and registry patterns across light and dark themes, brand and functional profiles, and responsive widths. It is a review surface, not a substitute for automated interaction, accessibility, and visual regression tests.

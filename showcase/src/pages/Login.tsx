@@ -1,54 +1,79 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 
-export const Login: React.FC = () => {
+export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`Testing authentication state:\nEmail: ${email}\nPassword Length: ${password.length}`);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setMessage(email && password ? 'Form state is valid.' : 'Enter an email and password.');
   };
 
+  const valid = message === 'Form state is valid.';
+  const invalid = Boolean(message) && !valid;
+
   return (
-    <div className="min-h-[480px] flex items-center justify-center bg-background">
-      <Card className="w-full max-w-[380px] p-8">
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-2 font-display font-black text-lg text-foreground mb-2">
-            <span className="w-[26px] h-[26px] rounded-sm bg-foreground text-client flex items-center justify-center font-black text-[13px]">U</span>
-            UDesign
+    <div className="form-preview">
+      <Card surface="overlay" className="dialog-sample">
+        <header className="dialog-heading">
+          <span className="showcase-mark" aria-hidden="true">U</span>
+          <div>
+            <p className="preview-kicker">Secure workspace</p>
+            <h1>Sign in to UDesign</h1>
           </div>
-          <p className="text-xs text-muted-foreground">Accéder à votre console admin</p>
-        </div>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label className="font-display font-semibold text-[11px] uppercase tracking-wider text-muted-foreground" htmlFor="login-email">Identifiant</label>
+        </header>
+
+        <p className="dialog-description">Inspect field labels, keyboard focus, validation, and mobile dialog sizing.</p>
+
+        <form onSubmit={handleSubmit} className="form-stack" noValidate>
+          <label className="form-field" htmlFor="login-email">
+            <span>Email address</span>
             <input
               id="login-email"
-              type="text"
-              className="w-full h-10 border border-border rounded-sm px-3 bg-card text-foreground font-display text-[13.5px] outline-none focus:border-ring focus:ring-3 focus:ring-ud-accent-wash transition-all"
-              placeholder="admin@udesign.com"
+              type="email"
+              autoComplete="email"
+              placeholder="name@udesign.com"
+              aria-describedby={invalid ? 'login-error' : undefined}
+              aria-invalid={invalid || undefined}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(event) => setEmail(event.target.value)}
             />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="font-display font-semibold text-[11px] uppercase tracking-wider text-muted-foreground" htmlFor="login-pass">Mot de passe</label>
+          </label>
+
+          <label className="form-field" htmlFor="login-password">
+            <span>Password</span>
             <input
-              id="login-pass"
+              id="login-password"
               type="password"
-              className="w-full h-10 border border-border rounded-sm px-3 bg-card text-foreground font-display text-[13.5px] outline-none focus:border-ring focus:ring-3 focus:ring-ud-accent-wash transition-all"
-              placeholder="••••••••"
+              autoComplete="current-password"
+              placeholder="Enter your password"
+              aria-describedby={invalid ? 'login-error' : undefined}
+              aria-invalid={invalid || undefined}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(event) => setPassword(event.target.value)}
             />
-          </div>
-          <Button type="submit" className="w-full mt-2" variant="primary">
-            Se connecter
-          </Button>
+          </label>
+
+          <label className="checkbox-field">
+            <input type="checkbox" />
+            <span>Keep this device signed in</span>
+          </label>
+
+          {message && (
+            <div id={invalid ? 'login-error' : undefined} className={`form-message tone-${valid ? 'success' : 'danger'}`} role={invalid ? 'alert' : 'status'}>
+              <Badge variant={valid ? 'success' : 'danger'}>{valid ? 'Ready' : 'Needs attention'}</Badge>
+              <span>{message}</span>
+            </div>
+          )}
+
+          <Button type="submit">Sign in</Button>
+          <Button variant="secondary" disabled>Single sign-on unavailable</Button>
         </form>
       </Card>
     </div>
   );
-};
+}
