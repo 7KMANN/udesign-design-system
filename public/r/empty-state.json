@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "empty-state",
+  "type": "registry:component",
+  "title": "Empty State",
+  "description": "Actionable empty collection state with optional icon and call to action.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/empty-state.tsx",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\nexport interface EmptyStateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, \"title\"> {\n  action?: React.ReactNode\n  description?: React.ReactNode\n  icon?: React.ReactNode\n  title: React.ReactNode\n}\n\nconst EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(\n  ({ action, className, description, icon, title, ...props }, ref) => (\n    <div ref={ref} className={cn(\"flex min-h-48 flex-col items-center justify-center rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface-sunken)] p-6 text-center text-[var(--surface-sunken-foreground)]\", className)} {...props}>\n      {icon ? <div className=\"mb-3 flex size-[var(--touch-target-min)] items-center justify-center rounded-full bg-[var(--tone-neutral-surface)] text-[var(--tone-neutral-foreground)]\">{icon}</div> : null}\n      <h3 className=\"[font-family:var(--font-display)] text-base font-semibold\">{title}</h3>\n      {description ? <div className=\"mt-1 max-w-md text-sm text-[var(--muted-foreground)]\">{description}</div> : null}\n      {action ? <div className=\"mt-4\">{action}</div> : null}\n    </div>\n  ),\n)\nEmptyState.displayName = \"EmptyState\"\n\nexport { EmptyState }\n",
+      "type": "registry:component",
+      "target": "components/ui/empty-state.tsx"
+    }
+  ]
+}

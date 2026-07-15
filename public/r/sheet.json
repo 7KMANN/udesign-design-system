@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "sheet",
+  "type": "registry:ui",
+  "title": "Sheet",
+  "description": "Accessible edge panel with full-width mobile behavior and safe-area spacing.",
+  "dependencies": [
+    "@radix-ui/react-dialog",
+    "lucide-react"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/sheet.tsx",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport * as SheetPrimitive from \"@radix-ui/react-dialog\"\nimport { X } from \"lucide-react\"\n\nimport { cn } from \"@/lib/utils\"\n\nconst Sheet = SheetPrimitive.Root\nconst SheetTrigger = SheetPrimitive.Trigger\nconst SheetClose = SheetPrimitive.Close\nconst SheetPortal = SheetPrimitive.Portal\n\nconst SheetOverlay = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Overlay>, React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>>(\n  ({ className, ...props }, ref) => <SheetPrimitive.Overlay ref={ref} className={cn(\"fixed inset-0 z-50 bg-[var(--backdrop)] opacity-60\", className)} {...props} />,\n)\nSheetOverlay.displayName = SheetPrimitive.Overlay.displayName\n\nexport interface SheetContentProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content> {\n  closeLabel?: string\n  side?: \"top\" | \"right\" | \"bottom\" | \"left\"\n}\n\nconst sides = {\n  top: \"inset-x-0 top-0 border-b\",\n  right: \"inset-y-0 right-0 w-full border-l sm:max-w-md\",\n  bottom: \"inset-x-0 bottom-0 border-t pb-[max(var(--content-gutter-mobile),var(--safe-area-bottom))]\",\n  left: \"inset-y-0 left-0 w-full border-r sm:max-w-md\",\n} as const\n\nconst SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Content>, SheetContentProps>(\n  ({ children, className, closeLabel = \"Close\", side = \"right\", ...props }, ref) => (\n    <SheetPortal>\n      <SheetOverlay />\n      <SheetPrimitive.Content\n        ref={ref}\n        className={cn(\"fixed z-50 grid max-h-[var(--dialog-block-size-max)] gap-4 overflow-y-auto border-[var(--border)] bg-[var(--surface-raised)] p-[var(--content-gutter-mobile)] text-[var(--surface-raised-foreground)] shadow-[var(--shadow-3)] sm:p-6\", sides[side], className)}\n        {...props}\n      >\n        {children}\n        <SheetPrimitive.Close className=\"absolute right-2 top-2 inline-flex size-[var(--touch-target-min)] items-center justify-center rounded-md text-[var(--muted-foreground)] hover:bg-[var(--interactive-hover)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)]\">\n          <X className=\"size-4\" aria-hidden=\"true\" />\n          <span className=\"sr-only\">{closeLabel}</span>\n        </SheetPrimitive.Close>\n      </SheetPrimitive.Content>\n    </SheetPortal>\n  ),\n)\nSheetContent.displayName = SheetPrimitive.Content.displayName\n\nconst SheetHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn(\"flex flex-col gap-1.5 text-left\", className)} {...props} />\nSheetHeader.displayName = \"SheetHeader\"\n\nconst SheetFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn(\"mt-auto flex flex-col-reverse gap-2 sm:flex-row sm:justify-end\", className)} {...props} />\nSheetFooter.displayName = \"SheetFooter\"\n\nconst SheetTitle = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Title>, React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>>(\n  ({ className, ...props }, ref) => <SheetPrimitive.Title ref={ref} className={cn(\"[font-family:var(--font-display)] text-lg font-semibold\", className)} {...props} />,\n)\nSheetTitle.displayName = SheetPrimitive.Title.displayName\n\nconst SheetDescription = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Description>, React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>>(\n  ({ className, ...props }, ref) => <SheetPrimitive.Description ref={ref} className={cn(\"text-sm text-[var(--muted-foreground)]\", className)} {...props} />,\n)\nSheetDescription.displayName = SheetPrimitive.Description.displayName\n\nexport { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetOverlay, SheetPortal, SheetTitle, SheetTrigger }\n",
+      "type": "registry:ui",
+      "target": "components/ui/sheet.tsx"
+    }
+  ]
+}

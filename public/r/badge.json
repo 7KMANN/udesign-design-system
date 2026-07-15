@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "badge",
+  "type": "registry:ui",
+  "title": "Badge",
+  "description": "Semantic UDesign badge with independent tone and visual treatment.",
+  "dependencies": [
+    "@radix-ui/react-slot"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/badge.tsx",
+      "content": "import * as React from \"react\"\nimport { Slot } from \"@radix-ui/react-slot\"\n\nimport { cn } from \"@/lib/utils\"\n\nexport type UDesignTone = \"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"progress\" | \"brand\"\nexport type BadgeVariant = \"subtle\" | \"solid\" | \"outline\"\n\nexport interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {\n  asChild?: boolean\n  tone?: UDesignTone\n  variant?: BadgeVariant\n}\n\nconst toneClasses: Record<UDesignTone, Record<BadgeVariant, string>> = {\n  neutral: {\n    subtle: \"border-[var(--tone-neutral-border)] bg-[var(--tone-neutral-surface)] text-[var(--tone-neutral-foreground)]\",\n    solid: \"border-transparent bg-[var(--tone-neutral-solid)] text-[var(--tone-neutral-solid-foreground)]\",\n    outline: \"border-[var(--tone-neutral-border)] bg-transparent text-[var(--tone-neutral-foreground)]\",\n  },\n  info: {\n    subtle: \"border-[var(--tone-info-border)] bg-[var(--tone-info-surface)] text-[var(--tone-info-foreground)]\",\n    solid: \"border-transparent bg-[var(--tone-info-solid)] text-[var(--tone-info-solid-foreground)]\",\n    outline: \"border-[var(--tone-info-border)] bg-transparent text-[var(--tone-info-foreground)]\",\n  },\n  success: {\n    subtle: \"border-[var(--tone-success-border)] bg-[var(--tone-success-surface)] text-[var(--tone-success-foreground)]\",\n    solid: \"border-transparent bg-[var(--tone-success-solid)] text-[var(--tone-success-solid-foreground)]\",\n    outline: \"border-[var(--tone-success-border)] bg-transparent text-[var(--tone-success-foreground)]\",\n  },\n  warning: {\n    subtle: \"border-[var(--tone-warning-border)] bg-[var(--tone-warning-surface)] text-[var(--tone-warning-foreground)]\",\n    solid: \"border-transparent bg-[var(--tone-warning-solid)] text-[var(--tone-warning-solid-foreground)]\",\n    outline: \"border-[var(--tone-warning-border)] bg-transparent text-[var(--tone-warning-foreground)]\",\n  },\n  danger: {\n    subtle: \"border-[var(--tone-danger-border)] bg-[var(--tone-danger-surface)] text-[var(--tone-danger-foreground)]\",\n    solid: \"border-transparent bg-[var(--tone-danger-solid)] text-[var(--tone-danger-solid-foreground)]\",\n    outline: \"border-[var(--tone-danger-border)] bg-transparent text-[var(--tone-danger-foreground)]\",\n  },\n  progress: {\n    subtle: \"border-[var(--tone-progress-border)] bg-[var(--tone-progress-surface)] text-[var(--tone-progress-foreground)]\",\n    solid: \"border-transparent bg-[var(--tone-progress-solid)] text-[var(--tone-progress-solid-foreground)]\",\n    outline: \"border-[var(--tone-progress-border)] bg-transparent text-[var(--tone-progress-foreground)]\",\n  },\n  brand: {\n    subtle: \"border-[var(--tone-brand-border)] bg-[var(--tone-brand-surface)] text-[var(--tone-brand-foreground)]\",\n    solid: \"border-transparent bg-[var(--tone-brand-solid)] text-[var(--tone-brand-solid-foreground)]\",\n    outline: \"border-[var(--tone-brand-border)] bg-transparent text-[var(--tone-brand-foreground)]\",\n  },\n}\n\nconst Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(\n  ({ asChild = false, className, tone = \"neutral\", variant = \"subtle\", ...props }, ref) => {\n    const Comp = asChild ? Slot : \"span\"\n    return (\n      <Comp\n        ref={ref}\n        className={cn(\n          \"inline-flex min-h-6 items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold leading-none\",\n          toneClasses[tone][variant],\n          className,\n        )}\n        {...props}\n      />\n    )\n  },\n)\nBadge.displayName = \"Badge\"\n\nexport { Badge, toneClasses }\n",
+      "type": "registry:ui",
+      "target": "components/ui/badge.tsx"
+    }
+  ]
+}

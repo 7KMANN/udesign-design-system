@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "responsive-collection",
+  "type": "registry:component",
+  "title": "Responsive Collection",
+  "description": "Explicit desktop and mobile render slots for ergonomic collection layouts.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/responsive-collection.tsx",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\nexport interface ResponsiveCollectionProps extends React.HTMLAttributes<HTMLDivElement> {\n  desktop: React.ReactNode\n  mobile: React.ReactNode\n}\n\nconst ResponsiveCollection = React.forwardRef<HTMLDivElement, ResponsiveCollectionProps>(\n  ({ className, desktop, mobile, ...props }, ref) => (\n    <div ref={ref} className={cn(\"w-full\", className)} {...props}>\n      <div className=\"md:hidden\">{mobile}</div>\n      <div className=\"hidden md:block\">{desktop}</div>\n    </div>\n  ),\n)\nResponsiveCollection.displayName = \"ResponsiveCollection\"\n\nexport { ResponsiveCollection }\n",
+      "type": "registry:component",
+      "target": "components/ui/responsive-collection.tsx"
+    }
+  ]
+}

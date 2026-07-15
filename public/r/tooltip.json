@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "tooltip",
+  "type": "registry:ui",
+  "title": "Tooltip",
+  "description": "Accessible Radix tooltip using UDesign popover roles.",
+  "dependencies": [
+    "@radix-ui/react-tooltip"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/tooltip.tsx",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport * as TooltipPrimitive from \"@radix-ui/react-tooltip\"\n\nimport { cn } from \"@/lib/utils\"\n\nconst TooltipProvider = TooltipPrimitive.Provider\nconst Tooltip = TooltipPrimitive.Root\nconst TooltipTrigger = TooltipPrimitive.Trigger\n\nconst TooltipContent = React.forwardRef<React.ElementRef<typeof TooltipPrimitive.Content>, React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>>(\n  ({ className, sideOffset = 6, ...props }, ref) => (\n    <TooltipPrimitive.Portal>\n      <TooltipPrimitive.Content\n        ref={ref}\n        sideOffset={sideOffset}\n        className={cn(\"z-50 max-w-xs rounded-md border border-[var(--border)] bg-[var(--popover)] px-3 py-2 text-sm text-[var(--popover-foreground)] shadow-[var(--shadow-2)]\", className)}\n        {...props}\n      />\n    </TooltipPrimitive.Portal>\n  ),\n)\nTooltipContent.displayName = TooltipPrimitive.Content.displayName\n\nexport { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger }\n",
+      "type": "registry:ui",
+      "target": "components/ui/tooltip.tsx"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "icon-button",
+  "type": "registry:component",
+  "title": "Icon Button",
+  "description": "Icon-only action requiring an accessible label and minimum touch target.",
+  "registryDependencies": [
+    "utils",
+    "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/button.json"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/icon-button.tsx",
+      "content": "import * as React from \"react\"\n\nimport { Button, type ButtonProps } from \"@/components/ui/button\"\nimport { cn } from \"@/lib/utils\"\n\nexport interface IconButtonProps extends Omit<ButtonProps, \"aria-label\" | \"children\" | \"size\"> {\n  icon: React.ReactNode\n  label: string\n}\n\nconst IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(({ className, icon, label, ...props }, ref) => (\n  <Button ref={ref} aria-label={label} className={cn(\"size-[var(--touch-target-min)] shrink-0\", className)} size=\"icon\" {...props}>\n    {icon}\n  </Button>\n))\nIconButton.displayName = \"IconButton\"\n\nexport { IconButton }\n",
+      "type": "registry:component",
+      "target": "components/ui/icon-button.tsx"
+    }
+  ]
+}

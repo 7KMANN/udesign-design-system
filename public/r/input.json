@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "input",
+  "type": "registry:ui",
+  "title": "Input",
+  "description": "Mobile-safe text input using UDesign interaction roles.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/input.tsx",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\nexport interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}\n\nconst Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, ...props }, ref) => (\n  <input\n    ref={ref}\n    type={type}\n    className={cn(\n      \"flex h-[var(--control-height)] min-h-[var(--touch-target-min)] w-full rounded-md border border-[var(--input)] bg-[var(--background)] px-3 py-2 text-base text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[var(--interactive-disabled)] disabled:text-[var(--interactive-disabled-foreground)] md:text-sm\",\n      className,\n    )}\n    {...props}\n  />\n))\nInput.displayName = \"Input\"\n\nexport { Input }\n",
+      "type": "registry:ui",
+      "target": "components/ui/input.tsx"
+    }
+  ]
+}

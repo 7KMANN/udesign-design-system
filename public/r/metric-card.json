@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "metric-card",
+  "type": "registry:component",
+  "title": "Metric Card",
+  "description": "Data readout separating positive, negative, and neutral movement from status semantics.",
+  "registryDependencies": [
+    "utils",
+    "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/card.json"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/metric-card.tsx",
+      "content": "import * as React from \"react\"\n\nimport { Card, CardContent, CardHeader } from \"@/components/ui/card\"\nimport { cn } from \"@/lib/utils\"\n\nexport type MetricTone = \"positive\" | \"negative\" | \"neutral\"\n\nexport interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {\n  detail?: React.ReactNode\n  label: React.ReactNode\n  tone?: MetricTone\n  value: React.ReactNode\n}\n\nconst metricTones: Record<MetricTone, string> = {\n  positive: \"border-[var(--metric-positive-border)] bg-[var(--metric-positive-surface)] text-[var(--metric-positive-foreground)]\",\n  negative: \"border-[var(--metric-negative-border)] bg-[var(--metric-negative-surface)] text-[var(--metric-negative-foreground)]\",\n  neutral: \"border-[var(--metric-neutral-border)] bg-[var(--metric-neutral-surface)] text-[var(--metric-neutral-foreground)]\",\n}\n\nconst MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(\n  ({ className, detail, label, tone = \"neutral\", value, ...props }, ref) => (\n    <Card ref={ref} className={cn(metricTones[tone], className)} {...props}>\n      <CardHeader className=\"pb-2\"><p className=\"text-sm font-medium\">{label}</p></CardHeader>\n      <CardContent>\n        <p className=\"[font-family:var(--font-data)] text-2xl font-semibold tabular-nums\">{value}</p>\n        {detail ? <div className=\"mt-1 text-sm\">{detail}</div> : null}\n      </CardContent>\n    </Card>\n  ),\n)\nMetricCard.displayName = \"MetricCard\"\n\nexport { MetricCard }\n",
+      "type": "registry:component",
+      "target": "components/ui/metric-card.tsx"
+    }
+  ]
+}

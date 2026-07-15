@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "field",
+  "type": "registry:ui",
+  "title": "Field",
+  "description": "Form field composition with label, help text, and accessible error text.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/field.tsx",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\nconst Field = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(\n  ({ className, ...props }, ref) => <div ref={ref} className={cn(\"grid gap-2\", className)} {...props} />,\n)\nField.displayName = \"Field\"\n\nconst FieldLabel = React.forwardRef<HTMLLabelElement, React.LabelHTMLAttributes<HTMLLabelElement>>(\n  ({ className, ...props }, ref) => <label ref={ref} className={cn(\"text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-60\", className)} {...props} />,\n)\nFieldLabel.displayName = \"FieldLabel\"\n\nconst FieldDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(\n  ({ className, ...props }, ref) => <p ref={ref} className={cn(\"text-sm text-[var(--muted-foreground)]\", className)} {...props} />,\n)\nFieldDescription.displayName = \"FieldDescription\"\n\nconst FieldError = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(\n  ({ className, role = \"alert\", ...props }, ref) => <p ref={ref} role={role} className={cn(\"text-sm text-[var(--tone-danger-foreground)]\", className)} {...props} />,\n)\nFieldError.displayName = \"FieldError\"\n\nexport { Field, FieldDescription, FieldError, FieldLabel }\n",
+      "type": "registry:ui",
+      "target": "components/ui/field.tsx"
+    }
+  ]
+}

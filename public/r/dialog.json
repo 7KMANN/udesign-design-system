@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "dialog",
+  "type": "registry:ui",
+  "title": "Dialog",
+  "description": "Accessible Radix dialog with mobile-safe inline and viewport sizing.",
+  "dependencies": [
+    "@radix-ui/react-dialog",
+    "lucide-react"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/dialog.tsx",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport * as DialogPrimitive from \"@radix-ui/react-dialog\"\nimport { X } from \"lucide-react\"\n\nimport { cn } from \"@/lib/utils\"\n\nconst Dialog = DialogPrimitive.Root\nconst DialogTrigger = DialogPrimitive.Trigger\nconst DialogPortal = DialogPrimitive.Portal\nconst DialogClose = DialogPrimitive.Close\n\nconst DialogOverlay = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Overlay>, React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>>(\n  ({ className, ...props }, ref) => <DialogPrimitive.Overlay ref={ref} className={cn(\"fixed inset-0 z-50 bg-[var(--backdrop)] opacity-60\", className)} {...props} />,\n)\nDialogOverlay.displayName = DialogPrimitive.Overlay.displayName\n\nexport interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {\n  closeLabel?: string\n}\n\nconst DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Content>, DialogContentProps>(\n  ({ children, className, closeLabel = \"Close\", ...props }, ref) => (\n    <DialogPortal>\n      <DialogOverlay />\n      <DialogPrimitive.Content\n        ref={ref}\n        className={cn(\n          \"fixed left-1/2 top-1/2 z-50 grid w-[var(--dialog-inline-size-mobile)] max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] p-[var(--content-gutter-mobile)] text-[var(--surface-raised-foreground)] shadow-[var(--shadow-3)] max-h-[var(--dialog-block-size-max)] sm:p-6\",\n          className,\n        )}\n        {...props}\n      >\n        {children}\n        <DialogPrimitive.Close className=\"absolute right-2 top-2 inline-flex size-[var(--touch-target-min)] items-center justify-center rounded-md text-[var(--muted-foreground)] transition-colors hover:bg-[var(--interactive-hover)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] disabled:pointer-events-none\">\n          <X className=\"size-4\" aria-hidden=\"true\" />\n          <span className=\"sr-only\">{closeLabel}</span>\n        </DialogPrimitive.Close>\n      </DialogPrimitive.Content>\n    </DialogPortal>\n  ),\n)\nDialogContent.displayName = DialogPrimitive.Content.displayName\n\nconst DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn(\"flex flex-col gap-1.5 text-left\", className)} {...props} />\nDialogHeader.displayName = \"DialogHeader\"\n\nconst DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn(\"flex flex-col-reverse gap-2 sm:flex-row sm:justify-end\", className)} {...props} />\nDialogFooter.displayName = \"DialogFooter\"\n\nconst DialogTitle = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Title>, React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>>(\n  ({ className, ...props }, ref) => <DialogPrimitive.Title ref={ref} className={cn(\"[font-family:var(--font-display)] text-lg font-semibold leading-none\", className)} {...props} />,\n)\nDialogTitle.displayName = DialogPrimitive.Title.displayName\n\nconst DialogDescription = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Description>, React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>>(\n  ({ className, ...props }, ref) => <DialogPrimitive.Description ref={ref} className={cn(\"text-sm text-[var(--muted-foreground)]\", className)} {...props} />,\n)\nDialogDescription.displayName = DialogPrimitive.Description.displayName\n\nexport { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger }\n",
+      "type": "registry:ui",
+      "target": "components/ui/dialog.tsx"
+    }
+  ]
+}
