@@ -15,6 +15,7 @@ import { MetricCard } from '@/components/ui/metric-card';
 import { ResponsiveCollection } from '@/components/ui/responsive-collection';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Slider } from '@/components/ui/slider';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -146,7 +147,7 @@ export function KitchenSink() {
           <RegistryCard>
             <CardHeader>
               <CardTitle>Fields and controls</CardTitle>
-              <CardDescription>Field, Input, Textarea, Select, Checkbox, and Switch.</CardDescription>
+              <CardDescription>Field, Input, Textarea, Select, Checkbox, Switch, and Slider.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
               <Field>
@@ -167,6 +168,8 @@ export function KitchenSink() {
                 <label className="flex items-center gap-2"><Checkbox defaultChecked /> Include archived</label>
                 <label className="flex items-center gap-2"><Switch defaultChecked /> Live updates</label>
               </div>
+              <Slider aria-label="Match threshold" defaultValue={[40]} />
+              <Slider aria-label="Match threshold (disabled)" defaultValue={[60]} disabled />
             </CardContent>
           </RegistryCard>
 

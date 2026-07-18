@@ -19,7 +19,7 @@ const buttonVariants = {
 } as const
 
 const buttonSizes = {
-  compact: "h-[var(--control-height-compact)] min-h-[var(--touch-target-min)] px-3 text-sm",
+  compact: "h-[var(--control-height-compact)] max-md:min-h-[var(--touch-target-min)] pointer-coarse:min-h-[var(--touch-target-min)] px-3 text-sm",
   default: "h-[var(--control-height)] min-h-[var(--touch-target-min)] px-4 py-2",
   icon: "size-[var(--touch-target-min)] p-0",
 } as const

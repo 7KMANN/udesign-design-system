@@ -18,6 +18,7 @@ const requiredItems = [
   "select",
   "checkbox",
   "switch",
+  "slider",
   "field",
   "dialog",
   "sheet",
@@ -86,7 +87,7 @@ assert.match(files["tabs.tsx"], /TabsPrimitive\.Trigger[\s\S]*?min-h-\[var\(--to
 assert.match(files["select.tsx"], /SelectPrimitive\.ScrollUpButton[\s\S]*?min-h-\[var\(--touch-target-min\)\]/)
 assert.match(files["select.tsx"], /SelectPrimitive\.ScrollDownButton[\s\S]*?min-h-\[var\(--touch-target-min\)\]/)
 
-for (const clientFile of ["select.tsx", "checkbox.tsx", "switch.tsx", "dialog.tsx", "sheet.tsx", "tooltip.tsx", "tabs.tsx"]) {
+for (const clientFile of ["select.tsx", "checkbox.tsx", "switch.tsx", "slider.tsx", "dialog.tsx", "sheet.tsx", "tooltip.tsx", "tabs.tsx"]) {
   assert.match(files[clientFile], /^"use client"\r?\n/, `${clientFile} must preserve its App Router client boundary`)
 }
 
@@ -95,9 +96,20 @@ const switchRoot = files["switch.tsx"].match(/<SwitchPrimitive\.Root[\s\S]*?>/)?
 assert.match(checkboxRoot, /size-\[var\(--touch-target-min\)\]/)
 assert.match(switchRoot, /h-\[var\(--touch-target-min\)\]/)
 
+// Regression guards for the GlobalVision UI-sweep upstream bug patches (v1.3.1).
+assert.doesNotMatch(files["button.tsx"], /compact:\s*"[^"]*h-\[var\(--control-height-compact\)\] min-h-\[var\(--touch-target-min\)\]/, "button compact size must not flatten to a fixed 44px; use the max-md/pointer-coarse promotion pattern")
+assert.match(files["button.tsx"], /max-md:min-h-\[var\(--touch-target-min\)\] pointer-coarse:min-h-\[var\(--touch-target-min\)\]/)
+assert.doesNotMatch(files["checkbox.tsx"], /disabled:opacity-50/, "checkbox disabled state must use --interactive-disabled roles, not opacity")
+assert.doesNotMatch(files["switch.tsx"], /disabled:opacity-50/, "switch disabled state must use --interactive-disabled roles, not opacity")
+assert.doesNotMatch(files["dialog.tsx"], /bg-\[var\(--backdrop\)\] opacity-60/, "dialog overlay scrim alpha must ride on the color, not an opacity utility")
+assert.match(files["dialog.tsx"], /bg-\[var\(--backdrop\)\]\/60/)
+
+const sliderThumb = files["slider.tsx"].match(/<SliderPrimitive\.Thumb[\s\S]*?>/)?.[0] ?? ""
+assert.match(sliderThumb, /size-\[var\(--touch-target-min\)\]/)
+
 const core = registry.items.find((item) => item.name === "core")
 assert.equal(core.type, "registry:item")
-assert.equal(core.files.length, 20, "core must install the complete supported source set")
+assert.equal(core.files.length, 21, "core must install the complete supported source set")
 
 const outputDir = path.join(root, "public", "r")
 assert.ok(fs.existsSync(outputDir), "public/r must contain committed registry output")

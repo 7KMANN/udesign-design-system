@@ -8,3 +8,11 @@ Object.defineProperty(HTMLCanvasElement.prototype, "getContext", {
   configurable: true,
   value: () => null,
 })
+
+// jsdom has no ResizeObserver; @radix-ui/react-slider measures thumb size with it.
+class ResizeObserverStub {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+globalThis.ResizeObserver ??= ResizeObserverStub as unknown as typeof ResizeObserver

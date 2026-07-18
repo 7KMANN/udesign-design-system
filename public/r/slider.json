@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "slider",
+  "type": "registry:ui",
+  "title": "Slider",
+  "description": "Accessible Radix slider with a 44px touch target and semantic fill.",
+  "dependencies": [
+    "@radix-ui/react-slider"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/slider.tsx",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport * as SliderPrimitive from \"@radix-ui/react-slider\"\n\nimport { cn } from \"@/lib/utils\"\n\nconst Slider = React.forwardRef<\n  React.ElementRef<typeof SliderPrimitive.Root>,\n  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>\n>(({ className, value, defaultValue, min = 0, max = 100, \"aria-label\": ariaLabel, \"aria-labelledby\": ariaLabelledBy, ...props }, ref) => {\n  const thumbValues = value ?? defaultValue ?? [min]\n  return (\n    <SliderPrimitive.Root\n      ref={ref}\n      value={value}\n      defaultValue={defaultValue}\n      min={min}\n      max={max}\n      className={cn(\n        \"relative flex w-full touch-none select-none items-center data-[disabled]:cursor-not-allowed\",\n        className,\n      )}\n      {...props}\n    >\n      <SliderPrimitive.Track className=\"relative h-1.5 w-full grow overflow-hidden rounded-full bg-[var(--interactive-disabled)]\">\n        <SliderPrimitive.Range className=\"absolute h-full rounded-full bg-[var(--primary)] data-[disabled]:bg-[var(--interactive-disabled-foreground)]\" />\n      </SliderPrimitive.Track>\n      {thumbValues.map((_, index) => (\n        <SliderPrimitive.Thumb\n          key={index}\n          aria-label={ariaLabel}\n          aria-labelledby={ariaLabelledBy}\n          className=\"group relative flex size-[var(--touch-target-min)] items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] focus-visible:ring-offset-2 data-[disabled]:cursor-not-allowed\"\n        >\n          <span className=\"pointer-events-none block size-5 rounded-full border border-[var(--border)] bg-[var(--background)] shadow-[var(--shadow-1)] transition-colors group-data-[disabled]:border-[var(--interactive-disabled-foreground)] group-data-[disabled]:bg-[var(--interactive-disabled)]\" />\n        </SliderPrimitive.Thumb>\n      ))}\n    </SliderPrimitive.Root>\n  )\n})\nSlider.displayName = SliderPrimitive.Root.displayName\n\nexport { Slider }\n",
+      "type": "registry:ui",
+      "target": "components/ui/slider.tsx"
+    }
+  ]
+}

@@ -11,7 +11,7 @@
   "files": [
     {
       "path": "registry/new-york/ui/icon-button.tsx",
-      "content": "import * as React from \"react\"\n\nimport { Button, type ButtonProps } from \"@/components/ui/button\"\nimport { cn } from \"@/lib/utils\"\n\nexport interface IconButtonProps extends Omit<ButtonProps, \"aria-label\" | \"children\" | \"size\"> {\n  icon: React.ReactNode\n  label: string\n}\n\nconst IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(({ className, icon, label, ...props }, ref) => (\n  <Button ref={ref} aria-label={label} className={cn(\"size-[var(--touch-target-min)] shrink-0\", className)} size=\"icon\" {...props}>\n    {icon}\n  </Button>\n))\nIconButton.displayName = \"IconButton\"\n\nexport { IconButton }\n",
+      "content": "import * as React from \"react\"\r\n\r\nimport { Button, type ButtonProps } from \"@/components/ui/button\"\r\nimport { cn } from \"@/lib/utils\"\r\n\r\nexport interface IconButtonProps extends Omit<ButtonProps, \"aria-label\" | \"children\" | \"size\"> {\r\n  icon: React.ReactNode\r\n  label: string\r\n}\r\n\r\nconst IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(({ className, icon, label, ...props }, ref) => (\r\n  <Button ref={ref} aria-label={label} className={cn(\"size-[var(--touch-target-min)] shrink-0\", className)} size=\"icon\" {...props}>\r\n    {icon}\r\n  </Button>\r\n))\r\nIconButton.displayName = \"IconButton\"\r\n\r\nexport { IconButton }\r\n",
       "type": "registry:component",
       "target": "components/ui/icon-button.tsx"
     }

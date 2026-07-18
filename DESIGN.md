@@ -274,7 +274,7 @@ Shadows do not replace boundaries or focus treatment. Dark theme overlays must r
 
 ## Registry components
 
-The source registry includes these base components: button, badge, alert, card, input, textarea, select, checkbox, switch, field, dialog, sheet, tooltip, tabs, and table.
+The source registry includes these base components: button, badge, alert, card, input, textarea, select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, and table.
 
 The application patterns are icon-button, status-badge, metric-card, empty-state, and responsive-collection. The `core` registry item installs the recommended set.
 

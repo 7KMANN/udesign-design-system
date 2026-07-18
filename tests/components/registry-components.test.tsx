@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { IconButton } from "@/components/ui/icon-button"
 import { ResponsiveCollection } from "@/components/ui/responsive-collection"
+import { Slider } from "@/components/ui/slider"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
@@ -104,6 +105,18 @@ describe("UDesign registry accessibility contracts", () => {
     await user.keyboard("{ArrowRight}")
     expect(secondTab).toHaveFocus()
     expect(secondTab).toHaveAttribute("data-state", "active")
+  })
+
+  it("gives the slider thumb a keyboard-operable 44px touch target", async () => {
+    const user = userEvent.setup()
+    render(<Slider aria-label="Volume" defaultValue={[20]} />)
+
+    const thumb = screen.getByRole("slider", { name: "Volume" })
+    expect(thumb).toHaveClass("size-[var(--touch-target-min)]")
+
+    thumb.focus()
+    await user.keyboard("{ArrowRight}")
+    expect(thumb).toHaveAttribute("aria-valuenow", "21")
   })
 
   it("shows tooltip content from keyboard focus", async () => {
