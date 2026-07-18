@@ -2,6 +2,8 @@
 
 This workspace contains the canonical design system specification for the UDesign brand. All AI coding agents making edits to user interface layouts, stylesheets, or styling configurations in this project (or downstream repositories) MUST follow these instructions.
 
+> Also read [AGENTS.md](AGENTS.md) for operational pitfalls in this repo's own tooling (release script, line endings, cross-repo installs) — not covered below.
+
 ---
 
 ## 1. Zero-Variance Style Rules

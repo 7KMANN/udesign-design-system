@@ -28,6 +28,7 @@ Before changing this repository:
 5. Do not hand-edit generated token CSS, version snapshots, `showcase/public/versions.js`, or registry JSON under `public/r/`.
 6. Run the complete build, contract, component, registry type, showcase, and Playwright checks before release.
 7. Verify light and dark themes in both brand and functional profiles, including the 375px preview.
+8. Read [AGENTS.md](AGENTS.md) for known pitfalls in this repo's own tooling (release-script line-ending sensitivity, downstream install gotchas) before troubleshooting a script failure as a code bug.
 
 ## Architecture
 
