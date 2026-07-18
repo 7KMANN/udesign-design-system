@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1 (2026-07-18)
+
+Patch registry button/checkbox/switch/dialog upstream bugs and add Slider primitive
+
 ## 1.3.0 (2026-07-15)
 
 Expand semantic tokens and add the UDesign source registry.
