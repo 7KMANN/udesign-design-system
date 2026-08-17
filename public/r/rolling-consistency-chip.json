@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "rolling-consistency-chip",
+  "type": "registry:component",
+  "title": "Rolling Consistency Chip",
+  "description": "Trailing-window consistency count (e.g. '4 of the last 7'). Replaces the streak concept entirely - tone never varies with the count.",
+  "registryDependencies": [
+    "utils",
+    "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.1/public/r/badge.json"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/rolling-consistency-chip.tsx",
+      "content": "import * as React from \"react\"\n\nimport { Badge, type BadgeProps } from \"@/components/ui/badge\"\nimport { cn } from \"@/lib/utils\"\n\nexport interface RollingConsistencyChipProps extends Omit<BadgeProps, \"tone\" | \"children\"> {\n  /** How many days within the window satisfied the condition being counted. */\n  count: number\n  /** Size of the trailing-day window the count is measured against. */\n  window: number\n  /** Overrides the computed \"{count} of the last {window}\" text. */\n  label?: string\n}\n\nconst RollingConsistencyChip = React.forwardRef<HTMLSpanElement, RollingConsistencyChipProps>(\n  ({ className, count, label, window, ...props }, ref) => (\n    <Badge ref={ref} className={cn(className)} tone=\"neutral\" {...props}>\n      {label ?? `${count} of the last ${window}`}\n    </Badge>\n  ),\n)\nRollingConsistencyChip.displayName = \"RollingConsistencyChip\"\n\nexport { RollingConsistencyChip }\n",
+      "type": "registry:component",
+      "target": "components/ui/rolling-consistency-chip.tsx"
+    }
+  ]
+}

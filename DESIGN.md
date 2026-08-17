@@ -256,6 +256,28 @@ Cards and work areas rely primarily on semantic surfaces and borders. Brand over
 
 Shadows do not replace boundaries or focus treatment. Dark theme overlays must remain distinguishable from both the page floor and raised cards.
 
+## Motion
+
+Duration and easing are semantic roles, selected by intent, the same way every other token family here is: `--motion-duration-fast` / `--motion-easing-fast` for routine functional feedback, `--motion-duration-emphasis` / `--motion-easing-emphasis` for a closed loop. Component code selects the intent, never a millisecond value.
+
+Intensity is the size of a bounded, gamification-exclusive reaction: **0 no feedback, 1 routine feedback, 2 a closed loop. Intensity 3 does not exist and is not reachable through any combination of published tokens** - no screen-level celebration, no overlay, no particle burst. `--moment-intensity-1-scale` and `--moment-intensity-2-scale` compile only inside `[data-game="on"]` (see `data-game` below); nothing larger is published.
+
+**Intensity is identical in the brand and functional profiles.** The functional profile is not a quieter variant because it is "for work," and the brand profile is not a louder variant because it is presentational - both render the same reaction. The build enforces this structurally: the compiled motion values are read from one source tree only, with no per-profile override path to diverge through.
+
+`prefers-reduced-motion: reduce` is baked into the compiled token layer itself - `--motion-duration-*` collapses to `0ms` and `--moment-intensity-*-scale` collapses to `1` automatically, so a consuming component gets correct behavior by default without writing its own media query. Motion is still never the only indicator of a state change: a component using these tokens for its sole signal of "something changed" is incomplete regardless of the reduced-motion question.
+
+### `data-game`
+
+`data-game="on"` is a build-time attribute declared once at the document root, alongside `data-design`. It is not a user preference - no setting, cookie, or runtime code may read or write it as state. Gamification tokens and the three motion primitives below are inert without it: their custom properties simply do not exist outside a `[data-game="on"]` selector, so an application that never declares the attribute gets the non-gamified fallback through plain CSS cascade, not a runtime check.
+
+### Motion primitives
+
+Three generic, domain-flavorless primitives ship in the registry:
+
+- **Progress ring** (`progress-ring`) - truthful completion of a bounded set. Always renders the real numbers as text; never color or arc angle alone. Not gated behind `data-game` - it is broadly useful, not gamification-exclusive.
+- **Rolling-consistency chip** (`rolling-consistency-chip`) - "4 of the last 7." Composes `Badge` with a tone that never varies with the count. Not a streak: no chain, no repair/grace/freeze mechanic, no fire icon.
+- **Moment** (`moment`) - wraps `children` and applies a bounded `transform`/`opacity` reaction at the given `intensity` (1 or 2) when `active` becomes true. Renders no icon or text of its own - the caller's `children` carries the actual state change, which is what still communicates closure when the animation is removed under reduced motion. No portal, no fixed positioning, no overlay, no sound, no haptics. Gated behind `data-game="on"`; not part of the `core` bundle.
+
 ## Components
 
 **`button-primary`** uses `{colors.primary}` with `{colors.on-primary}` for the main action. It meets the shared control height and touch-target contract, exposes visible focus, and uses the interactive hover, pressed, and disabled roles.
@@ -277,6 +299,8 @@ Shadows do not replace boundaries or focus treatment. Dark theme overlays must r
 The source registry includes these base components: button, badge, alert, card, input, textarea, select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, and table.
 
 The application patterns are icon-button, status-badge, metric-card, empty-state, and responsive-collection. The `core` registry item installs the recommended set.
+
+The motion primitives - progress-ring, rolling-consistency-chip, and moment - are deliberately excluded from `core`. See "Motion primitives" above; `moment` in particular is gamification-exclusive and should only land in a repository that has declared `data-game="on"`.
 
 Registry components must:
 
@@ -302,6 +326,7 @@ The showcase must demonstrate:
 - Hover, pressed, selected, focus, and disabled states.
 - Responsive collections, mobile dialogs, and minimum touch targets.
 - Empty, loading, error, and populated examples where relevant.
+- Motion intensity 1 and 2, in both design profiles and both themes, plus the reduced-motion rendering.
 
 The historical version selector may show a reduced matrix for releases that predate a semantic role. Current unreleased output must cover the complete matrix.
 
@@ -316,6 +341,9 @@ The historical version selector may show a reduced matrix for releases that pred
 - Color-only status, metric, entity, or chart communication.
 - Excessive rounding that makes every container look like a pill.
 - Shadows on ordinary content cards in the functional profile.
+- Screen-level celebration: full-viewport overlays, particle bursts, confetti, or anything at an intensity beyond 2.
+- Motion as the sole indicator that a state changed - the non-motion signal (state, text, icon) must exist independent of the animation.
+- Intensity that varies between the brand and functional profiles.
 
 ## Known limits
 

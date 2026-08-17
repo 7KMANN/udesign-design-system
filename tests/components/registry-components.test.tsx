@@ -13,7 +13,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { IconButton } from "@/components/ui/icon-button"
+import { Moment } from "@/components/ui/moment"
+import { ProgressRing } from "@/components/ui/progress-ring"
 import { ResponsiveCollection } from "@/components/ui/responsive-collection"
+import { RollingConsistencyChip } from "@/components/ui/rolling-consistency-chip"
 import { Slider } from "@/components/ui/slider"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { Switch } from "@/components/ui/switch"
@@ -148,5 +151,66 @@ describe("UDesign registry accessibility contracts", () => {
 
     const results = await axe.run(container)
     expect(results.violations).toEqual([])
+  })
+
+  it("renders a truthful numeric readout on the progress ring, not just an arc", () => {
+    render(<ProgressRing completed={3} total={5} label="3 of 5 closed" />)
+
+    const ring = screen.getByRole("img", { name: "3 of 5 closed" })
+    expect(ring).toHaveTextContent("3/5")
+  })
+
+  it("gives the progress ring a safe, non-NaN empty state at total 0", () => {
+    render(<ProgressRing completed={0} total={0} label="0 of 0 closed" />)
+
+    const ring = screen.getByRole("img", { name: "0 of 0 closed" })
+    expect(ring.innerHTML).not.toContain("NaN")
+  })
+
+  it("renders the rolling consistency chip as a plain count, tone stable regardless of value", () => {
+    const { rerender } = render(<RollingConsistencyChip count={0} window={7} />)
+    const lowCountElement = screen.getByText("0 of the last 7")
+    expect(lowCountElement).toBeVisible()
+    // Captured as a plain string, not a live DOM reference - rerender()
+    // mutates this same node in place, so comparing the node after rerender
+    // would trivially equal itself and prove nothing.
+    const lowCountClassName = lowCountElement.className
+
+    rerender(<RollingConsistencyChip count={7} window={7} />)
+    const highCountElement = screen.getByText("7 of the last 7")
+    // Same tone regardless of count - a low count must not read as a
+    // warning and a high count must not read as success; it is a fact, not
+    // a judgment (ADR-0004 rolling consistency, never a streak).
+    expect(highCountElement.className).toContain("--tone-neutral-surface")
+    expect(lowCountClassName).toBe(highCountElement.className)
+  })
+
+  it("keeps the moment wrapper inline, transform-only, with no icon/text content of its own", () => {
+    render(
+      <Moment intensity={2} active>
+        <span data-testid="moment-child">Loop closed</span>
+      </Moment>,
+    )
+
+    const child = screen.getByTestId("moment-child")
+    const wrapper = child.parentElement as HTMLElement
+    expect(wrapper).toHaveAttribute("data-slot", "moment")
+    expect(wrapper).toHaveClass("inline-block")
+    // No portal: the wrapper is a plain ancestor of the child in the same tree.
+    expect(wrapper.contains(child)).toBe(true)
+    // Renders exactly the caller's content - no injected icon/text of its own.
+    expect(wrapper).toHaveTextContent("Loop closed")
+    expect(wrapper.style.transform).toBe("scale(var(--moment-intensity-2-scale, 1))")
+  })
+
+  it("does not apply the moment scale before active is true", () => {
+    render(
+      <Moment intensity={1} active={false}>
+        <span>Stage advanced</span>
+      </Moment>,
+    )
+
+    const wrapper = screen.getByText("Stage advanced").parentElement as HTMLElement
+    expect(wrapper.style.transform).toBe("scale(1)")
   })
 })

@@ -70,3 +70,41 @@ for (const viewport of viewports) {
     }
   })
 }
+
+test("motion tokens collapse to zero under prefers-reduced-motion, moment scale stays inert without it", async ({ page }) => {
+  await page.goto("/")
+
+  // Baseline (no reduced-motion emulation): the general motion tokens carry
+  // real values, and data-game="on" is pinned by the showcase shell, so the
+  // gamification-exclusive scale tokens are present too.
+  const baseline = await page.evaluate(() => {
+    const style = getComputedStyle(document.documentElement)
+    return {
+      durationFast: style.getPropertyValue("--motion-duration-fast").trim(),
+      momentScale2: style.getPropertyValue("--moment-intensity-2-scale").trim(),
+    }
+  })
+  expect(baseline.durationFast).toBe("150ms")
+  expect(baseline.momentScale2).toBe("1.04")
+
+  await page.emulateMedia({ reducedMotion: "reduce" })
+  const reduced = await page.evaluate(() => {
+    const style = getComputedStyle(document.documentElement)
+    return {
+      durationFast: style.getPropertyValue("--motion-duration-fast").trim(),
+      durationEmphasis: style.getPropertyValue("--motion-duration-emphasis").trim(),
+      momentScale1: style.getPropertyValue("--moment-intensity-1-scale").trim(),
+      momentScale2: style.getPropertyValue("--moment-intensity-2-scale").trim(),
+    }
+  })
+  expect(reduced.durationFast).toBe("0ms")
+  expect(reduced.durationEmphasis).toBe("0ms")
+  expect(reduced.momentScale1).toBe("1")
+  expect(reduced.momentScale2).toBe("1")
+
+  // The showcase's own live readout (KitchenSink's Motion section) reflects
+  // the emulated preference too - proves the page can actually observe it,
+  // not just that the token layer can.
+  await page.getByRole("combobox", { name: "Page" }).selectOption("system")
+  await expect(page.getByTestId("motion-showcase")).toContainText(/prefers-reduced-motion.*currently reads\s*reduce/is)
+})

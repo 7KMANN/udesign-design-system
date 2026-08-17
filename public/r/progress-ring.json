@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "progress-ring",
+  "type": "registry:component",
+  "title": "Progress Ring",
+  "description": "Domain-neutral completion ring for a bounded set, with a visible numeric readout so meaning never depends on color or arc angle alone.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/progress-ring.tsx",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\nexport interface ProgressRingProps extends React.SVGAttributes<SVGSVGElement> {\n  /** Number of units completed within the bounded set (e.g. 3 of 5). */\n  completed: number\n  /** Total size of the bounded set. */\n  total: number\n  /** Required accessible name, e.g. \"3 of 5 closed\". Carries the truthful summary a screen reader announces. */\n  label: string\n  /** Diameter in pixels. Defaults to 40. */\n  size?: number\n}\n\n/**\n * Generic, domain-flavorless indicator for \"truthful completion of a bounded\n * set\" (e.g. 3 of 5 done this week). Renders an SVG ring plus a real numeric\n * readout so meaning never depends on color or arc angle alone.\n */\nconst ProgressRing = React.forwardRef<SVGSVGElement, ProgressRingProps>(\n  ({ className, completed, total, label, size = 40, ...props }, ref) => {\n    const strokeWidth = Math.max(2, size / 10)\n    const center = size / 2\n    const radius = center - strokeWidth / 2\n    const circumference = 2 * Math.PI * radius\n    const ratio = total > 0 ? Math.min(1, Math.max(0, completed / total)) : 0\n    const dashoffset = circumference * (1 - ratio)\n    const fontSize = Math.max(8, size * 0.26)\n\n    return (\n      <svg\n        ref={ref}\n        role=\"img\"\n        aria-label={label}\n        width={size}\n        height={size}\n        viewBox={`0 0 ${size} ${size}`}\n        className={cn(\"shrink-0\", className)}\n        {...props}\n      >\n        <circle\n          aria-hidden=\"true\"\n          cx={center}\n          cy={center}\n          r={radius}\n          fill=\"none\"\n          strokeWidth={strokeWidth}\n          className=\"stroke-[var(--surface-sunken)]\"\n        />\n        <circle\n          aria-hidden=\"true\"\n          cx={center}\n          cy={center}\n          r={radius}\n          fill=\"none\"\n          strokeWidth={strokeWidth}\n          strokeLinecap=\"round\"\n          strokeDasharray={circumference}\n          strokeDashoffset={dashoffset}\n          transform={`rotate(-90 ${center} ${center})`}\n          className=\"stroke-[var(--tone-progress-solid)] transition-[stroke-dashoffset] duration-[var(--motion-duration-fast)] ease-[var(--motion-easing-fast)]\"\n        />\n        <text\n          aria-hidden=\"true\"\n          x={center}\n          y={center}\n          textAnchor=\"middle\"\n          dominantBaseline=\"central\"\n          fontSize={fontSize}\n          className=\"fill-[var(--foreground)] tabular-nums [font-family:var(--font-data)]\"\n        >\n          {completed}/{total}\n        </text>\n      </svg>\n    )\n  },\n)\nProgressRing.displayName = \"ProgressRing\"\n\nexport { ProgressRing }\n",
+      "type": "registry:component",
+      "target": "components/ui/progress-ring.tsx"
+    }
+  ]
+}

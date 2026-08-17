@@ -150,6 +150,30 @@
       "files": [{ "path": "registry/new-york/ui/icon-button.tsx", "type": "registry:component", "target": "components/ui/icon-button.tsx" }]
     },
     {
+      "name": "progress-ring",
+      "type": "registry:component",
+      "title": "Progress Ring",
+      "description": "Domain-neutral completion ring for a bounded set, with a visible numeric readout so meaning never depends on color or arc angle alone.",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/progress-ring.tsx", "type": "registry:component", "target": "components/ui/progress-ring.tsx" }]
+    },
+    {
+      "name": "rolling-consistency-chip",
+      "type": "registry:component",
+      "title": "Rolling Consistency Chip",
+      "description": "Trailing-window consistency count (e.g. '4 of the last 7'). Replaces the streak concept entirely - tone never varies with the count.",
+      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.1/public/r/badge.json"],
+      "files": [{ "path": "registry/new-york/ui/rolling-consistency-chip.tsx", "type": "registry:component", "target": "components/ui/rolling-consistency-chip.tsx" }]
+    },
+    {
+      "name": "moment",
+      "type": "registry:component",
+      "title": "Moment",
+      "description": "Bounded, in-place reaction wrapper for a closed loop, capped at intensity 2. Gamification-exclusive: inert without data-game=\"on\" (ADR-0001). Not included in the core bundle - install it only in a repository that has opted in.",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/moment.tsx", "type": "registry:component", "target": "components/ui/moment.tsx" }]
+    },
+    {
       "name": "status-badge",
       "type": "registry:component",
       "title": "Status Badge",

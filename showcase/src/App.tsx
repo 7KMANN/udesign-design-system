@@ -38,6 +38,11 @@ export default function App() {
   useEffect(() => {
     document.documentElement.dataset.design = design;
     document.documentElement.dataset.theme = theme;
+    // Pinned "on", not a showcase control: the showcase's job is to
+    // demonstrate the gamification layer, so it always declares the
+    // attribute the way a real consuming app would - see DESIGN.md
+    // "data-game". This is not a toggle (ADR-0001 bans that).
+    document.documentElement.dataset.game = 'on';
   }, [design, theme]);
 
   useEffect(() => {

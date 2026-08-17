@@ -30,6 +30,9 @@ const requiredItems = [
   "metric-card",
   "empty-state",
   "responsive-collection",
+  "progress-ring",
+  "rolling-consistency-chip",
+  "moment",
   "core",
 ]
 

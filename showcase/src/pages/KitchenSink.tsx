@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
@@ -12,7 +13,10 @@ import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui
 import { IconButton } from '@/components/ui/icon-button';
 import { Input } from '@/components/ui/input';
 import { MetricCard } from '@/components/ui/metric-card';
+import { Moment } from '@/components/ui/moment';
+import { ProgressRing } from '@/components/ui/progress-ring';
 import { ResponsiveCollection } from '@/components/ui/responsive-collection';
+import { RollingConsistencyChip } from '@/components/ui/rolling-consistency-chip';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Slider } from '@/components/ui/slider';
@@ -41,7 +45,45 @@ const SURFACES = [
   ['Console', '--surface-console'],
 ] as const;
 
+function useReducedMotionPreference() {
+  const [reduced, setReduced] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = () => setReduced(query.matches);
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
+  return reduced;
+}
+
+function MomentDemo({ intensity }: { intensity: 1 | 2 }) {
+  const [active, setActive] = useState(false);
+  return (
+    <div className="flex items-center gap-3">
+      <RegistryButton
+        variant="outline"
+        onClick={() => {
+          setActive(false);
+          // Re-trigger on the next frame so a repeated click restarts the
+          // transition instead of being a no-op (active was already true).
+          requestAnimationFrame(() => setActive(true));
+        }}
+      >
+        Fire intensity {intensity}
+      </RegistryButton>
+      <Moment intensity={intensity} active={active}>
+        <RegistryBadge tone={intensity === 2 ? 'success' : 'progress'} variant={intensity === 2 ? 'solid' : 'subtle'}>
+          {intensity === 2 ? 'Loop closed' : 'Stage advanced'}
+        </RegistryBadge>
+      </Moment>
+    </div>
+  );
+}
+
 export function KitchenSink() {
+  const reducedMotion = useReducedMotionPreference();
   return (
     <div className="preview-page">
       <header className="preview-heading">
@@ -225,6 +267,60 @@ export function KitchenSink() {
           )}
           mobile={<RegistryCard><CardContent className="p-4"><strong>Source-owned component</strong><p>Ready</p></CardContent></RegistryCard>}
         />
+      </section>
+
+      <section className="preview-section" aria-labelledby="motion-heading" data-testid="motion-showcase">
+        <div className="section-heading">
+          <div>
+            <p className="section-index">Motion</p>
+            <h2 id="motion-heading">Intensity 1 and 2, capped structurally</h2>
+          </div>
+          <p>
+            This browser&apos;s <code>prefers-reduced-motion</code> currently reads{' '}
+            <strong>{reducedMotion ? 'reduce' : 'no preference'}</strong> - toggle it in your OS or
+            browser settings and reload to see the baked-in reduced-motion path live. There is no
+            in-app override: that preference is read-only here, the same as it is for any consumer.
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <RegistryCard>
+            <CardHeader>
+              <CardTitle>Progress ring</CardTitle>
+              <CardDescription>Truthful completion of a bounded set - never color or arc angle alone.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap items-center gap-6">
+              <ProgressRing completed={3} total={5} label="3 of 5 closed" />
+              <ProgressRing completed={7} total={7} label="7 of 7 closed" />
+              <ProgressRing completed={0} total={4} label="0 of 4 closed" />
+            </CardContent>
+          </RegistryCard>
+
+          <RegistryCard>
+            <CardHeader>
+              <CardTitle>Rolling consistency chip</CardTitle>
+              <CardDescription>A trailing-window count. Never a streak - tone never varies with the count.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap items-center gap-3">
+              <RollingConsistencyChip count={4} window={7} />
+              <RollingConsistencyChip count={0} window={7} />
+              <RollingConsistencyChip count={7} window={7} />
+            </CardContent>
+          </RegistryCard>
+
+          <RegistryCard className="md:col-span-2">
+            <CardHeader>
+              <CardTitle>Moment</CardTitle>
+              <CardDescription>
+                Bounded, in-place reaction, gated behind <code>data-game=&quot;on&quot;</code>. No portal, no
+                overlay, no sound - the badge text is the actual signal; the wrapper only adds emphasis.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap items-center gap-6">
+              <MomentDemo intensity={1} />
+              <MomentDemo intensity={2} />
+            </CardContent>
+          </RegistryCard>
+        </div>
       </section>
 
       <section className="preview-section" aria-labelledby="action-heading">
