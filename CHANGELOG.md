@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0 (2026-08-17)
+
+Motion token layer, capped intensity scale, data-game gamification scoping, and three motion primitives (progress ring, rolling-consistency chip, moment)
+
 ## 1.3.1 (2026-07-18)
 
 Patch registry button/checkbox/switch/dialog upstream bugs and add Slider primitive
