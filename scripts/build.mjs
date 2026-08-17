@@ -92,6 +92,15 @@ const RESPONSIVE_VAR = {
 
 const RADIUS_VAR = { sm: '--radius-sm', base: '--radius', lg: '--radius-lg', pill: '--radius-pill' };
 
+// Motion: general-purpose, available at bare :root regardless of data-game -
+// a loading spinner needs these as much as a gamification moment does.
+const MOTION_DURATION_VAR = { fast: '--motion-duration-fast', emphasis: '--motion-duration-emphasis' };
+const MOTION_EASING_VAR = { fast: '--motion-easing-fast', emphasis: '--motion-easing-emphasis' };
+
+// Moment: gamification-exclusive (ADR-0001). Compiled only under
+// [data-game="on"], never at bare :root - see formatMomentBlock.
+const MOMENT_VAR = { 'intensity-1-scale': '--moment-intensity-1-scale', 'intensity-2-scale': '--moment-intensity-2-scale' };
+
 function getPath(tree, dotted) {
   if (!tree || !dotted) return undefined;
   return dotted.split('.').reduce((node, key) => node?.[key], tree);
@@ -106,6 +115,11 @@ function rgba(color) {
   if (!color || !color.components) return 'rgba(0,0,0,0)';
   const [r, g, b] = color.components.map((c) => Math.round(c * 255));
   return `rgba(${r},${g},${b},${color.alpha})`;
+}
+
+function cubicBezierCss(v) {
+  if (!Array.isArray(v) || v.length !== 4) return 'ease';
+  return `cubic-bezier(${v.join(', ')})`;
 }
 
 const GENERIC_FONT_KEYWORDS = new Set(['serif', 'sans-serif', 'monospace', 'cursive', 'fantasy', 'system-ui']);
@@ -273,11 +287,56 @@ function formatVarsBlock(t, baseTree, selector, { emitPrimitives = false, emitSt
     }
   }
 
+  L.push('');
+  L.push('  /* Motion: read from baseTree only, never from t - the structural');
+  L.push('     enforcement of "identical in both profiles" (contract Motion section).');
+  L.push('     tokens/functional.tokens.json has no motion key to override this with. */');
+  for (const [key, name] of Object.entries(MOTION_DURATION_VAR)) {
+    const token = baseTree.motion.duration[key];
+    if (token && token.$value) L.push(`  ${name}: ${dim(token.$value)};`);
+  }
+  for (const [key, name] of Object.entries(MOTION_EASING_VAR)) {
+    const token = baseTree.motion.easing[key];
+    if (token && token.$value) L.push(`  ${name}: ${cubicBezierCss(token.$value)};`);
+  }
+
   if (emitPrimitives) {
     L.push('');
     L.push(formatResponsive(t));
   }
 
+  L.push('}');
+  return L.join('\n');
+}
+
+function formatMomentBlock(baseTree, selector) {
+  const L = [];
+  L.push(`${selector} {`);
+  L.push('  /* Gamification-exclusive (ADR-0001). Inert without data-game="on": */');
+  L.push('  /* this block is the only place these two custom properties are emitted. */');
+  for (const [key, name] of Object.entries(MOMENT_VAR)) {
+    const token = baseTree.moment[key];
+    if (token && token.$value !== undefined) L.push(`  ${name}: ${token.$value};`);
+  }
+  L.push('}');
+  return L.join('\n');
+}
+
+function formatReducedMotionBlock(motionSelector, gameSelector) {
+  // Two separate rules, not one shared selector list: --moment-intensity-*
+  // must stay strictly inside a [data-game="on"] selector even here, or B3's
+  // "no unscoped gamification custom property" guarantee has a reduced-motion
+  // hole. --motion-duration-* is general-purpose, so it keeps the broad list.
+  const L = [];
+  L.push('@media (prefers-reduced-motion: reduce) {');
+  L.push(`  ${motionSelector} {`);
+  L.push('    /* B4: bakes the reduced-motion path into the compiled tokens so any');
+  L.push('       consumer - a moment, a loading spinner, anything - gets it for free. */');
+  for (const name of Object.values(MOTION_DURATION_VAR)) L.push(`    ${name}: 0ms;`);
+  L.push('  }');
+  L.push(`  ${gameSelector} {`);
+  for (const name of Object.values(MOMENT_VAR)) L.push(`    ${name}: 1;`);
+  L.push('  }');
   L.push('}');
   return L.join('\n');
 }
@@ -342,6 +401,13 @@ StyleDictionary.registerFormat({
       {},
     ));
     L.push('');
+    L.push(formatMomentBlock(baseTree, ':root[data-game="on"]'));
+    L.push('');
+    L.push(formatReducedMotionBlock(
+      ':root, :root[data-design="brand"], :root[data-design="functional"], .design-functional',
+      ':root[data-game="on"]',
+    ));
+    L.push('');
     L.push(formatTypographyHelpers(baseTree, baseTree));
     L.push('');
     L.push(formatTypographyHelpers(functionalBaseTree, baseTree, [':root[data-design="functional"]', '.design-functional']));
@@ -365,6 +431,10 @@ StyleDictionary.registerFormat({
     L.push(formatVarsBlock(mergedTree, baseTree, ':root', { emitPrimitives: true, emitStructure: true }));
     L.push('');
     L.push(formatVarsBlock(darkTree, baseTree, ':root[data-theme="dark"], .dark', {}));
+    L.push('');
+    L.push(formatMomentBlock(baseTree, ':root[data-game="on"]'));
+    L.push('');
+    L.push(formatReducedMotionBlock(':root', ':root[data-game="on"]'));
     L.push('');
     L.push(formatTypographyHelpers(mergedTree, baseTree));
     L.push('');

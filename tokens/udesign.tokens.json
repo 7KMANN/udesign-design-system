@@ -196,6 +196,26 @@
     "safe-area-bottom": { "$type": "string", "$value": "env(safe-area-inset-bottom, 0px)" }
   },
 
+  "motion": {
+    "$description": "Semantic duration and easing roles, selected by intent, never a raw millisecond value. Exactly two intents exist: fast (routine functional feedback, intensity 1) and emphasis (a loop closed, intensity 2). There is no third intent - intensity 3 does not exist in this system (contract 'Motion' section). Identical in the brand and functional profiles: build.mjs reads this family from the base tree only, never from tokens/functional.tokens.json, so there is no override path for a profile to diverge on.",
+    "duration": {
+      "$type": "duration",
+      "fast": { "$description": "Crisp state transition inside a control - stage advances, a message settles into a thread.", "$value": { "value": 150, "unit": "ms" } },
+      "emphasis": { "$description": "The owning component reacts within its own bounds - an outcome resolves, a commit completes.", "$value": { "value": 280, "unit": "ms" } }
+    },
+    "easing": {
+      "$type": "cubicBezier",
+      "fast": { "$description": "Standard ease-out. No overshoot - this fires many times a day.", "$value": [0.4, 0, 0.2, 1] },
+      "emphasis": { "$description": "A small settle-in overshoot, reserved for the rarer intensity-2 moment.", "$value": [0.34, 1.56, 0.64, 1] }
+    }
+  },
+
+  "moment": {
+    "$description": "Gamification-exclusive tokens (ADR-0001 in globalvision). build.mjs compiles this family scoped under [data-game=\"on\"] only - inert everywhere else, never emitted at bare :root. Two intensity levels only, deliberately small: no combination of these values composes a full-screen or celebratory effect (contract 'Motion' section's structural cap). Consumed by the design system's moment-wrapper primitive; component code selects the intensity, never the number.",
+    "intensity-1-scale": { "$type": "number", "$description": "Bounded transform scale for a routine (intensity 1) moment. Never used with the emphasis duration.", "$value": 1.015 },
+    "intensity-2-scale": { "$type": "number", "$description": "Bounded transform scale for a closure (intensity 2) moment. This is the ceiling - no larger published value exists.", "$value": 1.04 }
+  },
+
   "dark": {
     "$description": "Dark-mode semantic overrides. These compose with either design profile.",
     "role": {

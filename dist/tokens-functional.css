@@ -170,6 +170,14 @@
   --shadow-2: none;
   --shadow-3: 0px 12px 32px -8px rgba(27,27,27,0.2);
 
+  /* Motion: read from baseTree only, never from t - the structural
+     enforcement of "identical in both profiles" (contract Motion section).
+     tokens/functional.tokens.json has no motion key to override this with. */
+  --motion-duration-fast: 150ms;
+  --motion-duration-emphasis: 280ms;
+  --motion-easing-fast: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-easing-emphasis: cubic-bezier(0.34, 1.56, 0.64, 1);
+
   /* Responsive contracts */
   --touch-target-min: 44px;
   --control-height: 44px;
@@ -303,6 +311,26 @@
   --surface-overlay-foreground: var(--ud-panel);
   --surface-console: #090807;
   --surface-console-foreground: #bfdfb7;
+}
+
+:root[data-game="on"] {
+  /* Gamification-exclusive (ADR-0001). Inert without data-game="on": */
+  /* this block is the only place these two custom properties are emitted. */
+  --moment-intensity-1-scale: 1.015;
+  --moment-intensity-2-scale: 1.04;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    /* B4: bakes the reduced-motion path into the compiled tokens so any
+       consumer - a moment, a loading spinner, anything - gets it for free. */
+    --motion-duration-fast: 0ms;
+    --motion-duration-emphasis: 0ms;
+  }
+  :root[data-game="on"] {
+    --moment-intensity-1-scale: 1;
+    --moment-intensity-2-scale: 1;
+  }
 }
 
 /* Typography helpers */

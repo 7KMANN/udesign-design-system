@@ -88,6 +88,25 @@ function assertVariables(css, variables) {
   }
 }
 
+// Finds the {...} block immediately following a literal selector string,
+// via brace-depth counting rather than a non-nested regex - the brand block
+// carries a one-line comment with its own literal braces
+// ("--client overrides per page: :root{ --client:#E23A2E }"), so a naive
+// same-level capture stops short there.
+function block(css, selectorText) {
+  const idx = css.indexOf(selectorText);
+  if (idx === -1) return null;
+  const openIdx = css.indexOf('{', idx);
+  if (openIdx === -1) return null;
+  let depth = 1;
+  let i = openIdx + 1;
+  for (; i < css.length && depth > 0; i += 1) {
+    if (css[i] === '{') depth += 1;
+    else if (css[i] === '}') depth -= 1;
+  }
+  return css.slice(openIdx + 1, i - 1);
+}
+
 test('preserves every legacy CSS variable', () => {
   assertVariables(dualCss, legacyVariables);
 });
@@ -140,4 +159,56 @@ test('generates token CSS deterministically', () => {
   execFileSync(process.execPath, ['scripts/build.mjs'], { cwd: root, stdio: 'pipe' });
   assert.equal(fs.readFileSync(path.join(root, 'dist/tokens.css'), 'utf8'), dualCss);
   assert.equal(fs.readFileSync(path.join(root, 'dist/tokens-functional.css'), 'utf8'), functionalCss);
+});
+
+// --- Motion (B1/B2/B4) and gamification scoping (B3) ---
+// See udesign-docs standards/design/udesign-contract.md "Motion" and
+// globalvision's docs/adr/0001-0002.
+
+test('motion is byte-identical in the brand and functional profile blocks', () => {
+  const brand = block(dualCss, ':root, :root[data-design="brand"]');
+  const functional = block(dualCss, ':root[data-design="functional"], .design-functional');
+  assert.ok(brand, 'brand profile block not found');
+  assert.ok(functional, 'functional profile block not found');
+  for (const name of ['--motion-duration-fast', '--motion-duration-emphasis', '--motion-easing-fast', '--motion-easing-emphasis']) {
+    const brandValue = brand.match(new RegExp(`${name}:\\s*([^;]+);`))?.[1];
+    const functionalValue = functional.match(new RegExp(`${name}:\\s*([^;]+);`))?.[1];
+    assert.ok(brandValue, `${name} missing from the brand block`);
+    assert.equal(brandValue, functionalValue, `${name} diverges between brand and functional - B1 is wrong if this fails`);
+  }
+});
+
+test('exactly two motion intents are published - no third, no intensity 3', () => {
+  for (const css of [dualCss, functionalCss]) {
+    const intents = new Set(
+      [...css.matchAll(/--motion-duration-([a-z0-9-]+):/g)].map((m) => m[1]),
+    );
+    assert.deepEqual([...intents].sort(), ['emphasis', 'fast']);
+  }
+});
+
+test('gamification custom properties never appear unscoped - the mechanical half of ADR-0001', () => {
+  for (const css of [dualCss, functionalCss]) {
+    let found = false;
+    for (const [, selector, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+      if (!/--moment-/.test(body)) continue;
+      found = true;
+      assert.match(selector, /data-game="on"/, `selector "${selector.trim()}" leaks a gamification token outside data-game="on"`);
+    }
+    assert.ok(found, 'expected at least one --moment- declaration to check');
+  }
+});
+
+test('reduced motion zeroes duration and neutralizes moment scale by default', () => {
+  for (const css of [dualCss, functionalCss]) {
+    const reduced = css.slice(css.indexOf('@media (prefers-reduced-motion: reduce)'));
+    assert.notEqual(reduced.indexOf('@media'), -1, 'no prefers-reduced-motion block found');
+    assert.match(reduced, /--motion-duration-fast:\s*0ms;/);
+    assert.match(reduced, /--motion-duration-emphasis:\s*0ms;/);
+    assert.match(reduced, /--moment-intensity-1-scale:\s*1;/);
+    assert.match(reduced, /--moment-intensity-2-scale:\s*1;/);
+    // Still scoped even inside the media query - see the prior test's guarantee.
+    const gameRule = reduced.match(/:root\[data-game="on"\]\s*\{([^{}]*)\}/)?.[1];
+    assert.ok(gameRule && /--moment-intensity-1-scale:\s*1;/.test(gameRule));
+  }
 });
