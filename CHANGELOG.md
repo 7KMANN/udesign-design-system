@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.0 (2026-08-20)
+
+Feedback floor: an open motion duration vocabulary, press and pending states on every interactive primitive, and spinner, skeleton, and pressable in core.
+
 ## 1.4.0 (2026-08-17)
 
 Motion token layer, capped intensity scale, data-game gamification scoping, and three motion primitives (progress ring, rolling-consistency chip, moment)
