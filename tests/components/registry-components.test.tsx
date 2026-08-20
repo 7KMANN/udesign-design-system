@@ -2,8 +2,9 @@ import * as React from "react"
 import axe from "axe-core"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
+import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Dialog,
@@ -212,5 +213,33 @@ describe("UDesign registry accessibility contracts", () => {
 
     const wrapper = screen.getByText("Stage advanced").parentElement as HTMLElement
     expect(wrapper.style.transform).toBe("scale(1)")
+  })
+
+  it("marks a pending action as busy without greying it out", () => {
+    render(<Button pending>Save</Button>)
+
+    const button = screen.getByRole("button")
+    expect(button).toHaveAttribute("aria-busy", "true")
+    expect(button).toBeDisabled()
+    // A pending control keeps its own colours: disabled styling reads as
+    // "broken", which is the opposite of what it is doing.
+    expect(button.className).not.toContain("disabled:bg-[var(--interactive-disabled)]")
+  })
+
+  it("keeps a pending button's label in the layout so its width does not jump", () => {
+    render(<Button pending>Save changes</Button>)
+
+    // Hidden from view, still measured: this is the whole point.
+    const label = screen.getByText("Save changes")
+    expect(label).toHaveClass("invisible")
+    expect(screen.getByRole("button")).toContainElement(label)
+  })
+
+  it("does not fire a click on a pending action", async () => {
+    const onClick = vi.fn()
+    render(<Button pending onClick={onClick}>Send</Button>)
+
+    await userEvent.click(screen.getByRole("button"))
+    expect(onClick).not.toHaveBeenCalled()
   })
 })

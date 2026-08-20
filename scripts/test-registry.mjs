@@ -33,6 +33,9 @@ const requiredItems = [
   "progress-ring",
   "rolling-consistency-chip",
   "moment",
+  "spinner",
+  "skeleton",
+  "pressable",
   "core",
 ]
 
@@ -110,9 +113,18 @@ assert.match(files["dialog.tsx"], /bg-\[var\(--backdrop\)\]\/60/)
 const sliderThumb = files["slider.tsx"].match(/<SliderPrimitive\.Thumb[\s\S]*?>/)?.[0] ?? ""
 assert.match(sliderThumb, /size-\[var\(--touch-target-min\)\]/)
 
+// Feedback floor (v1.5.0). Each of these is a shape that read fine in a diff
+// and was still a dead control, so each gets a guard.
+assert.match(files["button.tsx"], /pending\?: boolean/, "Button must expose a pending state; every consumer otherwise reinvents it")
+assert.match(files["button.tsx"], /aria-busy=\{pending/, "a pending Button must report aria-busy")
+assert.match(files["button.tsx"], /invisible inline-flex/, "a pending Button must keep its children in the layout, or the width jumps")
+assert.match(files["spinner.tsx"], /motion-safe:animate-spin/, "the spinner must not animate under prefers-reduced-motion")
+assert.match(files["skeleton.tsx"], /\[animation-duration:var\(--motion-duration-ambient\)\]/)
+assert.match(files["pressable.tsx"], /active:scale-\[var\(--motion-press-scale-subtle\)\]/)
+
 const core = registry.items.find((item) => item.name === "core")
 assert.equal(core.type, "registry:item")
-assert.equal(core.files.length, 21, "core must install the complete supported source set")
+assert.equal(core.files.length, 24, "core must install the complete supported source set")
 
 const outputDir = path.join(root, "public", "r")
 assert.ok(fs.existsSync(outputDir), "public/r must contain committed registry output")

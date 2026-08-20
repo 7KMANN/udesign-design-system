@@ -59,7 +59,7 @@ const ProgressRing = React.forwardRef<SVGSVGElement, ProgressRingProps>(
           strokeDasharray={circumference}
           strokeDashoffset={dashoffset}
           transform={`rotate(-90 ${center} ${center})`}
-          className="stroke-[var(--tone-progress-solid)] transition-[stroke-dashoffset] duration-[var(--motion-duration-fast)] ease-[var(--motion-easing-fast)]"
+          className="stroke-[var(--tone-progress-solid)] transition-[stroke-dashoffset] duration-[var(--motion-duration-fast)] ease-[var(--motion-easing-standard)]"
         />
         <text
           aria-hidden="true"

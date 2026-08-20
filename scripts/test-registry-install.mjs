@@ -32,6 +32,9 @@ const expectedFiles = [
   "metric-card",
   "empty-state",
   "responsive-collection",
+  "spinner",
+  "skeleton",
+  "pressable",
 ]
 
 try {

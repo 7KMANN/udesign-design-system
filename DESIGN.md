@@ -307,9 +307,19 @@ Three generic, domain-flavorless primitives ship in the registry:
 
 **`card`** uses `{colors.surface-card}`, a `{colors.hairline}` boundary, and `{rounded.md}`. Runtime components use raised or card semantic roles so dark and functional profiles can adapt it.
 
+### Feedback primitives
+
+Three primitives carry the feedback floor. They are part of `core`: an application cannot meet the contract's Feedback section without them, so they are not optional extras.
+
+- **Spinner** (`spinner`) - a busy indicator for an action in flight. Under reduced motion it stops turning and stays visible, because the state has to survive the animation being removed.
+- **Skeleton** (`skeleton`) - a loading placeholder, sized to the content it replaces. A fallback of a different height causes a jump on arrival, which reads worse than the pause it replaced.
+- **Pressable** (`pressable`) - a clickable card, row, or list item. Renders a real button, so Enter, Space, focus, and the accessible name come from the platform instead of from a div with an `onClick`. Uses the subtle press scale; the control scale reads as a layout bug across a full-width surface.
+
+`Button` carries the same floor directly: `pending` disables it, reports `aria-busy`, and swaps in a spinner while preserving its width. Every interactive primitive here has a pressed state - a control that changes nothing on press is the single most common failure in machine-written UI.
+
 ## Registry components
 
-The source registry includes these base components: button, badge, alert, card, input, textarea, select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, and table.
+The source registry includes these base components: button, badge, alert, card, input, textarea, select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
 
 The application patterns are icon-button, status-badge, metric-card, empty-state, and responsive-collection. The `core` registry item installs the recommended set.
 

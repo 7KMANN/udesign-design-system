@@ -7,9 +7,9 @@
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "description": "UDesign action control with semantic variants and accessible touch targets.",
+      "description": "UDesign action control with semantic variants, press and pending feedback, and accessible touch targets.",
       "dependencies": ["@radix-ui/react-slot"],
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.5.0/public/r/spinner.json"],
       "files": [{ "path": "registry/new-york/ui/button.tsx", "type": "registry:ui", "target": "components/ui/button.tsx" }]
     },
     {
@@ -206,6 +206,31 @@
       "files": [{ "path": "registry/new-york/ui/responsive-collection.tsx", "type": "registry:component", "target": "components/ui/responsive-collection.tsx" }]
     },
     {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "Busy indicator for an action in flight. Stops turning under reduced motion rather than disappearing, so the state stays visible.",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/spinner.tsx", "type": "registry:ui", "target": "components/ui/spinner.tsx" }]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "Loading placeholder sized to the content it stands in for, so arrival does not shift the layout.",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/skeleton.tsx", "type": "registry:ui", "target": "components/ui/skeleton.tsx" }]
+    },
+    {
+      "name": "pressable",
+      "type": "registry:ui",
+      "title": "Pressable",
+      "description": "Clickable surface for a card, row, or list item. A real button, so keyboard activation and the accessible name come from the platform.",
+      "dependencies": ["@radix-ui/react-slot"],
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/pressable.tsx", "type": "registry:ui", "target": "components/ui/pressable.tsx" }]
+    },
+    {
       "name": "core",
       "type": "registry:item",
       "title": "UDesign Core",
@@ -243,7 +268,10 @@
         { "path": "registry/new-york/ui/status-badge.tsx", "type": "registry:component", "target": "components/ui/status-badge.tsx" },
         { "path": "registry/new-york/ui/metric-card.tsx", "type": "registry:component", "target": "components/ui/metric-card.tsx" },
         { "path": "registry/new-york/ui/empty-state.tsx", "type": "registry:component", "target": "components/ui/empty-state.tsx" },
-        { "path": "registry/new-york/ui/responsive-collection.tsx", "type": "registry:component", "target": "components/ui/responsive-collection.tsx" }
+        { "path": "registry/new-york/ui/responsive-collection.tsx", "type": "registry:component", "target": "components/ui/responsive-collection.tsx" },
+        { "path": "registry/new-york/ui/spinner.tsx", "type": "registry:ui", "target": "components/ui/spinner.tsx" },
+        { "path": "registry/new-york/ui/skeleton.tsx", "type": "registry:ui", "target": "components/ui/skeleton.tsx" },
+        { "path": "registry/new-york/ui/pressable.tsx", "type": "registry:ui", "target": "components/ui/pressable.tsx" }
       ]
     }
   ]
