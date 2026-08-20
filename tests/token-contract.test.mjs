@@ -170,7 +170,11 @@ test('motion is byte-identical in the brand and functional profile blocks', () =
   const functional = block(dualCss, ':root[data-design="functional"], .design-functional');
   assert.ok(brand, 'brand profile block not found');
   assert.ok(functional, 'functional profile block not found');
-  for (const name of ['--motion-duration-fast', '--motion-duration-emphasis', '--motion-easing-fast', '--motion-easing-emphasis']) {
+  // Derived, not listed: a hardcoded list silently stops covering any token
+  // added after it was written, which is how a family drifts apart by profile.
+  const names = [...new Set([...brand.matchAll(/(--motion-[a-z0-9-]+):/g)].map((m) => m[1]))];
+  assert.ok(names.length >= 12, `expected the full motion family in the brand block, found ${names.length}`);
+  for (const name of names) {
     const brandValue = brand.match(new RegExp(`${name}:\\s*([^;]+);`))?.[1];
     const functionalValue = functional.match(new RegExp(`${name}:\\s*([^;]+);`))?.[1];
     assert.ok(brandValue, `${name} missing from the brand block`);
@@ -178,12 +182,47 @@ test('motion is byte-identical in the brand and functional profile blocks', () =
   }
 });
 
-test('exactly two motion intents are published - no third, no intensity 3', () => {
+// The duration VOCABULARY is open: a component that needs an intent the system
+// does not publish is the reason 22 of 24 components hardcoded their own values
+// through v1.4.0. What is closed is the CEILING and the magnitude cap - see the
+// contract's Motion section, which separates feedback presence from reaction
+// magnitude. Do not re-freeze this to an exact set.
+//
+// 'ambient' and the loop family are continuous, non-interaction values: nobody
+// waits on one period of a shimmer, so the interaction ceiling does not apply.
+const INTERACTION_CEILING_MS = 400;
+const NON_INTERACTION_DURATIONS = new Set(['ambient']);
+
+test('every interaction duration stays at or under the ceiling', () => {
   for (const css of [dualCss, functionalCss]) {
-    const intents = new Set(
-      [...css.matchAll(/--motion-duration-([a-z0-9-]+):/g)].map((m) => m[1]),
+    const durations = [...css.matchAll(/--motion-duration-([a-z0-9-]+):\s*(\d+)ms;/g)];
+    assert.ok(durations.length > 0, 'no motion durations found');
+    for (const [, intent, value] of durations) {
+      if (NON_INTERACTION_DURATIONS.has(intent)) continue;
+      assert.ok(
+        Number(value) <= INTERACTION_CEILING_MS,
+        `--motion-duration-${intent} is ${value}ms, past the ${INTERACTION_CEILING_MS}ms interaction ceiling`,
+      );
+    }
+    assert.ok(
+      durations.some(([, intent]) => intent === 'slow'),
+      "'slow' is the named ceiling intent and must stay published",
     );
-    assert.deepEqual([...intents].sort(), ['emphasis', 'fast']);
+  }
+});
+
+test('the press family is published at bare :root, not behind data-game', () => {
+  for (const css of [dualCss, functionalCss]) {
+    for (const [, selector, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+      if (!/--motion-press-scale:/.test(body)) continue;
+      assert.doesNotMatch(
+        selector,
+        /data-game/,
+        'press feedback is the floor for every application, not a gamification opt-in',
+      );
+    }
+    const scale = Number(css.match(/--motion-press-scale:\s*([\d.]+);/)?.[1]);
+    assert.ok(scale > 0.9 && scale < 1, `press scale ${scale} is outside the bounded range`);
   }
 });
 
@@ -205,8 +244,16 @@ test('reduced motion zeroes duration and neutralizes moment scale by default', (
     assert.notEqual(reduced.indexOf('@media'), -1, 'no prefers-reduced-motion block found');
     assert.match(reduced, /--motion-duration-fast:\s*0ms;/);
     assert.match(reduced, /--motion-duration-emphasis:\s*0ms;/);
+    assert.match(reduced, /--motion-duration-ambient:\s*0ms;/);
+    assert.match(reduced, /--motion-loop-spin:\s*0ms;/);
+    assert.match(reduced, /--motion-press-scale:\s*1;/);
+    assert.match(reduced, /--motion-press-scale-subtle:\s*1;/);
     assert.match(reduced, /--moment-intensity-1-scale:\s*1;/);
     assert.match(reduced, /--moment-intensity-2-scale:\s*1;/);
+    // Feedback survives motion removal: the delay that suppresses a spinner
+    // flash is not motion, and the pressed colour is not motion either.
+    assert.doesNotMatch(reduced, /--motion-delay-indicator:/);
+    assert.doesNotMatch(reduced, /--interactive-pressed:/);
     // Still scoped even inside the media query - see the prior test's guarantee.
     const gameRule = reduced.match(/:root\[data-game="on"\]\s*\{([^{}]*)\}/)?.[1];
     assert.ok(gameRule && /--moment-intensity-1-scale:\s*1;/.test(gameRule));

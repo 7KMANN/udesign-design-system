@@ -258,13 +258,26 @@ Shadows do not replace boundaries or focus treatment. Dark theme overlays must r
 
 ## Motion
 
-Duration and easing are semantic roles, selected by intent, the same way every other token family here is: `--motion-duration-fast` / `--motion-easing-fast` for routine functional feedback, `--motion-duration-emphasis` / `--motion-easing-emphasis` for a closed loop. Component code selects the intent, never a millisecond value.
+Duration and easing are semantic roles, selected by intent, the same way every other token family here is. Component code selects the intent, never a millisecond value or a curve.
 
-Intensity is the size of a bounded, gamification-exclusive reaction: **0 no feedback, 1 routine feedback, 2 a closed loop. Intensity 3 does not exist and is not reachable through any combination of published tokens** - no screen-level celebration, no overlay, no particle burst. `--moment-intensity-1-scale` and `--moment-intensity-2-scale` compile only inside `[data-game="on"]` (see `data-game` below); nothing larger is published.
+| Intent | Duration | Use |
+| --- | --- | --- |
+| `instant` | 70ms | Press compression, toggle flip |
+| `fast` | 150ms | Hover, focus, in-place swap, small state change |
+| `standard` | 250ms | Panels, dialogs, list enter and exit, tab change |
+| `emphasis` | 280ms | Intensity-2 reaction inside the acting component |
+| `slow` | 350ms | Route transition, shared-element morph. **The interaction ceiling.** |
+| `ambient` | 1200ms | One period of a continuous loop (shimmer, pulse). Not an interaction duration. |
+
+Easing: `standard` (ease-out, the default), `enter` (decelerate, for arrivals), `exit` (accelerate, for departures), `emphasis` (a small settle-in overshoot, intensity 2 only - never an exit, never a layout-bounded element). `fast` remains published as a compatibility alias of `standard`.
+
+Also published: `--motion-delay-indicator` (hold before revealing a pending indicator, so a quick operation never flashes a spinner), `--motion-loop-spin` (one rotation of a busy indicator), and `--motion-press-scale` / `--motion-press-scale-subtle` (the pressed-control transform, at bare `:root` - press feedback is a floor for every application, not a gamification opt-in).
+
+**The duration vocabulary is open; the reaction magnitude is capped.** These are two axes. A component that needs an intent the system does not publish is how a system ends up with 22 of 24 components hardcoding their own values, so a genuinely needed intent is added here. Magnitude is a separate question and does not move: **0 the minimum in-control reaction, 1 routine feedback, 2 a closed loop. Intensity 3 does not exist and is not reachable through any combination of published tokens** - no screen-level celebration, no overlay, no particle burst. `--moment-intensity-1-scale` and `--moment-intensity-2-scale` compile only inside `[data-game="on"]` (see `data-game` below); nothing larger is published. Level 0 is the *smallest* reaction, never the absence of one - a control that changes nothing on press is a defect at every level.
 
 **Intensity is identical in the brand and functional profiles.** The functional profile is not a quieter variant because it is "for work," and the brand profile is not a louder variant because it is presentational - both render the same reaction. The build enforces this structurally: the compiled motion values are read from one source tree only, with no per-profile override path to diverge through.
 
-`prefers-reduced-motion: reduce` is baked into the compiled token layer itself - `--motion-duration-*` collapses to `0ms` and `--moment-intensity-*-scale` collapses to `1` automatically, so a consuming component gets correct behavior by default without writing its own media query. Motion is still never the only indicator of a state change: a component using these tokens for its sole signal of "something changed" is incomplete regardless of the reduced-motion question.
+`prefers-reduced-motion: reduce` is baked into the compiled token layer itself - `--motion-duration-*` and `--motion-loop-*` collapse to `0ms`, `--motion-press-scale*` and `--moment-intensity-*-scale` collapse to `1` automatically, so a consuming component gets correct behavior by default without writing its own media query. Two things deliberately do **not** collapse: `--motion-delay-indicator`, which suppresses a spinner flash rather than moving anything, and every interaction colour including `--interactive-pressed` - reduced motion removes the movement, not the feedback. A control still darkens on press, still shows its focus ring, and still reports `aria-busy`. Motion is still never the only indicator of a state change: a component using these tokens for its sole signal of "something changed" is incomplete regardless of the reduced-motion question.
 
 ### `data-game`
 

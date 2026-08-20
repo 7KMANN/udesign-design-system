@@ -197,16 +197,36 @@
   },
 
   "motion": {
-    "$description": "Semantic duration and easing roles, selected by intent, never a raw millisecond value. Exactly two intents exist: fast (routine functional feedback, intensity 1) and emphasis (a loop closed, intensity 2). There is no third intent - intensity 3 does not exist in this system (contract 'Motion' section). Identical in the brand and functional profiles: build.mjs reads this family from the base tree only, never from tokens/functional.tokens.json, so there is no override path for a profile to diverge on.",
+    "$description": "Semantic duration, easing, delay, loop, and press roles, selected by intent, never a raw millisecond value or curve. Identical in the brand and functional profiles: build.mjs reads this family from the base tree only, never from tokens/functional.tokens.json, so there is no override path for a profile to diverge on. Publishing more intents does not raise intensity - magnitude is capped separately (contract 'Motion' section, two axes). The interaction ceiling is 'slow': nothing a user is waiting on may run longer. 'ambient' and 'loop' are continuous non-interaction values and are exempt from that ceiling.",
     "duration": {
       "$type": "duration",
-      "fast": { "$description": "Crisp state transition inside a control - stage advances, a message settles into a thread.", "$value": { "value": 150, "unit": "ms" } },
-      "emphasis": { "$description": "The owning component reacts within its own bounds - an outcome resolves, a commit completes.", "$value": { "value": 280, "unit": "ms" } }
+      "instant": { "$description": "Press compression, toggle flip. Short enough to read as direct manipulation rather than as an animation.", "$value": { "value": 70, "unit": "ms" } },
+      "fast": { "$description": "Crisp state transition inside a control - hover, focus, an in-place swap, a message settling into a thread.", "$value": { "value": 150, "unit": "ms" } },
+      "standard": { "$description": "Panels, dialogs, list enter and exit, tab change - something arriving or leaving the screen.", "$value": { "value": 250, "unit": "ms" } },
+      "emphasis": { "$description": "The owning component reacts within its own bounds - an outcome resolves, a commit completes. Intensity 2.", "$value": { "value": 280, "unit": "ms" } },
+      "slow": { "$description": "Full route transition or shared-element morph. The interaction ceiling - no interaction-path duration above this exists, and none may be added.", "$value": { "value": 350, "unit": "ms" } },
+      "ambient": { "$description": "One period of a continuous, non-interaction loop: a skeleton shimmer, a pulse. Exempt from the interaction ceiling because nobody is waiting on a single period of it.", "$value": { "value": 1200, "unit": "ms" } }
     },
     "easing": {
       "$type": "cubicBezier",
-      "fast": { "$description": "Standard ease-out. No overshoot - this fires many times a day.", "$value": [0.4, 0, 0.2, 1] },
-      "emphasis": { "$description": "A small settle-in overshoot, reserved for the rarer intensity-2 moment.", "$value": [0.34, 1.56, 0.64, 1] }
+      "standard": { "$description": "Ease-out, for a state change that begins and ends on screen. The default. No overshoot - most of these fire many times a day.", "$value": [0.4, 0, 0.2, 1] },
+      "fast": { "$description": "Compatibility alias of standard, published since v1.4.0 under this name. Prefer standard in new code.", "$value": [0.4, 0, 0.2, 1] },
+      "enter": { "$description": "Decelerate, for something arriving: it comes in at speed and settles.", "$value": [0, 0, 0.2, 1] },
+      "exit": { "$description": "Accelerate, for something leaving: it starts still and speeds away. Never the overshoot curve - an exit that overshoots reads as a glitch, and an overshoot on anything that must not cross a layout boundary is a bug.", "$value": [0.4, 0, 1, 1] },
+      "emphasis": { "$description": "A small settle-in overshoot, reserved for the rarer intensity-2 moment. Exits and layout-bounded elements do not use it.", "$value": [0.34, 1.56, 0.64, 1] }
+    },
+    "delay": {
+      "$type": "duration",
+      "indicator": { "$description": "Hold before revealing a pending indicator, so an operation that finishes quickly never flashes a spinner. Deliberately NOT collapsed under reduced motion - zeroing it would reintroduce the flash it exists to prevent.", "$value": { "value": 200, "unit": "ms" } }
+    },
+    "loop": {
+      "$type": "duration",
+      "spin": { "$description": "One full rotation of a busy indicator. Collapses to 0ms under reduced motion: the indicator still renders and still reports aria-busy, it just stops moving.", "$value": { "value": 900, "unit": "ms" } }
+    },
+    "press": {
+      "$type": "number",
+      "scale": { "$description": "Transform scale for a pressed control - button, chip, tab, icon button. The acknowledgement half of the feedback floor; pairs with the --interactive-pressed background, which is what survives when motion is removed.", "$value": 0.97 },
+      "scale-subtle": { "$description": "Transform scale for a pressed large surface - a card, a table row. 0.97 across a full-width row reads as a layout bug rather than a press.", "$value": 0.995 }
     }
   },
 

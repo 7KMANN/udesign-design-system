@@ -176,10 +176,21 @@
   /* Motion: read from baseTree only, never from t - the structural
      enforcement of "identical in both profiles" (contract Motion section).
      tokens/functional.tokens.json has no motion key to override this with. */
+  --motion-duration-instant: 70ms;
   --motion-duration-fast: 150ms;
+  --motion-duration-standard: 250ms;
   --motion-duration-emphasis: 280ms;
+  --motion-duration-slow: 350ms;
+  --motion-duration-ambient: 1200ms;
+  --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --motion-easing-fast: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-easing-enter: cubic-bezier(0, 0, 0.2, 1);
+  --motion-easing-exit: cubic-bezier(0.4, 0, 1, 1);
   --motion-easing-emphasis: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --motion-delay-indicator: 200ms;
+  --motion-loop-spin: 900ms;
+  --motion-press-scale: 0.97;
+  --motion-press-scale-subtle: 0.995;
 
   /* Responsive contracts */
   --touch-target-min: 44px;
@@ -244,10 +255,21 @@
   /* Motion: read from baseTree only, never from t - the structural
      enforcement of "identical in both profiles" (contract Motion section).
      tokens/functional.tokens.json has no motion key to override this with. */
+  --motion-duration-instant: 70ms;
   --motion-duration-fast: 150ms;
+  --motion-duration-standard: 250ms;
   --motion-duration-emphasis: 280ms;
+  --motion-duration-slow: 350ms;
+  --motion-duration-ambient: 1200ms;
+  --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --motion-easing-fast: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-easing-enter: cubic-bezier(0, 0, 0.2, 1);
+  --motion-easing-exit: cubic-bezier(0.4, 0, 1, 1);
   --motion-easing-emphasis: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --motion-delay-indicator: 200ms;
+  --motion-loop-spin: 900ms;
+  --motion-press-scale: 0.97;
+  --motion-press-scale-subtle: 0.995;
 }
 
 :root[data-theme="dark"], .dark {
@@ -511,8 +533,17 @@
   :root, :root[data-design="brand"], :root[data-design="functional"], .design-functional {
     /* B4: bakes the reduced-motion path into the compiled tokens so any
        consumer - a moment, a loading spinner, anything - gets it for free. */
+    --motion-duration-instant: 0ms;
     --motion-duration-fast: 0ms;
+    --motion-duration-standard: 0ms;
     --motion-duration-emphasis: 0ms;
+    --motion-duration-slow: 0ms;
+    --motion-duration-ambient: 0ms;
+    --motion-loop-spin: 0ms;
+    /* Press scale collapses; --interactive-pressed does not. A control
+       still darkens on press with motion removed. */
+    --motion-press-scale: 1;
+    --motion-press-scale-subtle: 1;
   }
   :root[data-game="on"] {
     --moment-intensity-1-scale: 1;

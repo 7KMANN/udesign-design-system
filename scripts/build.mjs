@@ -94,8 +94,30 @@ const RADIUS_VAR = { sm: '--radius-sm', base: '--radius', lg: '--radius-lg', pil
 
 // Motion: general-purpose, available at bare :root regardless of data-game -
 // a loading spinner needs these as much as a gamification moment does.
-const MOTION_DURATION_VAR = { fast: '--motion-duration-fast', emphasis: '--motion-duration-emphasis' };
-const MOTION_EASING_VAR = { fast: '--motion-easing-fast', emphasis: '--motion-easing-emphasis' };
+const MOTION_DURATION_VAR = {
+  instant: '--motion-duration-instant',
+  fast: '--motion-duration-fast',
+  standard: '--motion-duration-standard',
+  emphasis: '--motion-duration-emphasis',
+  slow: '--motion-duration-slow',
+  ambient: '--motion-duration-ambient',
+};
+const MOTION_EASING_VAR = {
+  standard: '--motion-easing-standard',
+  fast: '--motion-easing-fast',
+  enter: '--motion-easing-enter',
+  exit: '--motion-easing-exit',
+  emphasis: '--motion-easing-emphasis',
+};
+// Loop periods collapse under reduced motion the same way durations do.
+const MOTION_LOOP_VAR = { spin: '--motion-loop-spin' };
+// Press magnitude: a motion value, so it lives in this family and collapses to
+// 1 under reduced motion. The pressed *color* is --interactive-pressed and does
+// not collapse - that is what keeps the press legible without motion.
+const MOTION_PRESS_VAR = { scale: '--motion-press-scale', 'scale-subtle': '--motion-press-scale-subtle' };
+// Delay is deliberately absent from the reduced-motion collapse below: it
+// suppresses a flash, it does not move anything.
+const MOTION_DELAY_VAR = { indicator: '--motion-delay-indicator' };
 
 // Moment: gamification-exclusive (ADR-0001). Compiled only under
 // [data-game="on"], never at bare :root - see formatMomentBlock.
@@ -299,6 +321,18 @@ function formatVarsBlock(t, baseTree, selector, { emitPrimitives = false, emitSt
     const token = baseTree.motion.easing[key];
     if (token && token.$value) L.push(`  ${name}: ${cubicBezierCss(token.$value)};`);
   }
+  for (const [key, name] of Object.entries(MOTION_DELAY_VAR)) {
+    const token = baseTree.motion.delay?.[key];
+    if (token && token.$value) L.push(`  ${name}: ${dim(token.$value)};`);
+  }
+  for (const [key, name] of Object.entries(MOTION_LOOP_VAR)) {
+    const token = baseTree.motion.loop?.[key];
+    if (token && token.$value) L.push(`  ${name}: ${dim(token.$value)};`);
+  }
+  for (const [key, name] of Object.entries(MOTION_PRESS_VAR)) {
+    const token = baseTree.motion.press?.[key];
+    if (token && token.$value !== undefined) L.push(`  ${name}: ${token.$value};`);
+  }
 
   if (emitPrimitives) {
     L.push('');
@@ -333,6 +367,10 @@ function formatReducedMotionBlock(motionSelector, gameSelector) {
   L.push('    /* B4: bakes the reduced-motion path into the compiled tokens so any');
   L.push('       consumer - a moment, a loading spinner, anything - gets it for free. */');
   for (const name of Object.values(MOTION_DURATION_VAR)) L.push(`    ${name}: 0ms;`);
+  for (const name of Object.values(MOTION_LOOP_VAR)) L.push(`    ${name}: 0ms;`);
+  L.push('    /* Press scale collapses; --interactive-pressed does not. A control');
+  L.push('       still darkens on press with motion removed. */');
+  for (const name of Object.values(MOTION_PRESS_VAR)) L.push(`    ${name}: 1;`);
   L.push('  }');
   L.push(`  ${gameSelector} {`);
   for (const name of Object.values(MOMENT_VAR)) L.push(`    ${name}: 1;`);
