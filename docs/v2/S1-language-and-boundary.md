@@ -34,6 +34,11 @@ inventory, the ten ranked inversions, the complete migration list). Also
 [`_orchestrator-verification.md`](./_orchestrator-verification.md), which records what S0 re-ran
 itself and the two research line numbers it corrected.
 
+Then read `OPERATION.md` §2 **"The skill fleet"**. It maps a named skill to each moment in this
+segment, and it is part of the operation rather than a suggestion. Start by invoking
+**`superpowers:executing-plans`** - you are executing a written plan with review checkpoints, which
+is that skill's exact case.
+
 None of that is repeated here. This file only tells you how to *run* the segment.
 
 ---
@@ -58,6 +63,18 @@ Six items, about two hours, listed in plan §4 Phase 0. They are correctness bug
 already published. None depends on any decision you will make. **Do them first so that if this
 segment stalls, the repo has still stopped shipping four known defects.**
 
+**Invoke `superpowers:test-driven-development` and work items 0.3-0.5 in that order: test first,
+red, then fix.** The plan's verification standard for all three is "fails before, passes after", so
+if you write the fix first you have no way to prove the test tests anything. This matters more than
+usual here: item 0.5's whole point is that an assertion which *looks* correct passes against a broken
+tree today.
+
+**Invoke `interface-responsiveness` before touching the three defects.** All three are feedback
+defects - a `:focus` where the system requires `:focus-visible`, press styling on a non-focusable
+`<tr>`, a thumb with no press treatment - and that skill is the canonical statement of the rules
+they break. Read the warning about it in `OPERATION.md` §2 first: its motion values are currently
+wrong, and item 1.8 is what fixes them.
+
 Item 0.4 is the only one that needs care: derive the `PRESSED` list instead of hardcoding it. Plan
 §4 explains why the current literal array is the reason two of the three defects were never caught.
 
@@ -65,8 +82,14 @@ Commit Phase 0 on its own. It is a clean, independently reviewable change.
 
 ### Then investigate before you write
 
-You know the decisions. You do not yet know the current text well enough to rewrite it. Two
-subagents, run **both at once**:
+You know the decisions. You do not yet know the current text well enough to rewrite it.
+
+**Invoke `superpowers:dispatching-parallel-agents`, then `superpowers:subagent-driven-development`
+before you spawn anything.** The budget is two concurrent agents and it is a hard limit - usage
+limits killed an agent mid-run during the research pass and interrupted S0 once. Both skills exist
+to stop two well-scoped agents becoming six that each re-derive the same context from cold.
+
+Two subagents, run **both at once**:
 
 **Subagent A: the migration executor.** Investigation B produced a complete migration list; the plan
 cites the items that matter (M1, M2, M3, M10, D-18, and the housekeeping items M14 through M18).
@@ -83,6 +106,16 @@ the em-dash purge. All mechanical, all verifiable, none of it requires guessing 
 
 **You keep 1.1, 1.2, 1.3, 1.4, 1.6, 1.7 and 1.9.** Those are the prose that carries the design
 language and the brand, and they are approval-bound or judgement-bound. Do not delegate them.
+
+**Invoke `writing-for-agents` before you touch `AGENTS.md` (item 1.1).** Its description names
+`AGENTS.md` explicitly, and 1.1 is the single highest-leverage item in the whole plan: the file with
+the strongest automatic agent pickup in the repo, currently spending 4,389 bytes on a CRLF bug. You
+are writing a document whose only job is to make another agent behave predictably, which is exactly
+what that skill is a reference for. Do not improvise it.
+
+**Invoke `domain-modeling` before item 1.8.** The boundary migration is an ownership-and-terminology
+problem before it is a file-move problem, and D-03's rule has to survive contact with facts nobody
+has classified yet.
 
 While the subagents run, read `AGENTS.md`, `DESIGN.md` and `README.md` end to end yourself. You are
 about to rewrite the first and restructure the other two.
@@ -134,6 +167,11 @@ If you are running short of budget, cut items 1.10 and 1.11 before you cut 1.1.
 
 ### Verification is part of done
 
+**Invoke `superpowers:verification-before-completion` before you claim anything is finished.**
+Standing rule 6 and that skill say the same thing: run the command, read the output, then make the
+claim. This segment is unusually easy to *believe* is done, because most of its output is prose that
+looks finished the moment it is written.
+
 Every plan item names its check. The two that matter most:
 
 - **The cold-read check for 1.1.** An agent given only `AGENTS.md` can state the accent budget and
@@ -149,8 +187,20 @@ think.
 
 ### Hand off
 
-Write `docs/v2/S1.5-profile-archetype.md` yourself, the way this file was written for you: it points at
-the plan, `DECISIONS.md` and the research, and restates none of them. Tell S1.5's orchestrator which
+Before you wrap: **invoke `ponytail:ponytail-review` on your own diff.** It hunts one thing, over
+-engineering, and this segment's failure mode is writing more prose than the rules need. Research
+§7.9 item 12 is the standard: countable or it does not survive. Then
+**`superpowers:requesting-code-review`** and **`superpowers:finishing-a-development-branch`** for the
+merge.
+
+Write `docs/v2/S1.5-profile-archetype.md` yourself, the way this file was written for you: it points
+at the plan, `DECISIONS.md` and the research, and restates none of them.
+
+**Carry the skill routing forward.** S1.5 has three that matter and it will not find them on its own:
+**`prototype`** (its central risk is "will these two profiles actually look different", which plan
+brief §7 explicitly permits prototyping to answer), **`frontend-design`** (it is designing the first
+structural components the system has ever had), and **`artifact-design`** (cut line 2 asks Kaleb to
+look at two profiles side by side - publish it, do not describe it). Say so in the handoff. Tell S1.5's orchestrator which
 of its work is delegable and which is not. **Point it at D-19 before D-05**: the token fork was
 superseded on 2026-09-02 and S1.5 is now a structural segment that ships the first layout primitives
 the system has ever had. The one part of D-05 still binding is that motion does not fork.
@@ -171,7 +221,10 @@ Then update `OPERATION.md` §4 and stop.
 - [ ] Both read paths traced end to end, by following them.
 - [ ] `udesign-docs` is tagged `v0.7.0` and `MOTION-SYSTEM.md`'s six values match `dist/tokens.css`.
 - [ ] The false density claims are deleted, not amended. Phase 2 restores true ones.
-- [ ] `S1.5-profile-archetype.md` is written.
+- [ ] `interface-responsiveness` reconciled **and re-installed** to `~/.claude/skills/`, so the
+      copy that actually loads no longer serves the six wrong motion values.
+- [ ] `S1.5-profile-archetype.md` is written, and it names `prototype`, `frontend-design` and
+      `artifact-design` for S1.5.
 - [ ] `OPERATION.md` §4 reflects reality, including anything unfinished and the next concrete action.
 
 ---

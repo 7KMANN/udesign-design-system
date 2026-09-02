@@ -42,6 +42,38 @@ Consequences, and they are not negotiable:
 - **Maximum 2 subagents concurrently** inside a segment. Usage limits bite hard — the research pass already lost an agent to a session limit mid-run.
 - Prefer **two meaty subagents over six small ones.** Every spawn re-reads the same context from cold; that cost is paid per agent, not per task. A subagent should own a coherent body of work it can finish and defend, not a chore.
 
+### The skill fleet
+
+Kaleb runs a large installed skill set. **Segments are expected to use it, and the routing is not
+left to taste** - the mapping below is part of the operation, the same way the concurrency budget is.
+
+`superpowers:using-superpowers` is the standing rule: if there is even a 1% chance a skill applies,
+invoke it before responding, and announce which one. What follows is where the fleet earns its keep
+in *this* operation.
+
+| When | Invoke | Why here specifically |
+|---|---|---|
+| Starting any segment that executes this plan | `superpowers:executing-plans` | Every segment after S0 executes a written plan with review checkpoints. That is the skill's exact case. |
+| Before spawning the segment's subagents | `superpowers:dispatching-parallel-agents`, then `superpowers:subagent-driven-development` | The budget is two concurrent agents on independent work. Both skills exist to stop that turning into six agents re-deriving the same context. |
+| Writing or editing `AGENTS.md`, `CLAUDE.md`, or a skill | **`writing-for-agents`** | Its description names `AGENTS.md` explicitly. S1's single highest-leverage item is an `AGENTS.md` rewrite. |
+| Fixing or auditing anything interactive | **`interface-responsiveness`** | Installed locally, so it loads by name. It is the canonical statement of the feedback rules this operation is trying to transmit. Read the warning below before trusting its motion values. |
+| Any defect fix that ships with a test | `superpowers:test-driven-development` | The plan's verification standard is literally "fails before, passes after". TDD makes that a discipline rather than a hope. |
+| Deciding what a fact is called and who owns it | `domain-modeling` | The boundary migration is an ownership-and-terminology problem before it is a file-move problem. |
+| A design question paper cannot answer | `prototype` | Plan brief §7 permits prototyping exactly here. S1.5's whole risk is "will these two profiles actually look different", which is not answerable on paper. |
+| Showing Kaleb something to judge | `artifact-design` | Cut line 2 asks him to look at two profiles side by side. A published page beats a description. |
+| Before claiming a segment is done | `superpowers:verification-before-completion` | Standing rule 6. Evidence before assertions. |
+| Wrapping a segment's branch | `superpowers:finishing-a-development-branch`, `superpowers:requesting-code-review` | Each segment merges to `master`. |
+| When a build satisfies you a little too much | `ponytail:ponytail-review` | Aimed only at over-engineering. S2's named risk is scope inflation; this is the check for it. |
+| When something breaks and the cause is not obvious | `superpowers:systematic-debugging` | Before proposing fixes, not after three of them failed. |
+
+**A warning about `interface-responsiveness`, found 2026-09-02.** It is installed at
+`~/.claude/skills/interface-responsiveness/` as a **full copy**, not a symlink, taken 2026-08-20. It
+is byte-identical to `udesign-docs` today (md5 verified), **which means it carries the same six
+drifted motion values** (Investigation B, I1). So the skill that actually loads at runtime is serving
+wrong easing curves right now, and **reconciling the values in `udesign-docs` will not fix the
+installed copy.** That is a third home for one fact, one level deeper than the inventory found.
+S1 must reconcile the source and then re-install, and say so in its ledger entry.
+
 ### Resumption protocol
 
 Non-optional. Usage limits will interrupt this operation at least once.
@@ -126,6 +158,7 @@ Append-only. Newest at the bottom. One line per event: date, who, what happened,
 | 2026-09-02 | **The finding underneath it:** there is **no layout or page-shell primitive in the registry at all** - 27 components, zero structural. Composition means whatever the consumer invents, which is how three catalogs diverged from one template. The fork had only ever changed values; nobody forked the structure. |
 | 2026-09-02 | **D-19 supersedes D-05.** Archetype fork replaces the token fork: type scale shape, hierarchy mechanism, layout archetype, numeric treatment. 6-8 days rather than 8-9. Motion still does not fork. The `--space-*` and `--control-height` forks are dropped, and with them the `(pointer: fine)` guard and migration notes MN-2/MN-3. |
 | 2026-09-02 | **D-20:** `PageCanvas` and `AppShell` ship for both consumption models. Registry 27 to 29 components. Deliberate, argued exception to the plan's scope-inflation warning. |
+| 2026-09-02 | **Skill routing added** (§2 "The skill fleet", standing rule 9). Segments now have a named skill per moment rather than being left to taste. **Finding while checking:** `interface-responsiveness` is installed at `~/.claude/skills/` as a full copy, not a symlink, and is byte-identical to `udesign-docs` - so it carries the same six drifted motion values, and reconciling the source will not fix the copy that actually loads. A third home for one fact. S1 must reconcile then re-install. |
 | 2026-09-02 | Plan Phase 2 rewritten, plus its scoring, risks, skip list and migration notes. **Phase 2 now scores yes/yes against P1 and P2 and would have stopped the catalog incident**; in its D-05 form it scored partial/no. S1 handoff updated. Committed. **Next concrete action unchanged: merge S0, then paste `S1-language-and-boundary.md` into a fresh session.** |
 
 ### S1 — Language & Boundary
@@ -176,3 +209,6 @@ Language question is settled: Node, shipped as a `bin`, run with `npx`. Both con
 6. **Verification is part of done.** A command that fails before and passes after, or an observation someone can make. This repo has a strong testing culture already — match it.
 7. **Do not fix consumers.** GlobalVision and udesignpages are evidence and test targets, not work. Record drift as a migration note.
 8. **Update §4 before you stop.** Including when you stop because you hit a limit.
+9. **Use the fleet.** §2 maps skills to the moments they belong to. A segment that rewrites
+   `AGENTS.md` without `writing-for-agents`, or fixes an interaction defect without
+   `interface-responsiveness`, is doing avoidable work from scratch.

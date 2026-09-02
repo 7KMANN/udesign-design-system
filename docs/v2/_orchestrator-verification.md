@@ -139,3 +139,33 @@ for every token family below except Motion." GlobalVision installs v1.5.0.
 **B/tags - confirmed.** `git tag` in `udesign-docs` returns `v0.1.0 v0.1.1 v0.2.0 v0.3.0 v0.4.0
 v0.5.0 v0.6.0`. `WEBDEV/CLAUDE.md` states the range runs to `v0.4.0`. The routing canon is two
 tags stale about its own canon.
+
+## Late finding, 2026-09-02: the skill has a third home, and it is the one that loads
+
+`interface-responsiveness` is installed at `~/.claude/skills/interface-responsiveness/` as a **full
+directory copy, not a symlink**, dated 2026-08-20. All seven reference files are present.
+
+`md5sum` of the installed `references/MOTION-SYSTEM.md` and the `udesign-docs` original:
+
+    ece8deb098c95fd713876412268b7812  ~/.claude/skills/.../MOTION-SYSTEM.md
+    ece8deb098c95fd713876412268b7812  udesign-docs/skills/.../MOTION-SYSTEM.md
+
+Byte-identical. **Which means the installed copy carries the same six drifted motion values** (I1).
+Every agent that loads this skill today is being served easing curves that do not match
+`dist/tokens.css`.
+
+Three consequences:
+
+1. **The fact has three homes, not two.** The inventory found `udesign-docs` and the design system.
+   The installed copy is a third, it is invisible to both repos, and it is the one with runtime
+   authority - the skill loads by name from the user's skill set, not from either working tree.
+2. **Reconciling `udesign-docs` will not fix it.** A copy taken by hand does not follow its source.
+   S1 must reconcile the source **and re-install**, then say so in the ledger.
+3. **It sharpens research §6 item 4's argument for leaving the skill in `udesign-docs`.** That
+   argument was "the skill loads by name from the user's installed skill set regardless of which
+   repo holds the canonical copy". True, and it cuts the other way too: because it loads from the
+   installed set, *neither* repo can keep it correct. The split in Δ-04 is still right, and it now
+   carries a re-install step.
+
+This is the same failure class as `udesignpages/tools/sync-canon.mjs` was written to prevent (F5),
+occurring in the one place nobody looked: the agent's own skill directory.

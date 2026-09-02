@@ -416,6 +416,18 @@ It states `udesign-docs` is tagged `v0.1.0`…`v0.4.0`. `git tag` returns throug
 Verified by the orchestrator. The routing canon is two tags stale about its own canon. One-line
 fix, no approval needed - it is a factual correction, not a change of position.
 
+### Δ-06 · The installed skill copy must be re-installed, not just reconciled
+
+Found 2026-09-02. `interface-responsiveness` is installed at `~/.claude/skills/` as a **full copy,
+not a symlink**, byte-identical to `udesign-docs` (md5 verified) and therefore carrying the same six
+drifted motion values as I1. It is the copy with runtime authority, since a skill loads by name from
+the installed set rather than from either working tree.
+
+Follows from Δ-04 and M1 rather than being a new choice: reconciling the source is already decided,
+and a hand-taken copy does not follow its source. **S1's M1 gains a re-install step**, and the done
+-state gains a check for it. Recorded because an agent reconciling `udesign-docs` would reasonably
+believe the job finished and it would not have.
+
 ---
 
 ## Nothing is left open
