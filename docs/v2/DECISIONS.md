@@ -1,0 +1,424 @@
+# UDesign v2.0.0 - decision record
+
+Every question put to Kaleb, his answer, and its **provenance tag**.
+
+| Tag | Meaning |
+|---|---|
+| `CANON` | Already written in the canon. Cite the line. No approval was needed or sought. |
+| `APPROVED` | Inferred, extrapolated or invented, and Kaleb said yes on the date shown. |
+| `REJECTED` | Put to Kaleb and declined. Recorded because the rejection is itself load-bearing. |
+| `NEEDS-APPROVAL` | Still open. S1-S4 may not build on it as settled. |
+
+Provenance governs approval, not topic - plan brief §4. A statement without a tag in this file is
+not something a later segment may treat as decided.
+
+---
+
+## Round 1 - 2026-09-01
+
+### D-01 · Profile differentiation · `APPROVED` 2026-09-01
+
+**Question:** how far should v2.0.0 close the gap between the profiles' intended difference and
+the shipped artifact?
+
+**Answer: differentiate the primitives, not only the composition.** Kaleb chose the expensive
+option over the recommended one. Composition-only was declined as insufficient.
+
+**Evidence this decision was taken against:** `docs/v2/_investigation-A-profiles.md`.
+Cost 7-13 eng-days, ~25-40 files, against 4-6 days for composition-only.
+
+**Two corrections that survive into the plan regardless of scope, both re-verified by the
+orchestrator** (`docs/v2/_orchestrator-verification.md`):
+- `tests/token-contract.test.mjs:168` is scoped to `--motion-*` and would **not** fire on a
+  density fork. Plan brief §3.2's stated constraint is true only for a motion fork.
+- `tests/token-contract.test.mjs:129-130` asserts `--control-height: 44px` file-wide rather than
+  per profile block, so a functional override to 36px passes today. **A live hole, independent of
+  this decision.** It must be closed before any primitive fork, or the touch-target contract dies
+  silently in one profile.
+- `scripts/build.mjs:289-296` gates `--space-*` behind `emitPrimitives`, on for brand and omitted
+  for functional (`:429`, `:431`). Density is currently **structurally unemittable**. Fixing this
+  gate is a precondition of D-01, not an optional cleanup.
+
+**Which axes fork is not settled by this answer.** See `NEEDS-APPROVAL: fork axes`, round 2.
+
+### D-02 · The visual bans stay absolute · `APPROVED` 2026-09-01
+
+**Question:** are the uppercase-mono-label and cold-slate-neutral bans absolute, or absolute only
+in the presentation profile?
+
+**Answer: both absolute, in both profiles.** `DESIGN.md:223`, `DESIGN.md:359` and `DESIGN.md:361`
+stand as written. No profile-conditional exemption.
+
+**Consequence, and it is the constraint that shapes D-01's implementation.** Investigation A
+measured that the brutalist prototype's look is carried mainly by 50 `font-mono`, 8 `uppercase`
+and 4 `tracking-wider` in one file, plus cold near-black greys. All of that is now permanently
+out of scope. **The profiles therefore cannot be differentiated through typographic treatment or
+palette temperature.** Everything D-01 buys must come from density, spacing rhythm, control
+dimensions, border weight, radius, shadow and - if approved - motion.
+
+This pairing is coherent, not contradictory: dense, tight, sharp and hard-edged is reachable
+through the space scale and control geometry without touching a banned technique.
+
+### D-03 · The boundary rule · `APPROVED` 2026-09-01
+
+> **A fact belongs to `udesign-design-system` if a reader must know which version of the design
+> system is installed in order to apply it correctly; otherwise it belongs to `udesign-docs`.**
+
+Chosen over topic-based ownership and over "fix the inversions, keep the split". It is the only
+rule tested that predicts both live failures - the six-way motion drift and the v1.3.1-vs-v1.5.0
+stale pin. Full argument, ten ranked inversions, test answers and migration list:
+`docs/v2/_investigation-B-boundary.md`.
+
+**Corollaries approved with the rule:**
+- The losing side keeps a pointer and a one-line applicability statement, never a restated
+  paragraph. Already the org convention - `udesign-docs/AGENTS.md:76-87`.
+- **Enforcement location is not ownership.** The package already tests WCAG contrast, a W3C-owned
+  number.
+- **`interface-responsiveness` is split, not moved.** `MOTION-SYSTEM.md` and `ENFORCEMENT.md`'s
+  rule list come to the design system; `SKILL.md` and the other five references stay in
+  `udesign-docs`. This follows from the rule rather than being a separate choice, and it preserves
+  `globalvision/AGENTS.md:14` - the one routing instruction in the stack that was ever followed.
+- The 100ms feedback floor stays in `udesign-docs`. Perception research outlives any release.
+
+**Hard dependency, stated by Investigation B and accepted here:** the rule passes the
+two-entry-point check **only if both `AGENTS.md` rewrites and the `package.json` `files` change
+ship with the migration.** Deferring them as "cheap text edits for later" leaves content moved and
+no route built to where it went, which is worse than the status quo. S1 may not split them out.
+
+### D-04 · `udesignpages` is not a source of truth · `REJECTED` 2026-09-01
+
+**Question:** ratify `udesignpages/public/design-system/README.md`'s visual-conviction block as
+canon? It claims (`:18`) to be "Pulled from real UDesign sources, not invented" and is the only
+substantial written statement of UDesign's *visual* conviction anywhere in the stack.
+
+**Answer, verbatim:** *"noo this is stale even if some things are true udesign pages doesnt really
+have business truth it was created by lower capable agents with more hallucination"*
+
+**This is the most consequential answer of round 1 and it invalidates a planned foundation.**
+Consequences, all binding on S1:
+
+1. **Nothing in `udesignpages` may be cited as canon.** Not the visual-conviction block, not
+   `patterns.html`, not the dated plan documents Investigation B extracted brand rules from
+   (M11, M12 in its migration list are **struck**, not deferred). The block's own sourcing claim
+   is not evidence; that is precisely the failure mode being described.
+2. **D5's visual-conviction body has no sourced foundation as of this decision.** It cannot be
+   written by citing that block. Where it comes from instead is `NEEDS-APPROVAL: visual
+   conviction source`, round 2.
+3. **It independently strengthens D1.** Investigation B found `patterns.html:38-49` - labelled
+   "COPY these blocks into each client page" - ships a `.ud-btn` with **no `:active` state at
+   all**, violating `udesign-contract.md:231` ban 16 and `DESIGN.md:318`. That artifact is now
+   confirmed as low-trust output rather than a de facto standard, so the CSS component layer
+   supersedes it outright with no reconciliation owed to it.
+4. **A general rule falls out, and it should be written down in S1:** provenance is not
+   established by a document asserting its own provenance. Agent-authored content in a consumer
+   repo is evidence of what an agent did, never of what UDesign wants.
+
+**Reading of the wider stack this forces:** the brand-voice extraction from
+`udesign-docs/business/udesign-ground-truth.md` §5 is **unaffected** - it is edit-restricted canon
+under `WEBDEV/CLAUDE.md` and was never sourced from `udesignpages`. That extraction stands.
+
+---
+
+## Round 2 - 2026-09-01
+
+### D-05 · Which axes fork · `APPROVED` 2026-09-01
+
+**Space scale and control geometry fork. Motion does not.**
+
+Forks per profile: `--space-*`, `--control-height`, border weight. ~8-9 eng-days, ~25-30 files.
+Motion stays byte-identical, so `DESIGN.md:278` and `tests/token-contract.test.mjs:168` survive
+untouched and no replacement invariant is needed. The full fork (motion included, 11-13 days, the
+guarantee replaced by four numeric bounds) was offered and declined.
+
+**Three preconditions this creates. All of them are S1.5's work.**
+
+1. `scripts/build.mjs:429/431` - the `emitPrimitives` gate passes `true` for the brand block and
+   omits it for functional, so `--space-*` is currently **structurally unemittable** in the
+   functional profile. Nothing else in D-05 can happen until that gate opens.
+2. `tests/token-contract.test.mjs:129-130` - the file-wide `assert.match` for `--control-height`
+   and `--touch-target-min` becomes a per-block assertion. Until it does, the fork silently voids
+   the touch-target contract in one profile. **This hole exists today, independent of D-05.**
+3. **`--touch-target-min` stays 44px in both profiles.** A sub-44px `--control-height` in
+   `operations` is legal only behind a `(pointer: fine)` guard. That guard is a new rule the
+   system does not have, it is part of D-05's cost, and every consumer must honour it. Accepted
+   knowingly - it was stated in the option Kaleb chose.
+
+### D-06 · Visual-conviction sources, in precedence order · `APPROVED` 2026-09-01
+
+Kaleb, verbatim: *"spec but mostly ground truth plus dictate"*.
+
+1. `udesign-docs/business/udesign-ground-truth.md` - **primary.**
+2. Kaleb's dictated words, recorded in this file with their date - see D-11.
+3. `docs/superpowers/specs/2026-07-14-dual-design-system-spec.md` and `explorations/index.html` -
+   **supporting only.** Usable, subordinate to the two above, never the sole basis for a claim.
+
+`udesignpages` is excluded entirely, per D-04.
+
+### D-07 · Profile names · `APPROVED` 2026-09-01
+
+**`brand` → `presentation`. `functional` → `operations`.**
+
+Both trace to existing text - `DESIGN.md:125` "presentation-led", `DESIGN.md:108` "Operational
+tools", `spec:18` "operational ERPs" - so the names themselves are `CANON`; the choice between
+candidates was Kaleb's.
+
+The name carries the decision rule: **is this presented to someone, or operated by someone?**
+That is the ambiguous-screen tiebreaker research §3.3 found missing, delivered in the identifier
+rather than in a paragraph. Neither half reads to a model as the default, which was the documented
+defect in `brand` (research §5.3).
+
+**Breaking change.** `data-design="brand"` / `"functional"` are the shipped selectors and
+GlobalVision pins them. Migration path: keep the old strings as selector aliases for one release
+(one extra string per block at `build.mjs:429-438`), and carry a migration note.
+
+### D-08 · Pin-once, promoted system-wide · `APPROVED` 2026-09-01
+
+One profile per document, declared once at the root, never switched at runtime, never nested.
+Promoted from the GlobalVision-scoped ratification at `udesign-contract.md:25`.
+
+Consequent edits: `DESIGN.md:133` narrows to theme-only nesting; `README.md:72`'s runtime
+switching is restricted to **review and documentation surfaces only** - the showcase legitimately
+needs to display both, and it already works this way, so nothing is rebuilt.
+
+The carve-out is a named boundary, not a judgement call. It matters more under D-05 than it did
+before: once density and control height differ, a nested profile produces visibly broken layout
+rather than merely inconsistent styling.
+
+---
+
+## Round 3 - 2026-09-01
+
+### D-09 · Accent budget, per profile · `APPROVED` 2026-09-01
+
+**Base rule - no approval needed.** Grounded in the observed catalog incident, research §7.7 A:
+one accent-filled control per screen, not per card, not per section; a repeated element never
+carries the accent.
+
+**Per-profile extension - `APPROVED`, inferred not sourced.** `presentation` may spend one
+accent-filled control per viewport. `operations` additionally forbids the accent anywhere in
+chrome, navigation, or any repeated block.
+
+**Approved wording for the `operations` clause (round 5, after the D-11 correction):**
+
+> In `operations` the accent never appears in chrome, navigation, or any repeated block.
+> **It marks the one action that commits work.**
+
+The round-3 alternative - "a screen may legitimately have no accent-filled control at all" - was
+put back to Kaleb in round 5 and **not selected.** It reads as an argument for less, which is the
+reading D-11 corrects. S1 uses the positive-purpose form above and does not reintroduce the
+scarcity phrasing.
+
+### D-10 · Refusals: consolidate, plus the AI-tell rule · `APPROVED` 2026-09-01
+
+The five ban lists across three repos (19 / 12 / 5 / 5 / 4 items, no stated precedence, only one
+numbered) merge into a single numbered superset in `DESIGN.md`. See D-17 for how numbering works.
+
+**Plus, approved as inference:** `udesign-ground-truth.md:144-147`'s *"Never: AI clichés /
+AI-sounding phrasing"* extends from copy into the visual domain, naming the visual tells that read
+as machine-generated - generic sans + slate + gradient, decorative gradients manufacturing
+hierarchy, glassmorphism, uniform emphasis everywhere. The verbal half is `CANON` at `:144-147`;
+the extension to visuals is `APPROVED`.
+
+### D-11 · The positive conviction, and Kaleb's dictated correction · `APPROVED` 2026-09-01
+
+**Approved statement: "Considered, not decorated."** Premium is shown through restraint and
+precision, never through ornament. Nothing on the screen is there to look impressive; everything
+is there because it is doing a job.
+
+Translated from `udesign-ground-truth.md:139-141` ("does not position itself as the cheapest
+option - prioritizes getting the garment, decoration method, and finished result right") and
+`:142` ("premium, honest, direct, transparent - results over promises"). **The translation is
+`APPROVED`, not `CANON`.** The sources state verbal tone; reading them as a visual position is
+inference that Kaleb signed.
+
+**Approved refusals - two of the three offered:**
+- **Never cheap, generic, or template-made.** Never looks like it came out of a template someone
+  else also bought. Pairs with `:139-141` - the visual form of the one business claim UDesign
+  already refuses to make.
+- **Never provisional, unfinished, or uncertain.** Nothing floating, nothing thin, no dead
+  controls, no state that leaves you unsure the click registered. This makes the 100ms floor and
+  the press rules read as consequences of a brand position rather than engineering hygiene.
+
+**Explicitly rejected, with Kaleb's reason, verbatim:**
+
+> *"1 and 3. Operations profile is known to be busy we vallue simplicity over minimalism so this
+> is ok."*
+
+"Never busy, loud, competing for attention" is **not** a UDesign refusal. The conviction is:
+
+> ### UDesign values simplicity over minimalism.
+
+Dictated, first-hand, and binding on S1. Consequences:
+
+1. **Density is not a fault in `operations`.** A busy operational screen is correct. This is the
+   conviction that *justifies* D-05's fork rather than merely permitting it - the fork exists to
+   let a dense screen be dense properly, not to make one profile quieter than the other.
+2. **"Simple" means legible and direct, not sparse.** Any v2 prose that treats emptiness,
+   whitespace, or element count as a virtue contradicts an approved conviction. S1 should read
+   its own draft against this sentence before shipping it.
+3. This correction is why D-09's wording was re-asked in round 5. **Emphasis scarcity and content
+   density are different axes.** Busy does not imply many accents. S1 must keep them separate in
+   the prose, because conflating them is exactly the error the round-3 wording made.
+
+### D-12 · Voice-in-the-UI · `CANON` - no approval needed
+
+`udesign-ground-truth.md:142-147` governs interface copy verbatim. Premium, honest, direct,
+transparent, results over promises; never corporate jargon ("B2B", "MOQ", "digitizing raster
+matrix"); never AI clichés or AI-sounding phrasing including em-dashes; never false claims.
+
+**The UI-specific extension was declined.** Errors saying what to do next, empty states saying
+what to do, never blaming the user, labels naming the action - all offered, all **not selected**.
+S1 may not write those rules. They are conventional interface-writing advice, not UDesign's
+stated position, and the distinction is the whole point of the approval protocol.
+
+Mechanical consequence worth taking: the em-dash ban becomes checkable across component source and
+every instruction file, not only `DESIGN.md`. Today `scripts/lint-design.mjs:58` scans `DESIGN.md`
+alone, which is why `AGENTS.md` contains nine em-dashes while banning them (research §1.8).
+
+---
+
+## Round 4 - 2026-09-01
+
+### D-13 · The accent is named by role, never by colour · `APPROVED` 2026-09-01
+
+In docs, code, class names and interface copy the accent is called **the accent**. Not "gold".
+
+This recovers a rule already followed universally - there is no colour name anywhere in the
+semantic token layer - that had only ever been *written down* in `udesignpages`, which D-04
+excludes. The practice is `CANON`; the written rule is `APPROVED`. It is machine-checkable, so it
+becomes a checker rule rather than an adjective.
+
+### D-14 · Segmentation correction - S1.5 · `APPROVED` 2026-09-01
+
+D-05 has no owner anywhere in `OPERATION.md` §3. **A new segment is inserted: S1.5 - Profile
+Fork**, after S1 and before S2. It owns the token overrides, the `emitPrimitives` gate, the
+per-block contract tests, and closing the 44px hole.
+
+Rationale accepted: one coherent job with a hard verification (the functional block emits its own
+space scale; a 36px override fails the presentation assertion and passes its own); it is S2's hard
+dependency, and building the CSS layer against geometry still in motion is how the two drift apart
+in week one; and it is a natural cut line - stop after S1.5 and the profiles are genuinely
+different with no new CSS surface to maintain.
+
+**Six segments: S0, S1, S1.5, S2, S3, S4.**
+
+### D-15 · `udesign-ground-truth.md` gains a visual-tone line · `APPROVED` 2026-09-01
+
+The **only** edit to the edit-restricted file in this entire operation. Approved verbatim in
+round 5:
+
+> **Visual tone:** considered, not decorated. Premium shows through restraint and precision,
+> never ornament. Never cheap or template-made, never provisional or unfinished. Simplicity over
+> minimalism: a dense working screen is correct.
+
+The short two-sentence variant was offered and **not selected.** The final clause is the load
+-bearing one: without it "restraint" gets read as "use less" and the `operations` profile is
+quietly minimalised by the next agent that touches it.
+
+Correct placement under D-03: a conviction that outlives any design release belongs in the docs,
+not the package.
+
+### D-16 · "Fastest in town" stays dropped · `REJECTED` 2026-09-01
+
+`udesign-website/docs/seo/SEO_GROUND_TRUTH.md:85` lists "fastest in town" among the false claims
+UDesign never makes; the distillation at `udesign-ground-truth.md:144-147` kept the other examples
+and dropped that one. Restoring it was offered and **not selected.** It stays dropped.
+
+Recorded because the *rejection* is load-bearing: a later agent will re-discover this gap and
+treat it as an oversight to fix. It is not. It was put to Kaleb and declined.
+
+---
+
+## Round 5 - 2026-09-01
+
+### D-17 · Ban numbering: append, never renumber · `APPROVED` 2026-09-01
+
+`udesign-contract.md`'s existing **19 bans keep their numbers exactly.** `DESIGN.md`'s 12 and the
+three shorter lists merge in as 20, 21, 22… wherever they are not already duplicates.
+
+Nothing citing "ban 16" ever breaks. No mapping table, no migration note for this item, and the
+merged list carries no renumbering risk. Both alternatives - logical regrouping with an old→new
+mapping, and stable IDs like `FEEDBACK-01` - were offered and **not selected.** Both invalidate
+every existing citation to buy tidiness.
+
+**Consequence for S1:** the merged list will not be in a tidy thematic order. That is the accepted
+cost. Group by theme with sub-headings if useful, but the numbers stay where they are.
+
+### D-18 · GlobalVision detail: strip and leave a pointer · `APPROVED` 2026-09-01
+
+`udesign-contract.md:249-317` - roughly 70 lines of GlobalVision implementation detail (lint rule
+IDs, `e2e/helpers.ts`, BlockNote, B-18) inside an org-wide standard, forbidden by
+`udesign-docs/AGENTS.md:51-53` and sent downward by D-03.
+
+**Removed. One line replaces it, saying GlobalVision's implementation detail lives in
+GlobalVision.** The content is preserved in `udesign-docs` git history and in the `v0.6.0` tag, so
+nothing is lost and GlobalVision can lift it whenever it chooses.
+
+Both alternatives declined: marking it "scheduled for removal in v0.8.0" ends the operation with a
+documented violation of its own new rule still shipping, which is how the current five ban lists
+came to exist; and writing GlobalVision's replacement copy directly contradicts the plan brief §5
+scope line, *"its not your job to fix them."*
+
+**Accepted cost, stated plainly:** GlobalVision's contract has a hole until someone there acts,
+and that someone is not this operation. It goes in the migration notes.
+
+---
+
+## Derived, not asked
+
+Decisions that follow necessarily from an approved rule. Not put to Kaleb, because the plan brief
+§4 forbids asking a question whose answer was already derivable.
+
+### Δ-01 · The gamification skill's "Level 3" is stale and gets corrected
+
+`udesign-docs/skills/gamified-product-experience/SKILL.md:96` publishes "Level 3: rare major
+achievement". `udesign-contract.md:155` and `DESIGN.md:276` both state Intensity 3 does not exist
+and is not reachable through any published token.
+
+Under **D-03**, a statement about what published tokens can produce is version-dependent, so the
+design system owns it: `DESIGN.md:276` wins and the skill's Level 3 is corrected. Investigation B
+raised this as a question for Kaleb; the boundary rule he approved answers it.
+
+### Δ-02 · `udesignpages` migration items M11 and M12 are struck
+
+Investigation B proposed promoting the `udesignpages` visual-conviction block (M11) and the brand
+rules embedded in its dated plan documents (M12) into canon. **D-04 excludes that repo as a
+source.** Both are struck, not deferred. S1 must not resurrect them.
+
+### Δ-03 · `patterns.html` is superseded outright
+
+`udesignpages/public/design-system/patterns.html:38-49`, labelled *"COPY these blocks into each
+client page"*, ships a `.ud-btn` with **no `:active` state at all** - violating
+`udesign-contract.md:231` ban 16 and `DESIGN.md:318`.
+
+Under D-04 it is low-trust agent output, not a de facto standard. The CSS component layer (D1)
+replaces it with **nothing owed to it in reconciliation.** Record as a migration note for
+`udesignpages`; do not fix that repo (plan brief §5).
+
+### Δ-04 · `interface-responsiveness` is split, not moved
+
+Follows from D-03 and was stated in the option Kaleb approved. `MOTION-SYSTEM.md` and
+`ENFORCEMENT.md`'s rule list (R1-R7) come to the design system; `SKILL.md` and the other five
+references stay in `udesign-docs`. This preserves `globalvision/AGENTS.md:14` - the one routing
+instruction in the whole stack that was ever actually followed.
+
+### Δ-05 · `WEBDEV/CLAUDE.md`'s tag range is wrong and gets corrected
+
+It states `udesign-docs` is tagged `v0.1.0`…`v0.4.0`. `git tag` returns through **`v0.6.0`**.
+Verified by the orchestrator. The routing canon is two tags stale about its own canon. One-line
+fix, no approval needed - it is a factual correction, not a change of position.
+
+---
+
+## Nothing is left open
+
+Every question raised by either investigation, and every question the plan brief §4 flagged as
+approval-bound, has an answer above. No item in the plan carries `NEEDS-APPROVAL`.
+
+The two items closest to the line, and why they are settled rather than soft:
+
+- **D-11's positive conviction** is an agent's translation of verbal tone into a visual position.
+  It is tagged `APPROVED`, not `CANON`, and D-11 says so explicitly. S1 must reproduce that tag
+  when it cites the sentence - the distinction is the point.
+- **D-09's per-profile extension** goes beyond what the incident grounds. Base rule `CANON`-by
+  -incident, extension `APPROVED`. S1 must not blur the two into one unattributed paragraph.
