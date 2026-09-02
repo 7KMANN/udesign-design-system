@@ -67,7 +67,7 @@ Sequential. Each one's output is the next one's input.
 |---|---|---|---|
 | **S0** | Decide & Plan | The boundary rule, the profile decision, approved brand decisions, and the implementation plan | — |
 | **S1** | Language & Boundary | All prose, both repos: `DESIGN.md`, `AGENTS.md`, composition rules, personality, docs migration | S0 |
-| **S1.5** | Profile Fork | The space-scale and control-geometry fork, the `emitPrimitives` gate, per-block contract tests | S1 |
+| **S1.5** | Profile Archetype | The type-scale-shape fork, the hierarchy mechanism, the two layout shells, numeric treatment | S1 |
 | **S2** | CSS Component Layer | Governed component classes for static HTML, in lockstep with the React registry | S1.5 |
 | **S3** | Enforcement | The portable checker. Defect fixes and in-repo tests moved to S1 Phase 0 | S2 |
 | **S4** | Reference & Release | Reference screens per profile, migration notes, v2.0.0 | S1-S3 |
@@ -76,7 +76,7 @@ Sequential. Each one's output is the next one's input.
 
 - **S0 is alone** because everything downstream depends on two unanswered questions, and both need Kaleb.
 - **S1 is one segment across both repos** on purpose. The boundary is the hardest call in the operation, and applying it in two separate sessions is how a boundary drifts on the day it is drawn. One mind applies it to both sides.
-- **S1.5 was added by S0** (decision D-14). D-05 forked the space scale and control geometry, and no
+- **S1.5 was added by S0** (decision D-14) and rescoped by D-19. It forks the profile *archetype*, and no
   segment owned that work. It is one coherent job with a hard verification, it is S2's dependency
   (building component classes against geometry still in motion is how the two drift apart in week
   one), and it is a natural cut line: stop after it and the profiles are genuinely different with
@@ -121,6 +121,12 @@ Append-only. Newest at the bottom. One line per event: date, who, what happened,
 | 2026-09-01 | **Plan written** to [`docs/superpowers/plans/2026-08-29-v2-design-language.md`](../superpowers/plans/2026-08-29-v2-design-language.md). Six phases, five cut lines, ten named skips, eight migration notes, honest P1/P2 scoring per phase including Phase 2 scoring worst. **No item carries `NEEDS-APPROVAL`.** |
 | 2026-09-01 | **S1 handoff written.** [`S1-language-and-boundary.md`](./S1-language-and-boundary.md). |
 | 2026-09-01 | **S0 done.** All seven done-state boxes met. Branch `v2/s0-decide-and-plan` ready to merge to `master`. **Next concrete action: merge S0, then paste `S1-language-and-boundary.md` into a fresh session.** |
+| 2026-09-02 | **Round 6. Kaleb reopened D-01/D-05 after reading the plan**, on the grounds that the constraints produced "2 ok profiles rather than 2 distinguishable great looking profiles". He reaffirmed D-02: the bans stay system-wide. |
+| 2026-09-02 | **The measurement that settled it:** the two profiles share the same type scale *shape* - every step within 5% of its counterpart, `h2` identical at 1.60x. Operations is presentation x0.875. With 21 of 30 identical light colour roles and an identical body typeface, they are **one design at two zoom levels**, and D-05 would have deepened that. Verified independently. |
+| 2026-09-02 | **The finding underneath it:** there is **no layout or page-shell primitive in the registry at all** - 27 components, zero structural. Composition means whatever the consumer invents, which is how three catalogs diverged from one template. The fork had only ever changed values; nobody forked the structure. |
+| 2026-09-02 | **D-19 supersedes D-05.** Archetype fork replaces the token fork: type scale shape, hierarchy mechanism, layout archetype, numeric treatment. 6-8 days rather than 8-9. Motion still does not fork. The `--space-*` and `--control-height` forks are dropped, and with them the `(pointer: fine)` guard and migration notes MN-2/MN-3. |
+| 2026-09-02 | **D-20:** `PageCanvas` and `AppShell` ship for both consumption models. Registry 27 to 29 components. Deliberate, argued exception to the plan's scope-inflation warning. |
+| 2026-09-02 | Plan Phase 2 rewritten, plus its scoring, risks, skip list and migration notes. **Phase 2 now scores yes/yes against P1 and P2 and would have stopped the catalog incident**; in its D-05 form it scored partial/no. S1 handoff updated. Committed. **Next concrete action unchanged: merge S0, then paste `S1-language-and-boundary.md` into a fresh session.** |
 
 ### S1 — Language & Boundary
 **Status:** ready to start
@@ -134,12 +140,15 @@ hours of correctness fixes that depend on nothing. Leaving it in S3 means the re
 defects for three more segments. This is a proposal from S0, not a decision Kaleb was asked to make;
 S1 may execute it as written or push it back to S3, but should say which.
 
-### S1.5 — Profile Fork
+### S1.5 — Profile Archetype
 **Status:** blocked on S1
-**Owns:** plan Phase 2. Decision D-05, and its three preconditions.
-**Warning for whoever writes this handoff:** item 2.1 (opening the `emitPrimitives` gate at
-`scripts/build.mjs:429/431`) is a build-system change that must land before any token override
-exists, and there is a latent bug at `build.mjs:471` to fix in the same pass.
+**Owns:** plan Phase 2. Decisions **D-19** (which supersedes D-05) and **D-20**.
+**Read D-19 before D-05.** The space-scale and control-height token fork was dropped on 2026-09-02
+after a measurement showed the two profiles share the same type scale shape, so forking density on
+the same curve would have produced the same design at 80% zoom. The fork is now structural: type
+scale shape, hierarchy mechanism, two layout shells (`PageCanvas`, `AppShell`), numeric treatment.
+**This segment ships the first structural components the system has ever had** - registry goes 27
+to 29 components. The `(pointer: fine)` accessibility guard is gone with the token fork.
 
 ### S2 — CSS Component Layer
 **Status:** blocked on S1.5

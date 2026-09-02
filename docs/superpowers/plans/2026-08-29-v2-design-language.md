@@ -2,6 +2,7 @@
 
 **Date:** 2026-08-29 (written 2026-09-01)
 **Status:** approved to execute. Nothing in this plan carries `NEEDS-APPROVAL`.
+**Revised 2026-09-02:** Phase 2 was rewritten after D-19 replaced D-05. See `DECISIONS.md` round 6.
 **Evidence:** [`docs/research/2026-08-27-design-language-transmission.md`](../../research/2026-08-27-design-language-transmission.md)
 **Brief:** [`docs/research/2026-08-29-v2-plan-brief.md`](../../research/2026-08-29-v2-plan-brief.md)
 **Decisions and their provenance tags:** [`docs/v2/DECISIONS.md`](../../v2/DECISIONS.md)
@@ -50,8 +51,9 @@ it is item 0.5 below.
 
 ## 3. Correction to the segment map
 
-`OPERATION.md` §3 had five segments and no owner for the profile fork. **D-14 inserts S1.5.** Six
-segments now: S0, S1, **S1.5**, S2, S3, S4.
+`OPERATION.md` §3 had five segments and no owner for the profile work. **D-14 inserts S1.5.** Six
+segments now: S0, S1, **S1.5**, S2, S3, S4. D-19 later rescoped S1.5 from a token fork to an
+archetype fork; the segment boundary was right, only its contents changed.
 
 One further correction, **proposed here rather than approved**, because it costs nothing and needs
 no new session: **Phase 0 below is enforcement work that `OPERATION.md` assigns to S3, and it should
@@ -342,52 +344,57 @@ files and source**, and leave the research record alone.
 
 ---
 
-### Phase 2: the profile fork
+### Phase 2: the profile archetype
 
-**S1.5. About 8-9 engineering days, ~25-30 files. Decision: D-05.**
+**S1.5. About 6-8 engineering days. Decisions: D-19 (supersedes D-05) and D-20.**
 
-Depends on Phase 1 (the rename lands first, so the fork is written against the final selectors) and
-on **0.5**, which must ship before any override exists.
+Depends on Phase 1 (the rename lands first) and on item 0.5.
+
+**Why this replaced the token fork.** The two profiles currently share the same type scale *shape*:
+each step measured against that profile's own body size is within 5%, and `h2` is identical at
+1.60x in both. Operations is presentation multiplied by 0.875. Combined with 21 of 30 identical
+light colour roles, an identical body typeface, and locked motion, the profiles are **one design at
+two zoom levels.** Forking `--space-*` and `--control-height` on the same curve would have produced
+the same design at 80% zoom for 8-9 days. D-19 forks the structure instead.
+
+The finding underneath it: **there is no layout or page-shell primitive anywhere in the registry.**
+27 components, zero structural. `responsive-collection` swaps a table for cards; nothing owns the
+page. Composition today means whatever the consumer invents, which is exactly how three catalogs
+diverged from one template (research 7.1).
 
 | # | Item | Files | Verification |
 |---|---|---|---|
-| 2.1 | Open the `emitPrimitives` gate for `operations` | `scripts/build.mjs:289-296,429,431` | `--space-*` appears in the operations block of `dist/tokens.css`. It cannot today. |
-| 2.2 | Fork the space scale | `tokens/functional.tokens.json` | Compiled operations gutters are measurably tighter; a contract test asserts the two scales differ. |
-| 2.3 | Fork `--control-height` behind a pointer guard | tokens, `dist/tokens.css` | A sub-44px control resolves only under `(pointer: fine)`; `--touch-target-min` stays 44px in both profiles. |
-| 2.4 | Fork border weight | tokens | Operations separation is drawn by border, presentation by space. |
+| 2.1 | Fork the type scale **shape** | `tokens/functional.tokens.json` | `presentation` display-to-body ratio rises toward ~3.5x, `operations` falls toward ~1.7x. A contract test asserts the two *shapes* differ, not just the sizes: no step may sit within 5% of its counterpart. |
+| 2.2 | Fork the hierarchy mechanism | tokens, `DESIGN.md` | `operations` radius reaches **0px** (from 2px); elevation stays zero; a stated rule says presentation draws hierarchy from space and elevation, operations from structure. |
+| 2.3 | `PageCanvas` and `AppShell` | `registry/new-york/ui/`, `registry.json` | Both render; registry goes 27 to 29 components, 28 to 30 items. The registry contract test covers them. |
+| 2.4 | Numeric treatment | the two shells, `table`, `metric-card`, `badge` | Every number in `operations` resolves to `--font-data` with `tabular-nums`. Used in 2 of 27 components today. |
 | 2.5 | Selector aliases | `scripts/build.mjs:429-438` | `data-design="functional"` still resolves after the rename. |
-| 2.6 | Restore the density claims, now true | `DESIGN.md:125,129`, `README.md:12` | Every claim is satisfied by a token in the compiled output. |
+| 2.6 | Restore the density claims, now true | `DESIGN.md:125,129`, `README.md:12` | Each claim is satisfied by the archetype, worded to describe structure rather than a spacing token that does not exist. |
 
-**2.3 is the item with a real cost and it was accepted knowingly.** `--touch-target-min` stays 44px
-in both profiles. A shorter operations control is legal **only** behind a `(pointer: fine)` guard.
-That guard is a new rule the system does not have today and every consumer must honour it. It is
-part of D-05's price, it was stated in the option Kaleb chose, and it needs one numbered ban of its
-own in the 1.5 list.
+**2.4 does not touch D-02.** The ban at `DESIGN.md:223` is on *wide-tracked uppercase* mono labels,
+not on mono. JetBrains Mono is already `font.family.data` in both profiles and `.ud-data` ships it
+today. Mono in sentence case at normal tracking has always been legal; it has simply never been used
+systematically.
 
-**The latent build bug to fix while here.** `dist/tokens-functional.css` is built from the merged
-tree with `emitPrimitives: true` (`build.mjs:471`) while the dual file is not. Add a `space` key
-today and the standalone stylesheet honours it while the dual one drops it: same app, two
-densities, and no test can see it. Fix it in 2.1 rather than discovering it in 2.2.
+**What the fork must still not do.** D-02 is reaffirmed, not relaxed: the uppercase-mono-label and
+cold-slate-neutral bans are absolute in both profiles. `DESIGN.md:223`, `:358`, `:361` stand. So does
+the motion lock, which is the one part of D-05 that survives.
 
-**What the fork must not do.** D-02: the uppercase-mono-label and cold-slate-neutral bans are
-absolute in both profiles. `DESIGN.md:223`, `:359`, `:361` stand. The profiles cannot be
-differentiated through typographic treatment or palette temperature; everything comes from geometry.
-Investigation A measured that most of the brutalist prototype's look is carried by exactly the
-techniques those bans forbid, so this is the constraint that shapes the whole phase.
+**What D-19 removed, and it is worth noticing.** No `--space-*` fork, no `--control-height` fork, and
+therefore **no `(pointer: fine)` guard** and no accessibility cost. `--touch-target-min` and
+`--control-height` stay 44px in both profiles. Density falls out of a fixed-viewport app shell for
+free. Migration notes MN-2 and MN-3 are struck.
 
-**Scoring, honestly.** **P1: partial.** A fresh agent does not build a better screen because the
-gutters are tighter; it builds a *more differentiated* one. This phase serves the design intent
-rather than the two prompts. **P2: yes**, because a checker can finally assert that an operations
-screen uses operations geometry, which is a class of drift nothing can currently detect.
+**Scoring, honestly.** **P1: yes**, and unlike D-05 this is a real yes. An agent given "use the
+design system" and an operational brief now gets a page *structure*, not just styled fragments, and
+structure is what three parallel agents each invented differently. **P2: yes**, because a checker can
+assert that an operations screen sits in an `AppShell` and a presentation screen does not.
 
-Said plainly: **this is the most expensive phase and the one that scores worst against P1 and P2.**
-It is in the plan because Kaleb chose it with the costs on the table (D-01, D-05), and because the
-current documentation makes claims the artifact does not honour. It is defensible. It is not the
-highest-leverage work in this document, and the plan would be dishonest to imply otherwise.
+This phase is no longer the one that scores worst. That was the point of replacing it.
 
-> **Cut line 2.** Stop here and the two profiles are genuinely different for the first time,
-> the docs are true about it, and no new CSS surface exists to maintain. React consumers get the
-> whole benefit. Static HTML is still ungoverned.
+> **Cut line 2.** Stop here and the two profiles read as different products rather than two zoom
+> levels, the system owns page structure for the first time, and React consumers get the whole
+> benefit. Static HTML still has no governed components below the token layer.
 
 ---
 
@@ -407,6 +414,13 @@ wrong and should be argued down explicitly.
 invented for itself: the button family first, then card, badge, table, field and input, empty state.
 Investigation B has the census. Anything a generator has never needed is a candidate for the skip
 list, and the plan should say so per component rather than mirroring by default.
+
+**The two shells are the exception, and they are not optional** (D-20). `PageCanvas` and `AppShell`
+get CSS-class equivalents even though no generator has asked for them, because no generator knew to
+ask: the divergence that started this operation was three agents inventing three page structures.
+Shipping the shell is what makes "use the design system" produce a correctly *structured* page
+rather than correctly *styled* fragments. The scope warning still binds every control; it does not
+bind these two.
 
 Note the current CSS surface is **seven typography utilities** (`dist/tokens.css:555-561`). This is
 designing a real surface from near zero.
@@ -537,6 +551,8 @@ Named, argued, and skipped. A plan that never says "skip this" was not thinking.
 | 8 | **Renumbering the merged ban list** | D-17. Breaks every existing citation to buy tidiness. Appending solves it for free. |
 | 9 | **Forking motion** | D-05. Offered at 11-13 days and declined. It trades the system's best-reasoned guarantee, one memorable sentence, for four numeric bounds. |
 | 10 | **Fixing GlobalVision or udesignpages** | Plan brief §5, verbatim: *"its not your job to fix them."* They are evidence and test targets. Drift found in them becomes a migration note, never a plan task. |
+| 11 | **Forking the body typeface** | Explored in round 6 as one of five differentiation levers. Not banned, and both profiles are Geist today, but it is the only lever carrying real brand-identity risk and the other four reach the goal without it. |
+| 12 | **The `--space-*` and `--control-height` token fork** | D-19 dropped it. Density falls out of the app shell for free; forking the tokens as well pays for it twice, and it was the source of the `(pointer: fine)` accessibility cost. |
 
 ---
 
@@ -548,8 +564,11 @@ is telling them what broke.
 | # | Change | Who it affects | What to do |
 |---|---|---|---|
 | MN-1 | `data-design` values renamed to `presentation` / `operations` (D-07) | Any consumer setting the attribute. GlobalVision pins `functional`. | Old strings work as aliases for one release. Update at leisure, before v3. |
-| MN-2 | `operations` control height may drop below 44px behind `(pointer: fine)` (D-05, 2.3) | Any consumer with its own control sizing | Honour the pointer guard. `--touch-target-min` is unchanged at 44px. |
-| MN-3 | Space scale now forks by profile (D-05) | Consumers hard-coding spacing | Use `--space-*`. Operations gutters are tighter than before. |
+| MN-2 | ~~Pointer guard for sub-44px controls~~ | - | **Struck.** D-19 dropped the control-height fork. Both profiles stay at 44px; no guard is needed. |
+| MN-3 | ~~Space scale forks by profile~~ | - | **Struck.** D-19 dropped the space fork. Density comes from `AppShell`, not from tokens. |
+| MN-3a | Type scale **shape** forks (D-19, 2.1) | Any consumer with its own heading sizes | `presentation` heading-to-body contrast increases, `operations` decreases. Use the `typography.*` roles rather than hard-coded sizes. |
+| MN-3b | `operations` radius reaches 0px (D-19, 2.2) | Consumers hard-coding radius | Use `--radius-*`. Operations corners are square, not 2px. |
+| MN-3c | Two new primitives: `PageCanvas`, `AppShell` (D-20) | Both consumption models | Not breaking; additive. But a screen composed without a shell is now non-conforming and the Phase 4 checker will say so. |
 | MN-4 | `udesign-contract.md:249-317` removed (D-18) | GlobalVision only | ~70 lines of its own implementation detail. Recover from `udesign-docs` git history or the `v0.6.0` tag and re-home it in GlobalVision. **GlobalVision's contract has a hole until it does.** |
 | MN-5 | `MOTION-SYSTEM.md` moves and six values are corrected (M1) | Anything that read it | Six documented values were wrong. Code matching the old document was wrong; code matching `dist/tokens.css` was always right. |
 | MN-6 | Merged ban list (D-10, D-17) | Anything citing a ban by number | Nothing breaks. Numbers 1-19 are unchanged by design. |
@@ -566,14 +585,17 @@ Per plan brief §6 and the model of research §7.6.
 |---|---|---|---|---|
 | 0 | ~2 hrs | critical (0.1, 0.2) | yes (0.3-0.6) | **No.** All feedback and version work. |
 | 1 | ~3-4 days | **critical** | **critical** | **Yes**, 1.2 and 1.3 specifically. |
-| 2 | 8-9 days | partial | yes | **No.** |
+| 2 | 6-8 days | **yes** | yes | **Yes**, 2.3 specifically: the divergence was three agents inventing three page structures because the system owned none. |
 | 3 | largest build | critical for static HTML | critical for static HTML | **Yes**, by giving the failing artifact an upstream. |
 | 4 | ~2-3 days | no | **this is P2** | **Catches it**, automatically, with no agent reading anything. |
 | 5 | ~3-4 days | yes | no | **Yes**, by imitation, if §7.7 D is honoured. |
 
 **Phase 1 is the best hour-for-hour work in this document and it is almost entirely text.** Phase 2
-is the most expensive and scores worst; it is included because Kaleb chose it with the costs visible
-and because the current docs claim things the artifact does not do.
+is the most expensive, and after D-19 replaced the token fork with the archetype fork it is no
+longer the one that scores worst. Its earlier form (fork `--space-*` and `--control-height`) scored
+"partial / yes" and would not have stopped the incident; the archetype form scores "yes / yes" and
+would. That change came from Kaleb reading the plan and pushing back, and it is the single largest
+improvement to this document.
 
 If the operation must be cut to its best 20%, it is **Phase 0 plus Phase 1**: about a week, and it
 addresses the only failure anyone has actually observed.
@@ -582,12 +604,16 @@ addresses the only failure anyone has actually observed.
 
 ## 8. Open risks
 
-1. **Phase 2 may not deliver the felt difference.** Investigation A's counter-argument stands: if the
-   felt gap is "these should look like two different products", geometry alone will not close it, and
-   D-02 permanently rules out the techniques that would. Kaleb was told this before choosing. Revisit
-   at cut line 2 by looking at the result, not by re-reading the plan.
-2. **Phase 3's scope can inflate.** 27 components is the wrong answer and the tempting one. Hold the
-   line at what a generator reaches for, and make S2 justify each addition against real evidence.
+1. **Phase 2 may still not deliver the felt difference.** D-19 addresses the measured cause (one
+   design at two zoom levels) and adds the structural axis that was never forked. That is a much
+   stronger position than D-05's, but it is still a prediction. D-02 remains absolute, so the two
+   loudest prototype techniques stay off the table permanently. **Revisit at cut line 2 by looking at
+   the two profiles side by side, not by re-reading this plan.** If they still read as one design,
+   the remaining unexercised lever is the body typeface, which is skip-list item 11 and carries
+   brand risk.
+2. **Phase 3's scope can inflate, and D-20 just widened it once already.** 27 mirrored components is
+   the wrong answer and the tempting one. The two shells are a deliberate, argued exception. Every
+   further addition needs the same standard of evidence, and S2 should be made to give it.
 3. **The checker can produce false positives and get switched off.** `ENFORCEMENT.md:5` is the
    governing principle. When in doubt, ship fewer rules.
 4. **Phase 1's personality sections can grow unsourced adjectives.** Every sentence carries a tag.

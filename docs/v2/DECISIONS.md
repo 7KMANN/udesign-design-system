@@ -121,7 +121,15 @@ under `WEBDEV/CLAUDE.md` and was never sourced from `udesignpages`. That extract
 
 ## Round 2 - 2026-09-01
 
-### D-05 · Which axes fork · `APPROVED` 2026-09-01
+### D-05 · Which axes fork · `SUPERSEDED by D-19` 2026-09-02
+
+> **Superseded.** The space-scale and control-height fork below was dropped in round 6 after a
+> measurement showed it would deepen the problem it was meant to solve. **D-19 replaces it.**
+> One part survives and is still binding: **motion does not fork.** Of the three preconditions,
+> only #2 (the `:129-130` test hole) survives - it is a real defect independent of any fork and
+> stays in Phase 0. #1 and #3 lapse with the token fork. Kept in full for the record.
+
+**Original decision, 2026-09-01:**
 
 **Space scale and control geometry fork. Motion does not.**
 
@@ -415,6 +423,9 @@ fix, no approval needed - it is a factual correction, not a change of position.
 Every question raised by either investigation, and every question the plan brief §4 flagged as
 approval-bound, has an answer above. No item in the plan carries `NEEDS-APPROVAL`.
 
+**Round 6 (2026-09-02) reopened and replaced D-05.** See D-19 and D-20 at the end of this file.
+Read D-19 before acting on anything D-05 says.
+
 The two items closest to the line, and why they are settled rather than soft:
 
 - **D-11's positive conviction** is an agent's translation of verbal tone into a visual position.
@@ -422,3 +433,110 @@ The two items closest to the line, and why they are settled rather than soft:
   when it cites the sentence - the distinction is the point.
 - **D-09's per-profile extension** goes beyond what the incident grounds. Base rule `CANON`-by
   -incident, extension `APPROVED`. S1 must not blur the two into one unattributed paragraph.
+
+---
+
+## Round 6 - 2026-09-02
+
+Kaleb reopened D-01/D-05 after reading the plan. His words:
+
+> *"I think the agent will learn through their research that the goal might be to have 2 different
+> products. brand identity should remain but i feel like this is putting too many constraints on
+> both profiles and results in having 2 ok profiles rather than 2 distinguishable great looking
+> profiles. I agree that bans are system wide."*
+
+**D-02 is reaffirmed, not relaxed.** The bans stay system-wide. What changed is the diagnosis of
+*why* the profiles read as similar, and it turned out to be measurable rather than a matter of
+taste.
+
+### The measurement that reopened it
+
+The two profiles share the same **type scale shape**. Each step relative to that profile's own body
+size:
+
+| Step | presentation | operations | difference |
+|---|---|---|---|
+| display | 3.00x | 2.86x | -4.8% |
+| h1 | 2.10x | 2.06x | -2.0% |
+| **h2** | **1.60x** | **1.60x** | **0.0%** |
+| h3 | 1.20x | 1.26x | +4.8% |
+| body | 1.00x | 1.00x | - |
+
+`h2` is identical. The operations profile is the presentation profile multiplied by ~0.875 and
+nothing else. Combined with 21 of 30 identical light colour roles, an identical body typeface
+(Geist in both), and locked motion, **the two profiles are one design at two zoom levels.**
+
+**D-05 as scoped would have made this worse.** Tighter gutters and shorter controls on the same
+curve is the same design at 80% zoom, for 8-9 days. Kaleb's read was correct.
+
+### The finding underneath it
+
+**The fork has only ever changed values. Nobody forked the structure.**
+
+Verified: there is **no layout or page-shell primitive anywhere in the registry.** 27 components,
+zero structural. `responsive-collection` swaps a table for cards; nothing owns the page. So
+"composition" today means whatever the consumer invents, which is precisely how three catalogs
+diverged from one template (research 7.1).
+
+Stripe Dashboard and stripe.com share a brand and read as different products because their
+*archetype* differs, not their spacing tokens.
+
+### D-19 · The archetype fork · `APPROVED` 2026-09-02 · **supersedes D-05**
+
+The profile difference is structural, not dimensional. Four axes:
+
+1. **Type scale shape forks.** `presentation` goes high-contrast (~3.5x display-to-body: drama).
+   `operations` goes flat (~1.7x: instrument). This is the axis that kills the zoom effect, and it
+   is ~7 tokens.
+2. **Hierarchy mechanism forks.** `presentation` draws hierarchy from space and elevation, cards
+   floating on canvas. `operations` draws it from structure: hairline grid, **0px radius** (down
+   from the current 2px), zero elevation, elements butting against each other. Half-shipped already
+   (shadows are off in functional) but never stated as a rule.
+3. **Layout archetype forks.** See D-20.
+4. **Numeric treatment forks.** Every number in `operations` uses `--font-data` with
+   `tabular-nums`; `presentation` stays proportional. **Legal today** and currently used in only 2
+   of 27 components (`metric-card`, `progress-ring`). Note this does not touch D-02: the ban at
+   `DESIGN.md:223` is on *wide-tracked uppercase* mono labels, not on mono.
+
+**Dropped from D-05:** the `--space-*` fork and the `--control-height` fork. Density now falls out
+of the app shell for free, so paying for it twice in tokens is waste.
+
+**Two consequences worth stating:**
+- **The `(pointer: fine)` guard is gone**, and with it D-05's accessibility cost and its migration
+  note. A desktop app shell can declare itself pointer-first at the shell level; individual controls
+  no longer need a guard, and `--touch-target-min` and `--control-height` stay 44px everywhere.
+- **The `emitPrimitives` gate is no longer a fork precondition.** The latent build bug at
+  `build.mjs:471` (the standalone stylesheet honours primitives the dual one drops) is still a real
+  bug and moves to Phase 0 as a correctness fix.
+
+**What D-05 keeps:** motion still does not fork. `DESIGN.md:278` and
+`tests/token-contract.test.mjs:168` survive untouched. That part of D-05 stands.
+
+**Rejected alternative:** archetype fork *plus* the original D-05 token fork, at 12-14 days. Offered
+and not selected, on the grounds that the app shell already delivers the density.
+
+**Also rejected:** forking the body typeface (option 5 of five explored). Not banned, and both
+profiles are Geist today, but it is the only lever that carries real brand-identity risk and the
+other four reach the goal without it.
+
+### D-20 · Two shells, both consumption models · `APPROVED` 2026-09-02
+
+`PageCanvas` (centered max-width column, full-bleed sections, the page scrolls) and `AppShell`
+(persistent sidebar, fixed viewport, panes scroll rather than the page, toolbar) ship as **React
+primitives and as CSS classes**, so both consumption models get them.
+
+**This is the direct answer to the catalog divergence.** Three agents invented three page structures
+because the design system owns none. Shipping the shell is what makes "use the design system"
+produce a correctly *structured* page rather than correctly *styled* fragments.
+
+Registry grows from 27 components to 29, and `registry.json` from 28 items to 30.
+
+**Accepted cost, stated plainly:** this grows the Phase 3 CSS layer's scope, which the plan
+explicitly warns against inflating (plan 8, risk 2). The warning still stands for *controls* -
+mirroring all 27 is still wrong. The shells are the exception, and they are the exception because
+the failure that started this operation was a structural one, not a control-level one.
+
+**Rejected:** React-only shells (halves the work but leaves `udesignpages`, the consumer that
+actually diverged, with rules instead of components, and rules are what failed there the first
+time). Also rejected: documenting the archetypes without shipping code, which is prose solving a
+composition problem, the thing research 7.9 item 12 says does not survive contact with an agent.

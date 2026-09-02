@@ -11,11 +11,13 @@ time.
 1. [`docs/v2/OPERATION.md`](./OPERATION.md) - the operation map, the execution model, the ledger you
    must update, and the standing rules. Note that S0 changed the map: there are six segments now,
    not five.
-2. [`docs/v2/DECISIONS.md`](./DECISIONS.md) - **read this one twice.** Eighteen tagged decisions and
+2. [`docs/v2/DECISIONS.md`](./DECISIONS.md) - **read this one twice.** Twenty tagged decisions and
    five derived ones. The tags are the whole point: `CANON` means cite the line and build on it,
    `APPROVED` means Kaleb said yes on a stated date and you must reproduce that tag when you cite
    it, `REJECTED` means it was put to him and declined. A statement without a tag in that file is
-   not something you may treat as settled.
+   not something you may treat as settled. **D-19 supersedes D-05**: read it before anything else in
+   that file, and treat everything D-05 says about forking `--space-*` or `--control-height` as
+   withdrawn. Only its motion lock survives.
 3. [`docs/superpowers/plans/2026-08-29-v2-design-language.md`](../superpowers/plans/2026-08-29-v2-design-language.md)
    - the plan. **Phase 0 and Phase 1 are yours.** Every item carries its files, its size, its
    verification, and an honest score against P1 and P2.
@@ -43,7 +45,7 @@ None of that is repeated here. This file only tells you how to *run* the segment
 | Phase 0, all six items | This repo, plus one line in `WEBDEV/CLAUDE.md` |
 | Phase 1, items 1.1 through 1.11 | This repo and `udesign-docs` |
 | The `udesign-docs` tag bump | `v0.7.0` |
-| The S1.5 handoff | `docs/v2/S1.5-profile-fork.md` |
+| The S1.5 handoff | `docs/v2/S1.5-profile-archetype.md` |
 | Updated ledger | `docs/v2/OPERATION.md` §4 |
 
 ---
@@ -87,7 +89,7 @@ about to rewrite the first and restructure the other two.
 
 ### What is approval-bound, and it is narrower than you think
 
-S0 did the grilling. **Eighteen decisions are settled and you should not reopen them.** The plan
+S0 did the grilling over six rounds. **Twenty decisions are settled and you should not reopen them.** The plan
 brief §4 protocol still applies to anything *new*, but the space of new questions is small now.
 
 Ask Kaleb only when:
@@ -147,10 +149,11 @@ think.
 
 ### Hand off
 
-Write `docs/v2/S1.5-profile-fork.md` yourself, the way this file was written for you: it points at
+Write `docs/v2/S1.5-profile-archetype.md` yourself, the way this file was written for you: it points at
 the plan, `DECISIONS.md` and the research, and restates none of them. Tell S1.5's orchestrator which
-of its work is delegable and which is not, and flag D-05's three preconditions explicitly, because
-item 2.1 is a build-system change that must land before any token override exists.
+of its work is delegable and which is not. **Point it at D-19 before D-05**: the token fork was
+superseded on 2026-09-02 and S1.5 is now a structural segment that ships the first layout primitives
+the system has ever had. The one part of D-05 still binding is that motion does not fork.
 
 Then update `OPERATION.md` §4 and stop.
 
@@ -168,7 +171,7 @@ Then update `OPERATION.md` §4 and stop.
 - [ ] Both read paths traced end to end, by following them.
 - [ ] `udesign-docs` is tagged `v0.7.0` and `MOTION-SYSTEM.md`'s six values match `dist/tokens.css`.
 - [ ] The false density claims are deleted, not amended. Phase 2 restores true ones.
-- [ ] `S1.5-profile-fork.md` is written.
+- [ ] `S1.5-profile-archetype.md` is written.
 - [ ] `OPERATION.md` §4 reflects reality, including anything unfinished and the next concrete action.
 
 ---
