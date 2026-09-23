@@ -182,6 +182,9 @@ the same curve would have produced the same design at 80% zoom. The fork is now 
 scale shape, hierarchy mechanism, two layout shells (`PageCanvas`, `AppShell`), numeric treatment.
 **This segment ships the first structural components the system has ever had** - registry goes 27
 to 29 components. The `(pointer: fine)` accessibility guard is gone with the token fork.
+**Also read [`_evidence-functional-density.md`](./_evidence-functional-density.md)** (2026-09-23,
+field evidence from GlobalVision): the density that was lost was inside Card/Dialog internals,
+not in shell gutters. That bears on D-19's "density falls out of the app shell for free".
 
 ### S2 — CSS Component Layer
 **Status:** blocked on S1.5
