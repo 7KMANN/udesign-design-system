@@ -288,8 +288,15 @@ tempting one.
 | 2026-09-26 | **S2 closed by the master orchestrator.** Gate check: `npm run validate` exit 0 (CRLF churn restored); `npm run build` reproduces the committed `dist/` apart from line endings; the checker reports 0 findings on both acceptance pages and `css/components.css`; no duplicate decision IDs. **One correction (Δ-21):** MN-17's "syncing changes nothing on screen" was false. Rendering seven `udesignpages` pages under three token files showed the token swap is inert but the layer's `min-height: 44px` reaches every `ud-btn` and the `patterns.html` badge gains a border. MN-17 corrected. S2's closing observation that the `.ud-*` typography helpers duplicate `--text-*` is not drift: `formatTypographyHelpers` emits both from the same token tree. Fast-forwarded into `master`, pushed, branch deleted. **Next concrete action: paste `S4-reference-release.md` into a fresh session.** |
 
 ### S4 — Reference & Release
-**Status:** ready to start. Handoff: [`S4-reference-release.md`](./S4-reference-release.md).
+**Status:** in progress. Handoff: [`S4-reference-release.md`](./S4-reference-release.md).
+**Branch:** `v2/s4-reference-release`.
 **Owns:** plan Phase 5.
+
+| Date | Event |
+|---|---|
+| 2026-09-26 | S4 started. Branch `v2/s4-reference-release` cut off `master` (`12739f0`). README's component lists already match the 30-item registry (fixed earlier), so that carry-over is closed with no edit. **No subagents:** the screens build on the S1.5 cut-line-2 source Kaleb already judged "two products", and every other item is a few lines in files the screens' tests also touch. |
+| 2026-09-26 | **`fe2fa50`, D-32 and the showcase.** `DESIGN.md` frontmatter and prose follow the registry: secondary borderless, outline 1px `hairline`, buttons Geist 500 at 16px, 44px, `8px 16px`, card `{rounded.lg}` and 24px (`--surface-padding`). **Derived under D-32's rule (the registry wins), not asked:** `button-secondary` fills with `--secondary` (#f4f1ea, new `surface-panel`), not `canvas`; and the Typography sentence giving Montserrat to "high-value calls to action" is cut, since it restated the same stale claim. Showcase: the four ban 19 findings become motion roles (0 findings), the profile switch and e2e write `presentation`/`operations`. |
+| 2026-09-26 | **`8c849a9`, the references.** `examples/presentation-order.tsx` (`PageCanvas`), `examples/operations-queue.tsx` (`AppShell`, dense per D-11: ten orders, seven columns, a ghost row action in every row, one accent that commits work), `examples/static-catalog.html` (class layer only). Each restraint is a comment on the control it governs. `tests/checker.test.mjs` holds all three at zero findings and exactly one accent-filled control, shown red three ways (a card CTA turned primary, a raw `200ms ease`, a second unrepeated primary). `tests/components/examples.test.tsx` renders both React screens under axe and exercises the toolbar filter; axe caught two real defects on first run (heading order `h1` to `CardTitle`'s `h3`, and a table region named like its pane), both fixed. `registry/tsconfig.json` typechecks `examples/`; `package.json` `files` gains it and `npm pack --dry-run` lists all three. `AGENTS.md` "Read next" points at it (`writing-for-agents`). **Next:** render all three for Kaleb, then CHANGELOG and the release. |
 
 ---
 

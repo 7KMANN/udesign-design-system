@@ -27,16 +27,16 @@ type Tone = "success" | "progress" | "neutral" | "danger"
 type Order = { id: string; client: string; method: string; pieces: number; step: string; tone: Tone; due: string }
 
 const orders: Order[] = [
-  { id: "UD-1036", client: "Entreprise exemple A", method: "Broderie", pieces: 24, step: "Prêt", tone: "success", due: "1 oct." },
-  { id: "UD-1038", client: "Entreprise exemple B", method: "DTF", pieces: 120, step: "Prêt", tone: "success", due: "2 oct." },
-  { id: "UD-1039", client: "Équipe exemple H", method: "Écussons", pieces: 80, step: "En production", tone: "progress", due: "5 oct." },
-  { id: "UD-1040", client: "École exemple C", method: "Broderie", pieces: 60, step: "En production", tone: "progress", due: "6 oct." },
-  { id: "UD-1041", client: "Équipe exemple D", method: "DTF", pieces: 200, step: "En attente", tone: "neutral", due: "8 oct." },
+  { id: "UD-1036", client: "Entreprise A", method: "Broderie", pieces: 24, step: "Prêt", tone: "success", due: "1 oct." },
+  { id: "UD-1038", client: "Entreprise B", method: "DTF", pieces: 120, step: "Prêt", tone: "success", due: "2 oct." },
+  { id: "UD-1039", client: "Équipe H", method: "Écussons", pieces: 80, step: "En production", tone: "progress", due: "5 oct." },
+  { id: "UD-1040", client: "École C", method: "Broderie", pieces: 60, step: "En production", tone: "progress", due: "6 oct." },
+  { id: "UD-1041", client: "Équipe D", method: "DTF", pieces: 200, step: "En attente", tone: "neutral", due: "8 oct." },
   { id: "UD-1042", client: "Club exemple", method: "Broderie, DTF", pieces: 108, step: "En production", tone: "progress", due: "9 oct." },
-  { id: "UD-1043", client: "Ligue exemple E", method: "Broderie", pieces: 36, step: "En retard", tone: "danger", due: "30 sept." },
-  { id: "UD-1044", client: "Commerce exemple F", method: "DTF", pieces: 72, step: "En attente", tone: "neutral", due: "14 oct." },
-  { id: "UD-1045", client: "Association exemple G", method: "Écussons", pieces: 150, step: "En attente", tone: "neutral", due: "16 oct." },
-  { id: "UD-1046", client: "Entreprise exemple I", method: "Broderie", pieces: 12, step: "En attente", tone: "neutral", due: "17 oct." },
+  { id: "UD-1043", client: "Ligue E", method: "Broderie", pieces: 36, step: "En retard", tone: "danger", due: "30 sept." },
+  { id: "UD-1044", client: "Commerce F", method: "DTF", pieces: 72, step: "En attente", tone: "neutral", due: "14 oct." },
+  { id: "UD-1045", client: "Association G", method: "Écussons", pieces: 150, step: "En attente", tone: "neutral", due: "16 oct." },
+  { id: "UD-1046", client: "Entreprise I", method: "Broderie", pieces: 12, step: "En attente", tone: "neutral", due: "17 oct." },
 ]
 
 const lines = [
@@ -81,9 +81,9 @@ export function OperationsQueue() {
         </nav>
       </AppShellSidebar>
 
-      <AppShellToolbar>
+      <AppShellToolbar className="flex-wrap">
         <h1 className="ud-h1 mr-auto">File de production</h1>
-        <Input aria-label="Rechercher une commande" placeholder="Rechercher une commande" className="w-56" />
+        <Input aria-label="Rechercher une commande" placeholder="Rechercher une commande" className="w-full sm:w-56" />
         {/* A toolbar is a group of peers: ghost, with the active filter shown by aria-pressed. */}
         {["Broderie", "DTF", "Écussons"].map((m) => (
           <Button key={m} variant="ghost" aria-pressed={method === m} className="aria-pressed:bg-[var(--interactive-selected)]" onClick={() => setMethod(method === m ? null : m)}>
@@ -92,7 +92,7 @@ export function OperationsQueue() {
         ))}
       </AppShellToolbar>
 
-      <AppShellPanes className="md:grid-cols-[minmax(0,1fr)_24rem]">
+      <AppShellPanes className="md:grid-cols-[minmax(0,1fr)_20rem]">
         <AppShellPane aria-label="Commandes actives">
           {/* Flat in operations: MetricCard needs no shadow or radius override, the profile resolves both. */}
           <div className="grid grid-cols-2 border-b border-[var(--border)] sm:grid-cols-4">
@@ -118,14 +118,15 @@ export function OperationsQueue() {
                 <TableRow key={o.id} data-state={o.id === "UD-1042" ? "selected" : undefined}>
                   <TableCell className={num}>{o.id}</TableCell>
                   <TableCell className="whitespace-nowrap">{o.client}</TableCell>
-                  <TableCell>{o.method}</TableCell>
+                  <TableCell className="whitespace-nowrap">{o.method}</TableCell>
                   <TableCell numeric>{o.pieces}</TableCell>
                   {/* The label carries the status; the tone only reinforces it (ban 11). */}
                   <TableCell><StatusBadge tone={o.tone}>{o.step}</StatusBadge></TableCell>
                   <TableCell className={`whitespace-nowrap ${num}`}>{o.due}</TableCell>
-                  <TableCell>
+                  {/* py-0: the button is the row's height, so the row stays on the 44px floor. */}
+                  <TableCell className="py-0">
                     {/* Repeated once per row: ghost, never the accent (AGENTS.md rule 5). */}
-                    <Button variant="ghost" size="compact" aria-label={`Ouvrir ${o.id}`}>Ouvrir</Button>
+                    <Button variant="ghost" aria-label={`Ouvrir ${o.id}`}>Ouvrir</Button>
                   </TableCell>
                 </TableRow>
               ))}
