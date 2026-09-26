@@ -55,7 +55,7 @@ export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElem
 }
 
 const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
-  ({ className, numeric: isNumeric, ...props }, ref) => <td ref={ref} className={cn("h-[var(--touch-target-min)] p-4 align-middle", isNumeric && numeric, className)} {...props} />,
+  ({ className, numeric: isNumeric, ...props }, ref) => <td ref={ref} className={cn("h-[var(--touch-target-min)] px-4 py-[var(--surface-padding,1rem)] align-middle", isNumeric && numeric, className)} {...props} />,
 )
 TableCell.displayName = "TableCell"
 

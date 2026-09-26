@@ -68,7 +68,7 @@
   },
 
   "responsive": {
-    "surface-padding": { "$type": "dimension", "$description": "Card, Dialog and Sheet padding (D-22, D-27). Presentation leaves it unset and keeps 24px.", "$value": { "value": 12, "unit": "px" } }
+    "surface-padding": { "$type": "dimension", "$description": "Card, Dialog and Sheet padding, and table cells vertically (D-22, D-27, D-28). Presentation leaves it unset and keeps 24px.", "$value": { "value": 12, "unit": "px" } }
   },
 
   "shadow": {

@@ -738,3 +738,25 @@ D-19 and D-22 fixed the ratios and the axes; these are the values. Kaleb's verdi
   `.ud-*` helper classes and component titles hard-coded `text-lg`, so the fork would have stopped
   at the helpers. Each profile block now emits `--text-display`, `--text-h1`, `--text-h2`,
   `--text-h3` and `--text-body`, and `CardTitle`, `DialogTitle`, `SheetTitle` read `--text-h3`.
+
+## Round 11 - 2026-09-26 (S1.5, cut line 2)
+
+**Evidence:** the cut-line-2 comparison, rendered only from the branch's registry and compiled
+tokens, each screen its own document with the profile pinned on the root. Private artifact
+`https://claude.ai/artifact/J7pXM5KvJfZC9C8MJ2UZPZ`. **Kaleb's verdict: two products. Cut line 2
+is met.**
+
+### D-28 · Table cells read `--surface-padding` vertically · `APPROVED` 2026-09-26
+
+The render showed 52px table rows in both profiles: `TableCell` padded 16px on every side and the
+44px floor is only a minimum. `TableCell` vertical padding now reads `--surface-padding` (fallback
+16px), so operations rows sit on the 44px floor and presentation is unchanged. One more consumer of
+D-22's one variable; no new token. **Rejected:** leaving tables for S2 or S4.
+
+### Derived in round 11, not asked
+
+- **Δ-13 · Semantic shadows never rendered.** Tailwind 3 compiles `shadow-[var(--shadow-N)]` as a
+  shadow colour, so `Card`, `Dialog`, `Sheet`, `Select`, `Tooltip` and the `Slider` and `Switch`
+  thumbs never showed their elevation in a Tailwind 3 consumer. They now use
+  `[box-shadow:var(--shadow-N)]`, and a registry guard forbids the ambiguous form. Found only by
+  rendering; no unit test could see it.

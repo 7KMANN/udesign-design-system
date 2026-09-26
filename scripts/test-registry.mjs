@@ -137,6 +137,10 @@ for (const name of ["card.tsx", "dialog.tsx", "sheet.tsx"]) {
 }
 assert.doesNotMatch(Object.values(files).join("\n"), /--dialog-padding/, "--dialog-padding was renamed --surface-padding (Δ-11)")
 assert.doesNotMatch(files["card.tsx"], /\bp-6\b/, "a fixed p-6 ignores the operations padding")
+// D-28: table cells tighten vertically with the same variable; the 44px row floor stays.
+const tableCell = files["table.tsx"].match(/const TableCell[\s\S]*?\n\)/)?.[0] ?? ""
+assert.match(tableCell, /py-\[var\(--surface-padding,1rem\)\]/, "TableCell must read its vertical padding from --surface-padding")
+assert.match(tableCell, /h-\[var\(--touch-target-min\)\]/, "TableCell keeps the 44px row floor")
 assert.match(files["card.tsx"], /\[box-shadow:var\(--shadow-2\)\]/, "presentation cards float on --shadow-2 (D-27)")
 assert.match(files["badge.tsx"], /whitespace-nowrap/, "a badge label wrapping inside its pill reads as broken")
 const NUMERIC = /\[font-family:var\(--font-numeric\)\] \[font-variant-numeric:var\(--font-numeric-variant\)\]/

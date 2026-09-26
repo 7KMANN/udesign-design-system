@@ -262,7 +262,7 @@ Display type may scale fluidly. Controls and body text must remain readable with
 
 ## Layout and responsive behavior
 
-Use the shared spacing roles for component rhythm. The space scale and control height are the same in both profiles; the shells and one padding role make the difference. `PageSection` separates presentation blocks generously. In operations, `AppShell` panes butt against each other and `--surface-padding` sets 12px inside `Card`, `Dialog` and `Sheet`, while every control keeps the 44px touch floor. `APPROVED 2026-09-25 D-22`, `APPROVED 2026-09-26 D-27`
+Use the shared spacing roles for component rhythm. The space scale and control height are the same in both profiles; the shells and one padding role make the difference. `PageSection` separates presentation blocks generously. In operations, `AppShell` panes butt against each other and `--surface-padding` sets 12px inside `Card`, `Dialog` and `Sheet` and above and below each table cell, while every control and table row keeps the 44px touch floor. `APPROVED 2026-09-25 D-22`, `APPROVED 2026-09-26 D-27, D-28`
 
 The responsive contract includes:
 
@@ -273,7 +273,7 @@ The responsive contract includes:
 - `--dialog-inline-size-mobile`
 - `--dialog-block-size-max`
 - `--safe-area-bottom`
-- `--surface-padding` (set by `operations` only; unset, `Card` pads 24px and `Dialog`/`Sheet` 16px on phones, 24px from `sm`)
+- `--surface-padding` (set by `operations` only; unset, `Card` pads 24px, `Dialog`/`Sheet` 16px on phones and 24px from `sm`, table cells 16px)
 
 Interactive controls need a minimum inline and block target of `--touch-target-min`. Compact controls can reduce their visible field height while preserving the touch area around the trigger.
 
