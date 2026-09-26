@@ -5,7 +5,7 @@
 3. An async control shows its own pending: `<Button pending>`.
 4. Motion: `--motion-*` roles, never raw values.
 5. One accent-filled control per screen. None on a repeated row, card, or item.
-6. Presented to someone: `presentation`. Operated by someone: `operations`.
+6. Presented to someone: `presentation` in `PageCanvas`. Operated by someone: `operations` in `AppShell`.
 
 Build to these. Audit against them. The sections below make each one exact.
 
@@ -43,6 +43,10 @@ Shipped values: [`docs/motion-contract.md`](docs/motion-contract.md).
 - One profile per document, set once on the root (`<html data-design="operations">`), never
   nested, never switched at runtime. Only a review or documentation surface that exists to show
   both profiles may switch.
+- Build the page in its shell: a `presentation` screen in `PageCanvas` (sections, centered column),
+  an `operations` screen in `AppShell` (sidebar, toolbar, panes). Both are in `core`.
+- Mark every figure: `TableCell numeric`, or `--font-numeric` with `--font-numeric-variant`.
+  Title and heading sizes come from `--text-*`.
 - A screen that is genuinely both: ask the owner. Do not mix.
 - `brand` and `functional` still resolve as aliases of `presentation` and `operations` for one
   release. Write the new names.

@@ -9,10 +9,10 @@ Do not source brand values from Icitte. It is a separate product line with its o
 ## What ships in 1.5.0
 
 - A semantic token foundation for light and dark themes.
-- Two profiles, `presentation` and `operations`, pinned once per document.
+- Two profiles, `presentation` and `operations`, pinned once per document. They differ in structure: type scale shape, source of hierarchy, page shell, and figures. Controls keep the 44px touch floor in both.
 - Tone roles for neutral, info, success, warning, danger, progress, and brand states.
 - Metric, chart, entity, interaction, surface, and responsive roles.
-- A shadcn source registry with 15 base components, five application patterns, and a `core` bundle.
+- A shadcn source registry with 19 base components, five application patterns, two page shells (`page-canvas`, `app-shell`), three motion primitives, and a `core` bundle.
 - A responsive showcase that exercises the full theme and profile matrix.
 
 This is not a bundled React runtime library. Registry components are copied into the consuming repository so the application can inspect, adapt, and test its own source while the shared semantic contract remains stable.
@@ -103,11 +103,15 @@ npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-sy
 
 Available base items:
 
-`button`, `badge`, `alert`, `card`, `input`, `textarea`, `select`, `checkbox`, `switch`, `field`, `dialog`, `sheet`, `tooltip`, `tabs`, and `table`.
+`button`, `badge`, `alert`, `card`, `input`, `textarea`, `select`, `checkbox`, `switch`, `slider`, `field`, `dialog`, `sheet`, `tooltip`, `tabs`, `table`, `spinner`, `skeleton`, and `pressable`.
 
 Available patterns:
 
 `icon-button`, `status-badge`, `metric-card`, `empty-state`, and `responsive-collection`.
+
+Page shells, one per profile:
+
+`page-canvas` (`presentation`) and `app-shell` (`operations`).
 
 Generated JSON under `public/r/` is release output. Edit the registry source and rebuild instead of patching generated JSON.
 

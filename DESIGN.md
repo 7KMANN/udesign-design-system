@@ -18,10 +18,10 @@ colors:
 typography:
   display-lg:
     fontFamily: "Montserrat, sans-serif"
-    fontSize: 48px
+    fontSize: 56px
     fontWeight: 900
-    lineHeight: 1.05
-    letterSpacing: -1px
+    lineHeight: 1
+    letterSpacing: -1.4px
   body-md:
     fontFamily: "Geist Sans, sans-serif"
     fontSize: 14px
@@ -105,7 +105,7 @@ components:
 UDesign supports two visual jobs with one semantic contract:
 
 - Public and presentation surfaces need recognizable brand impact.
-- Operational tools need compact controls, clear state, and dependable information density.
+- Operational tools need clear state and dependable information density, built from structure (a fixed-viewport shell, compact surface padding, a flat type scale) rather than from controls smaller than the 44px touch floor.
 
 Components must describe intent through semantic variables. Primitive values are token implementation details. Applications do not select a primitive because it happens to look correct in one profile.
 
@@ -118,6 +118,13 @@ Pick the profile with one question: **is this screen presented to someone, or op
 
 A screen that is genuinely both is a question for the owner, not a mix.
 
+**Each profile has its own page shell and its own source of hierarchy.** `APPROVED 2026-09-02 D-19, D-20`
+
+- `presentation` draws hierarchy from space and elevation. The screen sits in `PageCanvas`: the page scrolls, each `PageSection` holds a centered column with generous space around it, and cards float on `--shadow-2` over the field. `APPROVED 2026-09-02 D-19`, `APPROVED 2026-09-26 D-27` for the shadow
+- `operations` draws hierarchy from structure. The screen sits in `AppShell`: a persistent sidebar, a toolbar, and panes that scroll inside a fixed viewport, butting against each other on hairline borders with square corners and no elevation. `APPROVED 2026-09-02 D-19`
+- The type scale forks with them: `presentation` display is 3.5x its body, `operations` display is 1.7x its body and its headings rank by weight. Read sizes from `--text-display`, `--text-h1`, `--text-h2`, `--text-h3` and `--text-body`. `APPROVED 2026-09-26 D-27`
+- A screen composed outside its shell does not conform (ban 27). `APPROVED 2026-09-02 D-20`
+
 **Pin once.** One profile per document, declared once on the document root, never nested, never switched at runtime. The only exception is a review or documentation surface whose job is to show both profiles, such as the showcase.
 
 `data-design="brand"` and `data-design="functional"` still resolve, as aliases of `presentation` and `operations`, for one release. Write the new names.
@@ -126,11 +133,11 @@ Each profile combines with `data-theme="light"` or `data-theme="dark"`. Presenta
 
 ### Presentation profile
 
-The presentation profile uses Montserrat for strong display moments, the full radius scale, and restrained overlay elevation. Its signature is the contrast between a quiet warm field and a compact geometric UDesign lockup.
+The presentation profile uses Montserrat for strong display moments, a high-contrast type scale, the full radius scale, and cards that float on `--shadow-2`. Its signature is the contrast between a quiet warm field and a compact geometric UDesign lockup.
 
 ### Operations profile
 
-The operations profile uses Geist for dense interface typography, smaller radii, stronger boundaries, and flat operational surfaces. Montserrat remains reserved for the UDesign lockup and rare display moments.
+The operations profile uses Geist for dense interface typography, a flat type scale, square corners, stronger boundaries, flat surfaces, 12px padding inside cards, dialogs and sheets, and tabular mono figures. Montserrat remains reserved for the UDesign lockup and rare display moments.
 
 ### Theme behavior
 
@@ -247,13 +254,15 @@ Respect `prefers-reduced-motion`. Animation may clarify a transition or progress
 
 Montserrat carries the UDesign lockup, display headings, and high-value calls to action in the presentation profile. Geist carries interface text and dense operations layouts. JetBrains Mono is limited to codes, identifiers, timestamps, and aligned numeric readouts.
 
+Figures go through one pair of roles, `--font-numeric` and `--font-numeric-variant`: `operations` renders them in JetBrains Mono with tabular figures so columns align, `presentation` keeps them proportional in Geist. In the registry, mark a column of figures with `TableHead numeric` and `TableCell numeric`. `APPROVED 2026-09-02 D-19`
+
 Labels use sentence case with normal tracking. Do not turn metadata, navigation, or field labels into wide-tracked uppercase mono text. Body copy uses the semantic foreground. Muted foreground is for secondary information only after its contrast has been verified on the selected surface.
 
 Display type may scale fluidly. Controls and body text must remain readable without horizontal zoom at 375px.
 
 ## Layout and responsive behavior
 
-Use the shared spacing roles for component rhythm. Presentation pages can use broader separation. Operations pages can use compact spacing without shrinking touch targets or readable type.
+Use the shared spacing roles for component rhythm. The space scale and control height are the same in both profiles; the shells and one padding role make the difference. `PageSection` separates presentation blocks generously. In operations, `AppShell` panes butt against each other and `--surface-padding` sets 12px inside `Card`, `Dialog` and `Sheet`, while every control keeps the 44px touch floor. `APPROVED 2026-09-25 D-22`, `APPROVED 2026-09-26 D-27`
 
 The responsive contract includes:
 
@@ -264,6 +273,7 @@ The responsive contract includes:
 - `--dialog-inline-size-mobile`
 - `--dialog-block-size-max`
 - `--safe-area-bottom`
+- `--surface-padding` (set by `operations` only; unset, `Card` pads 24px and `Dialog`/`Sheet` 16px on phones, 24px from `sm`)
 
 Interactive controls need a minimum inline and block target of `--touch-target-min`. Compact controls can reduce their visible field height while preserving the touch area around the trigger.
 
@@ -279,7 +289,7 @@ Full-height mobile layouts use small viewport units. Validate at 375px, not only
 
 ## Elevation
 
-Cards and work areas rely primarily on semantic surfaces and borders. Presentation overlays may use the elevation scale. Operations content remains flat except for true overlays that need separation from the workspace.
+Presentation cards float on `--shadow-2` and overlays use `--shadow-3`. Operations content stays flat: its `--shadow-1` and `--shadow-2` resolve to `none`, and only true overlays take `--shadow-3` (ban 21).
 
 Shadows do not replace boundaries or focus treatment. Dark theme overlays must remain distinguishable from both the page floor and raised cards.
 
@@ -362,7 +372,7 @@ Three primitives carry the feedback floor. They are part of `core`: an applicati
 
 The source registry includes these base components: button, badge, alert, card, input, textarea, select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
 
-The application patterns are icon-button, status-badge, metric-card, empty-state, and responsive-collection. The `core` registry item installs the recommended set.
+The application patterns are icon-button, status-badge, metric-card, empty-state, and responsive-collection. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included.
 
 The motion primitives - progress-ring, rolling-consistency-chip, and moment - are deliberately excluded from `core`. See "Motion primitives" above; `moment` in particular is gamification-exclusive and should only land in a repository that has declared `data-game="on"`.
 
@@ -432,6 +442,10 @@ This is the one numbered list. Bans 1-19 keep the numbers they carried in `udesi
 
 25. Generic sans-serif paired with cool slate neutrals and a decorative gradient, used together as a default aesthetic.
 26. Uniform emphasis: more accent-filled controls than "Emphasis and hierarchy" allows, so no single action reads as the primary one.
+
+### Added with the page shells `APPROVED 2026-09-02 D-20`
+
+27. A screen outside its profile's shell: an `operations` screen not composed in `AppShell`, or a `presentation` screen composed in `AppShell`.
 
 ## Known limits
 
