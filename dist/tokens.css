@@ -2,7 +2,7 @@
  * UDesign design tokens (Dual Style: Brand & Functional). Compiled from DTCG sources.
  * Do not hand-edit this file: edit the token source and run `npm run build`.
  */
-:root, :root[data-design="brand"] {
+:root, :root[data-design="brand"], :root[data-design="presentation"] {
   /* Primitives: brand */
   --ud-accent-wash: #f3ead9;
   --ud-accent-300: #dec5a6;
@@ -176,21 +176,21 @@
   /* Motion: read from baseTree only, never from t - the structural
      enforcement of "identical in both profiles" (contract Motion section).
      tokens/functional.tokens.json has no motion key to override this with. */
-  --motion-duration-instant: 70ms;
-  --motion-duration-fast: 150ms;
-  --motion-duration-standard: 250ms;
-  --motion-duration-emphasis: 280ms;
-  --motion-duration-slow: 350ms;
-  --motion-duration-ambient: 1200ms;
-  --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
-  --motion-easing-fast: cubic-bezier(0.4, 0, 0.2, 1);
-  --motion-easing-enter: cubic-bezier(0, 0, 0.2, 1);
-  --motion-easing-exit: cubic-bezier(0.4, 0, 1, 1);
-  --motion-easing-emphasis: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --motion-delay-indicator: 200ms;
-  --motion-loop-spin: 900ms;
-  --motion-press-scale: 0.97;
-  --motion-press-scale-subtle: 0.995;
+  --motion-duration-instant: 70ms; /* Press compression, toggle flip. Short enough to read as direct manipulation rather than as an animation. */
+  --motion-duration-fast: 150ms; /* Crisp state transition inside a control - hover, focus, an in-place swap, a message settling into a thread. */
+  --motion-duration-standard: 250ms; /* Panels, dialogs, list enter and exit, tab change - something arriving or leaving the screen. */
+  --motion-duration-emphasis: 280ms; /* The owning component reacts within its own bounds - an outcome resolves, a commit completes. Intensity 2. */
+  --motion-duration-slow: 350ms; /* Full route transition or shared-element morph. The interaction ceiling - no interaction-path duration above this exists, and none may be added. */
+  --motion-duration-ambient: 1200ms; /* One period of a continuous, non-interaction loop: a skeleton shimmer, a pulse. Exempt from the interaction ceiling because nobody is waiting on a single period of it. */
+  --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1); /* Ease-out, for a state change that begins and ends on screen. The default. No overshoot - most of these fire many times a day. */
+  --motion-easing-fast: cubic-bezier(0.4, 0, 0.2, 1); /* Compatibility alias of standard, published since v1.4.0 under this name. Prefer standard in new code. */
+  --motion-easing-enter: cubic-bezier(0, 0, 0.2, 1); /* Decelerate, for something arriving: it comes in at speed and settles. */
+  --motion-easing-exit: cubic-bezier(0.4, 0, 1, 1); /* Accelerate, for something leaving: it starts still and speeds away. Never the overshoot curve - an exit that overshoots reads as a glitch, and an overshoot on anything that must not cross a layout boundary is a bug. */
+  --motion-easing-emphasis: cubic-bezier(0.34, 1.56, 0.64, 1); /* A small settle-in overshoot, reserved for the rarer intensity-2 moment. Exits and layout-bounded elements do not use it. */
+  --motion-delay-indicator: 200ms; /* Hold before revealing a pending indicator, so an operation that finishes quickly never flashes a spinner. Deliberately NOT collapsed under reduced motion - zeroing it would reintroduce the flash it exists to prevent. */
+  --motion-loop-spin: 900ms; /* One full rotation of a busy indicator. Collapses to 0ms under reduced motion: the indicator still renders and still reports aria-busy, it just stops moving. */
+  --motion-press-scale: 0.97; /* Transform scale for a pressed control - button, chip, tab, icon button. The acknowledgement half of the feedback floor, pairs with the --interactive-pressed background, which is what survives when motion is removed. */
+  --motion-press-scale-subtle: 0.995; /* Transform scale for a pressed large surface - a card, a table row. 0.97 across a full-width row reads as a layout bug rather than a press. */
 
   /* Responsive contracts */
   --touch-target-min: 44px;
@@ -202,7 +202,7 @@
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-:root[data-design="functional"], .design-functional {
+:root[data-design="functional"], .design-functional, :root[data-design="operations"], .design-operations {
   /* Semantic roles */
   --background: var(--ud-panel);
   --foreground: var(--ud-ink);
@@ -255,21 +255,21 @@
   /* Motion: read from baseTree only, never from t - the structural
      enforcement of "identical in both profiles" (contract Motion section).
      tokens/functional.tokens.json has no motion key to override this with. */
-  --motion-duration-instant: 70ms;
-  --motion-duration-fast: 150ms;
-  --motion-duration-standard: 250ms;
-  --motion-duration-emphasis: 280ms;
-  --motion-duration-slow: 350ms;
-  --motion-duration-ambient: 1200ms;
-  --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
-  --motion-easing-fast: cubic-bezier(0.4, 0, 0.2, 1);
-  --motion-easing-enter: cubic-bezier(0, 0, 0.2, 1);
-  --motion-easing-exit: cubic-bezier(0.4, 0, 1, 1);
-  --motion-easing-emphasis: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --motion-delay-indicator: 200ms;
-  --motion-loop-spin: 900ms;
-  --motion-press-scale: 0.97;
-  --motion-press-scale-subtle: 0.995;
+  --motion-duration-instant: 70ms; /* Press compression, toggle flip. Short enough to read as direct manipulation rather than as an animation. */
+  --motion-duration-fast: 150ms; /* Crisp state transition inside a control - hover, focus, an in-place swap, a message settling into a thread. */
+  --motion-duration-standard: 250ms; /* Panels, dialogs, list enter and exit, tab change - something arriving or leaving the screen. */
+  --motion-duration-emphasis: 280ms; /* The owning component reacts within its own bounds - an outcome resolves, a commit completes. Intensity 2. */
+  --motion-duration-slow: 350ms; /* Full route transition or shared-element morph. The interaction ceiling - no interaction-path duration above this exists, and none may be added. */
+  --motion-duration-ambient: 1200ms; /* One period of a continuous, non-interaction loop: a skeleton shimmer, a pulse. Exempt from the interaction ceiling because nobody is waiting on a single period of it. */
+  --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1); /* Ease-out, for a state change that begins and ends on screen. The default. No overshoot - most of these fire many times a day. */
+  --motion-easing-fast: cubic-bezier(0.4, 0, 0.2, 1); /* Compatibility alias of standard, published since v1.4.0 under this name. Prefer standard in new code. */
+  --motion-easing-enter: cubic-bezier(0, 0, 0.2, 1); /* Decelerate, for something arriving: it comes in at speed and settles. */
+  --motion-easing-exit: cubic-bezier(0.4, 0, 1, 1); /* Accelerate, for something leaving: it starts still and speeds away. Never the overshoot curve - an exit that overshoots reads as a glitch, and an overshoot on anything that must not cross a layout boundary is a bug. */
+  --motion-easing-emphasis: cubic-bezier(0.34, 1.56, 0.64, 1); /* A small settle-in overshoot, reserved for the rarer intensity-2 moment. Exits and layout-bounded elements do not use it. */
+  --motion-delay-indicator: 200ms; /* Hold before revealing a pending indicator, so an operation that finishes quickly never flashes a spinner. Deliberately NOT collapsed under reduced motion - zeroing it would reintroduce the flash it exists to prevent. */
+  --motion-loop-spin: 900ms; /* One full rotation of a busy indicator. Collapses to 0ms under reduced motion: the indicator still renders and still reports aria-busy, it just stops moving. */
+  --motion-press-scale: 0.97; /* Transform scale for a pressed control - button, chip, tab, icon button. The acknowledgement half of the feedback floor, pairs with the --interactive-pressed background, which is what survives when motion is removed. */
+  --motion-press-scale-subtle: 0.995; /* Transform scale for a pressed large surface - a card, a table row. 0.97 across a full-width row reads as a layout bug rather than a press. */
 }
 
 :root[data-theme="dark"], .dark {
@@ -397,7 +397,7 @@
   --surface-console-foreground: #bfdfb7;
 }
 
-:root[data-design="functional"][data-theme="dark"], :root[data-design="functional"].dark, .design-functional[data-theme="dark"], .design-functional.dark, .dark .design-functional {
+:root[data-design="functional"][data-theme="dark"], :root[data-design="functional"].dark, .design-functional[data-theme="dark"], .design-functional.dark, .dark .design-functional, :root[data-design="operations"][data-theme="dark"], :root[data-design="operations"].dark, .design-operations[data-theme="dark"], .design-operations.dark, .dark .design-operations {
   /* Semantic roles */
   --background: #11100e;
   --foreground: var(--ud-panel);
@@ -530,7 +530,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root, :root[data-design="brand"], :root[data-design="functional"], .design-functional {
+  :root, :root[data-design="brand"], :root[data-design="functional"], .design-functional, :root[data-design="presentation"], :root[data-design="operations"], .design-operations {
     /* B4: bakes the reduced-motion path into the compiled tokens so any
        consumer - a moment, a loading spinner, anything - gets it for free. */
     --motion-duration-instant: 0ms;
@@ -561,10 +561,10 @@
 .ud-data{font-family:var(--font-data);font-weight:var(--fw-regular);font-size:0.85rem;line-height:1.4;letter-spacing:0em}
 
 /* Typography helpers */
-:root[data-design="functional"] .ud-display,.design-functional .ud-display{font-family:var(--font-display);font-weight:var(--fw-black);font-size:2.5rem;line-height:1.05;letter-spacing:-0.02em}
-:root[data-design="functional"] .ud-h1,.design-functional .ud-h1{font-family:var(--font-display);font-weight:var(--fw-bold);font-size:1.8rem;line-height:1.1;letter-spacing:-0.01em}
-:root[data-design="functional"] .ud-h2,.design-functional .ud-h2{font-family:var(--font-display);font-weight:var(--fw-semibold);font-size:1.4rem;line-height:1.15;letter-spacing:-0.01em}
-:root[data-design="functional"] .ud-h3,.design-functional .ud-h3{font-family:var(--font-display);font-weight:var(--fw-semibold);font-size:1.1rem;line-height:1.2;letter-spacing:0em}
-:root[data-design="functional"] .ud-body,.design-functional .ud-body{font-family:var(--font-body);font-weight:var(--fw-regular);font-size:0.875rem;line-height:1.5;letter-spacing:0em}
-:root[data-design="functional"] .ud-label,.design-functional .ud-label{font-family:var(--font-display);font-weight:var(--fw-medium);font-size:0.75rem;line-height:1.25;letter-spacing:0em;color:var(--muted-foreground)} /* Title case, no uppercase/tracking */
-:root[data-design="functional"] .ud-data,.design-functional .ud-data{font-family:var(--font-data);font-weight:var(--fw-regular);font-size:0.8125rem;line-height:1.4;letter-spacing:0em}
+:root[data-design="functional"] .ud-display,.design-functional .ud-display,:root[data-design="operations"] .ud-display,.design-operations .ud-display{font-family:var(--font-display);font-weight:var(--fw-black);font-size:2.5rem;line-height:1.05;letter-spacing:-0.02em}
+:root[data-design="functional"] .ud-h1,.design-functional .ud-h1,:root[data-design="operations"] .ud-h1,.design-operations .ud-h1{font-family:var(--font-display);font-weight:var(--fw-bold);font-size:1.8rem;line-height:1.1;letter-spacing:-0.01em}
+:root[data-design="functional"] .ud-h2,.design-functional .ud-h2,:root[data-design="operations"] .ud-h2,.design-operations .ud-h2{font-family:var(--font-display);font-weight:var(--fw-semibold);font-size:1.4rem;line-height:1.15;letter-spacing:-0.01em}
+:root[data-design="functional"] .ud-h3,.design-functional .ud-h3,:root[data-design="operations"] .ud-h3,.design-operations .ud-h3{font-family:var(--font-display);font-weight:var(--fw-semibold);font-size:1.1rem;line-height:1.2;letter-spacing:0em}
+:root[data-design="functional"] .ud-body,.design-functional .ud-body,:root[data-design="operations"] .ud-body,.design-operations .ud-body{font-family:var(--font-body);font-weight:var(--fw-regular);font-size:0.875rem;line-height:1.5;letter-spacing:0em}
+:root[data-design="functional"] .ud-label,.design-functional .ud-label,:root[data-design="operations"] .ud-label,.design-operations .ud-label{font-family:var(--font-display);font-weight:var(--fw-medium);font-size:0.75rem;line-height:1.25;letter-spacing:0em;color:var(--muted-foreground)} /* Title case, no uppercase/tracking */
+:root[data-design="functional"] .ud-data,.design-functional .ud-data,:root[data-design="operations"] .ud-data,.design-operations .ud-data{font-family:var(--font-data);font-weight:var(--fw-regular);font-size:0.8125rem;line-height:1.4;letter-spacing:0em}

@@ -14,5 +14,6 @@
       "type": "registry:ui",
       "target": "components/ui/skeleton.tsx"
     }
-  ]
+  ],
+  "docs": "Size the skeleton to mirror the dimensions of the content it stands in for. A fallback of a different height causes a jump on arrival, which reads worse than the blank pause it replaced. See DESIGN.md."
 }

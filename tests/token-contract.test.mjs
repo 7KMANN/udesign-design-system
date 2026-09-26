@@ -144,10 +144,25 @@ function assertTouchFloor(css) {
 
 test('holds the 44px touch floor in every profile block', () => {
   assertTouchFloor(dualCss);
-  const functionalSelector = ':root[data-design="functional"], .design-functional {';
-  const overridden = dualCss.replace(functionalSelector, `${functionalSelector}\n  --control-height: 36px;`);
+  const overridden = dualCss.replace(/(:root\[data-design="functional"\], \.design-functional[^{]*\{)/, '$1\n  --control-height: 36px;');
   assert.notEqual(overridden, dualCss, 'mutation did not apply');
   assert.throws(() => assertTouchFloor(overridden), /36px in the functional block/);
+});
+
+// D-07: presentation and operations are the names; brand and functional stay
+// as aliases for one release. An alias must select the very same block.
+test('presentation and operations resolve to the same blocks as their aliases', () => {
+  for (const [name, alias] of [
+    [':root[data-design="presentation"]', ':root[data-design="brand"]'],
+    [':root[data-design="operations"]', ':root[data-design="functional"]'],
+    ['.design-operations', '.design-functional'],
+    [':root[data-design="operations"][data-theme="dark"]', ':root[data-design="functional"][data-theme="dark"]'],
+  ]) {
+    const named = block(dualCss, name);
+    assert.ok(named, `${name} is not emitted`);
+    assert.equal(named, block(dualCss, alias), `${name} does not share a block with ${alias}`);
+  }
+  assert.match(dualCss, /\[data-design="operations"\] \.ud-body/, 'operations typography helpers missing');
 });
 
 test('emits the responsive contract with mobile-safe values', () => {
@@ -159,11 +174,11 @@ test('emits the responsive contract with mobile-safe values', () => {
 test('emits functional typography helpers in the combined stylesheet', () => {
   assert.match(
     dualCss,
-    /:root\[data-design="functional"\] \.ud-display,[^{]*\.design-functional \.ud-display\{[^}]*font-size:2\.5rem/,
+    /:root\[data-design="functional"\] \.ud-display,[^{]*\.design-functional \.ud-display[^{]*\{[^}]*font-size:2\.5rem/,
   );
   assert.match(
     dualCss,
-    /:root\[data-design="functional"\] \.ud-body,[^{]*\.design-functional \.ud-body\{[^}]*font-size:0\.875rem/,
+    /:root\[data-design="functional"\] \.ud-body,[^{]*\.design-functional \.ud-body[^{]*\{[^}]*font-size:0\.875rem/,
   );
 });
 
@@ -279,5 +294,65 @@ test('reduced motion zeroes duration and neutralizes moment scale by default', (
     // Still scoped even inside the media query - see the prior test's guarantee.
     const gameRule = reduced.match(/:root\[data-game="on"\]\s*\{([^{}]*)\}/)?.[1];
     assert.ok(gameRule && /--moment-intensity-1-scale:\s*1;/.test(gameRule));
+  }
+});
+
+// --- Token $description emitted as a trailing CSS comment (S1 Item 1.10) ---
+// build.mjs's descriptionComment() surfaces a token's DTCG $description on
+// its own declaration line, for the motion, interactive, and tone families,
+// wherever a $description exists. Verifies both the happy path and that the
+// sanitizer keeps the two mechanisms above (block()'s brace counting and the
+// `name:\s*([^;]+);` value regex) from ever seeing a stray `{`, `}`, or `;`.
+
+test('emits a token\'s $description as a trailing comment on its declaration line', () => {
+  for (const css of [dualCss, functionalCss]) {
+    assert.match(
+      css,
+      /--motion-duration-instant:\s*70ms;\s*\/\*\s*Press compression, toggle flip\.[^*]*\*\//,
+      'expected the duration.instant $description on its own declaration line',
+    );
+  }
+});
+
+test('strips or escapes characters in a $description that would break the CSS-comment or value parsing', () => {
+  const baseTokens2 = JSON.parse(fs.readFileSync(path.join(root, 'tokens/udesign.tokens.json'), 'utf8'));
+  const pressScaleDescription = baseTokens2.motion.press.scale.$description;
+  assert.ok(pressScaleDescription.includes(';'), 'fixture assumption: press.scale $description contains a semicolon in source');
+
+  // dist/tokens.css's dual brand selector and dist/tokens-functional.css's
+  // standalone :root selector differ, so each needs its own block() lookup -
+  // same asymmetry the "holds the 44px touch floor" test above works around.
+  for (const [css, brandSelector] of [
+    [dualCss, ':root, :root[data-design="brand"]'],
+    [functionalCss, ':root'],
+  ]) {
+    const brand = block(css, brandSelector);
+    assert.ok(brand, 'brand profile block not found');
+    // The declaration's own trailing `;` must still be the FIRST one the
+    // value regex sees - i.e. no unescaped `;` inside the comment.
+    const [, value] = brand.match(/--motion-press-scale:\s*([\d.]+);/) || [];
+    assert.equal(value, '0.97', 'a semicolon inside the description must not have shifted where the value regex stops');
+    // No $description-derived comment (on a --motion-*, --tone-*, or
+    // --interactive-* declaration) may contain a raw brace or semicolon: a
+    // pre-existing, hand-written comment elsewhere in this block
+    // (`--client overrides per page: :root{ --client:#E23A2E }`) legitimately
+    // does contain both, which is exactly why block() counts brace depth
+    // instead of assuming comments are brace-free - so this check is scoped
+    // to descriptionComment()'s own output, not every comment in the block.
+    for (const match of brand.matchAll(/--(?:motion|tone|interactive)-[a-z0-9-]+:\s*[^;]+;\s*\/\*([^*]*)\*\//g)) {
+      const comment = match[1];
+      assert.doesNotMatch(comment, /[{}]/, `comment "${comment.trim()}" contains a brace that would confuse block()'s depth counter`);
+      assert.doesNotMatch(comment, /;/, `comment "${comment.trim()}" contains a semicolon that could confuse the value regex on a different token`);
+    }
+  }
+});
+
+test('adds no description comment where a token has no $description', () => {
+  // --interactive-* and --tone-* carry no leaf-level $description in the
+  // token source today (only their family has one) - descriptionComment()
+  // must not fabricate one from the family's description.
+  for (const css of [dualCss, functionalCss]) {
+    assert.doesNotMatch(css, /--interactive-hover:[^\n;]*;\s*\/\*/, '--interactive-hover has no per-token $description to emit');
+    assert.doesNotMatch(css, /--tone-neutral-foreground:[^\n;]*;\s*\/\*/, '--tone-neutral-foreground has no per-token $description to emit');
   }
 });

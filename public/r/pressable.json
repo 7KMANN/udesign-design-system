@@ -17,5 +17,6 @@
       "type": "registry:ui",
       "target": "components/ui/pressable.tsx"
     }
-  ]
+  ],
+  "docs": "Renders a real button for a clickable card, row, or list item, so Enter, Space, focus, and the accessible name come from the platform instead of a div with an onClick. Uses the subtle press scale: the standard control press scale reads as a layout bug across a full-width surface. See DESIGN.md."
 }

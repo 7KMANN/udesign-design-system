@@ -144,6 +144,24 @@ function cubicBezierCss(v) {
   return `cubic-bezier(${v.join(', ')})`;
 }
 
+// Emits a token's DTCG $description as a trailing CSS comment on its own
+// declaration line (motion, interactive, and tone families - see
+// formatSemanticGroups and the MOTION_* loops below). Only where a
+// $description exists. Sanitized so it can never break the two mechanisms
+// tests/token-contract.test.mjs uses to parse this file back out: a
+// brace-depth block() matcher and a `name:\s*([^;]+);` value regex - so no
+// `{`, `}`, or `;` survive, and a literal `*/` can never close the comment
+// early.
+function descriptionComment(token) {
+  const description = token && token.$description;
+  if (!description) return '';
+  const safe = description
+    .replace(/\*\//g, '* /')
+    .replace(/[{}]/g, '')
+    .replace(/;/g, ',');
+  return ` /* ${safe} */`;
+}
+
 const GENERIC_FONT_KEYWORDS = new Set(['serif', 'sans-serif', 'monospace', 'cursive', 'fantasy', 'system-ui']);
 function fontFamilyCss(list) {
   if (!list || !Array.isArray(list)) return 'sans-serif';
@@ -197,11 +215,25 @@ function cssTokenValue(token) {
   return value?.hex || value;
 }
 
+// Families whose per-token $description (where present) is worth surfacing
+// as a trailing CSS comment on the declaration line, so a reader inspecting
+// dist/tokens.css does not need to cross-reference the DTCG source. Kept
+// narrow (tone, interactive - motion is handled separately below since it
+// isn't part of SEMANTIC_ENTRIES) rather than applied to every semantic
+// family, since most don't carry per-token descriptions today.
+const DESCRIPTION_COMMENT_PREFIXES = ['tone.', 'interactive.'];
+
 function formatSemanticGroups(t) {
   const lines = ['  /* Semantic roles */'];
   for (const [tokenPath, cssVariable] of SEMANTIC_ENTRIES) {
-    const value = cssTokenValue(getPath(t, tokenPath));
-    if (value !== undefined) lines.push(`  ${cssVariable}: ${value};`);
+    const token = getPath(t, tokenPath);
+    const value = cssTokenValue(token);
+    if (value !== undefined) {
+      const comment = DESCRIPTION_COMMENT_PREFIXES.some((prefix) => tokenPath.startsWith(prefix))
+        ? descriptionComment(token)
+        : '';
+      lines.push(`  ${cssVariable}: ${value};${comment}`);
+    }
     if (tokenPath === 'role.border' && value !== undefined) lines.push('  --border: var(--border-color);');
   }
   return lines.join('\n');
@@ -315,23 +347,23 @@ function formatVarsBlock(t, baseTree, selector, { emitPrimitives = false, emitSt
   L.push('     tokens/functional.tokens.json has no motion key to override this with. */');
   for (const [key, name] of Object.entries(MOTION_DURATION_VAR)) {
     const token = baseTree.motion.duration[key];
-    if (token && token.$value) L.push(`  ${name}: ${dim(token.$value)};`);
+    if (token && token.$value) L.push(`  ${name}: ${dim(token.$value)};${descriptionComment(token)}`);
   }
   for (const [key, name] of Object.entries(MOTION_EASING_VAR)) {
     const token = baseTree.motion.easing[key];
-    if (token && token.$value) L.push(`  ${name}: ${cubicBezierCss(token.$value)};`);
+    if (token && token.$value) L.push(`  ${name}: ${cubicBezierCss(token.$value)};${descriptionComment(token)}`);
   }
   for (const [key, name] of Object.entries(MOTION_DELAY_VAR)) {
     const token = baseTree.motion.delay?.[key];
-    if (token && token.$value) L.push(`  ${name}: ${dim(token.$value)};`);
+    if (token && token.$value) L.push(`  ${name}: ${dim(token.$value)};${descriptionComment(token)}`);
   }
   for (const [key, name] of Object.entries(MOTION_LOOP_VAR)) {
     const token = baseTree.motion.loop?.[key];
-    if (token && token.$value) L.push(`  ${name}: ${dim(token.$value)};`);
+    if (token && token.$value) L.push(`  ${name}: ${dim(token.$value)};${descriptionComment(token)}`);
   }
   for (const [key, name] of Object.entries(MOTION_PRESS_VAR)) {
     const token = baseTree.motion.press?.[key];
-    if (token && token.$value !== undefined) L.push(`  ${name}: ${token.$value};`);
+    if (token && token.$value !== undefined) L.push(`  ${name}: ${token.$value};${descriptionComment(token)}`);
   }
 
   if (emitPrimitives) {
@@ -426,29 +458,30 @@ StyleDictionary.registerFormat({
     L.push(' * Do not hand-edit this file: edit the token source and run `npm run build`.');
     L.push(' */');
     
-    L.push(formatVarsBlock(baseTree, baseTree, ':root, :root[data-design="brand"]', { emitPrimitives: true, emitStructure: true }));
+    // D-07: presentation/operations are the names; brand/functional are aliases for one release.
+    L.push(formatVarsBlock(baseTree, baseTree, ':root, :root[data-design="brand"], :root[data-design="presentation"]', { emitPrimitives: true, emitStructure: true }));
     L.push('');
-    L.push(formatVarsBlock(functionalTree, baseTree, ':root[data-design="functional"], .design-functional', { emitStructure: true }));
+    L.push(formatVarsBlock(functionalTree, baseTree, ':root[data-design="functional"], .design-functional, :root[data-design="operations"], .design-operations', { emitStructure: true }));
     L.push('');
     L.push(formatVarsBlock(brandDarkTree, baseTree, ':root[data-theme="dark"], .dark', {}));
     L.push('');
     L.push(formatVarsBlock(
       functionalDarkTree,
       baseTree,
-      ':root[data-design="functional"][data-theme="dark"], :root[data-design="functional"].dark, .design-functional[data-theme="dark"], .design-functional.dark, .dark .design-functional',
+      ':root[data-design="functional"][data-theme="dark"], :root[data-design="functional"].dark, .design-functional[data-theme="dark"], .design-functional.dark, .dark .design-functional, :root[data-design="operations"][data-theme="dark"], :root[data-design="operations"].dark, .design-operations[data-theme="dark"], .design-operations.dark, .dark .design-operations',
       {},
     ));
     L.push('');
     L.push(formatMomentBlock(baseTree, ':root[data-game="on"]'));
     L.push('');
     L.push(formatReducedMotionBlock(
-      ':root, :root[data-design="brand"], :root[data-design="functional"], .design-functional',
+      ':root, :root[data-design="brand"], :root[data-design="functional"], .design-functional, :root[data-design="presentation"], :root[data-design="operations"], .design-operations',
       ':root[data-game="on"]',
     ));
     L.push('');
     L.push(formatTypographyHelpers(baseTree, baseTree));
     L.push('');
-    L.push(formatTypographyHelpers(functionalBaseTree, baseTree, [':root[data-design="functional"]', '.design-functional']));
+    L.push(formatTypographyHelpers(functionalBaseTree, baseTree, [':root[data-design="functional"]', '.design-functional', ':root[data-design="operations"]', '.design-operations']));
     L.push('');
 
     return L.join('\n');

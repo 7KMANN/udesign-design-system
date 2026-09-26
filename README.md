@@ -4,12 +4,12 @@ UDesign provides the semantic design foundation and source-owned React component
 
 Do not source brand values from Icitte. It is a separate product line with its own identity.
 
-**License:** proprietary, uDesign Productions only. See [LICENSE.md](LICENSE.md). Public visibility does not grant permission to use the work.
+**License:** proprietary, UDesign Productions only. See [LICENSE.md](LICENSE.md). Public visibility does not grant permission to use the work.
 
 ## What ships in 1.5.0
 
 - A semantic token foundation for light and dark themes.
-- Brand and functional density profiles selected at runtime.
+- Two profiles, `presentation` and `operations`, pinned once per document.
 - Tone roles for neutral, info, success, warning, danger, progress, and brand states.
 - Metric, chart, entity, interaction, surface, and responsive roles.
 - A shadcn source registry with 15 base components, five application patterns, and a `core` bundle.
@@ -27,8 +27,8 @@ Before changing this repository:
 4. Keep labels in sentence case. Do not use wide-tracked uppercase utility labels.
 5. Do not hand-edit generated token CSS, version snapshots, `showcase/public/versions.js`, or registry JSON under `public/r/`.
 6. Run the complete build, contract, component, registry type, showcase, and Playwright checks before release.
-7. Verify light and dark themes in both brand and functional profiles, including the 375px preview.
-8. Read [AGENTS.md](AGENTS.md) for known pitfalls in this repo's own tooling (release-script line-ending sensitivity, downstream install gotchas) before troubleshooting a script failure as a code bug.
+7. Verify light and dark themes in both the presentation and operations profiles, including the 375px preview.
+8. Read [AGENTS.md](AGENTS.md) first. It carries the design rules and routes to [docs/TOOLING-PITFALLS.md](docs/TOOLING-PITFALLS.md) for script failures.
 
 ## Architecture
 
@@ -58,18 +58,18 @@ Import the combined stylesheet once near the application root:
 @import "udesign-design-system/dist/tokens.css";
 ```
 
-`tokens.css` supports all four runtime combinations:
+Declare one profile and one theme on the document root:
 
 ```html
-<html data-design="brand" data-theme="light">
-<html data-design="brand" data-theme="dark">
-<html data-design="functional" data-theme="light">
-<html data-design="functional" data-theme="dark">
+<html data-design="presentation" data-theme="light">
+<html data-design="presentation" data-theme="dark">
+<html data-design="operations" data-theme="light">
+<html data-design="operations" data-theme="dark">
 ```
 
-If the attributes are absent, the stylesheet uses the brand and light defaults. Set both attributes before first paint when possible to avoid a visible theme change during hydration.
+The profile is pinned once per document and never switched at runtime; [DESIGN.md](DESIGN.md) "Profiles" has the rule and how to choose. `brand` and `functional` still resolve as aliases for one release. If the attributes are absent, the stylesheet uses the presentation and light defaults. Set both attributes before first paint when possible to avoid a visible theme change during hydration.
 
-`dist/tokens-functional.css` remains available for applications that only need the functional profile. Applications that switch profiles at runtime should use the combined stylesheet.
+`dist/tokens-functional.css` remains available for applications that only use the operations profile. The combined stylesheet is for everything else, including review and documentation surfaces that show both profiles side by side, which is the only case where a profile may switch.
 
 ## Install registry components
 
@@ -219,7 +219,7 @@ The release pipeline compiles the source against React 18 and Tailwind 3, perfor
 ## Source of truth and generated files
 
 - `tokens/udesign.tokens.json` defines shared primitives and semantic roles.
-- `tokens/functional.tokens.json` defines functional-profile overrides.
+- `tokens/functional.tokens.json` defines operations-profile overrides.
 - `registry.json` defines the shadcn manifest and `registry/new-york/ui/` contains the component and pattern source.
 - `DESIGN.md` defines usage rules and accessibility expectations.
 - `dist/`, `history/`, `public/r/`, and `showcase/public/versions.js` are generated or release-managed output.
@@ -257,4 +257,4 @@ git push origin master --tags
 
 ## Showcase
 
-The Vite showcase demonstrates tokens and registry patterns across light and dark themes, brand and functional profiles, and responsive widths. It is a review surface, not a substitute for automated interaction, accessibility, and visual regression tests.
+The Vite showcase demonstrates tokens and registry patterns across light and dark themes, both profiles, and responsive widths. It is a review surface, not a substitute for automated interaction, accessibility, and visual regression tests.

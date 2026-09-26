@@ -14,5 +14,6 @@
       "type": "registry:ui",
       "target": "components/ui/spinner.tsx"
     }
-  ]
+  ],
+  "docs": "The ring renders whether or not it turns: under reduced motion the spin animation drops but the shape stays a visible busy indicator. Pass label to announce the wait to assistive technology, or omit it when a parent already reports aria-busy. See DESIGN.md."
 }

@@ -18,5 +18,6 @@
       "type": "registry:ui",
       "target": "components/ui/button.tsx"
     }
-  ]
+  ],
+  "docs": "The pending prop disables the control, reports aria-busy, and swaps in a spinner while preserving the button's width so the layout does not jump when the work starts. Press treatment is per-variant: a neutral surface darkens to the pressed role while a solid surface has no deeper solid role to move to, and every variant keeps a non-motion colour signal since --motion-press-scale collapses to 1 under reduced motion. See DESIGN.md."
 }

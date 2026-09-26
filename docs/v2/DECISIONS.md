@@ -428,6 +428,11 @@ and a hand-taken copy does not follow its source. **S1's M1 gains a re-install s
 -state gains a check for it. Recorded because an agent reconciling `udesign-docs` would reasonably
 believe the job finished and it would not have.
 
+**Corrected 2026-09-26 (S1).** The premise was wrong. The installed directory is a Windows junction
+into the `udesign-docs` working tree, not a copy: identical md5s meant one file seen twice. There is
+no copy to re-install. It serves whatever `udesign-docs` has checked out, so reconciling the source
+and merging it to `main` is sufficient.
+
 ---
 
 ## Nothing is left open

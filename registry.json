@@ -8,6 +8,7 @@
       "type": "registry:ui",
       "title": "Button",
       "description": "UDesign action control with semantic variants, press and pending feedback, and accessible touch targets.",
+      "docs": "The pending prop disables the control, reports aria-busy, and swaps in a spinner while preserving the button's width so the layout does not jump when the work starts. Press treatment is per-variant: a neutral surface darkens to the pressed role while a solid surface has no deeper solid role to move to, and every variant keeps a non-motion colour signal since --motion-press-scale collapses to 1 under reduced motion. See DESIGN.md.",
       "dependencies": ["@radix-ui/react-slot"],
       "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.5.0/public/r/spinner.json"],
       "files": [{ "path": "registry/new-york/ui/button.tsx", "type": "registry:ui", "target": "components/ui/button.tsx" }]
@@ -138,6 +139,7 @@
       "type": "registry:ui",
       "title": "Table",
       "description": "Responsive data table with keyboard-scrollable overflow and touch-safe rows.",
+      "docs": "TableRow has no pressed state: a <tr> cannot take focus or a key press, so press styling would promise a click the keyboard cannot make. A clickable row is Pressable, not a styled <tr>. See DESIGN.md.",
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/table.tsx", "type": "registry:ui", "target": "components/ui/table.tsx" }]
     },
@@ -170,6 +172,7 @@
       "type": "registry:component",
       "title": "Moment",
       "description": "Bounded, in-place reaction wrapper for a closed loop, capped at intensity 2. Gamification-exclusive: inert without data-game=\"on\" (ADR-0001). Not included in the core bundle - install it only in a repository that has opted in.",
+      "docs": "Intensity is capped at 2: intensity 3 (screen-level celebration, particle bursts, overlays) does not exist in this design system and must never become expressible through this component. Moment renders no icon or text of its own; the caller's children carry the actual state change, which is what still communicates closure when the animation is removed under reduced motion. See DESIGN.md.",
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/moment.tsx", "type": "registry:component", "target": "components/ui/moment.tsx" }]
     },
@@ -210,6 +213,7 @@
       "type": "registry:ui",
       "title": "Spinner",
       "description": "Busy indicator for an action in flight. Stops turning under reduced motion rather than disappearing, so the state stays visible.",
+      "docs": "The ring renders whether or not it turns: under reduced motion the spin animation drops but the shape stays a visible busy indicator. Pass label to announce the wait to assistive technology, or omit it when a parent already reports aria-busy. See DESIGN.md.",
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/spinner.tsx", "type": "registry:ui", "target": "components/ui/spinner.tsx" }]
     },
@@ -218,6 +222,7 @@
       "type": "registry:ui",
       "title": "Skeleton",
       "description": "Loading placeholder sized to the content it stands in for, so arrival does not shift the layout.",
+      "docs": "Size the skeleton to mirror the dimensions of the content it stands in for. A fallback of a different height causes a jump on arrival, which reads worse than the blank pause it replaced. See DESIGN.md.",
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/skeleton.tsx", "type": "registry:ui", "target": "components/ui/skeleton.tsx" }]
     },
@@ -226,6 +231,7 @@
       "type": "registry:ui",
       "title": "Pressable",
       "description": "Clickable surface for a card, row, or list item. A real button, so keyboard activation and the accessible name come from the platform.",
+      "docs": "Renders a real button for a clickable card, row, or list item, so Enter, Space, focus, and the accessible name come from the platform instead of a div with an onClick. Uses the subtle press scale: the standard control press scale reads as a layout bug across a full-width surface. See DESIGN.md.",
       "dependencies": ["@radix-ui/react-slot"],
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/pressable.tsx", "type": "registry:ui", "target": "components/ui/pressable.tsx" }]
@@ -235,6 +241,7 @@
       "type": "registry:item",
       "title": "UDesign Core",
       "description": "Complete UDesign new-york component and pattern source set.",
+      "docs": "UDesign core installed. Before you build: every interaction shows a visible change within 100ms; every interactive element has a pressed state; every async control shows pending in itself (Button has a pending prop); a clickable row or card is Pressable, never a div with onClick; durations and easings come from --motion-* roles. Emphasis: one accent-filled control per screen, never inside a repeated row, card, or list item. Read AGENTS.md, then DESIGN.md.",
       "dependencies": [
         "@radix-ui/react-checkbox",
         "@radix-ui/react-dialog",

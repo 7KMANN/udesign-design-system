@@ -1,81 +1,77 @@
-# Agent Instructions — udesign-design-system
+# UDesign design system
 
-Read this before making any change or running any script in this repo. It is the canonical
-cross-tool instruction file (the emerging `AGENTS.md` standard most coding agents read
-automatically). `.cursorrules` and `.gemini/rules` point here for tool-specific pickup;
-edit pitfalls in this file only, not in those.
+1. Every input: a visible change within 100ms, before any network call returns.
+2. Every interactive element has a pressed state.
+3. An async control shows its own pending: `<Button pending>`.
+4. Motion: `--motion-*` roles, never raw values.
+5. One accent-filled control per screen. None on a repeated row, card, or item.
+6. Presented to someone: `presentation`. Operated by someone: `operations`.
 
-For style and token rules, read [DESIGN.md](DESIGN.md) and the "Rules for contributors
-and agents" section of [README.md](README.md). This file covers operational pitfalls in
-the repo's own tooling — things that will not show up by reading the source.
+Build to these. Audit against them. The sections below make each one exact.
 
-## Known pitfalls
+## The rules, exactly
 
-### 1. `npm run release` can fail at the very last step on mixed line endings
+**1. Feedback floor.** There is no opt-out. The full feedback model
+(four layers, response-time budget) is owned by `udesign-docs`, linked below.
 
-**Symptom:** the full `validate` pipeline passes (build, DESIGN.md lint, registry build,
-39 contract tests including WCAG AA, typecheck, component tests, clean-app registry
-install, showcase build, Playwright e2e — all green) and then the release still fails with:
+**2. Press.** A CSS `:active` treatment using `--interactive-pressed` or `--motion-press-scale`,
+on an element a keyboard can reach, with a `:focus-visible` ring (never `:focus`). A clickable row,
+card, or list item is `Pressable`, never a `div` with `onClick`. A `TableRow` has no press state.
 
-```
-Release failed and was rolled back: CHANGELOG.md must start with the canonical header.
-```
+**3. Pending.** `Button`'s `pending` prop disables it, sets `aria-busy`, and keeps its width. The
+control that was clicked is the one that shows the wait.
 
-**Root cause:** this repo has `core.autocrlf=true` and no `.gitattributes`. Git checks
-text files out with CRLF locally but stores them as LF. `scripts/release-utils.mjs`
-(`prependChangelog`) detects the file's newline style with
-`changelog.includes("\r\n") ? "\r\n" : "\n"` and then asserts the file starts with
-`# Changelog<newline><newline>` using that exact detected style. If `CHANGELOG.md` (or
-any other hand-maintained file this script touches) has **mixed** endings — some lines
-LF, some CRLF — the detection picks CRLF (because it only checks for presence, not
-uniformity) but the actual header bytes may be LF, and the assertion fails.
+**4. Motion.** Select a duration by intent: `instant`, `fast`, `standard`, `emphasis`, `slow`.
+`slow` (350ms) is the interaction ceiling. Never `duration-200`, never a literal `cubic-bezier`.
+Shipped values: [`docs/motion-contract.md`](docs/motion-contract.md).
 
-This happens whenever an agent or editor hand-edits `CHANGELOG.md` (e.g. reconstructing
-missing historical entries) and writes LF-only content into a file Git checked out as
-CRLF. `git status` will show the file as clean/unmodified under `autocrlf`, because
-autocrlf normalizes for the *comparison* — it does not fix the bytes on disk. The mixed
-state is invisible until this byte-exact assertion runs, which is the last step of a
-~2-minute pipeline.
+**5. Accent.** "Accent-filled" means `Button` with `variant="default"`, which is also what a
+`Button` with no variant renders. Count them per screen.
+- A modal or side panel gets its own one.
+- A control repeated per card or list item is `secondary`; in a dense toolbar or table row it is
+  `ghost`. However important it feels in isolation.
+- `presentation` may spend one accent-filled control per viewport.
+- In `operations` the accent never appears in chrome, navigation, or any repeated block. It marks
+  the one action that commits work.
+- Density is a separate axis. A dense, busy `operations` screen is correct, and it still spends one
+  accent.
+- Call it **the accent** in code, class names, and copy. Never by a colour name.
 
-**Fix:** if `CHANGELOG.md` was hand-edited and the release fails this way, check what Git
-considers canonical before touching anything else:
+**6. Profile.** Ask one question: is this screen presented to someone, or operated by someone?
+- `presentation`: marketing, proposals, client portals, presentation-led screens.
+- `operations`: production, scheduling, accounting, administration, internal operational tools.
+- One profile per document, set once on the root (`<html data-design="operations">`), never
+  nested, never switched at runtime. Only a review or documentation surface that exists to show
+  both profiles may switch.
+- A screen that is genuinely both: ask the owner. Do not mix.
+- `brand` and `functional` still resolve as aliases of `presentation` and `operations` for one
+  release. Write the new names.
 
-```bash
-git show HEAD:CHANGELOG.md | node -e "..."   # confirm HEAD's own newline style first
-git status --short CHANGELOG.md              # confirm no *other* pending edits you'd lose
-git checkout -- CHANGELOG.md                  # restores Git's own canonical checkout
-```
+## Auditing ("fix drifted stuff")
 
-`git checkout --` is safe and sufficient when the file's content is already correct and
-only the line endings are inconsistent — it does not touch content, only re-checks-out
-the bytes Git already has recorded. Do not blanket-normalize to LF; check `HEAD`'s actual
-stored encoding first, since the fix must match what's committed, not an assumption.
+Every finding names its rule: a number from `DESIGN.md` "Banned design patterns", or one of the six
+rules above, plus the file and line. A pattern no written rule covers is not a finding.
+`dist/tokens.css` is the truth for token names and values; a document that disagrees with it is the
+drift, not the code.
 
-**Permanent fix (not yet applied, flagged for whoever picks this up):** add a
-`.gitattributes` pinning text files to one line-ending convention (e.g.
-`* text=auto eol=lf`) so this class of bug becomes impossible rather than something to
-catch at release time.
+## Read next
 
-### 2. This is a general risk, not unique to `CHANGELOG.md`
+1. [`DESIGN.md`](DESIGN.md): "Emphasis and hierarchy", "Interaction states", "Motion",
+   "Components", "Banned design patterns". The rest is reference.
+2. Any change to an interactive element (a button, form, link, row, tab, dialog, filter, upload, or
+   navigation item) loads the `interface-responsiveness` skill first, every time. One button
+   counts. Source: [`skills/interface-responsiveness/SKILL.md`](https://github.com/7KMANN/udesign-docs/blob/v0.9.0/skills/interface-responsiveness/SKILL.md).
 
-Any script in this repo that does byte-exact or newline-sensitive parsing of a
-hand-maintained file (not just `prependChangelog`) is exposed to the same failure mode
-under `autocrlf=true` + no `.gitattributes`. If a future release-pipeline failure looks
-like a formatting/assertion error rather than an actual logic or content bug, check line
-endings on the file in question before debugging the script itself.
+## Owned by `udesign-docs`, not here
 
-### 3. Downstream consumers (e.g. GlobalVision)
+Version-independent canon. Link at a tag; the latest is listed by `git -C udesign-docs tag`.
 
-GlobalVision pins this package via a Git tag (`github:7KMANN/udesign-design-system#vX.Y.Z`)
-and installs it with plain `npm install`. That command does **not** re-resolve an
-already-locked Git dependency to a new tag — if you bump the pin in `package.json` but
-`npm install` reports "up to date" with the old commit still in the lockfile, force it
-explicitly:
+- The feedback model: [`standards/design/udesign-contract.md`](https://github.com/7KMANN/udesign-docs/blob/v0.9.0/standards/design/udesign-contract.md), section "Feedback".
+- Voice in interface copy and the visual tone: [`business/udesign-ground-truth.md`](https://github.com/7KMANN/udesign-docs/blob/v0.9.0/business/udesign-ground-truth.md), §5. Interface copy follows it verbatim.
 
-```bash
-npm install "udesign-design-system@github:7KMANN/udesign-design-system#vX.Y.Z"
-```
+## Changing this repository
 
-Verify with `require('./node_modules/udesign-design-system/package.json').version` and
-the `resolved` commit in `package-lock.json` — both should match the new tag before you
-trust the install.
+- `npm test` stays green. `npm run validate` runs the full pipeline before a release.
+- After editing anything under `registry/new-york/ui/`, run `npm run build:registry`; the registry
+  test fails on stale `public/r/` output. Never hand-edit `dist/` or `public/r/`.
+- A script that fails on formatting rather than logic: [`docs/TOOLING-PITFALLS.md`](docs/TOOLING-PITFALLS.md).

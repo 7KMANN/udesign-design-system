@@ -109,30 +109,57 @@ UDesign supports two visual jobs with one semantic contract:
 
 Components must describe intent through semantic variables. Primitive values are token implementation details. Applications do not select a primitive because it happens to look correct in one profile.
 
-## Profile matrix
+## Profiles
 
-Two independent attributes create four supported combinations:
+Pick the profile with one question: **is this screen presented to someone, or operated by someone?**
 
-- `data-design="brand"` with `data-theme="light"`
-- `data-design="brand"` with `data-theme="dark"`
-- `data-design="functional"` with `data-theme="light"`
-- `data-design="functional"` with `data-theme="dark"`
+- `data-design="presentation"`: presented. Marketing, proposals, client portals, and presentation-led screens.
+- `data-design="operations"`: operated. Production, scheduling, accounting, and administration.
 
-Brand and light are the defaults when attributes are absent.
+A screen that is genuinely both is a question for the owner, not a mix.
 
-### Brand profile
+**Pin once.** One profile per document, declared once on the document root, never nested, never switched at runtime. The only exception is a review or documentation surface whose job is to show both profiles, such as the showcase.
 
-The brand profile uses Montserrat for strong display moments, generous section spacing, the full radius scale, and restrained overlay elevation. It suits marketing, proposals, client portals, and presentation-led screens. Its signature is the contrast between a quiet warm field and a compact geometric UDesign lockup.
+`data-design="brand"` and `data-design="functional"` still resolve, as aliases of `presentation` and `operations`, for one release. Write the new names.
 
-### Functional profile
+Each profile combines with `data-theme="light"` or `data-theme="dark"`. Presentation and light are the defaults when the attributes are absent.
 
-The functional profile uses Geist for dense interface typography, tighter spacing, smaller radii, stronger boundaries, and flat operational surfaces. Montserrat remains reserved for the UDesign lockup and rare display moments. It suits production, scheduling, accounting, and administration.
+### Presentation profile
+
+The presentation profile uses Montserrat for strong display moments, the full radius scale, and restrained overlay elevation. Its signature is the contrast between a quiet warm field and a compact geometric UDesign lockup.
+
+### Operations profile
+
+The operations profile uses Geist for dense interface typography, smaller radii, stronger boundaries, and flat operational surfaces. Montserrat remains reserved for the UDesign lockup and rare display moments.
 
 ### Theme behavior
 
-Theme changes alter semantic color assignments, not component APIs. Dark theme uses solid surfaces with clear separation. Raised, sunken, overlay, and console surfaces remain distinguishable without relying on transparency. Components must work when a profile or theme is nested inside another application surface.
+Theme changes alter semantic color assignments, not component APIs. Dark theme uses solid surfaces with clear separation. Raised, sunken, overlay, and console surfaces remain distinguishable without relying on transparency. A theme may be nested inside another application surface; a profile may not.
 
 Set both attributes before first paint when server rendering. A theme control must expose its current state, update the document attribute, and preserve the user choice according to the host application's preference policy.
+
+## Visual conviction
+
+Every sentence in this section and the next carries its provenance. `CANON` cites the canon line it restates. `APPROVED` carries the date the owner approved an inference, recorded in `docs/v2/DECISIONS.md`.
+
+- UDesign's visual position translates its business one: it "does not position itself as the cheapest option", and its tone is "premium, honest, direct, transparent". `CANON udesign-ground-truth.md:139-142` for the quotes, `APPROVED 2026-09-01 D-11` for reading them as a visual position
+- Considered, not decorated: premium shows through restraint and precision, never through ornament. `APPROVED 2026-09-01 D-11`
+- Nothing on the screen is there to look impressive; everything is there because it is doing a job. `APPROVED 2026-09-01 D-11`
+- Simplicity over minimalism: a dense working screen is correct, and "simple" means legible and direct, not sparse. `APPROVED 2026-09-01 D-11`
+- Never cheap, generic, or template-made: a screen never looks like it came out of a template someone else also bought. `APPROVED 2026-09-01 D-11`
+- Never provisional, unfinished, or uncertain: nothing floating, nothing thin, no dead controls, and no state that leaves you unsure the click registered. `APPROVED 2026-09-01 D-11`
+- The accent is called the accent in docs, code, class names, and interface copy, never by a colour name. `APPROVED 2026-09-01 D-13`
+- The visual tells of machine-generated UI are refused outright; they are bans 5, 6, 25, and 26 in "Banned design patterns". `APPROVED 2026-09-01 D-10`
+
+## Voice in the interface
+
+Interface copy follows `udesign-ground-truth.md` §5 verbatim; the lines below point at it and add nothing. `CANON udesign-ground-truth.md:142-147`
+
+- Tone: premium, honest, direct, transparent, with results over promises. `CANON udesign-ground-truth.md:142`
+- The brand name is always "UDesign". `CANON udesign-ground-truth.md:143`
+- Customer-facing copy uses no corporate jargon, such as "B2B", "MOQ", or "digitizing raster matrix". `CANON udesign-ground-truth.md:144-145`
+- Copy has no AI clichés and no AI-sounding phrasing, including em-dashes. `CANON udesign-ground-truth.md:145-146`
+- Copy makes no false claims, such as same-day turnaround, free digitizing on a one-piece order, or price matching. `CANON udesign-ground-truth.md:146-147`
 
 ## Semantic color system
 
@@ -152,13 +179,13 @@ Neutral, info, success, warning, danger, progress, and brand tones each provide:
 - `solid` for high-emphasis fills.
 - `solid-foreground` for content placed on the solid fill.
 
-The canonical shape is `--tone-{name}-{role}`. Use the full family rather than mixing a surface from one tone with text from another.
+The canonical shape is `--tone-{name}-{role}`. Use the full family rather than mixing a surface from one tone with text from another. Tones are for statuses only; a category that is not a status uses an entity family.
 
 Success confirms completion or a healthy condition. Warning identifies a condition that needs attention. Danger identifies failure, destructive action, or an urgent block. Info provides neutral guidance. Progress communicates active work. Brand identifies UDesign or a selected branded action. Neutral covers passive state.
 
 ### Metric roles
 
-Metrics describe direction, not general status. Positive, negative, and neutral metric families each expose `foreground`, `surface`, and `border` roles.
+Metrics describe direction, not general status. Positive, negative, and neutral metric families each expose `foreground`, `surface`, and `border` roles. A directional delta uses a metric family, never `--tone-success-*` or `--tone-danger-*`.
 
 - Positive means movement in the desired direction.
 - Negative means movement away from the desired direction.
@@ -218,7 +245,7 @@ Respect `prefers-reduced-motion`. Animation may clarify a transition or progress
 
 ## Typography
 
-Montserrat carries the UDesign lockup, display headings, and high-value calls to action in the brand profile. Geist carries interface text and dense functional layouts. JetBrains Mono is limited to codes, identifiers, timestamps, and aligned numeric readouts.
+Montserrat carries the UDesign lockup, display headings, and high-value calls to action in the presentation profile. Geist carries interface text and dense operations layouts. JetBrains Mono is limited to codes, identifiers, timestamps, and aligned numeric readouts.
 
 Labels use sentence case with normal tracking. Do not turn metadata, navigation, or field labels into wide-tracked uppercase mono text. Body copy uses the semantic foreground. Muted foreground is for secondary information only after its contrast has been verified on the selected surface.
 
@@ -226,7 +253,7 @@ Display type may scale fluidly. Controls and body text must remain readable with
 
 ## Layout and responsive behavior
 
-Use the shared spacing roles for component rhythm. Brand pages can use broader separation. Functional pages can use compact spacing without shrinking touch targets or readable type.
+Use the shared spacing roles for component rhythm. Presentation pages can use broader separation. Operations pages can use compact spacing without shrinking touch targets or readable type.
 
 The responsive contract includes:
 
@@ -252,7 +279,7 @@ Full-height mobile layouts use small viewport units. Validate at 375px, not only
 
 ## Elevation
 
-Cards and work areas rely primarily on semantic surfaces and borders. Brand overlays may use the elevation scale. Functional content remains flat except for true overlays that need separation from the workspace.
+Cards and work areas rely primarily on semantic surfaces and borders. Presentation overlays may use the elevation scale. Operations content remains flat except for true overlays that need separation from the workspace.
 
 Shadows do not replace boundaries or focus treatment. Dark theme overlays must remain distinguishable from both the page floor and raised cards.
 
@@ -275,7 +302,7 @@ Also published: `--motion-delay-indicator` (hold before revealing a pending indi
 
 **The duration vocabulary is open; the reaction magnitude is capped.** These are two axes. A component that needs an intent the system does not publish is how a system ends up with 22 of 24 components hardcoding their own values, so a genuinely needed intent is added here. Magnitude is a separate question and does not move: **0 the minimum in-control reaction, 1 routine feedback, 2 a closed loop. Intensity 3 does not exist and is not reachable through any combination of published tokens** - no screen-level celebration, no overlay, no particle burst. `--moment-intensity-1-scale` and `--moment-intensity-2-scale` compile only inside `[data-game="on"]` (see `data-game` below); nothing larger is published. Level 0 is the *smallest* reaction, never the absence of one - a control that changes nothing on press is a defect at every level.
 
-**Intensity is identical in the brand and functional profiles.** The functional profile is not a quieter variant because it is "for work," and the brand profile is not a louder variant because it is presentational - both render the same reaction. The build enforces this structurally: the compiled motion values are read from one source tree only, with no per-profile override path to diverge through.
+**Intensity is identical in the presentation and operations profiles.** The operations profile is not a quieter variant because it is "for work," and the presentation profile is not a louder variant because it is presentational - both render the same reaction. The build enforces this structurally: the compiled motion values are read from one source tree only, with no per-profile override path to diverge through.
 
 `prefers-reduced-motion: reduce` is baked into the compiled token layer itself - `--motion-duration-*` and `--motion-loop-*` collapse to `0ms`, `--motion-press-scale*` and `--moment-intensity-*-scale` collapse to `1` automatically, so a consuming component gets correct behavior by default without writing its own media query. Two things deliberately do **not** collapse: `--motion-delay-indicator`, which suppresses a spinner flash rather than moving anything, and every interaction colour including `--interactive-pressed` - reduced motion removes the movement, not the feedback. A control still darkens on press, still shows its focus ring, and still reports `aria-busy`. Motion is still never the only indicator of a state change: a component using these tokens for its sole signal of "something changed" is incomplete regardless of the reduced-motion question.
 
@@ -291,13 +318,27 @@ Three generic, domain-flavorless primitives ship in the registry:
 - **Rolling-consistency chip** (`rolling-consistency-chip`) - "4 of the last 7." Composes `Badge` with a tone that never varies with the count. Not a streak: no chain, no repair/grace/freeze mechanic, no fire icon.
 - **Moment** (`moment`) - wraps `children` and applies a bounded `transform`/`opacity` reaction at the given `intensity` (1 or 2) when `active` becomes true. Renders no icon or text of its own - the caller's `children` carries the actual state change, which is what still communicates closure when the animation is removed under reduced motion. No portal, no fixed positioning, no overlay, no sound, no haptics. Gated behind `data-game="on"`; not part of the `core` bundle.
 
+## Emphasis and hierarchy
+
+Emphasis is a budget, counted in accent-filled controls. In the registry an accent-filled control is `Button` with `variant="default"`, which is also what a `Button` with no variant renders. Elsewhere it is any control filled with `--primary`.
+
+- One accent-filled control per screen: not per card, not per section. A modal or side panel gets its own one. `CANON research §7.7 A, D-09`
+- A repeated element never carries the accent: a control that appears once per row, card, or list item is `secondary` or `ghost`, however important it feels in isolation. `CANON research §7.7 A, D-09`
+- `presentation` may spend one accent-filled control per viewport. `APPROVED 2026-09-01 D-09`
+- In `operations` the accent never appears in chrome, navigation, or any repeated block. It marks the one action that commits work. `APPROVED 2026-09-01 D-09`
+- Emphasis and density are separate axes: a busy `operations` screen with many controls is correct, its controls are low emphasis, and it still spends one accent. `APPROVED 2026-09-01 D-11`
+
+The test: count the accent-filled controls in one viewport. More than the budget means the hierarchy is wrong, not that the screen is important.
+
 ## Components
 
-**`button-primary`** uses `{colors.primary}` with `{colors.on-primary}` for the main action. It meets the shared control height and touch-target contract, exposes visible focus, and uses the interactive hover, pressed, and disabled roles.
+**`button-primary`** (registry `Button`, `variant="default"`) uses `{colors.primary}` with `{colors.on-primary}`. **Use when** it is the single most important action on the screen; never in a repeated element. It meets the shared control height and touch-target contract, exposes visible focus, and uses the interactive hover, pressed, and disabled roles.
 
-**`button-secondary`** uses `{colors.canvas}` with `{colors.ink}` and a `{colors.hairline}` boundary. Runtime components consume the matching semantic roles so the treatment adapts to theme and profile.
+**`button-secondary`** (`variant="secondary"`) uses `{colors.canvas}` with `{colors.ink}` and a `{colors.hairline}` boundary. **Use when** the action sits inside a card, row, or list item, or is the negative half of a pair. Runtime components consume the matching semantic roles so the treatment adapts to theme and profile.
 
-**`button-outline`** uses a transparent surface, `{colors.ink}` foreground, and a clear outline. Its hover state uses semantic interaction roles rather than a raw inverse color.
+**`button-outline`** (`variant="outline"`) uses a transparent surface, `{colors.ink}` foreground, and a clear outline. **Use when** a standalone action must not compete with the screen's primary. Its hover state uses semantic interaction roles rather than a raw inverse color.
+
+The registry `Button` has three more variants. `ghost`: **use when** several controls sit together, as in dense toolbars and table row actions. `destructive`: **use when** the action deletes something or cannot be undone. `link`: **use when** the action is navigation that reads as text.
 
 **`header-lockup`** keeps the compact UDesign mark and Montserrat weight. It is the main signature element, so surrounding navigation remains visually restrained.
 
@@ -305,11 +346,11 @@ Three generic, domain-flavorless primitives ship in the registry:
 
 **`confidential-footer`** uses `{colors.canvas}`, `{colors.muted}`, and a `{colors.hairline}` top boundary. Its label remains sentence case and should only use the destructive role when the content represents a real warning.
 
-**`card`** uses `{colors.surface-card}`, a `{colors.hairline}` boundary, and `{rounded.md}`. Runtime components use raised or card semantic roles so dark and functional profiles can adapt it.
+**`card`** uses `{colors.surface-card}`, a `{colors.hairline}` boundary, and `{rounded.md}`. Runtime components use raised or card semantic roles so dark themes and the operations profile can adapt it.
 
 ### Feedback primitives
 
-Three primitives carry the feedback floor. They are part of `core`: an application cannot meet the contract's Feedback section without them, so they are not optional extras.
+Three primitives carry the feedback floor. They are part of `core`: an application cannot meet the feedback model in [`udesign-contract.md` "Feedback"](https://github.com/7KMANN/udesign-docs/blob/v0.9.0/standards/design/udesign-contract.md) (owned by `udesign-docs`, version-independent) without them, so they are not optional extras.
 
 - **Spinner** (`spinner`) - a busy indicator for an action in flight. Under reduced motion it stops turning and stays visible, because the state has to survive the animation being removed.
 - **Skeleton** (`skeleton`) - a loading placeholder, sized to the content it replaces. A fallback of a different height causes a jump on arrival, which reads worse than the pause it replaced.
@@ -355,18 +396,42 @@ The historical version selector may show a reduced matrix for releases that pred
 
 ## Banned design patterns
 
-- Cool slate neutrals that break the warm UDesign foundation.
-- Translucent frosted panels in place of solid semantic surfaces.
-- Decorative gradients used to manufacture hierarchy.
-- Wide-tracked uppercase utility labels.
-- Raw color literals or primitive token variables in component source.
-- Tiny interactive targets hidden inside visually compact controls.
-- Color-only status, metric, entity, or chart communication.
-- Excessive rounding that makes every container look like a pill.
-- Shadows on ordinary content cards in the functional profile.
-- Screen-level celebration: full-viewport overlays, particle bursts, confetti, or anything at an intensity beyond 2.
-- Motion as the sole indicator that a state changed - the non-motion signal (state, text, icon) must exist independent of the animation.
-- Intensity that varies between the brand and functional profiles.
+This is the one numbered list. Bans 1-19 keep the numbers they carried in `udesign-docs/standards/design/udesign-contract.md`, so a citation of "ban N" from before v2.0.0 still resolves. New bans append after the last number and never move. An audit cites each finding by its number.
+
+### From the contract (1-19)
+
+1. `var(--ud-*)` anywhere in consumer source (for example `app/`, `components/`, `lib/`).
+2. Raw Tailwind palette utilities (`bg-slate-*`, `text-red-500`, `border-zinc-*`, any `{property}-{palette}-{number}`).
+3. Color literals (`#hex`, `oklch()`, `rgb()`, `hsl()`) in app code. Allowed only for genuinely intentional data (map markers, user-picked swatches, product imagery) and must carry a `design-ok: <reason>` comment on or above the line.
+4. Raw shadow utilities (`shadow-sm` .. `shadow-2xl`, `drop-shadow-*`). Use `--shadow-1/2/3` for true overlays only.
+5. `backdrop-blur` / glassmorphism / frosted translucent panels. Solid semantic surfaces only.
+6. Gradient-clipped text (`bg-clip-text`) and decorative gradients used for hierarchy.
+7. `uppercase` combined with wide tracking.
+8. `vh`, `dvh`, `h-screen` for layout heights. Use `svh`.
+9. Native `<select>`, checkbox, radio, range controls outside `components/ui`.
+10. Cool slate/zinc/gray neutrals in any form. UDesign neutrals are warm stone; they come from semantic roles, never restated locally.
+11. Color-only communication of status, metric, entity, or chart meaning.
+12. Pill-shaping every container. `rounded-full` is for genuine pills (badges, avatars, dots), not cards or inputs.
+13. Icon-only interactive controls without an accessible name.
+14. Em-dashes in UI copy and docs: use hyphens or colons.
+15. An async control with no pending state. A control that awaits and shows nothing until the promise settles is banned regardless of correctness.
+16. An interactive element with no pressed state. `:hover` is not a substitute: it does not exist on touch and does not fire for keyboard activation.
+17. Internal navigation through a raw `<a href>`. Use the framework's link primitive, so the client-side transition, prefetch, and loading state can run at all.
+18. `<Suspense fallback={null}>`, and any other fallback that renders nothing. A boundary that falls back to nothing is a boundary that communicates nothing.
+19. A hardcoded duration or easing value in application code (`duration-200`, `300ms`, `ease-out`, a literal cubic-bezier). Duration and easing come from motion roles.
+
+### Added in v2.0.0
+
+20. Tiny interactive targets hidden inside visually compact controls. A control may look shorter than 44px; the hit area behind it may not (see the responsive contract's `--touch-target-min`).
+21. A shadow, raw or semantic, on an ordinary content card in the operations profile. `--shadow-1/2/3` stay reserved for true overlays (dialogs, menus, popovers) there.
+22. Screen-level celebration: full-viewport overlays, particle bursts, confetti, or any reaction beyond intensity 2.
+23. Motion as the sole indicator that a state changed. The non-motion signal (state, text, or icon) must exist independent of the animation.
+24. Intensity that varies between the presentation and operations profiles.
+
+### Visual tells of machine-generated UI `APPROVED 2026-09-01 D-10`
+
+25. Generic sans-serif paired with cool slate neutrals and a decorative gradient, used together as a default aesthetic.
+26. Uniform emphasis: more accent-filled controls than "Emphasis and hierarchy" allows, so no single action reads as the primary one.
 
 ## Known limits
 

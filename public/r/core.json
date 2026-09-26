@@ -163,5 +163,6 @@
       "type": "registry:ui",
       "target": "components/ui/pressable.tsx"
     }
-  ]
+  ],
+  "docs": "UDesign core installed. Before you build: every interaction shows a visible change within 100ms; every interactive element has a pressed state; every async control shows pending in itself (Button has a pending prop); a clickable row or card is Pressable, never a div with onClick; durations and easings come from --motion-* roles. Emphasis: one accent-filled control per screen, never inside a repeated row, card, or list item. Read AGENTS.md, then DESIGN.md."
 }

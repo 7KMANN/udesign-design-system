@@ -14,5 +14,6 @@
       "type": "registry:ui",
       "target": "components/ui/table.tsx"
     }
-  ]
+  ],
+  "docs": "TableRow has no pressed state: a <tr> cannot take focus or a key press, so press styling would promise a click the keyboard cannot make. A clickable row is Pressable, not a styled <tr>. See DESIGN.md."
 }
