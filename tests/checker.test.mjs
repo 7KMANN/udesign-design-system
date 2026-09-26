@@ -32,6 +32,22 @@ test('pages built from the shipped component classes report zero findings', () =
   }
 });
 
+// Plan Phase 5: the reference screens an agent copies. Zero findings, and each spends exactly
+// one accent-filled control: a Button with no variant or variant="default", or ud-btn-primary.
+test('each reference screen in examples/ reports zero findings and spends one accent', () => {
+  const dir = new URL('../examples/', import.meta.url);
+  const names = fs.readdirSync(dir).filter((n) => /\.(tsx|html)$/.test(n));
+  assert.deepEqual(names.sort(), ['operations-queue.tsx', 'presentation-order.tsx', 'static-catalog.html']);
+  for (const name of names) {
+    const text = fs.readFileSync(new URL(name, dir), 'utf8');
+    assert.deepEqual(check([{ file: name, text }]), [], name);
+    const accents = name.endsWith('.html')
+      ? text.match(/class="[^"]*\bud-btn-primary\b/g) ?? []
+      : (text.match(/<Button\b(?:=>|[^>])*>/g) ?? []).filter((tag) => !/variant="(?!default")/.test(tag));
+    assert.equal(accents.length, 1, `${name}: ${accents.join(' | ')}`);
+  }
+});
+
 test('accent-repeated passes one accent in the hero and one in the footer', () => {
   const html = '<main><section class="hero"><a class="ud-btn ud-btn-primary">Go</a></section></main>\n<footer><a class="ud-btn ud-btn-primary">Go</a></footer>';
   assert.deepEqual(hits('a.html', html), []);

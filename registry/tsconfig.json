@@ -10,5 +10,5 @@
       "@/lib/utils": ["registry/test-support/utils.ts"]
     }
   },
-  "include": ["new-york/ui/**/*.tsx", "test-support/**/*.ts"]
+  "include": ["new-york/ui/**/*.tsx", "test-support/**/*.ts", "../examples/**/*.tsx"]
 }

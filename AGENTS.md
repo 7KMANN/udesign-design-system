@@ -70,7 +70,10 @@ drift, not the code.
 
 1. [`DESIGN.md`](DESIGN.md): "Emphasis and hierarchy", "Interaction states", "Motion",
    "Components", "Banned design patterns". The rest is reference.
-2. Any change to an interactive element (a button, form, link, row, tab, dialog, filter, upload, or
+2. Building a screen: start from [`examples/`](examples/), one reference screen per profile plus
+   one static-HTML page. Copy the part you need; each restraint rule is a comment on the control
+   it governs.
+3. Any change to an interactive element (a button, form, link, row, tab, dialog, filter, upload, or
    navigation item) loads the `interface-responsiveness` skill first, every time. One button
    counts. Source: [`skills/interface-responsiveness/SKILL.md`](https://github.com/7KMANN/udesign-docs/blob/v0.9.0/skills/interface-responsiveness/SKILL.md).
 

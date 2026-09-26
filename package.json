@@ -11,6 +11,7 @@
   },
   "files": [
     "bin",
+    "examples",
     "dist",
     "tokens",
     "registry",

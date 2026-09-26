@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<!-- Reference screen, static HTML, presentation profile: a client catalog.
+     Built only from the component classes in dist/tokens.css; no inline <style>, no script.
+     Copy the parts you need; the restraint travels with each part.
+     Link your synced copy of dist/tokens.css. Placeholder data: no real client or product. -->
+<html lang="fr-CA" data-design="presentation" data-theme="light">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue, Club exemple</title>
+    <link rel="stylesheet" href="../dist/tokens.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<!-- ud-page-canvas: the presentation shell. The page scrolls; each ud-page-section centres a column (ban 27). -->
+<body class="ud-page-canvas">
+
+    <header class="ud-page-section ud-page-section-band">
+        <p class="ud-h3">UDesign</p>
+        <p class="ud-label">Catalogue préparé pour Club exemple, saison 2026</p>
+    </header>
+
+    <main>
+        <section class="ud-page-section" aria-labelledby="titre">
+            <h1 id="titre" class="ud-display">Les vêtements proposés</h1>
+            <p class="ud-label" style="max-width: 52ch; margin-top: var(--space-4);">Chaque article a été choisi pour la façon dont votre équipe va le porter.</p>
+            <!-- The one accent-filled control on this page: the action the catalog exists for. -->
+            <a class="ud-btn ud-btn-primary" href="soumission.html" style="margin-top: var(--space-6);">Demander une soumission</a>
+        </section>
+
+        <section class="ud-page-section ud-page-section-band" aria-labelledby="articles">
+            <h2 id="articles" class="ud-h2">Articles</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: var(--space-6); margin-top: var(--space-8);">
+
+                <!-- ud-card floats on --shadow-2 in presentation: no shadow of its own. -->
+                <div class="ud-card">
+                    <div style="aspect-ratio: 4 / 3; border-radius: var(--radius); background: var(--secondary);" aria-hidden="true"></div>
+                    <h3 class="ud-h3">T-shirt coton épais</h3>
+                    <p class="ud-label">Broderie poitrine. Choisi pour les entraînements extérieurs.</p>
+                    <!-- Repeated once per card: secondary, never the accent (AGENTS.md rule 5). -->
+                    <a class="ud-btn ud-btn-secondary" href="t-shirt.html">Voir l’article</a>
+                </div>
+
+                <div class="ud-card">
+                    <div style="aspect-ratio: 4 / 3; border-radius: var(--radius); background: var(--secondary);" aria-hidden="true"></div>
+                    <h3 class="ud-h3">Hoodie molleton</h3>
+                    <p class="ud-label">DTF dos. Choisi pour les déplacements en autobus.</p>
+                    <a class="ud-btn ud-btn-secondary" href="hoodie.html">Voir l’article</a>
+                </div>
+
+                <div class="ud-card">
+                    <div style="aspect-ratio: 4 / 3; border-radius: var(--radius); background: var(--secondary);" aria-hidden="true"></div>
+                    <h3 class="ud-h3">Casquette structurée</h3>
+                    <p class="ud-label">Broderie avant. Taille unique, fermoir ajustable.</p>
+                    <a class="ud-btn ud-btn-secondary" href="casquette.html">Voir l’article</a>
+                </div>
+
+                <div class="ud-card">
+                    <div style="aspect-ratio: 4 / 3; border-radius: var(--radius); background: var(--secondary);" aria-hidden="true"></div>
+                    <h3 class="ud-h3">Tuque tricot à rebord</h3>
+                    <p class="ud-label">Écusson avant. Choisie pour les matchs d’hiver.</p>
+                    <a class="ud-btn ud-btn-secondary" href="tuque.html">Voir l’article</a>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="ud-page-section" aria-labelledby="tailles">
+            <h2 id="tailles" class="ud-h2">Quantités par taille</h2>
+            <!-- A wide table scrolls inside its region instead of widening the page. -->
+            <div class="ud-table-scroll" role="region" aria-label="Quantités par taille" tabindex="0" style="margin-top: var(--space-6);">
+                <table class="ud-table">
+                    <thead>
+                        <tr>
+                            <th>Article</th>
+                            <!-- Every column of figures is ud-table-numeric, on its th and each td. -->
+                            <th class="ud-table-numeric">S</th>
+                            <th class="ud-table-numeric">M</th>
+                            <th class="ud-table-numeric">L</th>
+                            <th class="ud-table-numeric">XL</th>
+                            <th class="ud-table-numeric">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>T-shirt coton épais</td><td class="ud-table-numeric">6</td><td class="ud-table-numeric">14</td><td class="ud-table-numeric">16</td><td class="ud-table-numeric">12</td><td class="ud-table-numeric">48</td></tr>
+                        <tr><td>Hoodie molleton</td><td class="ud-table-numeric">4</td><td class="ud-table-numeric">10</td><td class="ud-table-numeric">12</td><td class="ud-table-numeric">10</td><td class="ud-table-numeric">36</td></tr>
+                        <tr><td>Casquette structurée</td><td class="ud-table-numeric" colspan="4">Taille unique</td><td class="ud-table-numeric">24</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>
