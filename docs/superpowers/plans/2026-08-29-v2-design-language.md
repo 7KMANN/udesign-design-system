@@ -5,6 +5,8 @@
 **Revised 2026-09-02:** Phase 2 was rewritten after D-19 replaced D-05. See `DECISIONS.md` round 6.
 **Revised 2026-09-25:** item 0.7 added (D-21), item 2.7 added (D-22), two checker rules added
 (Δ-07), and the `udesign-docs` tag number corrected. See `DECISIONS.md` round 7.
+**Revised 2026-09-26:** Phase 4 now executes before Phase 3 (D-26). Phase numbers are unchanged so
+every existing item citation still resolves.
 **Evidence:** [`docs/research/2026-08-27-design-language-transmission.md`](../../research/2026-08-27-design-language-transmission.md)
 **Brief:** [`docs/research/2026-08-29-v2-plan-brief.md`](../../research/2026-08-29-v2-plan-brief.md)
 **Decisions and their provenance tags:** [`docs/v2/DECISIONS.md`](../../v2/DECISIONS.md)
@@ -69,6 +71,10 @@ needs rules to check.
 ## 4. Phases and cut lines
 
 Ordered by leverage per hour, not by architecture. Stop after any phase and the result is coherent.
+
+**Execution order is 0, 1, 2, 4, 3, 5** (D-26). Phase 4, the checker, runs before Phase 3, the CSS
+layer, because Phase 3's verification requires it. The numbers are kept rather than renumbered, for
+the same reason as D-17: items 3.x and 4.x are cited across the plan, the ledger and both repos.
 
 ### Phase 0: stop shipping the wrong thing
 
@@ -414,8 +420,9 @@ This phase is no longer the one that scores worst. That was the point of replaci
 
 **S2. The largest build. Decision: D1 in the plan brief; research §7.8 is the diagnosis.**
 
-Depends on Phase 2. Building component classes against geometry that is still moving is how the two
-drift apart in week one.
+Depends on Phase 2 and **Phase 4** (D-26). Building component classes against geometry that is still
+moving is how the two drift apart in week one, and building them without the checker that will
+judge them leaves the verification below unrunnable.
 
 #### 3.1 Scope: do not mirror 27 components
 
@@ -486,7 +493,12 @@ with zero findings. Today the same page fails on the press state alone (Δ-03).
 
 ### Phase 4: the portable checker
 
-**S3. Decision: D2. Seed: research §7.7 C and `ENFORCEMENT.md`'s R1-R7 (migration item M2).**
+**S3. Runs before Phase 3 (D-26). Decision: D2. Seed: research §7.7 C and `ENFORCEMENT.md`'s R1-R7
+(migration item M2).**
+
+Depends on Phase 2, for the `AppShell` rule. **Not** on Phase 3: the static-HTML rules target the
+`.ud-btn` class family that Phase 3.2 adopts from `udesignpages` unchanged, so they can be written
+and proven against today's generated catalogs. When S2 lands, this checker is its acceptance test.
 
 **The language question is settled by evidence, not preference.** Both consumers run Node:
 `globalvision/package.json` pins the design system (currently at v1.5.0) and `udesignpages` has zero

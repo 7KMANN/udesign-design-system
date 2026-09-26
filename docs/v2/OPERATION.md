@@ -2,7 +2,7 @@
 
 **This file is both the map and the state.** Every segment updates the ledger in §4 before it ends. An orchestrator resuming after a limit, a crash, or a week away reads this file first and knows exactly where things stand.
 
-**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0 and S1 complete. S1.5 ready to start once S1 merges.
+**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0 and S1 complete and merged. S1.5 ready to start. Order from here: S1.5, S3, S2, S4 (D-26).
 
 ---
 
@@ -74,6 +74,22 @@ wrong easing curves right now, and **reconciling the values in `udesign-docs` wi
 installed copy.** That is a third home for one fact, one level deeper than the inventory found.
 S1 must reconcile the source and then re-install, and say so in its ledger entry.
 
+### Between segments: the master orchestrator loop
+
+Segment orchestrators run one at a time in fresh sessions. The master orchestrator session (the
+one that ran S0) runs between them:
+
+1. **Gate check.** Before a handoff is pasted: check the ledger against both repos, look for drift
+   since the last segment (new tags, new evidence, consumer changes), and re-verify anything new.
+   This caught the `v0.7.0` tag collision and turned field evidence into D-21 and D-22 before S1.
+2. **Kaleb pastes the handoff** into a fresh session. That orchestrator asks its own questions and
+   writes the next handoff before it stops.
+3. **Close-out.** Merge, tag and push (on Kaleb's word), delete the segment branches, update the
+   ledger, then gate-check the next segment.
+
+Only one session closes a segment. If a segment orchestrator offers to merge after the master
+orchestrator has been asked to, it is told to stand down, so two sessions never cut the same tag.
+
 ### Resumption protocol
 
 Non-optional. Usage limits will interrupt this operation at least once.
@@ -100,9 +116,9 @@ Sequential. Each one's output is the next one's input.
 | **S0** | Decide & Plan | The boundary rule, the profile decision, approved brand decisions, and the implementation plan | — |
 | **S1** | Language & Boundary | All prose, both repos: `DESIGN.md`, `AGENTS.md`, composition rules, personality, docs migration | S0 |
 | **S1.5** | Profile Archetype | The type-scale-shape fork, the hierarchy mechanism, the two layout shells, numeric treatment | S1 |
-| **S2** | CSS Component Layer | Governed component classes for static HTML, in lockstep with the React registry | S1.5 |
-| **S3** | Enforcement | The portable checker. Defect fixes and in-repo tests moved to S1 Phase 0 | S2 |
-| **S4** | Reference & Release | Reference screens per profile, migration notes, v2.0.0 | S1-S3 |
+| **S3** | Enforcement | The portable checker. Defect fixes and in-repo tests moved to S1 Phase 0. **Runs before S2** (D-26) | S1.5 |
+| **S2** | CSS Component Layer | Governed component classes for static HTML, in lockstep with the React registry | S3 |
+| **S4** | Reference & Release | Reference screens per profile, migration notes, v2.0.0 | S1.5, S3, S2 |
 
 ### Why this split
 
@@ -114,7 +130,14 @@ Sequential. Each one's output is the next one's input.
   one), and it is a natural cut line: stop after it and the profiles are genuinely different with
   no new CSS surface to maintain.
 - **S2 is alone** because it is the largest build and the most parallelizable — the natural place for two subagents doing real work.
-- **S3 follows S2** because a checker needs rules to check and needs the CSS layer to check HTML against. S0's plan moved its cheap half (three defect fixes, three tests) into S1 Phase 0, so the repo stops shipping known defects immediately rather than three segments from now.
+- **S3 runs before S2** (D-26, 2026-09-26). S0 originally put it after S2, arguing the checker needed
+  the CSS layer to check HTML against. That was wrong on both counts: S2's own done-state
+  (plan Phase 3 verification) requires a page to pass the checker, so S2 could not finish without
+  S3; and plan Phase 3.2 already fixes the class names to the `.ud-btn` family `udesignpages` uses
+  today, so the checker can target them before S2 governs them. S3 still follows S1.5, because one
+  rule is "an operations screen sits in `AppShell`". Running it first makes the checker S2's
+  acceptance test and puts the checker in place one segment earlier.
+- *Superseded reasoning, kept for the record:* S3 follows S2 because a checker needs rules to check and needs the CSS layer to check HTML against. S0's plan moved its cheap half (three defect fixes, three tests) into S1 Phase 0, so the repo stops shipping known defects immediately rather than three segments from now.
 - **S4 is last** because reference screens must demonstrate the finished system, not a draft of it.
 
 ### Handoffs are written just-in-time
@@ -165,10 +188,10 @@ Append-only. Newest at the bottom. One line per event: date, who, what happened,
 | 2026-09-25 | **Round 7**, from the GlobalVision density evidence (`ee7dab0`), all claims re-verified. **D-21:** `Dialog`/`Sheet` padding moves into a variable so `p-0` actually wins; new Phase 0 item 0.7. **D-22:** `Card`/`Dialog`/`Sheet` get a padding axis per profile; amends D-19, adds plan item 2.7, S1.5 becomes 7-9 days. Two checker rules (Δ-07) and migration notes MN-9/MN-10 added. No `NEEDS-APPROVAL` remains. **Next concrete action: cut `v2/s1-language-and-boundary` off `master` and paste `S1-language-and-boundary.md` into a fresh session.** |
 
 ### S1 — Language & Boundary
-**Status:** complete on its branches, pending merge.
-**Branch:** `v2/s1-language-and-boundary` in both repos.
+**Status:** complete. Merged 2026-09-26 in both repos; `udesign-docs` `v0.9.0` cut and pushed.
+**Branch:** `v2/s1-language-and-boundary` in both repos (merged and deleted).
 **Handoff:** [`S1-language-and-boundary.md`](./S1-language-and-boundary.md)
-**Next action:** merge both branches, cut `udesign-docs` `v0.9.0` on the merge (D-24), push, then paste [`S1.5-profile-archetype.md`](./S1.5-profile-archetype.md) into a fresh session.
+**Next action:** none. S1.5 is next.
 **Owns:** plan Phase 0 (all seven items) and Phase 1 (items 1.1-1.11), plus the next `udesign-docs` minor tag (`v0.9.0` as of 2026-09-25; `v0.7.0` and `v0.8.0` were taken by platform docs, Δ-08).
 
 | Date | Event |
@@ -189,6 +212,9 @@ Append-only. Newest at the bottom. One line per event: date, who, what happened,
 | 2026-09-26 | **Branch review (opus): with fixes.** C1 docs links to `v2.0.0` resolved by D-24 (pairing note, MN-11). I1 `--dialog-padding` was declared on the element, so no profile could reach it: now a fallback (`p-[var(--dialog-padding,var(--dialog-padding-default))]`), a test forbids the element declaring the variable, showcase build confirms Tailwind compiles it, tailwind-merge still lets `p-0` win. I2 `SelectItem` had no pressed state and passed because the guard was per file: the guard is now per component (split at `React.forwardRef`), ran red on `select.tsx#6` only, then fixed. I3 ban 4 vs D-19: put to Kaleb, D-23. I4 intensity ownership worded accurately in `skills/README.md`; the "spacing" claim removed from the contract and `motion-contract.md`. I5 this ledger. |
 | 2026-09-26 | Round 8 decisions D-23, D-24, D-25 recorded; migration notes MN-11, MN-12 added; the ban 1/2 generalizations recorded in `DECISIONS.md`. D-25's governance line was first blocked by auto mode as a shared-standard change and written after Kaleb approved it. |
 | 2026-09-26 | **S1 done-state:** Phase 0 committed with each new test red first; `npm pack --dry-run` lists `AGENTS.md`; cold read passed; every personality sentence tagged; bans 1-19 keep their numbers, 20-26 appended, pointers in the contract, `.cursorrules`, `.gemini/rules` (the two `udesignpages` lists are consumer files, not edited, per standing rule 7); both read paths traced; `MOTION-SYSTEM.md` values match `dist/tokens.css`; 0.7's test red then green; false density claims deleted; the installed skill is a junction, so it is correct on merge (Δ-06 corrected); S1.5 handoff written. **Open, not blocking:** `udesign-docs` `v0.9.0` not yet cut; README's component lists (`:15`, `:106`) predate v1.5.0; the showcase and e2e still use the alias names. |
+| 2026-09-26 | **S1 closed by the master orchestrator.** Pre-merge gate check: done-state confirmed against the repos, 59/59 contract and 19/19 component tests green, both repos fast-forwardable, origin unmoved. Merged `v2/s1-language-and-boundary` into design-system `master` (`74f1268`) and `udesign-docs` `main` (`2fc92bd`), cut annotated `udesign-docs` `v0.9.0` (D-24), pushed both and the tag, deleted both branches. Tests re-run green on merged `master`. |
+| 2026-09-26 | **D-26: segment order is now S1.5, S3, S2, S4.** Found during the gate check: plan Phase 3's verification requires the Phase 4 checker, which S0's map built after S2, so S2 could not meet its own done-state. See `DECISIONS.md` round 9. S1.5 now writes the S3 handoff. |
+| 2026-09-26 | **Known window, approved in D-24:** from now until S4 cuts `v2.0.0`, `udesign-docs` carries 13 links in 9 files to design system `v2.0.0`, which does not exist yet. MN-11 keeps consumers on `v0.8.0`. Reason enough not to let the operation stall. **Next concrete action: paste `S1.5-profile-archetype.md` into a fresh session.** |
 
 Note: plan §3 proposes that **Phase 0 runs at the top of S1 rather than in S3**. It is about two
 hours of correctness fixes that depend on nothing. Leaving it in S3 means the repo ships five known
@@ -196,7 +222,8 @@ defects for three more segments. This is a proposal from S0, not a decision Kale
 S1 may execute it as written or push it back to S3, but should say which.
 
 ### S1.5 — Profile Archetype
-**Status:** ready once S1 merges. Handoff: [`S1.5-profile-archetype.md`](./S1.5-profile-archetype.md)
+**Status:** ready to start. S1 merged 2026-09-26. Handoff: [`S1.5-profile-archetype.md`](./S1.5-profile-archetype.md)
+**Writes next:** the **S3** handoff (`S3-enforcement.md`), not S2's (D-26).
 **Owns:** plan Phase 2. Decisions **D-19** (which supersedes D-05), **D-20**, and **D-22** (which amends D-19).
 **Read D-19 before D-05.** The space-scale and control-height token fork was dropped on 2026-09-02
 after a measurement showed the two profiles share the same type scale shape, so forking density on
@@ -209,18 +236,19 @@ field evidence from GlobalVision): the density that was lost was inside Card/Dia
 not in shell gutters. **Resolved 2026-09-25 by D-22:** `Card`, `Dialog` and `Sheet` get a padding
 axis (plan item 2.7), and D-19's "density falls out of the app shell for free" is withdrawn.
 
+### S3 — Enforcement
+**Status:** blocked on S1.5. **Runs before S2** (D-26).
+**Owns:** plan Phase 4, the portable checker. Its in-repo test half moved to S1 Phase 0.
+Language question is settled: Node, shipped as a `bin`, run with `npx`. Both consumers run Node.
+**Writes next:** the S2 handoff, and hands S2 the checker as its acceptance test.
+
 ### S2 — CSS Component Layer
-**Status:** blocked on S1.5
+**Status:** blocked on S3 (D-26).
 **Owns:** plan Phase 3. Scope discipline is the risk: 27 components is the wrong answer and the
 tempting one.
 
-### S3 — Enforcement
-**Status:** blocked on S2
-**Owns:** plan Phase 4, the portable checker. Its in-repo test half moved to S1 Phase 0.
-Language question is settled: Node, shipped as a `bin`, run with `npx`. Both consumers run Node.
-
 ### S4 — Reference & Release
-**Status:** blocked on S1-S3
+**Status:** blocked on S1.5, S3, S2.
 **Owns:** plan Phase 5.
 
 ---

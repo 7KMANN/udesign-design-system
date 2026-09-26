@@ -666,3 +666,33 @@ of what UDesign wants.
   goes with D-18. The banned artifacts themselves are unchanged.
 - **Ban 26 is countable.** D-10's "uniform emphasis everywhere" is written as "more accent-filled
   controls than 'Emphasis and hierarchy' allows", so it cannot be read as asking for more accent.
+
+
+---
+
+## Round 9 - 2026-09-26 (master orchestrator, between S1 and S1.5)
+
+### D-26 · The checker runs before the CSS layer · `APPROVED` 2026-09-26
+
+**Segment order from here: S1.5, S3, S2, S4.** Plan execution order: Phase 0, 1, 2, **4, 3**, 5.
+Phase and item numbers are unchanged.
+
+**Why.** Found in the pre-S1.5 gate check. Plan Phase 3 (S2) is verified by "a generated catalog page
+built from the shipped classes passes the Phase 4 checker with zero findings". The Phase 4 checker is
+S3, which S0's map scheduled after S2. S2 could not meet its own done-state. S0's reason for putting
+S3 second, that the checker "needs the CSS layer to check HTML against", does not hold either: Phase
+3.2 fixes the class names to the `.ud-btn` family already in use, so the checker can target them now.
+
+**What it buys:** the checker lands a segment earlier; it becomes S2's acceptance test before S2
+writes a line, and it watches S2 for building more than it should; the three-catalog proof runs
+against today's `udesignpages` output.
+
+**Still ordered after S1.5,** because one checker rule is "an operations screen sits in `AppShell`"
+(migration note MN-3c), and S1.5 creates `AppShell`.
+
+**Accepted cost:** if S2 adds a modifier class nobody anticipated, a checker rule may need a small
+update in S2.
+
+**Rejected:** keeping S2 before S3 and rewriting S2's verification to something it can meet alone.
+
+This corrects S0's own segment map; S0's handoff explicitly permitted such corrections.
