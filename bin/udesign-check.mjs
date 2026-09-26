@@ -24,6 +24,11 @@ function* walk(target) {
 
 const targets = process.argv.slice(2);
 const files = targets.length ? targets : ['.'];
+const missing = files.filter((t) => !fs.existsSync(t));
+if (missing.length) {
+  console.error(`udesign-check: no such file or directory: ${missing.join(', ')}`);
+  process.exit(2);
+}
 const sources = files.flatMap((t) => [...walk(t)]).map((file) => ({
   file: path.relative(process.cwd(), file).split(path.sep).join('/'),
   text: fs.readFileSync(file, 'utf8'),

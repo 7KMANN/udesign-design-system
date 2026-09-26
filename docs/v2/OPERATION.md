@@ -2,7 +2,7 @@
 
 **This file is both the map and the state.** Every segment updates the ledger in §4 before it ends. An orchestrator resuming after a limit, a crash, or a week away reads this file first and knows exactly where things stand.
 
-**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0, S1 and S1.5 complete and merged. S3 done on its branch, awaiting merge. Order from here: S2, S4 (D-26).
+**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0, S1 and S1.5 complete and merged. S3 complete and merged. S2 ready to start. Order from here: S2, S4 (D-26).
 
 ---
 
@@ -252,8 +252,8 @@ axis (plan item 2.7), and D-19's "density falls out of the app shell for free" i
 | 2026-09-26 | **Δ-10, found in the pre-S3 gate check:** the gold-button divergence in `019e34a7` was never committed, so "flag `019e34a7`" would pass all three catalogs and prove nothing. S3's proof is now two halves: zero findings on the three real catalogs, and a flag on a committed fixture rebuilt from `019e34a7` with its card CTAs switched to primary. Plan Phase 4 and the S3 handoff updated. **Next concrete action: paste `S3-enforcement.md` into a fresh session.** |
 
 ### S3 — Enforcement
-**Status:** done-state met on `v2/s3-enforcement`; the master orchestrator merges. Handoff: [`S3-enforcement.md`](./S3-enforcement.md). **Runs before S2** (D-26).
-**Branch:** `v2/s3-enforcement`.
+**Status:** complete. Merged to `master` 2026-09-26 and pushed. Handoff: [`S3-enforcement.md`](./S3-enforcement.md). **Runs before S2** (D-26).
+**Branch:** `v2/s3-enforcement` (merged and deleted).
 **Owns:** plan Phase 4, the portable checker. Its in-repo test half moved to S1 Phase 0.
 Language question is settled: Node, shipped as a `bin`, run with `npx`. Both consumers run Node.
 **Writes next:** the S2 handoff, and hands S2 the checker as its acceptance test.
@@ -267,14 +267,15 @@ Language question is settled: Node, shipped as a `bin`, run with `npx`. Both con
 | 2026-09-26 | **Real findings in consumers, recorded not fixed (rule 7).** GlobalVision: one ban 26 (`components/section-page.tsx:269`, an accent `Button` in every mapped card, the catalog incident in React), 12 `div-onclick`, 85 em-dash, one `GOLD` identifier, one ban 27 (functional, no `AppShell`). `udesignpages/public`: 441 ban 19, 146 ban 1 (96 in a hand-made "Functional Brutalist" token file), 3 ban 14, 3 ban 27, 2 `--brand-gold`. This repo's showcase: 4 ban 19 in `showcase/src/index.css` (S4's); its runtime profile switch now carries `design-ok:` as `AGENTS.md` rule 6's named exception. The registry itself: 0 findings. |
 | 2026-09-26 | `AGENTS.md` "Auditing" starts with the checker (`writing-for-agents`); `docs/checker-rules.md` lists what ships, what each rule does not flag, the shell classes, and every cut with its reason; `package.json` gains `bin`, and `files` gains `bin` and `docs/checker-rules.md`. `ponytail-review` cut a hand-built line index and a hand-rolled `fileURLToPath`; all eight rules kept. |
 | 2026-09-26 | **S3 done-state.** `npm run validate` exit 0: lint clean, contracts 78/78, registry 30 items, components 24/24, clean registry install, showcase build, e2e 4/4 (validate re-embeds CRLF into `dist/` and `public/r/`; restored, content unchanged, TOOLING-PITFALLS §1). S2 handoff written. **Not done, and not S3's:** the four showcase findings (S4); the git form `npx github:7KMANN/udesign-design-system#<tag>` is verified only once the branch is pushed; GlobalVision gets `npx udesign-check` only when it repins to a tag that has the `bin`. **Next concrete action:** master orchestrator gate-checks and merges `v2/s3-enforcement`, then S2. |
+| 2026-09-26 | **S3 closed by the master orchestrator.** Gate check: `npm run validate` green on the branch (CRLF churn restored again); catalog proof reproduced independently (the fixture flagged once under ban 26, no accent finding in any real catalog); `udesign-docs` has 6 commits past `v0.9.0`, none in `standards/` or design, so no drift. One fix before merge: a mistyped path crashed the checker with a Node stack trace, now a one-line error and exit 2. The duplicate Δ-10 (Δ-16) was the master orchestrator's, from round 12. Fast-forwarded into `master`, pushed, branch deleted. **Next concrete action: paste `S2-css-layer.md` into a fresh session.** |
 
 ### S2 — CSS Component Layer
-**Status:** ready once S3 merges. Handoff: [`S2-css-layer.md`](./S2-css-layer.md). The checker is its acceptance test.
+**Status:** ready to start. Handoff: [`S2-css-layer.md`](./S2-css-layer.md). The checker is its acceptance test.
 **Owns:** plan Phase 3. Scope discipline is the risk: 27 components is the wrong answer and the
 tempting one.
 
 ### S4 — Reference & Release
-**Status:** blocked on S1.5, S3, S2.
+**Status:** blocked on S2.
 **Owns:** plan Phase 5.
 
 ---
