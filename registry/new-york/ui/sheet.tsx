@@ -34,7 +34,7 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
       <SheetOverlay />
       <SheetPrimitive.Content
         ref={ref}
-        className={cn("fixed z-50 grid max-h-[var(--dialog-block-size-max)] gap-4 overflow-y-auto border-[var(--border)] bg-[var(--surface-raised)] p-[var(--content-gutter-mobile)] text-[var(--surface-raised-foreground)] shadow-[var(--shadow-3)] sm:p-6", sides[side], className)}
+        className={cn("fixed z-50 grid max-h-[var(--dialog-block-size-max)] gap-4 overflow-y-auto border-[var(--border)] bg-[var(--surface-raised)] [--dialog-padding:var(--content-gutter-mobile)] sm:[--dialog-padding:1.5rem] p-[var(--dialog-padding)] text-[var(--surface-raised-foreground)] shadow-[var(--shadow-3)]", sides[side], className)}
         {...props}
       >
         {children}

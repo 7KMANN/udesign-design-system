@@ -30,8 +30,10 @@ const TableFooter = React.forwardRef<HTMLTableSectionElement, React.HTMLAttribut
 )
 TableFooter.displayName = "TableFooter"
 
+// No pressed state: a <tr> cannot take focus or a key press, so press styling
+// would promise a click the keyboard cannot make. A clickable row is Pressable.
 const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement>>(
-  ({ className, ...props }, ref) => <tr ref={ref} className={cn("min-h-[var(--touch-target-min)] border-b transition-[background-color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] hover:bg-[var(--interactive-hover)] active:bg-[var(--interactive-pressed)] data-[state=selected]:bg-[var(--interactive-selected)]", className)} {...props} />,
+  ({ className, ...props }, ref) => <tr ref={ref} className={cn("min-h-[var(--touch-target-min)] border-b transition-[background-color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] hover:bg-[var(--interactive-hover)] data-[state=selected]:bg-[var(--interactive-selected)]", className)} {...props} />,
 )
 TableRow.displayName = "TableRow"
 

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import { readFileSync } from "node:fs"
 import test from "node:test"
 
 import {
@@ -6,7 +7,9 @@ import {
   assertReleaseTags,
   assertTaggedPackageVersion,
   nextVersion,
+  pinReadme,
   prependChangelog,
+  readmePins,
 } from "../scripts/release-utils.mjs"
 
 test("calculates an additive minor release", () => {
@@ -87,4 +90,20 @@ test("verifies package-lock root version matches the release", () => {
 test("verifies the current tag contains the current package version", () => {
   assert.doesNotThrow(() => assertTaggedPackageVersion({ version: "1.2.0" }, "1.2.0"))
   assert.throws(() => assertTaggedPackageVersion({ version: "1.1.0" }, "1.2.0"), /tagged package version/i)
+})
+
+test("README install pins match the package version", () => {
+  const pkg = JSON.parse(readFileSync("package.json", "utf8"))
+  const pins = readmePins(readFileSync("README.md", "utf8"))
+  assert.ok(pins.length >= 5, `expected the five install pins, found ${pins.length}`)
+  assert.deepEqual([...new Set(pins)], [pkg.version], "README.md installs a version other than the one in package.json")
+})
+
+test("pinReadme rewrites every pin and nothing else", () => {
+  const before = "## What ships in 1.3.0\n#v1.3.0\n/v1.3.0/public\nshadcn@3.5.0"
+  assert.equal(pinReadme(before, "2.0.0"), "## What ships in 2.0.0\n#v2.0.0\n/v2.0.0/public\nshadcn@3.5.0")
+})
+
+test("the package ships AGENTS.md", () => {
+  assert.ok(JSON.parse(readFileSync("package.json", "utf8")).files.includes("AGENTS.md"))
 })

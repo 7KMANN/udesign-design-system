@@ -7,6 +7,7 @@ import {
   assertReleaseTags,
   assertTaggedPackageVersion,
   nextVersion,
+  pinReadme,
   prependChangelog,
 } from './release-utils.mjs';
 
@@ -93,12 +94,14 @@ console.log('All release checks passed. Proceeding with version bump...');
 const packageLockPath = new URL('package-lock.json', ROOT);
 const changelogPath = new URL('CHANGELOG.md', ROOT);
 const versionsPath = new URL('showcase/public/versions.js', ROOT);
+const readmePath = new URL('README.md', ROOT);
 const historyDir = new URL(`history/v${next}/`, ROOT);
 const backups = new Map([
   [pkgPath, readFileSync(pkgPath)],
   [packageLockPath, readFileSync(packageLockPath)],
   [changelogPath, readFileSync(changelogPath)],
   [versionsPath, readFileSync(versionsPath)],
+  [readmePath, readFileSync(readmePath)],
 ]);
 
 try {
@@ -106,6 +109,7 @@ try {
   writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
   execSync('npm install --package-lock-only --ignore-scripts --no-audit --no-fund', { stdio: 'inherit', cwd: ROOT });
   assertPackageLockVersion(JSON.parse(readFileSync(packageLockPath, 'utf8')), next);
+  writeFileSync(readmePath, pinReadme(readFileSync(readmePath, 'utf8'), next));
 
   mkdirSync(historyDir, { recursive: true });
   cpSync(new URL('dist/tokens.css', ROOT), new URL('tokens.css', historyDir));

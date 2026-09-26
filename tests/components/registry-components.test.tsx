@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { IconButton } from "@/components/ui/icon-button"
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
 import { Moment } from "@/components/ui/moment"
 import { ProgressRing } from "@/components/ui/progress-ring"
 import { ResponsiveCollection } from "@/components/ui/responsive-collection"
@@ -54,6 +55,28 @@ describe("UDesign registry accessibility contracts", () => {
     )
 
     expect(screen.getByRole("region", { name: "Invoice results" })).toHaveAttribute("tabindex", "0")
+  })
+
+  // D-21: tailwind-merge only drops a base padding class that conflicts with the
+  // override, and sm:p-6 does not conflict with p-0. So a consumer's p-0 used to
+  // give 0 on phones and 24px on desktop, silently. No breakpoint-prefixed
+  // padding in the base class is what lets one p-0 win completely. (The cn()
+  // here is a plain join, so this asserts the base classes, not the merge.)
+  it.each([
+    ["dialog", () => (
+      <Dialog open>
+        <DialogContent className="p-0"><DialogTitle>Edge</DialogTitle><DialogDescription>Flush.</DialogDescription></DialogContent>
+      </Dialog>
+    )],
+    ["sheet", () => (
+      <Sheet open>
+        <SheetContent className="p-0"><SheetTitle>Edge</SheetTitle><SheetDescription>Flush.</SheetDescription></SheetContent>
+      </Sheet>
+    )],
+  ])("lets a single p-0 remove all %s padding", (_, ui) => {
+    render(ui())
+    const padding = screen.getByRole("dialog").className.split(/\s+/).filter((c) => /^(?:[\w-]+:)*p-/.test(c))
+    expect(padding.filter((c) => c.includes(":"))).toEqual([])
   })
 
   it("opens a labeled dialog with a mobile-safe content contract", async () => {

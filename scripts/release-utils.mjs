@@ -46,3 +46,15 @@ export function assertTaggedPackageVersion(taggedPackage, version) {
     throw new Error(`Tagged package version does not match ${version}.`)
   }
 }
+
+// Every install snippet in README.md pins a release. They went stale twice by
+// hand, so the release rewrites them and a test asserts they match.
+const README_PIN = /(What ships in |#v|\/v)(\d+\.\d+\.\d+)/g
+
+export function readmePins(readme) {
+  return [...readme.matchAll(README_PIN)].map((m) => m[2])
+}
+
+export function pinReadme(readme, version) {
+  return readme.replace(README_PIN, (_, prefix) => `${prefix}${version}`)
+}

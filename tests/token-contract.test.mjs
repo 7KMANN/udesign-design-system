@@ -126,9 +126,31 @@ test('emits composable brand and functional dark selectors', () => {
   assert.match(dualCss, /\.dark \.design-functional/);
 });
 
+// Per block, not file-wide: a file-wide match is satisfied by the brand block
+// alone, so a functional --control-height of 36px would pass unnoticed.
+function assertTouchFloor(css) {
+  const brand = block(css, ':root, :root[data-design="brand"]');
+  const functional = block(css, ':root[data-design="functional"], .design-functional');
+  assert.ok(brand && functional, 'profile blocks not found');
+  for (const name of ['--touch-target-min', '--control-height']) {
+    assert.match(brand, new RegExp(`${name}:\\s*44px`), `${name} must be 44px in the brand block`);
+    for (const [label, body] of [['brand', brand], ['functional', functional]]) {
+      for (const [, value] of body.matchAll(new RegExp(`${name}:\\s*([^;]+);`, 'g'))) {
+        assert.equal(value.trim(), '44px', `${name} is ${value.trim()} in the ${label} block; the touch floor is 44px in both profiles`);
+      }
+    }
+  }
+}
+
+test('holds the 44px touch floor in every profile block', () => {
+  assertTouchFloor(dualCss);
+  const functionalSelector = ':root[data-design="functional"], .design-functional {';
+  const overridden = dualCss.replace(functionalSelector, `${functionalSelector}\n  --control-height: 36px;`);
+  assert.notEqual(overridden, dualCss, 'mutation did not apply');
+  assert.throws(() => assertTouchFloor(overridden), /36px in the functional block/);
+});
+
 test('emits the responsive contract with mobile-safe values', () => {
-  assert.match(dualCss, /--touch-target-min:\s*44px/);
-  assert.match(dualCss, /--control-height:\s*44px/);
   assert.match(dualCss, /--dialog-inline-size-mobile:\s*95vw/);
   assert.match(dualCss, /--dialog-block-size-max:\s*100svh/);
   assert.match(dualCss, /--safe-area-bottom:\s*env\(safe-area-inset-bottom, 0px\)/);
