@@ -867,3 +867,19 @@ the frontmatter; classes that diverge from React on purpose.
 - **Δ-20 · `ud-btn-ghost` ships without generator evidence.** `AGENTS.md` rule 5 prescribes `ghost`
   for toolbars and table rows, and `AppShellToolbar` (D-20) is where it lands; without it a static
   toolbar forces a generator to invent one. The next derived ID is Δ-21.
+
+
+---
+
+## Round 15 - 2026-09-26 (master orchestrator, closing S2)
+
+### Δ-21 · Syncing the tokens file is not a no-op in `udesignpages` · derived, measured
+
+MN-17 said syncing the compiled file "changes nothing on screen" because each page's inline rules
+win. Measured in the gate check: seven real pages rendered three ways (today's hand-made tokens,
+`master`'s pre-S2 `dist/tokens.css`, S2's) with computed styles compared on every element. The
+token swap alone changes nothing. The component layer does: inline rules override only the
+properties they set, so `min-height: 44px` reaches every `ud-btn` (38.5px to 44px, 45 buttons on
+two catalogs, cards 5.5px taller) and the `ud-badge` on `patterns.html` gains a border. Screenshots
+show the change is the intended touch-target minimum, not breakage. MN-17 now states it. The next
+derived ID is Δ-22.

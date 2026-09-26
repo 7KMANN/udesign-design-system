@@ -2,7 +2,7 @@
 
 **This file is both the map and the state.** Every segment updates the ledger in §4 before it ends. An orchestrator resuming after a limit, a crash, or a week away reads this file first and knows exactly where things stand.
 
-**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0, S1 and S1.5 complete and merged. S3 complete and merged. S2 complete on its branch, awaiting the master orchestrator. Next: S4 (D-26).
+**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0, S1 and S1.5 complete and merged. S3 and S2 complete and merged. S4 ready to start.
 
 ---
 
@@ -271,8 +271,8 @@ Language question is settled: Node, shipped as a `bin`, run with `npx`. Both con
 | 2026-09-26 | **The git form of the checker is proven** after the push, from a directory outside any repo: `npx --yes github:7KMANN/udesign-design-system#master <paths>` flags the fixture under ban 26 and exits 1 (about 70 s on first fetch, 5 s cached). The package name alone runs the bin; adding `udesign-check` after it passes that word as a path, which now fails with a clear error. `AGENTS.md` "Auditing" already gives the right form. |
 
 ### S2 — CSS Component Layer
-**Status:** complete on `v2/s2-css-layer`, not merged. Handoff: [`S2-css-layer.md`](./S2-css-layer.md). The checker is its acceptance test.
-**Branch:** `v2/s2-css-layer` (merge to `master`).
+**Status:** complete. Merged to `master` 2026-09-26 and pushed. Handoff: [`S2-css-layer.md`](./S2-css-layer.md). The checker is its acceptance test.
+**Branch:** `v2/s2-css-layer` (merged and deleted).
 **Writes next:** the S4 handoff, [`S4-reference-release.md`](./S4-reference-release.md).
 **Owns:** plan Phase 3. Scope discipline is the risk: 27 components is the wrong answer and the
 tempting one.
@@ -285,9 +285,10 @@ tempting one.
 | 2026-09-26 | **Round 14.** Kaleb: skip the header lockup and footer (**D-30**); ship inside `dist/tokens.css` (**D-31**); after seeing the `DESIGN.md` frontmatter and the registry rendered side by side, the registry wins and S4 corrects the frontmatter (**D-32**). Derived: Δ-17 to Δ-20. MN-17 (`udesignpages`) and MN-18 (GlobalVision, nothing to do: no React consumer uses a `ud-` component class) added. `AGENTS.md` rule 6 gains the static-HTML pointer (`writing-for-agents`); README gains the distribution section; `docs/checker-rules.md` marks the shell classes shipped. |
 | 2026-09-26 | **Skipped, each with its reason in `MIRROR`:** alert, select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, icon-button, progress-ring, rolling-consistency-chip, moment, status-badge, metric-card, responsive-collection, spinner, skeleton, core. `ponytail-review` cut one line (`position: relative`, a React spinner anchor the static layer has no use for). **No subagents:** one stylesheet and one test file, written test-first; two agents would have collided in both. **Observation, not acted on:** the `.ud-*` typography helpers in `dist/tokens.css` hard-code font sizes that equal the `--text-*` variables today; two homes for one value. |
 | 2026-09-26 | **S2 done-state.** The evidenced classes plus the Δ-14 shells ship in the stylesheet, every skip named. The 3.3 parity tests ran red first and are green. Both acceptance pages report zero findings and are held in `tests/checker.test.mjs`. 3.4 is D-31, written in README. `npm run validate` exit 0: lint clean, contracts 87/87, registry 30 items, components 24/24, clean registry install, showcase build, e2e 4/4 (`public/r/` CRLF churn restored, content unchanged). S4 handoff written. **Not done, and not S2's:** the frontmatter correction (D-32, S4); `udesignpages` adopting the layer (MN-17, consumer work). **Next concrete action:** master orchestrator gate-checks and merges `v2/s2-css-layer`, then S4. |
+| 2026-09-26 | **S2 closed by the master orchestrator.** Gate check: `npm run validate` exit 0 (CRLF churn restored); `npm run build` reproduces the committed `dist/` apart from line endings; the checker reports 0 findings on both acceptance pages and `css/components.css`; no duplicate decision IDs. **One correction (Δ-21):** MN-17's "syncing changes nothing on screen" was false. Rendering seven `udesignpages` pages under three token files showed the token swap is inert but the layer's `min-height: 44px` reaches every `ud-btn` and the `patterns.html` badge gains a border. MN-17 corrected. S2's closing observation that the `.ud-*` typography helpers duplicate `--text-*` is not drift: `formatTypographyHelpers` emits both from the same token tree. Fast-forwarded into `master`, pushed, branch deleted. **Next concrete action: paste `S4-reference-release.md` into a fresh session.** |
 
 ### S4 — Reference & Release
-**Status:** ready to start once S2 merges. Handoff: [`S4-reference-release.md`](./S4-reference-release.md).
+**Status:** ready to start. Handoff: [`S4-reference-release.md`](./S4-reference-release.md).
 **Owns:** plan Phase 5.
 
 ---
