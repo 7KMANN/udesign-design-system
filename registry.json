@@ -237,6 +237,24 @@
       "files": [{ "path": "registry/new-york/ui/pressable.tsx", "type": "registry:ui", "target": "components/ui/pressable.tsx" }]
     },
     {
+      "name": "page-canvas",
+      "type": "registry:component",
+      "title": "Page Canvas",
+      "description": "The presentation page shell: the page scrolls, content sits in a centered column, and a section can run edge to edge.",
+      "docs": "Use for a screen presented to someone, under data-design=\"presentation\". PageCanvas wraps the document; PageSection gives each block a centered column and generous vertical space, and variant=\"band\" runs a raised surface edge to edge. Hierarchy comes from space and elevation. An operations screen uses AppShell instead. See DESIGN.md \"Profiles\".",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/page-canvas.tsx", "type": "registry:component", "target": "components/ui/page-canvas.tsx" }]
+    },
+    {
+      "name": "app-shell",
+      "type": "registry:component",
+      "title": "App Shell",
+      "description": "The operations page shell: a persistent sidebar, a toolbar, and panes that scroll inside a fixed viewport.",
+      "docs": "Use for a screen operated by someone, under data-design=\"operations\". Compose AppShell > AppShellSidebar (put a nav inside, laid out flex md:flex-col) + AppShellToolbar + AppShellPanes > AppShellPane (give each an aria-label). From md the viewport is fixed and panes scroll; below md the page scrolls and the sidebar becomes a row. Panes butt against each other on hairlines: no gap, no elevation. A presentation screen uses PageCanvas instead. See DESIGN.md \"Profiles\".",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/app-shell.tsx", "type": "registry:component", "target": "components/ui/app-shell.tsx" }]
+    },
+    {
       "name": "core",
       "type": "registry:item",
       "title": "UDesign Core",
@@ -276,6 +294,8 @@
         { "path": "registry/new-york/ui/metric-card.tsx", "type": "registry:component", "target": "components/ui/metric-card.tsx" },
         { "path": "registry/new-york/ui/empty-state.tsx", "type": "registry:component", "target": "components/ui/empty-state.tsx" },
         { "path": "registry/new-york/ui/responsive-collection.tsx", "type": "registry:component", "target": "components/ui/responsive-collection.tsx" },
+        { "path": "registry/new-york/ui/page-canvas.tsx", "type": "registry:component", "target": "components/ui/page-canvas.tsx" },
+        { "path": "registry/new-york/ui/app-shell.tsx", "type": "registry:component", "target": "components/ui/app-shell.tsx" },
         { "path": "registry/new-york/ui/spinner.tsx", "type": "registry:ui", "target": "components/ui/spinner.tsx" },
         { "path": "registry/new-york/ui/skeleton.tsx", "type": "registry:ui", "target": "components/ui/skeleton.tsx" },
         { "path": "registry/new-york/ui/pressable.tsx", "type": "registry:ui", "target": "components/ui/pressable.tsx" }

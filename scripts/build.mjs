@@ -88,6 +88,7 @@ const RESPONSIVE_VAR = {
   'dialog-inline-size-mobile': '--dialog-inline-size-mobile',
   'dialog-block-size-max': '--dialog-block-size-max',
   'safe-area-bottom': '--safe-area-bottom',
+  'surface-padding': '--surface-padding',
 };
 
 const RADIUS_VAR = { sm: '--radius-sm', base: '--radius', lg: '--radius-lg', pill: '--radius-pill' };
@@ -290,6 +291,16 @@ function formatVarsBlock(t, baseTree, selector, { emitPrimitives = false, emitSt
   L.push(`  --font-display: ${fontFamilyCss(fontDisplay)};`);
   L.push(`  --font-body: ${fontFamilyCss(fontBody)};`);
   L.push(`  --font-data: ${fontFamilyCss(fontData)};`);
+  // D-19 item 4: figures resolve through one pair, so a component marks a number
+  // once and each profile decides proportional or tabular mono.
+  const numericRef = (t.font?.family?.numeric || baseTree.font.family.numeric).$value.slice(1, -1);
+  L.push(`  --font-numeric: var(--font-${numericRef.split('.').pop()});`);
+  L.push(`  --font-numeric-variant: ${(t.font?.['numeric-variant'] || baseTree.font['numeric-variant']).$value};`);
+  // The scale as variables, so components reach it too, not only the .ud-* helpers (Δ-12).
+  for (const step of ['display', 'h1', 'h2', 'h3', 'body']) {
+    const token = t.typography?.[step] || baseTree.typography[step];
+    L.push(`  --text-${step}: ${dim(token.$value.fontSize)};`);
+  }
 
   if (emitPrimitives) {
     const weightLine = Object.entries(baseTree.font.weight)
@@ -356,10 +367,10 @@ function formatVarsBlock(t, baseTree, selector, { emitPrimitives = false, emitSt
     if (token && token.$value !== undefined) L.push(`  ${name}: ${token.$value};${descriptionComment(token)}`);
   }
 
-  if (emitPrimitives) {
-    L.push('');
-    L.push(formatResponsive(t));
-  }
+  // Not behind emitPrimitives: the dual operations block must be able to emit
+  // its own responsive values (--surface-padding), or the fork silently drops.
+  L.push('');
+  L.push(formatResponsive(t));
 
   L.push('}');
   return L.join('\n');

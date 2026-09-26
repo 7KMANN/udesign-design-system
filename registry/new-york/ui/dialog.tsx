@@ -27,13 +27,13 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 grid w-[var(--dialog-inline-size-mobile)] max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] [--dialog-padding-default:var(--content-gutter-mobile)] sm:[--dialog-padding-default:1.5rem] p-[var(--dialog-padding,var(--dialog-padding-default))] text-[var(--surface-raised-foreground)] shadow-[var(--shadow-3)] max-h-[var(--dialog-block-size-max)]",
+          "fixed left-1/2 top-1/2 z-50 grid w-[var(--dialog-inline-size-mobile)] max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface-raised)] [--surface-padding-default:var(--content-gutter-mobile)] sm:[--surface-padding-default:1.5rem] p-[var(--surface-padding,var(--surface-padding-default))] text-[var(--surface-raised-foreground)] shadow-[var(--shadow-3)] max-h-[var(--dialog-block-size-max)]",
           className,
         )}
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute right-2 top-2 inline-flex size-[var(--touch-target-min)] items-center justify-center rounded-md text-[var(--muted-foreground)] transition-[transform,background-color,color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] active:bg-[var(--interactive-pressed)] hover:bg-[var(--interactive-hover)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] disabled:pointer-events-none">
+        <DialogPrimitive.Close className="absolute right-2 top-2 inline-flex size-[var(--touch-target-min)] items-center justify-center rounded-[var(--radius)] text-[var(--muted-foreground)] transition-[transform,background-color,color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] active:bg-[var(--interactive-pressed)] hover:bg-[var(--interactive-hover)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] disabled:pointer-events-none">
           <X className="size-4" aria-hidden="true" />
           <span className="sr-only">{closeLabel}</span>
         </DialogPrimitive.Close>
@@ -50,7 +50,7 @@ const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 DialogFooter.displayName = "DialogFooter"
 
 const DialogTitle = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Title>, React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>>(
-  ({ className, ...props }, ref) => <DialogPrimitive.Title ref={ref} className={cn("[font-family:var(--font-display)] text-lg font-semibold leading-none", className)} {...props} />,
+  ({ className, ...props }, ref) => <DialogPrimitive.Title ref={ref} className={cn("[font-family:var(--font-display)] text-[length:var(--text-h3)] font-semibold leading-none", className)} {...props} />,
 )
 DialogTitle.displayName = DialogPrimitive.Title.displayName
 

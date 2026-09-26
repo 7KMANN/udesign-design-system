@@ -68,7 +68,7 @@ const ProgressRing = React.forwardRef<SVGSVGElement, ProgressRingProps>(
           textAnchor="middle"
           dominantBaseline="central"
           fontSize={fontSize}
-          className="fill-[var(--foreground)] tabular-nums [font-family:var(--font-data)]"
+          className="fill-[var(--foreground)] [font-family:var(--font-numeric)] [font-variant-numeric:var(--font-numeric-variant)]"
         >
           {completed}/{total}
         </text>

@@ -37,13 +37,25 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
 )
 TableRow.displayName = "TableRow"
 
-const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<HTMLTableCellElement>>(
-  ({ className, ...props }, ref) => <th ref={ref} className={cn("h-[var(--touch-target-min)] px-4 text-left align-middle font-medium text-[var(--muted-foreground)]", className)} {...props} />,
+// `numeric` marks a column of figures: right-aligned, and rendered by the
+// profile's numeric pair, so operations columns are tabular mono (D-19).
+const numeric = "text-right [font-family:var(--font-numeric)] [font-variant-numeric:var(--font-numeric-variant)]"
+
+export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
+  numeric?: boolean
+}
+
+const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
+  ({ className, numeric: isNumeric, ...props }, ref) => <th ref={ref} className={cn("h-[var(--touch-target-min)] px-4 text-left align-middle font-medium text-[var(--muted-foreground)]", isNumeric && "text-right", className)} {...props} />,
 )
 TableHead.displayName = "TableHead"
 
-const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<HTMLTableCellElement>>(
-  ({ className, ...props }, ref) => <td ref={ref} className={cn("h-[var(--touch-target-min)] p-4 align-middle", className)} {...props} />,
+export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  numeric?: boolean
+}
+
+const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+  ({ className, numeric: isNumeric, ...props }, ref) => <td ref={ref} className={cn("h-[var(--touch-target-min)] p-4 align-middle", isNumeric && numeric, className)} {...props} />,
 )
 TableCell.displayName = "TableCell"
 

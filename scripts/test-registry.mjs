@@ -36,6 +36,8 @@ const requiredItems = [
   "spinner",
   "skeleton",
   "pressable",
+  "page-canvas",
+  "app-shell",
   "core",
 ]
 
@@ -50,6 +52,8 @@ assert.deepEqual(
 const rawColorPattern = /(?:\b(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:[1-9]00|50)\b)|(?:#[0-9a-f]{3,8}\b)/i
 const primitivePattern = /--ud-/
 const rawShadowPattern = /\bshadow-(?:sm|md|lg|xl|2xl)\b/
+// Δ-10: rounded-sm/md/lg resolve through the consumer's Tailwind theme, so --radius never reaches them.
+const radiusAliasPattern = /\brounded-(?:sm|md|lg|xl|2xl|3xl)\b/
 const unmappedSemanticUtilityPattern = /\b(?:bg|text|border|ring)-(?:background|foreground|card|card-foreground|popover|popover-foreground|primary|primary-foreground|primary-hover|secondary|secondary-foreground|muted|muted-foreground|accent|accent-foreground|input|destructive|destructive-foreground|border)\b/
 
 for (const item of registry.items) {
@@ -64,6 +68,7 @@ for (const item of registry.items) {
     assert.doesNotMatch(source, rawColorPattern, `${file.path} contains a raw color utility or literal`)
     assert.doesNotMatch(source, primitivePattern, `${file.path} consumes a forbidden UDesign primitive`)
     assert.doesNotMatch(source, rawShadowPattern, `${file.path} contains a raw elevation utility`)
+    assert.doesNotMatch(source, radiusAliasPattern, `${file.path} uses a Tailwind radius alias; use rounded-[var(--radius*)]`)
     assert.doesNotMatch(source, unmappedSemanticUtilityPattern, `${file.path} relies on an uninstalled Tailwind theme alias`)
     assert.match(file.target, /^components\/ui\//, `${file.path} must install under components/ui`)
   }
@@ -122,9 +127,27 @@ assert.match(files["spinner.tsx"], /motion-safe:animate-spin/, "the spinner must
 assert.match(files["skeleton.tsx"], /\[animation-duration:var\(--motion-duration-ambient\)\]/)
 assert.match(files["pressable.tsx"], /active:scale-\[var\(--motion-press-scale-subtle\)\]/)
 
+// The profile archetype (D-19, D-22, D-27): one padding variable, the scale as
+// variables, figures through the numeric pair. Each resolves to a profile value.
+for (const name of ["card.tsx", "dialog.tsx", "sheet.tsx"]) {
+  assert.match(files[name], /p-\[var\(--surface-padding,/, `${name} must read its padding from --surface-padding`)
+  assert.match(files[name], /text-\[length:var\(--text-h3\)\]/, `${name} title must use the type scale, not a fixed size`)
+}
+assert.doesNotMatch(Object.values(files).join("\n"), /--dialog-padding/, "--dialog-padding was renamed --surface-padding (Δ-11)")
+assert.doesNotMatch(files["card.tsx"], /\bp-6\b/, "a fixed p-6 ignores the operations padding")
+assert.match(files["card.tsx"], /shadow-\[var\(--shadow-2\)\]/, "presentation cards float on --shadow-2 (D-27)")
+const NUMERIC = /\[font-family:var\(--font-numeric\)\] \[font-variant-numeric:var\(--font-numeric-variant\)\]/
+for (const name of ["metric-card.tsx", "progress-ring.tsx", "table.tsx"]) {
+  assert.match(files[name], NUMERIC, `${name} must render figures through --font-numeric`)
+  assert.doesNotMatch(files[name], /--font-data|\btabular-nums\b/, `${name} hard-codes one profile's figures`)
+}
+for (const name of ["badge.tsx", "app-shell.tsx"]) {
+  assert.match(files[name], /\[font-variant-numeric:var\(--font-numeric-variant\)\]/, `${name} must align figures in operations`)
+}
+
 const core = registry.items.find((item) => item.name === "core")
 assert.equal(core.type, "registry:item")
-assert.equal(core.files.length, 24, "core must install the complete supported source set")
+assert.equal(core.files.length, 26, "core must install the complete supported source set")
 
 const outputDir = path.join(root, "public", "r")
 assert.ok(fs.existsSync(outputDir), "public/r must contain committed registry output")

@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
+import { AppShell, AppShellPane, AppShellPanes, AppShellSidebar, AppShellToolbar } from "@/components/ui/app-shell"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -16,13 +17,14 @@ import {
 import { IconButton } from "@/components/ui/icon-button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
 import { Moment } from "@/components/ui/moment"
+import { PageCanvas, PageSection } from "@/components/ui/page-canvas"
 import { ProgressRing } from "@/components/ui/progress-ring"
 import { ResponsiveCollection } from "@/components/ui/responsive-collection"
 import { RollingConsistencyChip } from "@/components/ui/rolling-consistency-chip"
 import { Slider } from "@/components/ui/slider"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { Switch } from "@/components/ui/switch"
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
@@ -77,9 +79,9 @@ describe("UDesign registry accessibility contracts", () => {
     render(ui())
     const padding = screen.getByRole("dialog").className.split(/\s+/).filter((c) => /^(?:[\w-]+:)*p-/.test(c))
     expect(padding.filter((c) => c.includes(":"))).toEqual([])
-    // D-22's hook: a profile or shell sets --dialog-padding from outside, so
-    // the element may only declare the fallback, never the variable itself.
-    expect(screen.getByRole("dialog").className).not.toContain("[--dialog-padding:")
+    // D-22's hook: the operations profile sets --surface-padding from outside,
+    // so the element may only declare the fallback, never the variable itself.
+    expect(screen.getByRole("dialog").className).not.toContain("[--surface-padding:")
   })
 
   it("opens a labeled dialog with a mobile-safe content contract", async () => {
@@ -267,5 +269,60 @@ describe("UDesign registry accessibility contracts", () => {
 
     await userEvent.click(screen.getByRole("button"))
     expect(onClick).not.toHaveBeenCalled()
+  })
+})
+
+// D-20: the first structural components. Operations sits in AppShell, presentation in PageCanvas.
+describe("UDesign page shells", () => {
+  const operationsScreen = () => (
+    <AppShell>
+      <AppShellSidebar><nav aria-label="Main"><a href="#queue">Production</a></nav></AppShellSidebar>
+      <AppShellToolbar><h1>Production queue</h1></AppShellToolbar>
+      <AppShellPanes>
+        <AppShellPane aria-label="Orders"><button type="button">UD-1042</button></AppShellPane>
+        <AppShellPane aria-label="Order detail"><p>108 pieces</p></AppShellPane>
+      </AppShellPanes>
+    </AppShell>
+  )
+
+  it("holds the viewport on desktop and scrolls the panes, not the page", () => {
+    const { container } = render(operationsScreen())
+    expect(container.firstElementChild).toHaveClass("md:h-svh", "md:overflow-hidden")
+    for (const pane of screen.getAllByRole("region")) expect(pane).toHaveClass("md:overflow-y-auto", "md:min-h-0")
+    expect(screen.getByRole("main")).toContainElement(screen.getByRole("region", { name: "Order detail" }))
+  })
+
+  it("lets the page scroll again on phones, where a fixed viewport traps content", () => {
+    const { container } = render(operationsScreen())
+    expect(container.firstElementChild).toHaveClass("min-h-svh")
+    expect(container.firstElementChild?.className).not.toMatch(/(?:^|s)(?:h-svh|overflow-hidden)(?:s|$)/)
+  })
+
+  it("renders the operations shell without axe violations", async () => {
+    const { container } = render(operationsScreen())
+    expect((await axe.run(container)).violations).toEqual([])
+  })
+
+  it("centers presentation content in a column while a section bleeds to the edge", async () => {
+    const { container } = render(
+      <PageCanvas>
+        <PageSection variant="band" aria-label="Chosen garments"><h2>Chosen garments</h2></PageSection>
+      </PageCanvas>,
+    )
+    const section = screen.getByRole("region", { name: "Chosen garments" })
+    expect(section.firstElementChild).toHaveClass("mx-auto", "max-w-6xl")
+    expect(section).toHaveClass("bg-[var(--card)]")
+    expect((await axe.run(container)).violations).toEqual([])
+  })
+
+  it("marks a numeric table column so each profile can render its figures", () => {
+    render(
+      <Table>
+        <TableHeader><TableRow><TableHead numeric>Qty</TableHead></TableRow></TableHeader>
+        <TableBody><TableRow><TableCell numeric>108</TableCell></TableRow></TableBody>
+      </Table>,
+    )
+    expect(screen.getByText("108")).toHaveClass("text-right", "[font-family:var(--font-numeric)]")
+    expect(screen.getByText("Qty")).toHaveClass("text-right")
   })
 })

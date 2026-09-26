@@ -236,6 +236,13 @@ field evidence from GlobalVision): the density that was lost was inside Card/Dia
 not in shell gutters. **Resolved 2026-09-25 by D-22:** `Card`, `Dialog` and `Sheet` get a padding
 axis (plan item 2.7), and D-19's "density falls out of the app shell for free" is withdrawn.
 
+| Date | Event |
+|---|---|
+| 2026-09-26 | S1.5 started. Branch `v2/s1.5-profile-archetype` cut off `master` (`386867f`). **Baseline was red:** `scripts/test-registry.mjs` compared `public/r` bytes, and 8 of 29 committed JSON files embed LF while `core.autocrlf` checks sources out as CRLF. Fixed by comparing content (`9a2ab8f`), red before and green after. |
+| 2026-09-26 | **Finding for 2.2:** registry components use `rounded-sm/md/lg` 18 times. Those are Tailwind theme aliases, so the consumer's config picks the radius and `--radius: 0px` never reaches a button or input. 2.2 moves them to `rounded-[var(--radius*)]` and a registry test forbids the aliases. |
+| 2026-09-26 | Plan: prototype both shells in both profiles (`prototype`, `frontend-design`), put the scale steps, shell structure and compact padding to Kaleb, then build test-first. No subagent dispatched yet. |
+| 2026-09-26 | **Prototype verdict: two products.** Built on the real `dist/tokens.css`, published privately (`https://claude.ai/artifact/39cLxHx2WsUCM8BtDSiThW`), source on `v2/s1.5-prototype` (`090bfde`). Kaleb approved the type steps, 12px compact padding and `--shadow-2` presentation cards: **D-27**. Derived and recorded: Δ-10 radius utilities become variables, Δ-11 `--dialog-padding` becomes `--surface-padding`, Δ-12 the type scale is emitted as `--text-*` variables. **No subagents:** the build is one coherent change across tokens, `build.mjs`, and the same test files, so two agents would collide in `test-registry.mjs` and `public/r`. Next: red tests for 2.1, 2.2, 2.4 and 2.7, then tokens and build. |
+
 ### S3 — Enforcement
 **Status:** blocked on S1.5. **Runs before S2** (D-26).
 **Owns:** plan Phase 4, the portable checker. Its in-repo test half moved to S1 Phase 0.

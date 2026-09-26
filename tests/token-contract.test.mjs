@@ -165,6 +165,71 @@ test('presentation and operations resolve to the same blocks as their aliases', 
   assert.match(dualCss, /\[data-design="operations"\] \.ud-body/, 'operations typography helpers missing');
 });
 
+// --- The profile archetype (D-19, D-22, D-27) ---
+// Each check runs on the dual stylesheet's operations block and on the
+// standalone operations stylesheet, which must agree.
+const presentationBlock = block(dualCss, ':root, :root[data-design="brand"]');
+const operationsBlocks = [
+  ['dual operations', block(dualCss, ':root[data-design="functional"], .design-functional')],
+  ['standalone operations', block(functionalCss, ':root')],
+];
+
+function varValue(body, name) {
+  return body.match(new RegExp(`${name}:\\s*([^;]+);`))?.[1].trim();
+}
+
+function typeShape(body) {
+  const rem = (step) => {
+    const value = varValue(body, `--text-${step}`);
+    assert.match(value ?? '', /^[\d.]+rem$/, `--text-${step} must be emitted in rem, got ${value}`);
+    return parseFloat(value);
+  };
+  const body1 = rem('body');
+  return Object.fromEntries(['display', 'h1', 'h2', 'h3'].map((step) => [step, rem(step) / body1]));
+}
+
+test('the profiles fork the type scale shape, not only its size', () => {
+  const presentation = typeShape(presentationBlock);
+  assert.ok(presentation.display >= 3.3, `presentation display is ${presentation.display.toFixed(2)}x body; D-19 wants drama, ~3.5x`);
+  for (const [label, body] of operationsBlocks) {
+    const operations = typeShape(body);
+    assert.ok(operations.display <= 1.8, `${label} display is ${operations.display.toFixed(2)}x body; D-19 wants an instrument, ~1.7x`);
+    for (const step of Object.keys(presentation)) {
+      const gap = Math.abs(presentation[step] / operations[step] - 1);
+      assert.ok(gap > 0.05, `${step} is within 5% of its counterpart in ${label} (${(gap * 100).toFixed(1)}%): one design at two zoom levels`);
+    }
+  }
+});
+
+test('operations draws hierarchy from structure: square corners, flat cards', () => {
+  for (const [label, body] of operationsBlocks) {
+    for (const name of ['--radius-sm', '--radius', '--radius-lg']) assert.equal(varValue(body, name), '0px', `${name} in ${label}`);
+    for (const name of ['--shadow-1', '--shadow-2']) assert.equal(varValue(body, name), 'none', `${name} in ${label}`);
+  }
+  assert.notEqual(varValue(presentationBlock, '--radius'), '0px', 'presentation keeps its radius scale');
+  assert.notEqual(varValue(presentationBlock, '--shadow-2'), 'none', 'presentation cards float on --shadow-2 (D-27)');
+});
+
+test('operations sets a compact surface padding; presentation leaves the fallback alone', () => {
+  for (const [label, body] of operationsBlocks) {
+    const padding = varValue(body, '--surface-padding');
+    assert.match(padding ?? '', /^\d+px$/, `${label} must set --surface-padding in px`);
+    assert.ok(parseFloat(padding) < 24, `${label} --surface-padding ${padding} is not more compact than presentation's 24px`);
+  }
+  // Declaring it here would override the 16px phone fallback Dialog and Sheet carry.
+  assert.equal(varValue(presentationBlock, '--surface-padding'), undefined);
+  assertTouchFloor(dualCss);
+});
+
+test('operations numbers are tabular mono; presentation numbers stay proportional', () => {
+  for (const [label, body] of operationsBlocks) {
+    assert.equal(varValue(body, '--font-numeric'), 'var(--font-data)', label);
+    assert.equal(varValue(body, '--font-numeric-variant'), 'tabular-nums', label);
+  }
+  assert.equal(varValue(presentationBlock, '--font-numeric'), 'var(--font-body)');
+  assert.equal(varValue(presentationBlock, '--font-numeric-variant'), 'normal');
+});
+
 test('emits the responsive contract with mobile-safe values', () => {
   assert.match(dualCss, /--dialog-inline-size-mobile:\s*95vw/);
   assert.match(dualCss, /--dialog-block-size-max:\s*100svh/);
@@ -174,7 +239,7 @@ test('emits the responsive contract with mobile-safe values', () => {
 test('emits functional typography helpers in the combined stylesheet', () => {
   assert.match(
     dualCss,
-    /:root\[data-design="functional"\] \.ud-display,[^{]*\.design-functional \.ud-display[^{]*\{[^}]*font-size:2\.5rem/,
+    /:root\[data-design="functional"\] \.ud-display,[^{]*\.design-functional \.ud-display[^{]*\{[^}]*font-size:1\.5rem/,
   );
   assert.match(
     dualCss,

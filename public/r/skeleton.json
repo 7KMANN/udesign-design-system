@@ -10,7 +10,7 @@
   "files": [
     {
       "path": "registry/new-york/ui/skeleton.tsx",
-      "content": "import * as React from \"react\"\r\n\r\nimport { cn } from \"@/lib/utils\"\r\n\r\nexport type SkeletonProps = React.HTMLAttributes<HTMLDivElement>\r\n\r\n/**\r\n * A placeholder that mirrors the dimensions of the content it stands in for.\r\n * A fallback of a different height causes a jump on arrival, which reads worse\r\n * than the blank pause it replaced - size this to the real thing.\r\n */\r\nconst Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(({ className, ...props }, ref) => (\r\n  <div\r\n    ref={ref}\r\n    aria-hidden=\"true\"\r\n    className={cn(\"rounded-md bg-[var(--muted)] motion-safe:animate-pulse [animation-duration:var(--motion-duration-ambient)]\", className)}\r\n    {...props}\r\n  />\r\n))\r\nSkeleton.displayName = \"Skeleton\"\r\n\r\nexport { Skeleton }\r\n",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\nexport type SkeletonProps = React.HTMLAttributes<HTMLDivElement>\n\n/**\n * A placeholder that mirrors the dimensions of the content it stands in for.\n * A fallback of a different height causes a jump on arrival, which reads worse\n * than the blank pause it replaced - size this to the real thing.\n */\nconst Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(({ className, ...props }, ref) => (\n  <div\n    ref={ref}\n    aria-hidden=\"true\"\n    className={cn(\"rounded-[var(--radius)] bg-[var(--muted)] motion-safe:animate-pulse [animation-duration:var(--motion-duration-ambient)]\", className)}\n    {...props}\n  />\n))\nSkeleton.displayName = \"Skeleton\"\n\nexport { Skeleton }\n",
       "type": "registry:ui",
       "target": "components/ui/skeleton.tsx"
     }

@@ -57,7 +57,7 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
       <Comp
         ref={ref}
         className={cn(
-          "inline-flex min-h-6 items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold leading-none",
+          "inline-flex min-h-6 items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold leading-none [font-variant-numeric:var(--font-numeric-variant)]",
           toneClasses[tone][variant],
           className,
         )}

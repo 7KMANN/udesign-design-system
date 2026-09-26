@@ -34,11 +34,11 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
       <SheetOverlay />
       <SheetPrimitive.Content
         ref={ref}
-        className={cn("fixed z-50 grid max-h-[var(--dialog-block-size-max)] gap-4 overflow-y-auto border-[var(--border)] bg-[var(--surface-raised)] [--dialog-padding-default:var(--content-gutter-mobile)] sm:[--dialog-padding-default:1.5rem] p-[var(--dialog-padding,var(--dialog-padding-default))] text-[var(--surface-raised-foreground)] shadow-[var(--shadow-3)]", sides[side], className)}
+        className={cn("fixed z-50 grid max-h-[var(--dialog-block-size-max)] gap-4 overflow-y-auto border-[var(--border)] bg-[var(--surface-raised)] [--surface-padding-default:var(--content-gutter-mobile)] sm:[--surface-padding-default:1.5rem] p-[var(--surface-padding,var(--surface-padding-default))] text-[var(--surface-raised-foreground)] shadow-[var(--shadow-3)]", sides[side], className)}
         {...props}
       >
         {children}
-        <SheetPrimitive.Close className="absolute right-2 top-2 inline-flex size-[var(--touch-target-min)] items-center justify-center rounded-md text-[var(--muted-foreground)] transition-[transform,background-color,color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] active:bg-[var(--interactive-pressed)] hover:bg-[var(--interactive-hover)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)]">
+        <SheetPrimitive.Close className="absolute right-2 top-2 inline-flex size-[var(--touch-target-min)] items-center justify-center rounded-[var(--radius)] text-[var(--muted-foreground)] transition-[transform,background-color,color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] active:bg-[var(--interactive-pressed)] hover:bg-[var(--interactive-hover)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)]">
           <X className="size-4" aria-hidden="true" />
           <span className="sr-only">{closeLabel}</span>
         </SheetPrimitive.Close>
@@ -55,7 +55,7 @@ const SheetFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 SheetFooter.displayName = "SheetFooter"
 
 const SheetTitle = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Title>, React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>>(
-  ({ className, ...props }, ref) => <SheetPrimitive.Title ref={ref} className={cn("[font-family:var(--font-display)] text-lg font-semibold", className)} {...props} />,
+  ({ className, ...props }, ref) => <SheetPrimitive.Title ref={ref} className={cn("[font-family:var(--font-display)] text-[length:var(--text-h3)] font-semibold", className)} {...props} />,
 )
 SheetTitle.displayName = SheetPrimitive.Title.displayName
 

@@ -13,7 +13,7 @@ const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(({ className, .
   <div
     ref={ref}
     aria-hidden="true"
-    className={cn("rounded-md bg-[var(--muted)] motion-safe:animate-pulse [animation-duration:var(--motion-duration-ambient)]", className)}
+    className={cn("rounded-[var(--radius)] bg-[var(--muted)] motion-safe:animate-pulse [animation-duration:var(--motion-duration-ambient)]", className)}
     {...props}
   />
 ))

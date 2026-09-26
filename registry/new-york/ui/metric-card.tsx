@@ -23,7 +23,7 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
     <Card ref={ref} className={cn(metricTones[tone], className)} {...props}>
       <CardHeader className="pb-2"><p className="text-sm font-medium">{label}</p></CardHeader>
       <CardContent>
-        <p className="[font-family:var(--font-data)] text-2xl font-semibold tabular-nums">{value}</p>
+        <p className="[font-family:var(--font-numeric)] [font-variant-numeric:var(--font-numeric-variant)] text-2xl font-semibold">{value}</p>
         {detail ? <div className="mt-1 text-sm">{detail}</div> : null}
       </CardContent>
     </Card>

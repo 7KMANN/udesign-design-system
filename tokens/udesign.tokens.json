@@ -367,8 +367,10 @@
       "$type": "fontFamily",
       "display": { "$description": "Impact + UI. From udesign-website.", "$value": ["Montserrat", "sans-serif"] },
       "body":    { "$description": "Readable application and long-form text.", "$value": ["Geist", "system-ui", "sans-serif"] },
-      "data":    { "$description": "Technical readouts only: SKU, PMS, dimensions.", "$value": ["JetBrains Mono", "monospace"] }
+      "data":    { "$description": "Technical readouts only: SKU, PMS, dimensions.", "$value": ["JetBrains Mono", "monospace"] },
+      "numeric": { "$description": "Figures in running UI. Presentation keeps them proportional in the body face (D-19).", "$value": "{font.family.body}" }
     },
+    "numeric-variant": { "$type": "string", "$description": "font-variant-numeric for figures. Presentation: proportional.", "$value": "normal" },
     "weight": {
       "$type": "fontWeight",
       "regular": { "$value": 400 },
@@ -382,10 +384,10 @@
 
   "typography": {
     "$type": "typography",
-    "display": { "$value": { "fontFamily": "{font.family.display}", "fontWeight": "{font.weight.black}", "fontSize": { "value": 3, "unit": "rem" }, "lineHeight": 1, "letterSpacing": { "value": -0.02, "unit": "em" } } },
-    "h1":      { "$value": { "fontFamily": "{font.family.display}", "fontWeight": "{font.weight.black}", "fontSize": { "value": 2.1, "unit": "rem" }, "lineHeight": 1.05, "letterSpacing": { "value": -0.01, "unit": "em" } } },
-    "h2":      { "$value": { "fontFamily": "{font.family.display}", "fontWeight": "{font.weight.extrabold}", "fontSize": { "value": 1.6, "unit": "rem" }, "lineHeight": 1.1, "letterSpacing": { "value": -0.01, "unit": "em" } } },
-    "h3":      { "$value": { "fontFamily": "{font.family.display}", "fontWeight": "{font.weight.bold}", "fontSize": { "value": 1.2, "unit": "rem" }, "lineHeight": 1.2, "letterSpacing": { "value": 0, "unit": "em" } } },
+    "display": { "$value": { "fontFamily": "{font.family.display}", "fontWeight": "{font.weight.black}", "fontSize": { "value": 3.5, "unit": "rem" }, "lineHeight": 1, "letterSpacing": { "value": -0.025, "unit": "em" } } },
+    "h1":      { "$value": { "fontFamily": "{font.family.display}", "fontWeight": "{font.weight.black}", "fontSize": { "value": 2.5, "unit": "rem" }, "lineHeight": 1.05, "letterSpacing": { "value": -0.015, "unit": "em" } } },
+    "h2":      { "$value": { "fontFamily": "{font.family.display}", "fontWeight": "{font.weight.extrabold}", "fontSize": { "value": 1.75, "unit": "rem" }, "lineHeight": 1.1, "letterSpacing": { "value": -0.01, "unit": "em" } } },
+    "h3":      { "$value": { "fontFamily": "{font.family.display}", "fontWeight": "{font.weight.bold}", "fontSize": { "value": 1.25, "unit": "rem" }, "lineHeight": 1.2, "letterSpacing": { "value": 0, "unit": "em" } } },
     "body":    { "$value": { "fontFamily": "{font.family.body}", "fontWeight": "{font.weight.regular}", "fontSize": { "value": 1, "unit": "rem" }, "lineHeight": 1.6, "letterSpacing": { "value": 0, "unit": "em" } } },
     "label":   { "$description": "Quiet Title-case label. Never uppercase, never wide-tracked, never mono.", "$value": { "fontFamily": "{font.family.display}", "fontWeight": "{font.weight.semibold}", "fontSize": { "value": 0.78, "unit": "rem" }, "lineHeight": 1.3, "letterSpacing": { "value": 0, "unit": "em" } } },
     "data":    { "$value": { "fontFamily": "{font.family.data}", "fontWeight": "{font.weight.regular}", "fontSize": { "value": 0.85, "unit": "rem" }, "lineHeight": 1.4, "letterSpacing": { "value": 0, "unit": "em" } } }

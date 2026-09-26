@@ -22,7 +22,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
     <div
       ref={ref}
       role={role}
-      className={cn("relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg~*]:pl-7", alertTones[tone], className)}
+      className={cn("relative w-full rounded-[var(--radius-lg)] border p-4 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg~*]:pl-7", alertTones[tone], className)}
       {...props}
     />
   ),

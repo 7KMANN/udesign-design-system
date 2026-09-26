@@ -696,3 +696,45 @@ update in S2.
 **Rejected:** keeping S2 before S3 and rewriting S2's verification to something it can meet alone.
 
 This corrects S0's own segment map; S0's handoff explicitly permitted such corrections.
+
+---
+
+## Round 10 - 2026-09-26 (S1.5, after the prototype)
+
+**Evidence:** a prototype built on the real `dist/tokens.css` showed one order screen composed the way
+an agent composes it today, in both profiles, next to the proposed archetype (the client's view in
+`PageCanvas`, the shop's view in `AppShell`), with the type ratios, radius, padding and numeric face
+measured live from the render. Published as a private artifact,
+`https://claude.ai/artifact/39cLxHx2WsUCM8BtDSiThW`; source on branch `v2/s1.5-prototype`.
+
+### D-27 · The archetype's numbers · `APPROVED` 2026-09-26
+
+D-19 and D-22 fixed the ratios and the axes; these are the values. Kaleb's verdict on the prototype:
+**the two profiles read as two products.** So skip-list item 11 (the body typeface) stays unused.
+
+1. **Type scale steps**, display / h1 / h2 / h3 against the profile's own body:
+   `presentation` 3.5x / 2.5x / 1.75x / 1.25x on a 16px body; `operations` 1.71x / 1.43x / 1.21x /
+   1.07x on a 14px body (24 / 20 / 17 / 15px). Every step differs from its counterpart by more than
+   5%. Operations headings draw their hierarchy from weight (700, 700, 600, 600), not size.
+2. **Compact padding: 12px** for `Card`, `Dialog` and `Sheet` in `operations`. The GlobalVision
+   parcel fix landed on the same value. Presentation keeps its current padding.
+3. **Presentation cards float on `--shadow-2`** instead of `--shadow-1`. This is D-19's "hierarchy
+   from space and elevation" made visible. `--shadow-2` is `none` in operations, so ban 21 holds.
+
+**Rejected:** 16px compact padding; keeping `--shadow-1` on presentation cards.
+
+### Derived in round 10, not asked
+
+- **Δ-10 · Radius utilities become variables.** The registry used `rounded-sm/md/lg` 18 times.
+  Those are Tailwind theme aliases, so each consumer's config picked the radius and `--radius: 0px`
+  could never reach a button. They become `rounded-[var(--radius-sm)]`, `rounded-[var(--radius)]`
+  and `rounded-[var(--radius-lg)]`. `rounded-md` maps to `--radius` because the `DESIGN.md`
+  frontmatter gives buttons `{rounded.md}` = 10px, which is `--radius`; Tailwind's unmapped
+  `rounded-md` was 6px, so presentation controls move from 6px to the documented 10px.
+- **Δ-11 · `--dialog-padding` becomes `--surface-padding`.** D-22 asks for one variable across
+  `Card`, `Dialog` and `Sheet`, and a card reading `--dialog-padding` misnames itself to every agent.
+  The variable is unreleased (S1 added it), so the rename breaks nothing. MN-10 is updated.
+- **Δ-12 · The type scale is emitted as variables.** Before this, the scale reached only the
+  `.ud-*` helper classes and component titles hard-coded `text-lg`, so the fork would have stopped
+  at the helpers. Each profile block now emits `--text-display`, `--text-h1`, `--text-h2`,
+  `--text-h3` and `--text-body`, and `CardTitle`, `DialogTitle`, `SheetTitle` read `--text-h3`.

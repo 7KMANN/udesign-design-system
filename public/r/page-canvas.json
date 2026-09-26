@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "page-canvas",
+  "type": "registry:component",
+  "title": "Page Canvas",
+  "description": "The presentation page shell: the page scrolls, content sits in a centered column, and a section can run edge to edge.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/page-canvas.tsx",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\n// The presentation archetype (D-19, D-20). The page scrolls, content sits in a\n// centered column, and a section may bleed to the edge. Hierarchy comes from\n// space and elevation, so sections are separated generously and cards float.\n\nconst PageCanvas = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(\n  ({ className, ...props }, ref) => (\n    <div ref={ref} className={cn(\"min-h-svh bg-[var(--background)] text-[var(--foreground)]\", className)} {...props} />\n  ),\n)\nPageCanvas.displayName = \"PageCanvas\"\n\nexport interface PageSectionProps extends React.HTMLAttributes<HTMLElement> {\n  /** `band` runs a raised surface edge to edge; `canvas` sits on the page field. */\n  variant?: \"canvas\" | \"band\"\n}\n\n// One fluid padding class rather than a breakpoint pair, so a consumer's py-0 wins outright (D-21).\nconst PageSection = React.forwardRef<HTMLElement, PageSectionProps>(\n  ({ children, className, variant = \"canvas\", ...props }, ref) => (\n    <section\n      ref={ref}\n      className={cn(\n        \"py-[clamp(var(--space-8),8vw,calc(var(--space-8)*2))]\",\n        variant === \"band\" && \"border-y border-[var(--border)] bg-[var(--card)]\",\n        className,\n      )}\n      {...props}\n    >\n      <div className=\"mx-auto w-full max-w-6xl px-[var(--content-gutter-mobile)] sm:px-[var(--space-8)]\">{children}</div>\n    </section>\n  ),\n)\nPageSection.displayName = \"PageSection\"\n\nexport { PageCanvas, PageSection }\n",
+      "type": "registry:component",
+      "target": "components/ui/page-canvas.tsx"
+    }
+  ],
+  "docs": "Use for a screen presented to someone, under data-design=\"presentation\". PageCanvas wraps the document; PageSection gives each block a centered column and generous vertical space, and variant=\"band\" runs a raised surface edge to edge. Hierarchy comes from space and elevation. An operations screen uses AppShell instead. See DESIGN.md \"Profiles\"."
+}
