@@ -242,14 +242,15 @@
 }
 
 .preview-heading h1 {
-  font-size: clamp(1.85rem, 6cqi, 3rem);
+  /* v2 type scale; the fallback keeps v1.x token snapshots rendering as they shipped. */
+  font-size: var(--text-display, clamp(1.85rem, 6cqi, 3rem));
   line-height: 1;
 }
 
 .section-heading h2,
 .collection-toolbar h2,
 .legend-card h2 {
-  font-size: clamp(1.1rem, 3cqi, 1.5rem);
+  font-size: var(--text-h2, clamp(1.1rem, 3cqi, 1.5rem));
 }
 
 .preview-heading > p,
@@ -882,7 +883,7 @@
 }
 
 .dialog-heading h1 {
-  font-size: 1.5rem;
+  font-size: var(--text-h1, 1.5rem);
 }
 
 .dialog-description {

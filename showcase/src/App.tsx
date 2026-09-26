@@ -35,16 +35,21 @@ export default function App() {
   const [design, setDesign] = useState<Design>('presentation');
   const [theme, setTheme] = useState<Theme>('light');
 
+  // v1.x snapshots only know the pre-D-07 names, so a comparison must speak their language.
+  const legacyTokens = selectedVersionPath.includes('/history/v1.');
+
   useEffect(() => {
     // design-ok: a documentation surface that shows both profiles (AGENTS.md rule 6).
-    document.documentElement.dataset.design = design;
+    document.documentElement.dataset.design = legacyTokens
+      ? { presentation: 'brand', operations: 'functional' }[design]
+      : design;
     document.documentElement.dataset.theme = theme;
     // Pinned "on", not a showcase control: the showcase's job is to
     // demonstrate the gamification layer, so it always declares the
     // attribute the way a real consuming app would - see DESIGN.md
     // "data-game". This is not a toggle (ADR-0001 bans that).
     document.documentElement.dataset.game = 'on';
-  }, [design, theme]);
+  }, [design, theme, legacyTokens]);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -129,7 +134,8 @@ export default function App() {
 
       <main className="showcase-workspace">
         <p className="showcase-context" aria-live="polite">
-          {design} profile, {theme} theme, {VIEWPORT_WIDTHS[viewport]} preview
+          {design} profile, {theme} theme, {VIEWPORT_WIDTHS[viewport]} preview,{' '}
+          {legacyTokens ? selectedVersionPath.split('/')[2] : 'current'} tokens
         </p>
         <div
           className="showcase-preview"

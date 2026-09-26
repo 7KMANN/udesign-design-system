@@ -88,7 +88,7 @@ export function KitchenSink() {
     <div className="preview-page">
       <header className="preview-heading">
         <div>
-          <p className="preview-kicker">UDesign 1.3.0</p>
+          <p className="preview-kicker">UDesign</p>
           <h1>Semantic system matrix</h1>
         </div>
         <p>Every sample changes across theme and design profile without changing component code.</p>
