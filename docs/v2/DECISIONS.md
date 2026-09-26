@@ -438,6 +438,9 @@ approval-bound, has an answer above. No item in the plan carries `NEEDS-APPROVAL
 **Round 6 (2026-09-02) reopened and replaced D-05.** See D-19 and D-20 at the end of this file.
 Read D-19 before acting on anything D-05 says.
 
+**Round 7 (2026-09-25) amended D-19** after GlobalVision field evidence. See D-21, D-22 and
+Δ-07 through Δ-09 at the end of this file. Nothing is open after round 7 either.
+
 The two items closest to the line, and why they are settled rather than soft:
 
 - **D-11's positive conviction** is an agent's translation of verbal tone into a visual position.
@@ -493,7 +496,11 @@ diverged from one template (research 7.1).
 Stripe Dashboard and stripe.com share a brand and read as different products because their
 *archetype* differs, not their spacing tokens.
 
-### D-19 · The archetype fork · `APPROVED` 2026-09-02 · **supersedes D-05**
+### D-19 · The archetype fork · `APPROVED` 2026-09-02 · **supersedes D-05** · amended by D-22
+
+> **Amended 2026-09-25 by D-22.** The claim below that "density now falls out of the app shell for
+> free" was shown by field evidence to hold only for shell gutters. D-22 extends item 2 into
+> `Card`, `Dialog` and `Sheet`. Everything else in D-19 stands.
 
 The profile difference is structural, not dimensional. Four axes:
 
@@ -552,3 +559,69 @@ the failure that started this operation was a structural one, not a control-leve
 actually diverged, with rules instead of components, and rules are what failed there the first
 time). Also rejected: documenting the archetypes without shipping code, which is prose solving a
 composition problem, the thing research 7.9 item 12 says does not survive contact with an agent.
+
+
+---
+
+## Round 7 - 2026-09-25
+
+**Trigger:** [`_evidence-functional-density.md`](./_evidence-functional-density.md), committed
+2026-09-23 as `ee7dab0`. Kaleb reviewed GlobalVision's parcel-tracking tool as "not optimized at all,
+way too much spacing". The screen already followed the functional profile and passed `lint:design`
+with zero violations. The evidence file left three candidate responses marked `NEEDS-APPROVAL`, which
+made the plan's "nothing carries `NEEDS-APPROVAL`" untrue.
+
+**Every claim in the evidence was re-verified against `master` on 2026-09-25:** `card.tsx:11,26,31`
+pad with `p-6`; `dialog.tsx:30` sets `p-[var(--content-gutter-mobile)] ... sm:p-6` with `gap-4`;
+`sheet.tsx:37` has the same shape.
+
+### D-21 · The padding override fix goes in Phase 0, as a variable · `APPROVED` 2026-09-25
+
+`dialog.tsx:30` and `sheet.tsx:37` move their breakpoint padding into a variable,
+`p-[var(--dialog-padding)]`, so a single consumer `p-0` wins completely. Today tailwind-merge treats
+`sm:p-6` and `p-0` as different classes: the override gives 0 on phones and 24px on desktop, and
+nothing reports it. Seven GlobalVision dialogs have this problem right now.
+
+**Phase 0, item 0.7.** It is a shipped bug of the same kind as the other four, and Phase 0 was
+pulled forward precisely so shipped bugs stop shipping. It also becomes the hook D-22 uses.
+
+**Rejected:** an explicit `inset="none"` prop. It adds a public API to document, test and mirror in
+the CSS layer, only fixes the edge-to-edge case, and gives the density axis nothing to hook into.
+**Rejected:** deferring to S1.5, which would keep the bug shipping for at least another segment.
+
+### D-22 · A density axis inside the components · `APPROVED` 2026-09-25 · amends D-19
+
+`Card`, `Dialog` and `Sheet` read their padding from one variable. `operations` (or `AppShell`) sets
+it compact; `presentation` keeps 24px. **Only padding moves.** `--touch-target-min` and
+`--control-height` stay 44px in both profiles, and D-19's reason for dropping the token fork (same
+type curve means the same design at 80% zoom) is untouched.
+
+**What it corrects in D-19:** item 2 (the hierarchy fork) now reaches inside the components, and the
+phrase "density falls out of the app shell for free" is withdrawn. The shell handles gutters; the
+components handle their own internals. The GlobalVision measurement is the evidence: 1 of 7
+tracking events visible before the local fix, 7 of 7 after, and none of the waste was in a gutter.
+
+**Plan item 2.7. S1.5 grows by about a day, to 7-9 engineering days.**
+
+**Rejected:** letting S1.5 prototype first. The field measurement already exists. **Rejected:**
+leaving D-19 as it was, which would make "use the design system" produce a spacious operations
+screen by default. That hurts P1.
+
+### Derived in round 7, not asked
+
+**Δ-07 · Two checker rules join Phase 4.** From the evidence's third candidate. Neither makes a
+claim about UDesign; both are countable, catch real shipped bugs, and fit `ENFORCEMENT.md:5`.
+(8) flag `p-0`/`px-0`/`py-0` passed to a component whose base class has a breakpoint-prefixed
+padding. D-21 fixes the registry's own `Dialog`/`Sheet`, but consumers carry local forks, so the
+rule still pays. (9) flag Tailwind class names assembled with `.replace()` or template strings from
+other class names. Tailwind only generates classes that appear literally in source.
+
+**Δ-08 · S1 cuts the next `udesign-docs` minor tag, not `v0.7.0`.** `v0.7.0` (2026-09-11) and
+`v0.8.0` (2026-09-13) were cut for Invoice Ninja platform docs while S1 was waiting. Both touched
+only `platform/invoice-ninja.md`, so nothing S1 depends on moved. S1 cuts whatever the next minor
+is when it gets there: **`v0.9.0` as of 2026-09-25.** The handoff no longer hard-codes a number.
+
+**Δ-09 · Registry fixes do not reach GlobalVision's `Card` or `Dialog`.** Its
+`components/ui/card.tsx` and `dialog.tsx` are local shadcn v4 forks, not the `@udesign` registry
+versions its `components.json` points at. Recorded as migration note MN-9. Not scheduled: plan
+brief §5 keeps consumer fixes out of scope.

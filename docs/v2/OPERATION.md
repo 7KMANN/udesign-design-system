@@ -2,7 +2,7 @@
 
 **This file is both the map and the state.** Every segment updates the ledger in §4 before it ends. An orchestrator resuming after a limit, a crash, or a week away reads this file first and knows exactly where things stand.
 
-**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0 complete. S1 ready to start.
+**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0 complete and merged. S1 ready to start (re-verified 2026-09-25).
 
 ---
 
@@ -132,9 +132,9 @@ Every handoff points at text. None restates the research, the brief, or a prior 
 Append-only. Newest at the bottom. One line per event: date, who, what happened, what is next.
 
 ### S0 — Decide & Plan
-**Status:** in progress — phase 1 (investigation)
-**Branch:** `v2/s0-decide-and-plan` (created, off `master` @ `75c9271`)
-**Next action:** absorb both subagent reports, then grilling round 1 (boundary + profiles).
+**Status:** complete. Merged to `master`.
+**Branch:** `v2/s0-decide-and-plan` (merged; safe to delete)
+**Next action:** none. S1 is next.
 
 | Date | Event |
 |---|---|
@@ -160,22 +160,25 @@ Append-only. Newest at the bottom. One line per event: date, who, what happened,
 | 2026-09-02 | **D-20:** `PageCanvas` and `AppShell` ship for both consumption models. Registry 27 to 29 components. Deliberate, argued exception to the plan's scope-inflation warning. |
 | 2026-09-02 | **Skill routing added** (§2 "The skill fleet", standing rule 9). Segments now have a named skill per moment rather than being left to taste. **Finding while checking:** `interface-responsiveness` is installed at `~/.claude/skills/` as a full copy, not a symlink, and is byte-identical to `udesign-docs` - so it carries the same six drifted motion values, and reconciling the source will not fix the copy that actually loads. A third home for one fact. S1 must reconcile then re-install. |
 | 2026-09-02 | Plan Phase 2 rewritten, plus its scoring, risks, skip list and migration notes. **Phase 2 now scores yes/yes against P1 and P2 and would have stopped the catalog incident**; in its D-05 form it scored partial/no. S1 handoff updated. Committed. **Next concrete action unchanged: merge S0, then paste `S1-language-and-boundary.md` into a fresh session.** |
+| 2026-09-25 | **Pre-S1 freshness check.** Repo untouched since v1.5.0: all Phase 0 defects still ship, README still pins v1.3.0, `AGENTS.md` still missing from `files`, 49/49 tests pass. `udesign-docs`: `MOTION-SYSTEM.md` still has all six drifted values, the contract still claims v1.3.1, ground truth unchanged so D-15's line numbers hold. The installed skill copy is still byte-identical to source (Δ-06 stands). GlobalVision still pins v1.5.0. The three catalogs for the Phase 4 experiment are still present. |
+| 2026-09-25 | **Stale and fixed:** `udesign-docs` gained `v0.7.0` and `v0.8.0` for platform docs, so S1's tag is now "next minor" (`v0.9.0` today, Δ-08). `WEBDEV/CLAUDE.md` has fallen to four tags behind; item 0.6 now removes the hard-coded range rather than bumping it again. |
+| 2026-09-25 | **Round 7**, from the GlobalVision density evidence (`ee7dab0`), all claims re-verified. **D-21:** `Dialog`/`Sheet` padding moves into a variable so `p-0` actually wins; new Phase 0 item 0.7. **D-22:** `Card`/`Dialog`/`Sheet` get a padding axis per profile; amends D-19, adds plan item 2.7, S1.5 becomes 7-9 days. Two checker rules (Δ-07) and migration notes MN-9/MN-10 added. No `NEEDS-APPROVAL` remains. **Next concrete action: cut `v2/s1-language-and-boundary` off `master` and paste `S1-language-and-boundary.md` into a fresh session.** |
 
 ### S1 — Language & Boundary
 **Status:** ready to start
 **Branch:** `v2/s1-language-and-boundary` (to be cut off `master` after S0 merges)
 **Handoff:** [`S1-language-and-boundary.md`](./S1-language-and-boundary.md)
 **Next action:** Kaleb pastes that handoff into a fresh session.
-**Owns:** plan Phase 0 (all six items) and Phase 1 (items 1.1-1.11), plus the `udesign-docs` v0.7.0 tag.
+**Owns:** plan Phase 0 (all seven items) and Phase 1 (items 1.1-1.11), plus the next `udesign-docs` minor tag (`v0.9.0` as of 2026-09-25; `v0.7.0` and `v0.8.0` were taken by platform docs, Δ-08).
 
 Note: plan §3 proposes that **Phase 0 runs at the top of S1 rather than in S3**. It is about two
-hours of correctness fixes that depend on nothing. Leaving it in S3 means the repo ships four known
+hours of correctness fixes that depend on nothing. Leaving it in S3 means the repo ships five known
 defects for three more segments. This is a proposal from S0, not a decision Kaleb was asked to make;
 S1 may execute it as written or push it back to S3, but should say which.
 
 ### S1.5 — Profile Archetype
 **Status:** blocked on S1
-**Owns:** plan Phase 2. Decisions **D-19** (which supersedes D-05) and **D-20**.
+**Owns:** plan Phase 2. Decisions **D-19** (which supersedes D-05), **D-20**, and **D-22** (which amends D-19).
 **Read D-19 before D-05.** The space-scale and control-height token fork was dropped on 2026-09-02
 after a measurement showed the two profiles share the same type scale shape, so forking density on
 the same curve would have produced the same design at 80% zoom. The fork is now structural: type
@@ -184,7 +187,8 @@ scale shape, hierarchy mechanism, two layout shells (`PageCanvas`, `AppShell`), 
 to 29 components. The `(pointer: fine)` accessibility guard is gone with the token fork.
 **Also read [`_evidence-functional-density.md`](./_evidence-functional-density.md)** (2026-09-23,
 field evidence from GlobalVision): the density that was lost was inside Card/Dialog internals,
-not in shell gutters. That bears on D-19's "density falls out of the app shell for free".
+not in shell gutters. **Resolved 2026-09-25 by D-22:** `Card`, `Dialog` and `Sheet` get a padding
+axis (plan item 2.7), and D-19's "density falls out of the app shell for free" is withdrawn.
 
 ### S2 — CSS Component Layer
 **Status:** blocked on S1.5

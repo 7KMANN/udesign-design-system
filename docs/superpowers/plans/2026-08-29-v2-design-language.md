@@ -3,6 +3,8 @@
 **Date:** 2026-08-29 (written 2026-09-01)
 **Status:** approved to execute. Nothing in this plan carries `NEEDS-APPROVAL`.
 **Revised 2026-09-02:** Phase 2 was rewritten after D-19 replaced D-05. See `DECISIONS.md` round 6.
+**Revised 2026-09-25:** item 0.7 added (D-21), item 2.7 added (D-22), two checker rules added
+(Δ-07), and the `udesign-docs` tag number corrected. See `DECISIONS.md` round 7.
 **Evidence:** [`docs/research/2026-08-27-design-language-transmission.md`](../../research/2026-08-27-design-language-transmission.md)
 **Brief:** [`docs/research/2026-08-29-v2-plan-brief.md`](../../research/2026-08-29-v2-plan-brief.md)
 **Decisions and their provenance tags:** [`docs/v2/DECISIONS.md`](../../v2/DECISIONS.md)
@@ -81,7 +83,8 @@ Every item here is a correctness bug in something already published.
 | 0.3 | Fix the three shipped defects | `select.tsx:18`, `table.tsx:34`, `slider.tsx:30-37` | ~10 lines | The three tests in 0.4, red before and green after. | yes | yes |
 | 0.4 | Three machine-checkable tests | `tests/motion-adoption.test.mjs` or a sibling | ~60 lines | Each fails on today's tree. `press-implies-focusable` catches `table.tsx`; `focus-visible-not-focus` catches `select.tsx`; a **derived** `PRESSED` list catches `slider.tsx` and every future primitive. | yes | yes |
 | 0.5 | Close the touch-target hole | `tests/token-contract.test.mjs:129-130` | ~10 lines | Add a functional `--control-height: 36px` override: the test must fail. **Today it passes**, because `assert.match` runs against the whole file and the presentation block satisfies it. | no | yes |
-| 0.6 | Correct the routing canon's tag range | `WEBDEV/CLAUDE.md` | 1 string | `git tag` in `udesign-docs` returns through `v0.6.0`; the file says `v0.4.0`. | no | yes |
+| 0.6 | Stop the routing canon's tag range going stale | `WEBDEV/CLAUDE.md` | 1 line | The file says `v0.4.0`; `git tag` in `udesign-docs` returned `v0.6.0` on 2026-09-01 and `v0.8.0` on 2026-09-25. It has fallen four tags behind in a month. **Replace the hard-coded range with "tagged; `git -C udesign-docs tag` lists them"** so it cannot go stale again. That file's own rule 1 is "write rules, not changelogs", and a tag range is a changelog. | no | yes |
+| 0.7 | Make a padding override actually win in `Dialog` and `Sheet` (D-21) | `dialog.tsx:30`, `sheet.tsx:37` | ~4 lines + test | Move `sm:p-6` into a variable, `p-[var(--dialog-padding)]`. A test renders `DialogContent` with `className="p-0"` and asserts no breakpoint padding class survives `cn()`. **Today it fails:** tailwind-merge treats `sm:p-6` and `p-0` as different classes, so the override half-works (0 on phones, 24px on desktop). | yes | yes |
 
 **0.4 is the item to write carefully.** The existing `PRESSED` array at
 `tests/motion-adoption.test.mjs:77` is a hand-maintained literal, which is why `slider.tsx` and
@@ -93,8 +96,8 @@ guard that covers primitives nobody has written yet.
 Per `udesign-docs/skills/interface-responsiveness/references/ENFORCEMENT.md:5`: prefer a cheap rule
 with no false positives over a clever rule that needs judgement. All three are greps.
 
-> **Cut line 0.** Stop here and the repo no longer ships four known defects, the README installs the
-> right version, and three real bugs can no longer regress. Nothing about the design language has
+> **Cut line 0.** Stop here and the repo no longer ships five known defects, the README installs the
+> right version, and four real bugs can no longer regress. Nothing about the design language has
 > improved. This is a bug-fix release, and an honest one.
 
 ---
@@ -346,7 +349,7 @@ files and source**, and leave the research record alone.
 
 ### Phase 2: the profile archetype
 
-**S1.5. About 6-8 engineering days. Decisions: D-19 (supersedes D-05) and D-20.**
+**S1.5. About 7-9 engineering days. Decisions: D-19 (supersedes D-05), D-20, and D-22 (amends D-19).**
 
 Depends on Phase 1 (the rename lands first) and on item 0.5.
 
@@ -370,6 +373,7 @@ diverged from one template (research 7.1).
 | 2.4 | Numeric treatment | the two shells, `table`, `metric-card`, `badge` | Every number in `operations` resolves to `--font-data` with `tabular-nums`. Used in 2 of 27 components today. |
 | 2.5 | Selector aliases | `scripts/build.mjs:429-438` | `data-design="functional"` still resolves after the rename. |
 | 2.6 | Restore the density claims, now true | `DESIGN.md:125,129`, `README.md:12` | Each claim is satisfied by the archetype, worded to describe structure rather than a spacing token that does not exist. |
+| 2.7 | A density axis inside `Card`, `Dialog`, `Sheet` (D-22) | `card.tsx:11,26,31`, the variable from 0.7, tokens | All three read their padding from one variable. `operations` (or `AppShell`) sets it compact; `presentation` keeps 24px. A test asserts the operations value is smaller, and that `--touch-target-min` and `--control-height` stay 44px in both. |
 
 **2.4 does not touch D-02.** The ban at `DESIGN.md:223` is on *wide-tracked uppercase* mono labels,
 not on mono. JetBrains Mono is already `font.family.data` in both profiles and `.ud-data` ships it
@@ -382,8 +386,16 @@ the motion lock, which is the one part of D-05 that survives.
 
 **What D-19 removed, and it is worth noticing.** No `--space-*` fork, no `--control-height` fork, and
 therefore **no `(pointer: fine)` guard** and no accessibility cost. `--touch-target-min` and
-`--control-height` stay 44px in both profiles. Density falls out of a fixed-viewport app shell for
-free. Migration notes MN-2 and MN-3 are struck.
+`--control-height` stay 44px in both profiles. Migration notes MN-2 and MN-3 are struck.
+
+**Correction, 2026-09-25: the shell alone does not deliver density.** This section originally said
+density "falls out of a fixed-viewport app shell for free". Field evidence from GlobalVision
+([`_evidence-functional-density.md`](../../v2/_evidence-functional-density.md)) showed otherwise. The
+waste measured on a real operations screen was inside `Card` (`p-6`) and `Dialog`/`Sheet`
+(`sm:p-6`), and those render the same in any shell: 1 of 7 tracking events fit without scrolling
+before the local fix, 7 of 7 after. D-22 therefore extends D-19's hierarchy fork into the
+components (item 2.7). Only padding moves, so the 44px floor and D-19's reason for dropping the
+token fork both still hold.
 
 **Scoring, honestly.** **P1: yes**, and unlike D-05 this is a real yes. An agent given "use the
 design system" and an operational brief now gets a page *structure*, not just styled fragments, and
@@ -493,6 +505,13 @@ on it. **No Python port. No second implementation.**
 5. The em-dash ban (D-12).
 6. The accent named by colour (D-13).
 7. Profile pinned once at the root, never nested (D-08).
+8. A padding override (`p-0`, `px-0`, `py-0`) passed to a component whose base class carries a
+   breakpoint-prefixed padding (Δ-07). 0.7 fixes the registry's own `Dialog` and `Sheet`, but
+   consumers carry local forks (GlobalVision's `card.tsx` and `dialog.tsx` are shadcn v4, not the
+   registry versions), so the rule still earns its place.
+9. A Tailwind class name built at runtime with `.replace()` or a template string from another
+   class name (Δ-07). Tailwind only generates classes that appear literally in source, so these
+   render nothing. GlobalVision shipped a transparent stage connector this way and no lint saw it.
 
 **The governing principle is `ENFORCEMENT.md:5`:** prefer a cheap rule with no false positives over
 a clever rule that needs judgement. A checker that cries wolf gets switched off, and then P2 is worse
@@ -552,7 +571,7 @@ Named, argued, and skipped. A plan that never says "skip this" was not thinking.
 | 9 | **Forking motion** | D-05. Offered at 11-13 days and declined. It trades the system's best-reasoned guarantee, one memorable sentence, for four numeric bounds. |
 | 10 | **Fixing GlobalVision or udesignpages** | Plan brief §5, verbatim: *"its not your job to fix them."* They are evidence and test targets. Drift found in them becomes a migration note, never a plan task. |
 | 11 | **Forking the body typeface** | Explored in round 6 as one of five differentiation levers. Not banned, and both profiles are Geist today, but it is the only lever carrying real brand-identity risk and the other four reach the goal without it. |
-| 12 | **The `--space-*` and `--control-height` token fork** | D-19 dropped it. Density falls out of the app shell for free; forking the tokens as well pays for it twice, and it was the source of the `(pointer: fine)` accessibility cost. |
+| 12 | **The `--space-*` and `--control-height` token fork** | D-19 dropped it: on the same type curve it produces the same design at 80% zoom, and it was the source of the `(pointer: fine)` accessibility cost. Density comes from the shell plus the component padding axis (D-22), which moves padding only and leaves the space scale and the 44px floor alone. |
 
 ---
 
@@ -574,6 +593,8 @@ is telling them what broke.
 | MN-6 | Merged ban list (D-10, D-17) | Anything citing a ban by number | Nothing breaks. Numbers 1-19 are unchanged by design. |
 | MN-7 | `udesignpages/public/design-system/patterns.html` superseded (Δ-03) | udesignpages | Its `.ud-btn` has no `:active` state at all and violates ban 16. Replaced by the Phase 3 layer, with nothing owed to it in reconciliation. |
 | MN-8 | GlobalVision's four doc pins report changed (Investigation B) | GlobalVision | Its own repin test flags them. Record only; do not schedule. |
+| MN-9 | Registry fixes do not reach GlobalVision's `Card` or `Dialog` | GlobalVision | Its `components/ui/card.tsx` and `dialog.tsx` are local shadcn v4 forks with `data-slot` attributes, not the `@udesign` registry versions its `components.json` points at. 0.7 and 2.7 fix the registry; GlobalVision only benefits once it re-adds those components from the registry. |
+| MN-10 | `Dialog`/`Sheet` padding now reads from `--dialog-padding` (D-21) | Any consumer passing padding overrides | Not breaking. A single `p-0` now wins completely, so the `p-0 sm:p-0 gap-0` workaround GlobalVision used can be reduced to `p-0`. `gap-4` is unchanged. |
 
 ---
 
@@ -585,7 +606,7 @@ Per plan brief §6 and the model of research §7.6.
 |---|---|---|---|---|
 | 0 | ~2 hrs | critical (0.1, 0.2) | yes (0.3-0.6) | **No.** All feedback and version work. |
 | 1 | ~3-4 days | **critical** | **critical** | **Yes**, 1.2 and 1.3 specifically. |
-| 2 | 6-8 days | **yes** | yes | **Yes**, 2.3 specifically: the divergence was three agents inventing three page structures because the system owned none. |
+| 2 | 7-9 days | **yes** | yes | **Yes**, 2.3 specifically: the divergence was three agents inventing three page structures because the system owned none. |
 | 3 | largest build | critical for static HTML | critical for static HTML | **Yes**, by giving the failing artifact an upstream. |
 | 4 | ~2-3 days | no | **this is P2** | **Catches it**, automatically, with no agent reading anything. |
 | 5 | ~3-4 days | yes | no | **Yes**, by imitation, if §7.7 D is honoured. |

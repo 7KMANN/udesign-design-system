@@ -47,9 +47,9 @@ None of that is repeated here. This file only tells you how to *run* the segment
 
 | Artifact | Where |
 |---|---|
-| Phase 0, all six items | This repo, plus one line in `WEBDEV/CLAUDE.md` |
+| Phase 0, all seven items | This repo, plus one line in `WEBDEV/CLAUDE.md` |
 | Phase 1, items 1.1 through 1.11 | This repo and `udesign-docs` |
-| The `udesign-docs` tag bump | `v0.7.0` |
+| The `udesign-docs` tag bump | The next minor after the latest tag. `v0.9.0` as of 2026-09-25; run `git -C ../udesign-docs tag` before cutting (Δ-08) |
 | The S1.5 handoff | `docs/v2/S1.5-profile-archetype.md` |
 | Updated ledger | `docs/v2/OPERATION.md` §4 |
 
@@ -59,9 +59,13 @@ None of that is repeated here. This file only tells you how to *run* the segment
 
 ### Phase 0 first, before anything else, and before you think
 
-Six items, about two hours, listed in plan §4 Phase 0. They are correctness bugs in something
+Seven items, about two hours, listed in plan §4 Phase 0. They are correctness bugs in something
 already published. None depends on any decision you will make. **Do them first so that if this
-segment stalls, the repo has still stopped shipping four known defects.**
+segment stalls, the repo has still stopped shipping five known defects.**
+
+Item 0.7 was added on 2026-09-25 (D-21) from GlobalVision field evidence:
+[`_evidence-functional-density.md`](./_evidence-functional-density.md). Read its "mechanism 2"
+section before writing the test. The trap is that the obvious override silently half-works.
 
 **Invoke `superpowers:test-driven-development` and work items 0.3-0.5 in that order: test first,
 red, then fix.** The plan's verification standard for all three is "fails before, passes after", so
@@ -219,7 +223,9 @@ Then update `OPERATION.md` §4 and stop.
 - [ ] The merged ban list contains every ban from every prior list exactly once, bans 1-19 keep
       their numbers, and the four other locations hold pointers rather than restated bans.
 - [ ] Both read paths traced end to end, by following them.
-- [ ] `udesign-docs` is tagged `v0.7.0` and `MOTION-SYSTEM.md`'s six values match `dist/tokens.css`.
+- [ ] `udesign-docs` is tagged with the next minor (check `git tag` first; `v0.7.0` and `v0.8.0` are
+      taken) and `MOTION-SYSTEM.md`'s six values match `dist/tokens.css`.
+- [ ] Item 0.7's test fails on the pre-fix `dialog.tsx`/`sheet.tsx` and passes after.
 - [ ] The false density claims are deleted, not amended. Phase 2 restores true ones.
 - [ ] `interface-responsiveness` reconciled **and re-installed** to `~/.claude/skills/`, so the
       copy that actually loads no longer serves the six wrong motion values.
