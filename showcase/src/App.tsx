@@ -36,6 +36,7 @@ export default function App() {
   const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
+    // design-ok: a documentation surface that shows both profiles (AGENTS.md rule 6).
     document.documentElement.dataset.design = design;
     document.documentElement.dataset.theme = theme;
     // Pinned "on", not a showcase control: the showcase's job is to

@@ -6,7 +6,11 @@
   "description": "UDesign semantic tokens and versioned shadcn source registry for branded applications.",
   "type": "module",
   "main": "dist/tokens.css",
+  "bin": {
+    "udesign-check": "bin/udesign-check.mjs"
+  },
   "files": [
+    "bin",
     "dist",
     "tokens",
     "registry",
@@ -16,6 +20,7 @@
     "AGENTS.md",
     "DESIGN.md",
     "docs/motion-contract.md",
+    "docs/checker-rules.md",
     "HANDOFF.md",
     "CHANGELOG.md",
     "LICENSE.md"
@@ -27,7 +32,7 @@
     "dev": "vite",
     "dev:test": "vite --host 127.0.0.1 --port 4173 --strictPort",
     "test": "npm run test:contracts && npm run test:components",
-    "test:contracts": "node --test tests/design-utils.test.mjs tests/release-utils.test.mjs tests/token-contract.test.mjs tests/contrast.test.mjs tests/motion-adoption.test.mjs && node scripts/test-registry.mjs",
+    "test:contracts": "node --test tests/design-utils.test.mjs tests/release-utils.test.mjs tests/token-contract.test.mjs tests/contrast.test.mjs tests/motion-adoption.test.mjs tests/checker.test.mjs && node scripts/test-registry.mjs",
     "test:components": "vitest run",
     "test:e2e": "playwright test",
     "test:registry-install": "node scripts/test-registry-install.mjs",

@@ -2,7 +2,7 @@
 
 **This file is both the map and the state.** Every segment updates the ledger in §4 before it ends. An orchestrator resuming after a limit, a crash, or a week away reads this file first and knows exactly where things stand.
 
-**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0, S1 and S1.5 complete and merged. S3 ready to start. Order from here: S3, S2, S4 (D-26).
+**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0, S1 and S1.5 complete and merged. S3 done on its branch, awaiting merge. Order from here: S2, S4 (D-26).
 
 ---
 
@@ -252,13 +252,24 @@ axis (plan item 2.7), and D-19's "density falls out of the app shell for free" i
 | 2026-09-26 | **Δ-10, found in the pre-S3 gate check:** the gold-button divergence in `019e34a7` was never committed, so "flag `019e34a7`" would pass all three catalogs and prove nothing. S3's proof is now two halves: zero findings on the three real catalogs, and a flag on a committed fixture rebuilt from `019e34a7` with its card CTAs switched to primary. Plan Phase 4 and the S3 handoff updated. **Next concrete action: paste `S3-enforcement.md` into a fresh session.** |
 
 ### S3 — Enforcement
-**Status:** ready to start. Handoff: [`S3-enforcement.md`](./S3-enforcement.md). **Runs before S2** (D-26).
+**Status:** done-state met on `v2/s3-enforcement`; the master orchestrator merges. Handoff: [`S3-enforcement.md`](./S3-enforcement.md). **Runs before S2** (D-26).
+**Branch:** `v2/s3-enforcement`.
 **Owns:** plan Phase 4, the portable checker. Its in-repo test half moved to S1 Phase 0.
 Language question is settled: Node, shipped as a `bin`, run with `npx`. Both consumers run Node.
 **Writes next:** the S2 handoff, and hands S2 the checker as its acceptance test.
 
+| Date | Event |
+|---|---|
+| 2026-09-26 | S3 started. Branch `v2/s3-enforcement` cut off `master` (`316a52f`). **Measured every candidate rule against real consumer source before choosing** (GlobalVision `app/ components/ lib/ hooks/`, all 95 pages in `udesignpages/public`). **Cut on evidence:** the Δ-13 `shadow-[var()]` rule, since GlobalVision is Tailwind 4.1.13, which compiles that form as a real `box-shadow` (49 hits, all correct); raw hex (617 hits in generated HTML, nearly all product swatch data that ban 3 permits); colour-only status (needs judgement); rules 8 and 9 (no ban or `AGENTS.md` rule to cite; rule 9's narrow form matches only a comment about an already-fixed bug, the broad form is 158 lines of string munging). **Shipping:** accent in a repeated block, div with onClick, raw motion, `--ud-*` primitives, em-dash in copy (comments excluded: 277 GlobalVision hits were almost all comments), the accent named by colour, profile pin, ban 27. **No subagents:** one module and one test file, two agents would collide. Next: fixture first, then each rule red then green in `tests/checker.test.mjs`. |
+| 2026-09-26 | **Built test-first.** `tests/fixtures/catalog-divergent.html` rebuilt from `udesignpages` `dbfd172` `019e34a7/index.html`, 38 card CTAs switched to `ud-btn-primary`, otherwise byte-identical. All 15 checker tests written against a stub `check()` returning nothing: every flag case red, including the fixture. Then `bin/rules.mjs` and `bin/udesign-check.mjs`: green. The suppression test passed trivially against the stub, so it was shown red by deleting the `design-ok` check, then restored. |
+| 2026-09-26 | **Δ-10 (fixture) proof, both halves.** The three real catalogs (`2b1a3e5c`, `019d7262`, `019e34a7`): **0 accent-budget findings** (their other findings are ban 19, from inline `100ms ease` transitions, and real). The fixture: one `accent-repeated` finding at line 281, "38 accent-filled controls repeat under `html > body > div.catalog-grid > div.product-card`". Ran through `npx` from the `udesignpages` root: exit 1 with the same output. |
+| 2026-09-26 | **Round 13.** Asked Kaleb whether ban 14 covers GlobalVision's lone em-dash placeholder (38 cells). **D-29: it applies**, and GlobalVision is evidence, not a guide (D-25); the bans will grow against AI-looking UI. A `role="group"` exemption I had drafted for `div-onclick` was withdrawn under the same reasoning. Test files are skipped (test data is not copy), shown red first. Δ-14 names the shells' static-HTML classes, Δ-15 records the rule cuts, Δ-16 notes that two decisions share Δ-10. |
+| 2026-09-26 | **Real findings in consumers, recorded not fixed (rule 7).** GlobalVision: one ban 26 (`components/section-page.tsx:269`, an accent `Button` in every mapped card, the catalog incident in React), 12 `div-onclick`, 85 em-dash, one `GOLD` identifier, one ban 27 (functional, no `AppShell`). `udesignpages/public`: 441 ban 19, 146 ban 1 (96 in a hand-made "Functional Brutalist" token file), 3 ban 14, 3 ban 27, 2 `--brand-gold`. This repo's showcase: 4 ban 19 in `showcase/src/index.css` (S4's); its runtime profile switch now carries `design-ok:` as `AGENTS.md` rule 6's named exception. The registry itself: 0 findings. |
+| 2026-09-26 | `AGENTS.md` "Auditing" starts with the checker (`writing-for-agents`); `docs/checker-rules.md` lists what ships, what each rule does not flag, the shell classes, and every cut with its reason; `package.json` gains `bin`, and `files` gains `bin` and `docs/checker-rules.md`. `ponytail-review` cut a hand-built line index and a hand-rolled `fileURLToPath`; all eight rules kept. |
+| 2026-09-26 | **S3 done-state.** `npm run validate` exit 0: lint clean, contracts 78/78, registry 30 items, components 24/24, clean registry install, showcase build, e2e 4/4 (validate re-embeds CRLF into `dist/` and `public/r/`; restored, content unchanged, TOOLING-PITFALLS §1). S2 handoff written. **Not done, and not S3's:** the four showcase findings (S4); the git form `npx github:7KMANN/udesign-design-system#<tag>` is verified only once the branch is pushed; GlobalVision gets `npx udesign-check` only when it repins to a tag that has the `bin`. **Next concrete action:** master orchestrator gate-checks and merges `v2/s3-enforcement`, then S2. |
+
 ### S2 — CSS Component Layer
-**Status:** blocked on S3 (D-26).
+**Status:** ready once S3 merges. Handoff: [`S2-css-layer.md`](./S2-css-layer.md). The checker is its acceptance test.
 **Owns:** plan Phase 3. Scope discipline is the risk: 27 components is the wrong answer and the
 tempting one.
 

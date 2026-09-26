@@ -782,3 +782,41 @@ Found in the pre-S3 gate check. Plan Phase 4 was verified by "flag the known-div
 Derived rather than asked: it is test-fixture design that reconstructs a documented incident, and
 makes no new claim about UDesign. The fixture lives in this repo so the proof survives changes to a
 consumer that is out of scope (plan brief 5).
+
+---
+
+## Round 13 - 2026-09-26 (S3, the checker)
+
+**Evidence:** every candidate rule was run over real consumer source before it was chosen:
+GlobalVision's `app/`, `components/`, `lib/` and `hooks/` (572 files) and all of `udesignpages/public`
+(95 pages). The rules and their scope are in [`docs/checker-rules.md`](../checker-rules.md).
+
+### D-29 · Ban 14 covers a lone em-dash placeholder · `APPROVED` 2026-09-26
+
+GlobalVision renders an empty value as a lone em-dash in 38 cells, as in `{item.frequency ?? "\u2014"}` written as the literal glyph. Asked
+whether ban 14 covers that glyph. **Kaleb: it definitely applies.** No carve-out; the checker flags it
+like any other em-dash. He added that GlobalVision is evidence, not a guide: it was built loosely by
+many models, so a pattern being common there is no reason to narrow a rule (D-25). And the bans will
+grow, to keep AI-looking UI out.
+
+**Rejected:** exempting a string that is only the em-dash.
+
+### Derived in round 13, not asked
+
+- **Δ-14 · The shells' static-HTML class names.** `ud-page-canvas`, `ud-page-section` (plus
+  `ud-page-section-band`), `ud-app-shell`, `ud-app-shell-sidebar`, `ud-app-shell-toolbar`,
+  `ud-app-shell-panes`, `ud-app-shell-pane`. One rule generates all of them: `ud-` plus the React
+  component's name in kebab case, a variant appended as `ud-btn-primary` appends one. An agent that
+  knows the React component can therefore name the class without looking it up. S2 implements them;
+  the `shell` rule reads `ud-app-shell` now.
+- **Δ-15 · Eight rules ship, chosen by measurement.** Cut before shipping: the Δ-13
+  `shadow-[var()]` rule, because GlobalVision is Tailwind 4.1.13, which compiles that form as a real
+  `box-shadow` (Δ-13's bug is Tailwind 3 only); raw hex, whose hits in generated HTML are almost
+  all swatch data that ban 3 permits; colour-only status and the `:focus` half of plan rule 2, which
+  need judgement; plan rules 8 and 9, which no ban or `AGENTS.md` rule covers, so a finding could not
+  name its rule. One exemption was proposed and withdrawn under D-29's reasoning: a `role="group"`
+  `<div onClick>` stays a finding.
+- **Δ-16 · Two decisions share the ID Δ-10.** Round 10's Δ-10 (radius utilities become variables,
+  cited by MN-13) and round 12's Δ-10 (the committed catalog fixture, cited by plan Phase 4 and the S3
+  handoff). The record is append-only, so neither is renumbered: cite them as "Δ-10 (radius)" and
+  "Δ-10 (fixture)". The next derived ID is Δ-17.

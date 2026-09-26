@@ -53,6 +53,11 @@ Shipped values: [`docs/motion-contract.md`](docs/motion-contract.md).
 
 ## Auditing ("fix drifted stuff")
 
+Start with the checker, from the consumer's root: `npx udesign-check <paths>` where this package is
+installed, `npx --yes github:7KMANN/udesign-design-system#<tag> <paths>` where it is not. Each line
+it prints is a finding. It is the floor of the audit: the bans it does not cover are listed in
+[`docs/checker-rules.md`](docs/checker-rules.md), and you audit those by reading.
+
 Every finding names its rule: a number from `DESIGN.md` "Banned design patterns", or one of the six
 rules above, plus the file and line. A pattern no written rule covers is not a finding.
 `dist/tokens.css` is the truth for token names and values; a document that disagrees with it is the

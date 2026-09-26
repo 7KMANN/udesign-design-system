@@ -525,6 +525,9 @@ on it. **No Python port. No second implementation.**
    class name (Δ-07). Tailwind only generates classes that appear literally in source, so these
    render nothing. GlobalVision shipped a transparent stage connector this way and no lint saw it.
 
+**As built (S3):** eight rules, listed with their scope in `docs/checker-rules.md`. What was cut from
+this list, and the measurement behind each cut, is `DECISIONS.md` Δ-15.
+
 **The governing principle is `ENFORCEMENT.md:5`:** prefer a cheap rule with no false positives over
 a clever rule that needs judgement. A checker that cries wolf gets switched off, and then P2 is worse
 than it was before the checker existed.

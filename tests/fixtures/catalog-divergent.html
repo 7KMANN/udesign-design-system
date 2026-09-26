@@ -1,0 +1,660 @@
+<!-- Fixture (delta-10): udesignpages dbfd172 public/019e34a7-8b2c-71f9-a4e2-9d8c7b6a5f4e/index.html with every card CTA switched from ud-btn-secondary to ud-btn-primary, the divergence research 7.1 records. The checker must flag it. -->
+<!DOCTYPE html>
+<html lang="fr" data-design="brand" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glacières & Sacs Isothermes | UDesign</title>
+    <link rel="stylesheet" href="../design-system/udesign-tokens.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --radius-sm: 7px;
+            --radius: 10px;
+            --radius-lg: 16px;
+        }
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--foreground);
+            font-family: var(--font-body, 'Geist', sans-serif);
+            -webkit-font-smoothing: antialiased;
+        }
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            padding: 40px 24px;
+        }
+        .product-card {
+            background: var(--card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: var(--shadow-1);
+            transition: border-color 100ms ease, box-shadow 100ms ease, transform 100ms ease;
+        }
+        .product-card:hover {
+            border-color: var(--border-strong);
+            box-shadow: var(--shadow-2);
+        }
+        .product-card img {
+            width: 100%;
+            height: auto;
+            border-radius: var(--radius);
+            object-fit: contain;
+            aspect-ratio: 1;
+        }
+        .product-details-container {
+            padding: 40px 24px;
+            display: flex;
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .product-details-image {
+            flex: 1;
+        }
+        .product-details-image img {
+            width: 100%;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-1);
+            background: var(--card);
+        }
+        .product-details-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .swatch-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .swatch-btn {
+            cursor: pointer;
+            padding: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--card);
+            transition: border-color 100ms ease, transform 100ms ease, box-shadow 100ms ease;
+        }
+        .swatch-btn:hover {
+            border-color: var(--primary);
+        }
+        .swatch-btn:active {
+            transform: scale(0.92);
+            border-color: var(--primary-hover);
+            transition-duration: 100ms;
+        }
+        .swatch-btn:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+        .swatch-btn img {
+            width: 40px;
+            height: 40px;
+            border-radius: calc(var(--radius) - 1px);
+            display: block;
+        }
+        .ud-h1 {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0;
+        }
+        .ud-h2 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+        }
+        .ud-label {
+            font-family: var(--font-body, 'Geist', sans-serif);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--muted-foreground);
+            margin: 0;
+        }
+        @media (max-width: 1024px) {
+            .product-details-container {
+                flex-direction: column !important;
+                padding: 24px 16px;
+                gap: 24px;
+            }
+            .catalog-grid {
+                grid-template-columns: 1fr !important;
+                padding: 24px 16px;
+            }
+        }
+    </style>
+    <!-- Patterns CSS -->
+    <style>
+        .ud-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 24px;
+            background: var(--card);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-1);
+        }
+        .ud-lock {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            font-family: var(--font-display);
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            font-size: 18px;
+            color: var(--foreground);
+        }
+        .ud-lock .ud-u {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            background: var(--foreground);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 14px;
+        }
+        .ud-client-name {
+            font-family: var(--font-body, 'Geist', sans-serif);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted-foreground);
+        }
+        .ud-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 28px 24px;
+            text-align: center;
+            background: var(--background);
+        }
+        .ud-conf {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 11.5px;
+            letter-spacing: 0.06em;
+            color: var(--destructive);
+        }
+        .ud-copy {
+            font-family: var(--font-body, 'Geist', sans-serif);
+            font-size: 12.5px;
+            color: var(--muted-foreground);
+            margin-top: 8px;
+        }
+        .ud-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 14.5px;
+            line-height: 1;
+            border-radius: var(--radius);
+            padding: 11px 20px;
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 100ms ease, color 100ms ease, border-color 100ms ease, transform 100ms ease, box-shadow 100ms ease;
+        }
+        .ud-btn:hover {
+            text-decoration: none;
+        }
+        .ud-btn:active {
+            transform: scale(0.98);
+            transition-duration: 100ms;
+        }
+        .ud-btn:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+        .ud-btn-primary {
+            background: var(--primary);
+            color: var(--primary-foreground);
+        }
+        .ud-btn-primary:hover {
+            background: var(--primary-hover);
+            color: var(--primary-foreground);
+        }
+        .ud-btn-secondary {
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+            border-color: var(--border-color);
+        }
+        .ud-btn-secondary:hover {
+            background: var(--interactive-hover);
+            border-color: var(--border-strong);
+        }
+        .ud-btn-outline {
+            background: transparent;
+            border-color: var(--border-strong);
+            color: var(--foreground);
+        }
+        .ud-btn-outline:hover {
+            background: var(--interactive-hover);
+            border-color: var(--border-strong);
+        }
+        .ud-badge {
+            display: inline-flex;
+            align-items: center;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 11.5px;
+            padding: 5px 11px;
+            border-radius: var(--radius-pill);
+            background: var(--foreground);
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="ud-header">
+    <div class="ud-lock"><span class="ud-u">U</span>UDesign</div>
+    <div class="ud-client-name">Glacières &amp; Sacs Isothermes &middot; 2026</div>
+</header>
+
+    <div style="padding: 40px 24px 0;">
+        <h1 class="ud-h1">Catalogue</h1>
+    </div>
+    <div class="catalog-grid">
+        <div class="product-card">
+            <a href="frostyfold-recycled-cooler-bag.html">
+                <img src="assets/cb918_black-black.jpg" alt="Frostyfold Recycled Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Frostyfold Recycled Cooler Bag</h2>
+                <p class="ud-label">CB918 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="frostyfold-recycled-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="litterless-lunch-black.html">
+                <img src="assets/pk7043black_natural.jpg" alt="Litterless Lunch: Black">
+            </a>
+            <div>
+                <h2 class="ud-h2">Litterless Lunch: Black</h2>
+                <p class="ud-label">PK7043BLACK · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="litterless-lunch-black.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="savannah-classic-cooler-bag-premium.html">
+                <img src="assets/cb800premium_default.jpg" alt="Savannah Classic Cooler Bag: Premium">
+            </a>
+            <div>
+                <h2 class="ud-h2">Savannah Classic Cooler Bag: Premium</h2>
+                <p class="ud-label">CB800PREMIUM · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="savannah-classic-cooler-bag-premium.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="cork-d-recycled-plastic-cooler-bag.html">
+                <img src="assets/cb916_default.jpg" alt="Cork'D + Recycled Plastic Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Cork'D + Recycled Plastic Cooler Bag</h2>
+                <p class="ud-label">CB916 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="cork-d-recycled-plastic-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="glacier-peak-12-can-collapsible-cooler.html">
+                <img src="assets/cb909_grey-black.jpg" alt="Glacier Peak 12 Can Collapsible Cooler">
+            </a>
+            <div>
+                <h2 class="ud-h2">Glacier Peak 12 Can Collapsible Cooler</h2>
+                <p class="ud-label">CB909 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="glacier-peak-12-can-collapsible-cooler.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="glacier-peak-12-can-and-wine-cooler.html">
+                <img src="assets/cb910_default.jpg" alt="Glacier Peak 12 Can And Wine Cooler">
+            </a>
+            <div>
+                <h2 class="ud-h2">Glacier Peak 12 Can And Wine Cooler</h2>
+                <p class="ud-label">CB910 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="glacier-peak-12-can-and-wine-cooler.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="cooler-bag.html">
+                <img src="assets/cb729_default.jpg" alt="Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Cooler Bag</h2>
+                <p class="ud-label">CB729 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="glacier-peak-rugged-30l-tote.html">
+                <img src="assets/kn9955_default.jpg" alt="Glacier Peak Rugged 30L Tote">
+            </a>
+            <div>
+                <h2 class="ud-h2">Glacier Peak Rugged 30L Tote</h2>
+                <p class="ud-label">KN9955 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="glacier-peak-rugged-30l-tote.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="glacier-peak-cooler-backpack.html">
+                <img src="assets/cb908_default.jpg" alt="Glacier Peak Cooler Backpack">
+            </a>
+            <div>
+                <h2 class="ud-h2">Glacier Peak Cooler Backpack</h2>
+                <p class="ud-label">CB908 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="glacier-peak-cooler-backpack.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="glacier-peak-xl-24-can-cooler-bag.html">
+                <img src="assets/cb906_gray-black.jpg" alt="Glacier Peak XL 24 Can Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Glacier Peak XL 24 Can Cooler Bag</h2>
+                <p class="ud-label">CB906 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="glacier-peak-xl-24-can-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="savannah-cycle-cooler-bag.html">
+                <img src="assets/cb915_black.jpg" alt="Savannah Cycle Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Savannah Cycle Cooler Bag</h2>
+                <p class="ud-label">CB915 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="savannah-cycle-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="litterless-lunch-brown.html">
+                <img src="assets/pk7043brown_grey.jpg" alt="Litterless Lunch: Brown">
+            </a>
+            <div>
+                <h2 class="ud-h2">Litterless Lunch: Brown</h2>
+                <p class="ud-label">PK7043BROWN · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="litterless-lunch-brown.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="glacier-peak-12-can-cooler.html">
+                <img src="assets/cb910_default.jpg" alt="Glacier Peak 12 Can Cooler">
+            </a>
+            <div>
+                <h2 class="ud-h2">Glacier Peak 12 Can Cooler</h2>
+                <p class="ud-label">CB910 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="glacier-peak-12-can-cooler.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="cooler-bag-6-can.html">
+                <img src="assets/cb700_black-with-black-highlights.jpg" alt="Cooler Bag: 6 Can">
+            </a>
+            <div>
+                <h2 class="ud-h2">Cooler Bag: 6 Can</h2>
+                <p class="ud-label">CB700 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="cooler-bag-6-can.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="shoulder-strap-cooler-bag.html">
+                <img src="assets/cb2466_default.jpg" alt="Shoulder Strap Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Shoulder Strap Cooler Bag</h2>
+                <p class="ud-label">CB2466 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="shoulder-strap-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="garry-point-non-woven-cooler-bag.html">
+                <img src="assets/nw9103_black.jpg" alt="Garry Point Non Woven Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Garry Point Non Woven Cooler Bag</h2>
+                <p class="ud-label">NW9103 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="garry-point-non-woven-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="thornhill-chill-non-woven-insulated-cooler-bag.html">
+                <img src="assets/nw8896_black.jpg" alt="Thornhill Chill Non Woven Insulated Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Thornhill Chill Non Woven Insulated Cooler Bag</h2>
+                <p class="ud-label">NW8896 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="thornhill-chill-non-woven-insulated-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="the-crystal-bowl-large-cooler.html">
+                <img src="assets/nw7137_black.jpg" alt="The Crystal Bowl Large Cooler">
+            </a>
+            <div>
+                <h2 class="ud-h2">The Crystal Bowl Large Cooler</h2>
+                <p class="ud-label">NW7137 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="the-crystal-bowl-large-cooler.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="non-woven-insulated-grocery-tote.html">
+                <img src="assets/nw5462_black.jpg" alt="Non Woven Insulated Grocery Tote">
+            </a>
+            <div>
+                <h2 class="ud-h2">Non Woven Insulated Grocery Tote</h2>
+                <p class="ud-label">NW5462 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="non-woven-insulated-grocery-tote.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="six-can-neoprene-tube-cooler.html">
+                <img src="assets/n8356_black.jpg" alt="Six Can Neoprene Tube Cooler">
+            </a>
+            <div>
+                <h2 class="ud-h2">Six Can Neoprene Tube Cooler</h2>
+                <p class="ud-label">N8356 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="six-can-neoprene-tube-cooler.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="adventurers-cooler-bag.html">
+                <img src="assets/cb9238_default.jpg" alt="Adventurers Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Adventurers Cooler Bag</h2>
+                <p class="ud-label">CB9238 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="adventurers-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="savannah-trail-cooler-bag.html">
+                <img src="assets/cb9227_default.jpg" alt="Savannah Trail Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Savannah Trail Cooler Bag</h2>
+                <p class="ud-label">CB9227 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="savannah-trail-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="akerley-insulated-drawstring-cooler-cinch.html">
+                <img src="assets/cb9178_black.jpg" alt="Akerley Insulated Drawstring Cooler Cinch">
+            </a>
+            <div>
+                <h2 class="ud-h2">Akerley Insulated Drawstring Cooler Cinch</h2>
+                <p class="ud-label">CB9178 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="akerley-insulated-drawstring-cooler-cinch.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="almada-cooler-bag.html">
+                <img src="assets/cb9157_black.jpg" alt="Almada Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Almada Cooler Bag</h2>
+                <p class="ud-label">CB9157 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="almada-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="algarve-large-cooler-bag.html">
+                <img src="assets/cb902_default.jpg" alt="Algarve Large Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Algarve Large Cooler Bag</h2>
+                <p class="ud-label">CB902 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="algarve-large-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="algarve-medium-cooler-bag.html">
+                <img src="assets/cb901_default.jpg" alt="Algarve Medium Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Algarve Medium Cooler Bag</h2>
+                <p class="ud-label">CB901 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="algarve-medium-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="blizzkool-non-woven-grocery-cooler-bag.html">
+                <img src="assets/cb8569_default.jpg" alt="Blizzkool Non Woven Grocery/Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Blizzkool Non Woven Grocery/Cooler Bag</h2>
+                <p class="ud-label">CB8569 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="blizzkool-non-woven-grocery-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="savannah-classic-cooler-bag.html">
+                <img src="assets/cb800_default.jpg" alt="Savannah Classic Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Savannah Classic Cooler Bag</h2>
+                <p class="ud-label">CB800 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="savannah-classic-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="golf-cooler-bag.html">
+                <img src="assets/cb734_default.jpg" alt="Golf Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Golf Cooler Bag</h2>
+                <p class="ud-label">CB734 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="golf-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="ice-castle-dual-compartment-cooler.html">
+                <img src="assets/cb6657_default.jpg" alt="Ice Castle Dual Compartment Cooler">
+            </a>
+            <div>
+                <h2 class="ud-h2">Ice Castle Dual Compartment Cooler</h2>
+                <p class="ud-label">CB6657 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="ice-castle-dual-compartment-cooler.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="carry-cold-cooler-tote.html">
+                <img src="assets/cb5990_royal-blue-black.jpg" alt="Carry Cold Cooler Tote">
+            </a>
+            <div>
+                <h2 class="ud-h2">Carry Cold Cooler Tote</h2>
+                <p class="ud-label">CB5990 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="carry-cold-cooler-tote.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="amber-cooler-bag.html">
+                <img src="assets/cb5032_black-with-white-accents.jpg" alt="Amber Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Amber Cooler Bag</h2>
+                <p class="ud-label">CB5032 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="amber-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="oversized-cooler-bag.html">
+                <img src="assets/cb3103_black.jpg" alt="Oversized Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Oversized Cooler Bag</h2>
+                <p class="ud-label">CB3103 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="oversized-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="three-can-tube-cooler.html">
+                <img src="assets/cb297_default.jpg" alt="Three Can Tube Cooler">
+            </a>
+            <div>
+                <h2 class="ud-h2">Three Can Tube Cooler</h2>
+                <p class="ud-label">CB297 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="three-can-tube-cooler.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="beach-tote-cooler-bag.html">
+                <img src="assets/cb290_default.jpg" alt="Beach Tote/Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Beach Tote/Cooler Bag</h2>
+                <p class="ud-label">CB290 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="beach-tote-cooler-bag.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="cooler-bag-6-can-with-two-tone-webbing.html">
+                <img src="assets/cb702_default.jpg" alt="Cooler Bag: 6 Can With Two-Tone Webbing">
+            </a>
+            <div>
+                <h2 class="ud-h2">Cooler Bag: 6 Can With Two-Tone Webbing</h2>
+                <p class="ud-label">CB702 · Debco</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="cooler-bag-6-can-with-two-tone-webbing.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="aquarius-16-cooler-bag-bcl-2.html">
+                <img src="assets/bcl-2_black_01.jpg" alt="Aquarius 16 Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Aquarius 16 Cooler Bag</h2>
+                <p class="ud-label">BCL-2 · Stormtech</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="aquarius-16-cooler-bag-bcl-2.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+        <div class="product-card">
+            <a href="pack-n-go-cooler-bag-3572.html">
+                <img src="https://www.hitpromo.net/imageManager/show/400/3572_ROYBLK_Silkscreen.jpg" alt="Pack-N-Go Cooler Bag">
+            </a>
+            <div>
+                <h2 class="ud-h2">Pack-N-Go Cooler Bag</h2>
+                <p class="ud-label">#3572 · Hit Promotional Products</p>
+            </div>
+            <a class="ud-btn ud-btn-primary" href="pack-n-go-cooler-bag-3572.html" style="justify-content:center; margin-top: auto;">Voir Détails</a>
+        </div>
+    </div>
+    <footer class="ud-footer">
+    <div class="ud-conf">Document Confidentiel</div>
+    <div class="ud-copy">&copy; 2026 UDesign Pages &middot; Glacières &amp; Sacs Isothermes &middot; Réservé au client.</div>
+</footer>
+
+</body>
+</html>

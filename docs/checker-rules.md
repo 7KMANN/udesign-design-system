@@ -14,9 +14,70 @@ selector strings `brand` and `functional` remain as selector aliases for one rel
 
 ---
 
-## Lint rules
+## What `udesign-check` checks
 
-These are ordered by value-per-implementation-cost. Ship them in this order.
+`bin/udesign-check.mjs`, rules in `bin/rules.mjs`, tests in `tests/checker.test.mjs`. Every rule is a
+cheap lexical check: it may miss exotic source, and it never needs judgement to be right. Each rule
+was chosen by running the candidates over real consumer source first (S3 ledger, 2026-09-26).
+
+| Rule | Cites | Flags | Does not flag |
+|---|---|---|---|
+| `accent-repeated` | ban 26 | HTML: two or more `ud-btn-primary` under the same ancestor path (tag and classes), which is a repeated block. React: a `<Button>` with no `variant`, or `variant="default"`, inside a `.map()` callback. | One accent in a hero and one in a footer: different paths. |
+| `div-onclick` | `AGENTS.md` rule 2 | A JSX `<div>` with `onClick`, whatever its `role` or `tabIndex`. | A handler that only calls `stopPropagation()`, which makes nothing clickable. |
+| `raw-motion` | ban 19 | `duration-<n>`, `ease-in`/`-out`/`-in-out`/`-linear`, `ease-[cubic-bezier(...)]`; a `transition` or `animation` declaration (CSS or a style object) whose value holds a non-zero literal time, an easing keyword, `cubic-bezier()` or `steps()`. | Anything inside `var()`; a zero duration. |
+| `ud-primitive` | ban 1 | `var(--ud-*)`. | A synced copy of `dist/tokens.css`, recognized by its header. |
+| `em-dash` | ban 14 | An em-dash (U+2014, `&mdash;`, `&#8212;`) in HTML markup or JS/TS source, including a lone placeholder (D-29). | Comments, `<style>`, `<script>`. |
+| `accent-colour-name` | `AGENTS.md` rule 5 | A declared identifier with `gold` as a word part (`GOLD`, `goldAccent`); a CSS custom property with one (`--brand-gold`). | A product colour in copy or data ("Athletic Gold"). |
+| `profile-pin` | `AGENTS.md` rule 6 | `data-design` on any element but `<html>`; `dataset.design =`; `setAttribute("data-design", ...)`. | `[data-design=...]` selectors. |
+| `shell` | ban 27 | HTML: an `operations` (or `functional`) root with no `ud-app-shell`; a `presentation` (or `brand`) root with one. React: an `operations` `<html>` with no `<AppShell>` anywhere in the scanned tree; a `presentation` one with any. | A document with no `data-design`. |
+
+**Scope.** `.html`, `.css`, `.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`. Skips `node_modules`, `.git`,
+`.next`, `dist`, `build`, `out`, `coverage`, `__tests__`, `*.test.*`, `*.spec.*`, `*.min.*` and
+`*.d.ts`: build output is not source, and test data is not interface copy.
+
+**Suppression.** `design-ok: <reason>` on the flagged line or the line above, the convention ban 3
+already defines. The reason is for the reviewer; the checker only looks for the marker.
+
+**Exit code.** 1 when anything is found, 0 otherwise.
+
+### The shells' static-HTML classes (Δ-14)
+
+S2 implements these; the `shell` rule reads `ud-app-shell` today. Each is `ud-` plus the React
+component's name in kebab case, and a variant appends `-<variant>`, as `ud-btn-primary` does.
+
+| React (registry) | Class |
+|---|---|
+| `PageCanvas` | `ud-page-canvas` |
+| `PageSection`, `variant="band"` | `ud-page-section`, `ud-page-section-band` |
+| `AppShell` | `ud-app-shell` |
+| `AppShellSidebar` | `ud-app-shell-sidebar` |
+| `AppShellToolbar` | `ud-app-shell-toolbar` |
+| `AppShellPanes` | `ud-app-shell-panes` |
+| `AppShellPane` | `ud-app-shell-pane` |
+
+### Not shipped, and why
+
+Fewer rules (plan 8, risk 3). Each can ship later with a form that needs no judgement.
+
+- **Raw hex (ban 3).** 617 hits in `udesignpages` HTML, nearly all product swatch data, which ban 3
+  permits. Telling data from styling needs judgement.
+- **Colour-only status (ban 11).** Needs judgement.
+- **`:focus` instead of `:focus-visible` (`AGENTS.md` rule 2).** `focus:outline-none` beside a
+  `focus-visible:` ring is the safe pattern, and separating it from a real missing ring needs a
+  per-element read.
+- **Padding override on a breakpoint-padded component (Δ-07, plan rule 8).** Needs cross-file
+  resolution of each component's base classes, and no ban or `AGENTS.md` rule covers it yet.
+- **A class name built at runtime (Δ-07, plan rule 9).** A lexical match cannot tell class assembly
+  from string handling (158 `.replace(` calls in GlobalVision), and no ban covers it yet.
+- **`shadow-[var(...)]` (Δ-13).** Only a Tailwind 3 bug. Tailwind 4.1.13 compiles it as a real
+  `box-shadow`, so in GlobalVision every hit would be false.
+- **R2 to R7 below.** Seed specifications, not in the plan's list. R4 (ban 18) is the cheapest.
+
+---
+
+## Seed specifications
+
+Carried from `ENFORCEMENT.md`. R1 ships as `raw-motion`, without `transition-all`, which no ban names.
 
 ### R1 - `raw-motion-value` (lexical, zero ambiguity)
 
