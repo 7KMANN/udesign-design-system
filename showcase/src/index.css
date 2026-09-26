@@ -207,7 +207,7 @@
   background: var(--background);
   color: var(--foreground);
   box-shadow: var(--shadow-2);
-  transition: max-inline-size 180ms ease;
+  transition: max-inline-size var(--motion-duration-fast) var(--motion-easing-standard);
 }
 
 .preview-page {
@@ -505,7 +505,8 @@
   border-radius: var(--radius);
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, transform 120ms ease;
+  transition: var(--motion-duration-instant) var(--motion-easing-standard);
+  transition-property: background-color, color, border-color, transform;
 }
 
 .ud-button {
@@ -1031,8 +1032,8 @@ textarea:focus-visible,
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
+    transition-duration: var(--motion-duration-instant) !important;
+    animation-duration: var(--motion-duration-instant) !important;
     animation-iteration-count: 1 !important;
   }
 }

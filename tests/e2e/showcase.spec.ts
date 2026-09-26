@@ -20,7 +20,7 @@ for (const viewport of viewports) {
     await expect(themeToggle).toBeVisible()
     await expect(profileToggle).toBeVisible()
     await expect(themeToggle).toHaveAccessibleName(/switch to dark theme/i)
-    await expect(profileToggle).toHaveAccessibleName(/switch to functional profile/i)
+    await expect(profileToggle).toHaveAccessibleName(/switch to operations profile/i)
 
     const stateSelect = page.getByRole("combobox", { name: "Record state" })
     await stateSelect.focus()
@@ -44,10 +44,10 @@ for (const viewport of viewports) {
       await pageSelect.selectOption(pageName)
 
       for (const combination of [
-        { theme: "light", profile: "brand" },
-        { theme: "dark", profile: "brand" },
-        { theme: "dark", profile: "functional" },
-        { theme: "light", profile: "functional" },
+        { theme: "light", profile: "presentation" },
+        { theme: "dark", profile: "presentation" },
+        { theme: "dark", profile: "operations" },
+        { theme: "light", profile: "operations" },
       ]) {
         if ((await root.getAttribute("data-theme")) !== combination.theme) await themeToggle.click()
         if ((await root.getAttribute("data-design")) !== combination.profile) await profileToggle.click()

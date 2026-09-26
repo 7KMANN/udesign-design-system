@@ -6,7 +6,7 @@ import { Login } from './pages/Login';
 
 type Page = 'system' | 'login' | 'dashboard' | 'analytics';
 type Viewport = 'desktop' | 'tablet' | 'mobile';
-type Design = 'brand' | 'functional';
+type Design = 'presentation' | 'operations';
 type Theme = 'light' | 'dark';
 
 declare global {
@@ -32,7 +32,7 @@ export default function App() {
   const [viewport, setViewport] = useState<Viewport>(getInitialViewport);
   const [versions, setVersions] = useState<string[]>([]);
   const [selectedVersionPath, setSelectedVersionPath] = useState('../dist/tokens.css');
-  const [design, setDesign] = useState<Design>('brand');
+  const [design, setDesign] = useState<Design>('presentation');
   const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
@@ -78,11 +78,11 @@ export default function App() {
             type="button"
             className="showcase-toggle"
             data-testid="profile-toggle"
-            aria-label={`Switch to ${design === 'brand' ? 'functional' : 'brand'} profile`}
-            onClick={() => setDesign(design === 'brand' ? 'functional' : 'brand')}
+            aria-label={`Switch to ${design === 'presentation' ? 'operations' : 'presentation'} profile`}
+            onClick={() => setDesign(design === 'presentation' ? 'operations' : 'presentation')}
           >
             <span>Profile</span>
-            <strong>{design === 'brand' ? 'Brand' : 'Functional'}</strong>
+            <strong>{design === 'presentation' ? 'Presentation' : 'Operations'}</strong>
           </button>
 
           <button

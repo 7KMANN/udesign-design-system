@@ -11,6 +11,7 @@ colors:
   muted: "#8a8172"
   canvas: "#F4ECe1"
   surface-card: "#ffffff"
+  surface-panel: "#f4f1ea"
   hairline: "#e4ded0"
   destructive: "#b23a2f"
   on-primary: "#1b1b1b"
@@ -35,9 +36,9 @@ typography:
     lineHeight: 1.4
     letterSpacing: 0px
   button:
-    fontFamily: "Montserrat, sans-serif"
-    fontSize: 14.5px
-    fontWeight: 600
+    fontFamily: "Geist Sans, sans-serif"
+    fontSize: 16px
+    fontWeight: 500
     lineHeight: 1
     letterSpacing: 0px
 
@@ -63,21 +64,23 @@ components:
     textColor: "{colors.on-primary}"
     typography: "{typography.button}"
     rounded: "{rounded.md}"
-    padding: "11px 20px"
+    height: 44px
+    padding: "8px 16px"
   button-secondary:
-    backgroundColor: "{colors.canvas}"
+    backgroundColor: "{colors.surface-panel}"
     textColor: "{colors.ink}"
     typography: "{typography.button}"
     rounded: "{rounded.md}"
-    padding: "11px 20px"
-    border: "1px solid {colors.hairline}"
+    height: 44px
+    padding: "8px 16px"
   button-outline:
     backgroundColor: "transparent"
     textColor: "{colors.ink}"
     typography: "{typography.button}"
     rounded: "{rounded.md}"
-    border: "1.5px solid {colors.ink}"
-    padding: "11px 20px"
+    border: "1px solid {colors.hairline}"
+    height: 44px
+    padding: "8px 16px"
   header-lockup:
     fontFamily: "Montserrat, sans-serif"
     fontWeight: 900
@@ -95,9 +98,9 @@ components:
     padding: "28px 24px"
   card:
     backgroundColor: "{colors.surface-card}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.lg}"
     border: "1px solid {colors.hairline}"
-    padding: "20px"
+    padding: "24px"
 ---
 
 ## Purpose
@@ -252,7 +255,7 @@ Respect `prefers-reduced-motion`. Animation may clarify a transition or progress
 
 ## Typography
 
-Montserrat carries the UDesign lockup, display headings, and high-value calls to action in the presentation profile. Geist carries interface text and dense operations layouts. JetBrains Mono is limited to codes, identifiers, timestamps, and aligned numeric readouts.
+Montserrat carries the UDesign lockup and display headings in the presentation profile. Geist carries interface text, buttons included, and dense operations layouts. JetBrains Mono is limited to codes, identifiers, timestamps, and aligned numeric readouts.
 
 Figures go through one pair of roles, `--font-numeric` and `--font-numeric-variant`: `operations` renders them in JetBrains Mono with tabular figures so columns align, `presentation` keeps them proportional in Geist. In the registry, mark a column of figures with `TableHead numeric` and `TableCell numeric`. `APPROVED 2026-09-02 D-19`
 
@@ -344,9 +347,9 @@ The test: count the accent-filled controls in one viewport. More than the budget
 
 **`button-primary`** (registry `Button`, `variant="default"`) uses `{colors.primary}` with `{colors.on-primary}`. **Use when** it is the single most important action on the screen; never in a repeated element. It meets the shared control height and touch-target contract, exposes visible focus, and uses the interactive hover, pressed, and disabled roles.
 
-**`button-secondary`** (`variant="secondary"`) uses `{colors.canvas}` with `{colors.ink}` and a `{colors.hairline}` boundary. **Use when** the action sits inside a card, row, or list item, or is the negative half of a pair. Runtime components consume the matching semantic roles so the treatment adapts to theme and profile.
+**`button-secondary`** (`variant="secondary"`) uses `{colors.surface-panel}` with `{colors.ink}` and no border. **Use when** the action sits inside a card, row, or list item, or is the negative half of a pair. Runtime components consume the matching semantic roles so the treatment adapts to theme and profile.
 
-**`button-outline`** (`variant="outline"`) uses a transparent surface, `{colors.ink}` foreground, and a clear outline. **Use when** a standalone action must not compete with the screen's primary. Its hover state uses semantic interaction roles rather than a raw inverse color.
+**`button-outline`** (`variant="outline"`) uses the page surface, `{colors.ink}` foreground, and a 1px `{colors.hairline}` border. **Use when** a standalone action must not compete with the screen's primary. Its hover state uses semantic interaction roles rather than a raw inverse color.
 
 The registry `Button` has three more variants. `ghost`: **use when** several controls sit together, as in dense toolbars and table row actions. `destructive`: **use when** the action deletes something or cannot be undone. `link`: **use when** the action is navigation that reads as text.
 
@@ -356,7 +359,7 @@ The registry `Button` has three more variants. `ghost`: **use when** several con
 
 **`confidential-footer`** uses `{colors.canvas}`, `{colors.muted}`, and a `{colors.hairline}` top boundary. Its label remains sentence case and should only use the destructive role when the content represents a real warning.
 
-**`card`** uses `{colors.surface-card}`, a `{colors.hairline}` boundary, and `{rounded.md}`. Runtime components use raised or card semantic roles so dark themes and the operations profile can adapt it.
+**`card`** uses `{colors.surface-card}`, a `{colors.hairline}` boundary, `{rounded.lg}`, and `--surface-padding` inside (24px unset, 12px in `operations`). Runtime components use raised or card semantic roles so dark themes and the operations profile can adapt it.
 
 ### Feedback primitives
 
