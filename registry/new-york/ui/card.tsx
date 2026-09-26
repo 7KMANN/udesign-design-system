@@ -12,8 +12,11 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 )
 CardHeader.displayName = "CardHeader"
 
-const CardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, ...props }, ref) => <h3 ref={ref} className={cn("[font-family:var(--font-display)] text-[length:var(--text-h3)] font-semibold leading-none", className)} {...props} />,
+// The size comes from --text-h3 whatever the level, so `as` fixes the page outline without restyling.
+type CardTitleProps = React.HTMLAttributes<HTMLHeadingElement> & { as?: "h2" | "h3" | "h4" }
+
+const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
+  ({ className, as: Heading = "h3", ...props }, ref) => <Heading ref={ref} className={cn("[font-family:var(--font-display)] text-[length:var(--text-h3)] font-semibold leading-none", className)} {...props} />,
 )
 CardTitle.displayName = "CardTitle"
 

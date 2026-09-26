@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { AppShell, AppShellPane, AppShellPanes, AppShellSidebar, AppShellToolbar } from "@/components/ui/app-shell"
 import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Dialog,
@@ -29,6 +30,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 describe("UDesign registry accessibility contracts", () => {
+  it("lets a card title take the heading level its page outline needs, h3 by default", () => {
+    render(
+      <>
+        <Card><CardHeader><CardTitle>Default</CardTitle></CardHeader></Card>
+        <Card><CardHeader><CardTitle as="h2">Section</CardTitle></CardHeader></Card>
+      </>,
+    )
+
+    expect(screen.getByRole("heading", { name: "Default" }).tagName).toBe("H3")
+    expect(screen.getByRole("heading", { name: "Section" }).tagName).toBe("H2")
+  })
+
   it("gives icon actions a required accessible name and touch target", () => {
     render(<IconButton icon={<span aria-hidden="true">+</span>} label="Add record" />)
 
