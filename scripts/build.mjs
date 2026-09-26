@@ -144,14 +144,8 @@ function cubicBezierCss(v) {
   return `cubic-bezier(${v.join(', ')})`;
 }
 
-// Emits a token's DTCG $description as a trailing CSS comment on its own
-// declaration line (motion, interactive, and tone families - see
-// formatSemanticGroups and the MOTION_* loops below). Only where a
-// $description exists. Sanitized so it can never break the two mechanisms
-// tests/token-contract.test.mjs uses to parse this file back out: a
-// brace-depth block() matcher and a `name:\s*([^;]+);` value regex - so no
-// `{`, `}`, or `;` survive, and a literal `*/` can never close the comment
-// early.
+// A token's $description as a trailing CSS comment. No `{`, `}`, `;`, or `*/`
+// survive, so the contract tests' block() and value regexes still parse it.
 function descriptionComment(token) {
   const description = token && token.$description;
   if (!description) return '';
@@ -215,12 +209,8 @@ function cssTokenValue(token) {
   return value?.hex || value;
 }
 
-// Families whose per-token $description (where present) is worth surfacing
-// as a trailing CSS comment on the declaration line, so a reader inspecting
-// dist/tokens.css does not need to cross-reference the DTCG source. Kept
-// narrow (tone, interactive - motion is handled separately below since it
-// isn't part of SEMANTIC_ENTRIES) rather than applied to every semantic
-// family, since most don't carry per-token descriptions today.
+// Semantic families that surface $description (motion is emitted separately).
+// ponytail: tone and interactive carry no per-token descriptions yet, so this emits nothing until one is written.
 const DESCRIPTION_COMMENT_PREFIXES = ['tone.', 'interactive.'];
 
 function formatSemanticGroups(t) {

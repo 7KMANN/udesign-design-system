@@ -1,3 +1,6 @@
+import fs from "node:fs"
+import path from "node:path"
+
 function stripInlineComment(line) {
   let quote = null
 
@@ -59,4 +62,15 @@ export function parseFrontmatter(source) {
     metadata: parseYamlMapping(match[1]),
     prose: source.slice(match[0].length),
   }
+}
+
+// The em-dash ban covers every instruction file and all component source.
+// docs/ is left out on purpose: it is the research record, not instructions.
+const EM_DASH_FILES = ["AGENTS.md", "DESIGN.md", "README.md", "HANDOFF.md", "CHANGELOG.md", ".cursorrules", ".gemini/rules"]
+
+export function emDashScanTargets(root) {
+  const registry = fs.readdirSync(path.join(root, "registry"), { recursive: true })
+    .filter((file) => /\.tsx?$/.test(file))
+    .map((file) => `registry/${file.split(path.sep).join("/")}`)
+  return [...EM_DASH_FILES.filter((file) => fs.existsSync(path.join(root, file))), ...registry]
 }

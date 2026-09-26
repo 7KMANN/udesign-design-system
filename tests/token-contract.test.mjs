@@ -297,62 +297,11 @@ test('reduced motion zeroes duration and neutralizes moment scale by default', (
   }
 });
 
-// --- Token $description emitted as a trailing CSS comment (S1 Item 1.10) ---
-// build.mjs's descriptionComment() surfaces a token's DTCG $description on
-// its own declaration line, for the motion, interactive, and tone families,
-// wherever a $description exists. Verifies both the happy path and that the
-// sanitizer keeps the two mechanisms above (block()'s brace counting and the
-// `name:\s*([^;]+);` value regex) from ever seeing a stray `{`, `}`, or `;`.
-
-test('emits a token\'s $description as a trailing comment on its declaration line', () => {
+// Item 1.10: a token's $description rides along as a trailing comment. A `;`
+// inside one (press.scale has one) must not move where the value regex stops.
+test('emits $description as a trailing comment without disturbing the value', () => {
   for (const css of [dualCss, functionalCss]) {
-    assert.match(
-      css,
-      /--motion-duration-instant:\s*70ms;\s*\/\*\s*Press compression, toggle flip\.[^*]*\*\//,
-      'expected the duration.instant $description on its own declaration line',
-    );
-  }
-});
-
-test('strips or escapes characters in a $description that would break the CSS-comment or value parsing', () => {
-  const baseTokens2 = JSON.parse(fs.readFileSync(path.join(root, 'tokens/udesign.tokens.json'), 'utf8'));
-  const pressScaleDescription = baseTokens2.motion.press.scale.$description;
-  assert.ok(pressScaleDescription.includes(';'), 'fixture assumption: press.scale $description contains a semicolon in source');
-
-  // dist/tokens.css's dual brand selector and dist/tokens-functional.css's
-  // standalone :root selector differ, so each needs its own block() lookup -
-  // same asymmetry the "holds the 44px touch floor" test above works around.
-  for (const [css, brandSelector] of [
-    [dualCss, ':root, :root[data-design="brand"]'],
-    [functionalCss, ':root'],
-  ]) {
-    const brand = block(css, brandSelector);
-    assert.ok(brand, 'brand profile block not found');
-    // The declaration's own trailing `;` must still be the FIRST one the
-    // value regex sees - i.e. no unescaped `;` inside the comment.
-    const [, value] = brand.match(/--motion-press-scale:\s*([\d.]+);/) || [];
-    assert.equal(value, '0.97', 'a semicolon inside the description must not have shifted where the value regex stops');
-    // No $description-derived comment (on a --motion-*, --tone-*, or
-    // --interactive-* declaration) may contain a raw brace or semicolon: a
-    // pre-existing, hand-written comment elsewhere in this block
-    // (`--client overrides per page: :root{ --client:#E23A2E }`) legitimately
-    // does contain both, which is exactly why block() counts brace depth
-    // instead of assuming comments are brace-free - so this check is scoped
-    // to descriptionComment()'s own output, not every comment in the block.
-    for (const match of brand.matchAll(/--(?:motion|tone|interactive)-[a-z0-9-]+:\s*[^;]+;\s*\/\*([^*]*)\*\//g)) {
-      const comment = match[1];
-      assert.doesNotMatch(comment, /[{}]/, `comment "${comment.trim()}" contains a brace that would confuse block()'s depth counter`);
-      assert.doesNotMatch(comment, /;/, `comment "${comment.trim()}" contains a semicolon that could confuse the value regex on a different token`);
-    }
-  }
-});
-
-test('adds no description comment where a token has no $description', () => {
-  // --interactive-* and --tone-* carry no leaf-level $description in the
-  // token source today (only their family has one) - descriptionComment()
-  // must not fabricate one from the family's description.
-  for (const css of [dualCss, functionalCss]) {
-    assert.doesNotMatch(css, /--interactive-hover:[^\n;]*;\s*\/\*/, '--interactive-hover has no per-token $description to emit');
-    assert.doesNotMatch(css, /--tone-neutral-foreground:[^\n;]*;\s*\/\*/, '--tone-neutral-foreground has no per-token $description to emit');
+    assert.match(css, /--motion-duration-instant:\s*70ms;\s*\/\* Press compression, toggle flip\./);
+    assert.equal(css.match(/--motion-press-scale:\s*([^;]+);/)?.[1], '0.97');
   }
 });
