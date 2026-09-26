@@ -69,6 +69,8 @@ for (const item of registry.items) {
     assert.doesNotMatch(source, primitivePattern, `${file.path} consumes a forbidden UDesign primitive`)
     assert.doesNotMatch(source, rawShadowPattern, `${file.path} contains a raw elevation utility`)
     assert.doesNotMatch(source, radiusAliasPattern, `${file.path} uses a Tailwind radius alias; use rounded-[var(--radius*)]`)
+    // Tailwind 3 reads shadow-[var(...)] as a shadow colour, so no elevation renders.
+    assert.doesNotMatch(source, /\bshadow-\[var\(/, `${file.path} uses shadow-[var(...)]; use [box-shadow:var(--shadow-N)]`)
     assert.doesNotMatch(source, unmappedSemanticUtilityPattern, `${file.path} relies on an uninstalled Tailwind theme alias`)
     assert.match(file.target, /^components\/ui\//, `${file.path} must install under components/ui`)
   }
@@ -135,7 +137,8 @@ for (const name of ["card.tsx", "dialog.tsx", "sheet.tsx"]) {
 }
 assert.doesNotMatch(Object.values(files).join("\n"), /--dialog-padding/, "--dialog-padding was renamed --surface-padding (Δ-11)")
 assert.doesNotMatch(files["card.tsx"], /\bp-6\b/, "a fixed p-6 ignores the operations padding")
-assert.match(files["card.tsx"], /shadow-\[var\(--shadow-2\)\]/, "presentation cards float on --shadow-2 (D-27)")
+assert.match(files["card.tsx"], /\[box-shadow:var\(--shadow-2\)\]/, "presentation cards float on --shadow-2 (D-27)")
+assert.match(files["badge.tsx"], /whitespace-nowrap/, "a badge label wrapping inside its pill reads as broken")
 const NUMERIC = /\[font-family:var\(--font-numeric\)\] \[font-variant-numeric:var\(--font-numeric-variant\)\]/
 for (const name of ["metric-card.tsx", "progress-ring.tsx", "table.tsx"]) {
   assert.match(files[name], NUMERIC, `${name} must render figures through --font-numeric`)
