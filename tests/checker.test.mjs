@@ -23,6 +23,15 @@ test('accent-repeated passes the same catalog with its real secondary CTAs', () 
   assert.deepEqual(hits('index.html', real).filter((h) => h.startsWith('accent-repeated')), []);
 });
 
+// S2's acceptance test (plan Phase 3): pages built only from the shipped component classes,
+// one per profile, report nothing. The catalog is the same page the real ones fail on ban 19.
+test('pages built from the shipped component classes report zero findings', () => {
+  for (const name of ['catalog-components.html', 'app-shell-components.html']) {
+    const text = fs.readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8');
+    assert.deepEqual(check([{ file: name, text }]), [], name);
+  }
+});
+
 test('accent-repeated passes one accent in the hero and one in the footer', () => {
   const html = '<main><section class="hero"><a class="ud-btn ud-btn-primary">Go</a></section></main>\n<footer><a class="ud-btn ud-btn-primary">Go</a></footer>';
   assert.deepEqual(hits('a.html', html), []);

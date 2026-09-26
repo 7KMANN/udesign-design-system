@@ -275,6 +275,10 @@ Language question is settled: Node, shipped as a `bin`, run with `npx`. Both con
 **Owns:** plan Phase 3. Scope discipline is the risk: 27 components is the wrong answer and the
 tempting one.
 
+| Date | Event |
+|---|---|
+| 2026-09-26 | S2 started. Branch `v2/s2-css-layer` cut off `master` (`2354885`). **Census of `udesignpages/public` (95 pages) before choosing:** `ud-btn` 125 uses (secondary 62, outline 62, primary 1); `product-card`/`card` 135; `badge`/`tag` 46 plus one `ud-badge`; tables 15 in 4 pages (three order forms, one spec page); inputs 4 in 2 pages; empty states in 3 pages; every catalog card carries a hover and a raw-motion press on a non-focusable `div` (the `Pressable` pattern done wrong), and one page uses a `pressable` class 42 times. **Shipping:** `ud-btn` (primary, secondary, outline, plus ghost for the toolbar AGENTS.md rule 5 prescribes), `ud-card`, `ud-badge`, `ud-table`, `ud-input`, `ud-empty-state`, `ud-pressable`, and the Δ-14 shell classes. **Kaleb, round 14:** the header lockup and confidential footer are skipped (no registry twin, zero findings in their consumer CSS); distribution is inside `dist/tokens.css`, source `css/components.css`. No per-profile rules: every profile difference the classes need is already a variable (`--surface-padding`, `--shadow-2`, `--text-*`, `--font-numeric*`). **No subagents yet:** one stylesheet and one test file, written test-first, collide if split. Next: parity tests red, then `css/components.css`, then the acceptance fixture. |
+
 ### S4 — Reference & Release
 **Status:** blocked on S2.
 **Owns:** plan Phase 5.

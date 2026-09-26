@@ -441,6 +441,10 @@ function formatTypographyHelpers(t, baseTree, scopes = []) {
   return L.join('\n');
 }
 
+// The static-HTML component layer (plan Phase 3) ships inside the compiled tokens,
+// so a page that links them gets the classes. Hand-written: see css/components.css.
+const componentLayer = () => fs.readFileSync(path.resolve('css/components.css'), 'utf8').replace(/\r\n/g, '\n');
+
 StyleDictionary.registerFormat({
   name: 'ud/css-dual',
   format: () => {
@@ -456,7 +460,7 @@ StyleDictionary.registerFormat({
     const L = [];
     L.push('/*');
     L.push(' * UDesign design tokens (Dual Style: Brand & Functional). Compiled from DTCG sources.');
-    L.push(' * Do not hand-edit this file: edit the token source and run `npm run build`.');
+    L.push(' * Do not hand-edit this file: edit the token source or css/components.css and run `npm run build`.');
     L.push(' */');
     
     // D-07: presentation/operations are the names; brand/functional are aliases for one release.
@@ -484,6 +488,7 @@ StyleDictionary.registerFormat({
     L.push('');
     L.push(formatTypographyHelpers(functionalBaseTree, baseTree, [':root[data-design="functional"]', '.design-functional', ':root[data-design="operations"]', '.design-operations']));
     L.push('');
+    L.push(componentLayer());
 
     return L.join('\n');
   },
@@ -510,6 +515,7 @@ StyleDictionary.registerFormat({
     L.push('');
     L.push(formatTypographyHelpers(mergedTree, baseTree));
     L.push('');
+    L.push(componentLayer());
     return L.join('\n');
   },
 });

@@ -1,6 +1,6 @@
 /*
  * UDesign design tokens (Dual Style: Brand & Functional). Compiled from DTCG sources.
- * Do not hand-edit this file: edit the token source and run `npm run build`.
+ * Do not hand-edit this file: edit the token source or css/components.css and run `npm run build`.
  */
 :root, :root[data-design="brand"], :root[data-design="presentation"] {
   /* Primitives: brand */
@@ -585,3 +585,218 @@
 :root[data-design="functional"] .ud-body,.design-functional .ud-body,:root[data-design="operations"] .ud-body,.design-operations .ud-body{font-family:var(--font-body);font-weight:var(--fw-regular);font-size:0.875rem;line-height:1.5;letter-spacing:0em}
 :root[data-design="functional"] .ud-label,.design-functional .ud-label,:root[data-design="operations"] .ud-label,.design-operations .ud-label{font-family:var(--font-display);font-weight:var(--fw-medium);font-size:0.75rem;line-height:1.25;letter-spacing:0em;color:var(--muted-foreground)} /* Title case, no uppercase/tracking */
 :root[data-design="functional"] .ud-data,.design-functional .ud-data,:root[data-design="operations"] .ud-data,.design-operations .ud-data{font-family:var(--font-data);font-weight:var(--fw-regular);font-size:0.8125rem;line-height:1.4;letter-spacing:0em}
+
+/*
+ * UDesign component classes for static HTML. Source file: css/components.css.
+ * `npm run build` appends it to dist/tokens.css, so linking the tokens gives you these.
+ *
+ * One class per registry component a generator reaches for: `ud-` plus the React
+ * name in kebab case, a variant appended (`ud-btn-primary`). `ud-btn` keeps the name
+ * generators already wrote. The mirrored and skipped components, each with its
+ * reason, are listed in tests/component-css.test.mjs.
+ *
+ * No rule here is scoped by profile: every difference between presentation and
+ * operations arrives through a variable (--surface-padding, --shadow-2, --text-*,
+ * --font-numeric*). Pin the profile once on <html data-design="...">.
+ */
+
+/* Button. One ud-btn-primary per screen, none in a repeated block (AGENTS.md rule 5). */
+.ud-btn {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: var(--control-height);
+  min-height: var(--touch-target-min);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--motion-duration-instant) var(--motion-easing-standard);
+  transition-property: transform, background-color, color, opacity;
+}
+.ud-btn:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: 2px; }
+.ud-btn:active { transform: scale(var(--motion-press-scale)); }
+.ud-btn-primary { background: var(--primary); color: var(--primary-foreground); }
+.ud-btn-primary:hover { background: var(--primary-hover); }
+.ud-btn-primary:active { background: var(--primary-hover); opacity: 0.9; }
+.ud-btn-secondary { background: var(--secondary); color: var(--secondary-foreground); }
+.ud-btn-outline { border-color: var(--border); background: var(--background); }
+.ud-btn-secondary:hover, .ud-btn-outline:hover, .ud-btn-ghost:hover { background: var(--interactive-hover); }
+.ud-btn-secondary:active, .ud-btn-outline:active, .ud-btn-ghost:active { background: var(--interactive-pressed); }
+.ud-btn:disabled, .ud-btn[aria-disabled="true"] {
+  pointer-events: none;
+  border-color: transparent;
+  background: var(--interactive-disabled);
+  color: var(--interactive-disabled-foreground);
+}
+
+/* Pressable: a clickable card, row or item, on an <a> or <button>, never a <div>.
+   Declared before ud-card so `class="ud-pressable ud-card"` keeps the card's surface. */
+.ud-pressable {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-height: var(--touch-target-min);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--motion-duration-instant) var(--motion-easing-standard);
+  transition-property: transform, background-color, border-color;
+}
+.ud-pressable:hover { background: var(--interactive-hover); }
+.ud-pressable:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: 2px; }
+.ud-pressable:active { transform: scale(var(--motion-press-scale-subtle)); background: var(--interactive-pressed); }
+.ud-pressable:disabled { pointer-events: none; background: var(--interactive-disabled); color: var(--interactive-disabled-foreground); }
+
+/* Card. Floats on --shadow-2, which is none in operations (ban 21). */
+.ud-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--surface-padding, 1.5rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  color: var(--card-foreground);
+  box-shadow: var(--shadow-2);
+}
+
+/* Badge: a label, never the only carrier of a status (ban 11). */
+.ud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 1.5rem;
+  padding: 0.125rem 0.625rem;
+  border: 1px solid var(--tone-neutral-border);
+  border-radius: var(--radius-pill);
+  background: var(--tone-neutral-surface);
+  color: var(--tone-neutral-foreground);
+  font-size: 0.75rem;
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: var(--font-numeric-variant);
+}
+
+/* Table. Wrap it so a wide table scrolls instead of widening the page:
+   <div class="ud-table-scroll" role="region" aria-label="Orders" tabindex="0">.
+   Rows have no press state; a clickable row is a ud-pressable inside a cell.
+   Mark every column of figures ud-table-numeric, on its th and each td. */
+.ud-table-scroll { width: 100%; overflow-x: auto; }
+.ud-table-scroll:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: -2px; }
+.ud-table { width: 100%; border-collapse: collapse; caption-side: bottom; font-size: 0.875rem; }
+.ud-table tr {
+  border-bottom: 1px solid var(--border);
+  transition: var(--motion-duration-instant) var(--motion-easing-standard);
+  transition-property: background-color;
+}
+.ud-table tbody tr:last-child { border-bottom: 0; }
+.ud-table tbody tr:hover { background: var(--interactive-hover); }
+.ud-table th {
+  height: var(--touch-target-min);
+  padding: 0 var(--space-4);
+  text-align: left;
+  vertical-align: middle;
+  font-weight: var(--fw-medium);
+  color: var(--muted-foreground);
+}
+.ud-table td { height: var(--touch-target-min); padding: var(--surface-padding, 1rem) var(--space-4); vertical-align: middle; }
+.ud-table tfoot { border-top: 1px solid var(--border); background: var(--muted); font-weight: var(--fw-medium); }
+.ud-table caption { margin-top: var(--space-4); font-size: 0.875rem; color: var(--muted-foreground); }
+.ud-table .ud-table-numeric { text-align: right; font-family: var(--font-numeric); font-variant-numeric: var(--font-numeric-variant); }
+
+/* Input, on <input> and <textarea>. */
+.ud-input {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  height: var(--control-height);
+  min-height: var(--touch-target-min);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--input);
+  border-radius: var(--radius);
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+}
+textarea.ud-input { height: auto; min-height: 6rem; }
+.ud-input::placeholder { color: var(--muted-foreground); }
+.ud-input:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: 2px; }
+.ud-input:disabled { cursor: not-allowed; background: var(--interactive-disabled); color: var(--interactive-disabled-foreground); }
+
+/* Empty state: a title (.ud-h3), a line of help (.ud-label), and at most one action. */
+.ud-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 12rem;
+  padding: var(--space-6);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+  color: var(--surface-sunken-foreground);
+  text-align: center;
+}
+
+/* PageCanvas: the presentation shell. The page scrolls; each ud-page-section runs
+   edge to edge and centres its content in a 72rem column without a wrapper.
+   Works on <body> too, which is why it zeroes the margin. */
+.ud-page-canvas { min-height: 100svh; margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-body); }
+.ud-page-section {
+  padding-block: clamp(var(--space-8), 8vw, calc(var(--space-8) * 2));
+  padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--content-gutter-mobile));
+}
+.ud-page-section-band { border-block: 1px solid var(--border); background: var(--card); }
+@media (min-width: 640px) {
+  .ud-page-section { padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--space-8)); }
+}
+
+/* AppShell: the operations shell. Children in this order: ud-app-shell-sidebar (put a
+   <nav> of ud-btn-ghost links in it), ud-app-shell-toolbar, ud-app-shell-panes holding
+   ud-app-shell-pane sections, each with an aria-label. From 768px the viewport is fixed
+   and panes scroll; below it the page scrolls, so a phone keyboard never traps content.
+   Panes are equal width; size them with style="--pane-columns: minmax(0, 1fr) 20rem",
+   which applies from 768px only, as React's md:grid-cols-[...] does. */
+.ud-app-shell { display: grid; min-height: 100svh; margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-body); font-variant-numeric: var(--font-numeric-variant); }
+.ud-app-shell-sidebar { overflow-x: auto; border-bottom: 1px solid var(--sidebar-border); background: var(--sidebar); color: var(--sidebar-foreground); }
+.ud-app-shell-sidebar > nav { display: flex; gap: var(--space-1); padding: var(--space-2); }
+.ud-app-shell-toolbar {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-height);
+  padding-inline: var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+.ud-app-shell-panes { display: grid; }
+.ud-app-shell-pane { min-width: 0; border-top: 1px solid var(--border); }
+.ud-app-shell-pane:first-child { border-top: 0; }
+@media (min-width: 768px) {
+  .ud-app-shell { height: 100svh; grid-template-columns: 14rem minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); overflow: hidden; }
+  .ud-app-shell-sidebar { grid-row: span 2; overflow: hidden auto; border-bottom: 0; border-right: 1px solid var(--sidebar-border); }
+  .ud-app-shell-sidebar > nav { flex-direction: column; }
+  .ud-app-shell-sidebar > nav > .ud-btn { justify-content: flex-start; }
+  .ud-app-shell-panes { min-height: 0; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); grid-template-columns: var(--pane-columns, none); grid-template-rows: minmax(0, 1fr); }
+  .ud-app-shell-pane { min-height: 0; overflow-y: auto; border-top: 0; border-left: 1px solid var(--border); }
+  .ud-app-shell-pane:first-child { border-left: 0; }
+}
