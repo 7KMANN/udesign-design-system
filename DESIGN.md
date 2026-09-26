@@ -403,7 +403,7 @@ This is the one numbered list. Bans 1-19 keep the numbers they carried in `udesi
 1. `var(--ud-*)` anywhere in consumer source (for example `app/`, `components/`, `lib/`).
 2. Raw Tailwind palette utilities (`bg-slate-*`, `text-red-500`, `border-zinc-*`, any `{property}-{palette}-{number}`).
 3. Color literals (`#hex`, `oklch()`, `rgb()`, `hsl()`) in app code. Allowed only for genuinely intentional data (map markers, user-picked swatches, product imagery) and must carry a `design-ok: <reason>` comment on or above the line.
-4. Raw shadow utilities (`shadow-sm` .. `shadow-2xl`, `drop-shadow-*`). Use `--shadow-1/2/3` for true overlays only.
+4. Raw shadow utilities (`shadow-sm` .. `shadow-2xl`, `drop-shadow-*`). Use `--shadow-1/2/3`: in `operations` for true overlays only (ban 21); `presentation` may also elevate cards.
 5. `backdrop-blur` / glassmorphism / frosted translucent panels. Solid semantic surfaces only.
 6. Gradient-clipped text (`bg-clip-text`) and decorative gradients used for hierarchy.
 7. `uppercase` combined with wide tracking.

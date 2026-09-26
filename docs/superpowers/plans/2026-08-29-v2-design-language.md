@@ -595,6 +595,8 @@ is telling them what broke.
 | MN-8 | GlobalVision's four doc pins report changed (Investigation B) | GlobalVision | Its own repin test flags them. Record only; do not schedule. |
 | MN-9 | Registry fixes do not reach GlobalVision's `Card` or `Dialog` | GlobalVision | Its `components/ui/card.tsx` and `dialog.tsx` are local shadcn v4 forks with `data-slot` attributes, not the `@udesign` registry versions its `components.json` points at. 0.7 and 2.7 fix the registry; GlobalVision only benefits once it re-adds those components from the registry. |
 | MN-10 | `Dialog`/`Sheet` padding now reads from `--dialog-padding` (D-21) | Any consumer passing padding overrides | Not breaking. A single `p-0` now wins completely, so the `p-0 sm:p-0 gap-0` workaround GlobalVision used can be reduced to `p-0`. `gap-4` is unchanged. |
+| MN-11 | `udesign-docs` `v0.9.0` pairs with design system `v2.0.0` (D-24) | GlobalVision (design system `v1.5.0`, docs `v0.4.0`) | Stay on `udesign-docs` `v0.8.0` or earlier until moving to `v2.0.0`; move both pins in one change. At `v0.9.0` the contract no longer carries the ban list or the token vocabulary. |
+| MN-12 | Ban 4 scoped by profile (D-23); bans 1 and 2 lose GlobalVision-only wording | Anything citing ban 4 | Numbers unchanged. `presentation` may elevate cards; `operations` keeps shadows for true overlays (ban 21). |
 
 ---
 

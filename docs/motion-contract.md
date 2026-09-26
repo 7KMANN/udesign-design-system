@@ -99,7 +99,7 @@ A published `--interactive-pressed` that no component references is a token laye
 
    Consumers selecting by token then behave correctly without writing a media query. **Durations collapse; colors do not.** The pressed background, the focus ring, and the disabled treatment all still apply - that is what keeps feedback present when motion is removed. `--motion-delay-indicator` also does not collapse: it suppresses a spinner flash rather than moving anything.
 
-3. **Motion values are identical across visual profiles.** Profile governs type, spacing, radius, and elevation. It never governs motion. A build step that emits different motion output per profile is a defect, however reasonable the variation seemed.
+3. **Motion values are identical across visual profiles.** Profile governs type, radius, and elevation. It never governs motion. A build step that emits different motion output per profile is a defect, however reasonable the variation seemed.
 
 4. **Do not scope the base motion layer behind an opt-in attribute.** Emphasis-only tokens may be scoped to an opt-in attribute (`--moment-intensity-1-scale` and `--moment-intensity-2-scale` compile only inside `:root[data-game="on"]`). The ordinary interaction layer may not - a spinner needs a duration token as much as a celebration does.
 

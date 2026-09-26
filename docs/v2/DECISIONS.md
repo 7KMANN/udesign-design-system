@@ -630,3 +630,39 @@ is when it gets there: **`v0.9.0` as of 2026-09-25.** The handoff no longer hard
 `components/ui/card.tsx` and `dialog.tsx` are local shadcn v4 forks, not the `@udesign` registry
 versions its `components.json` points at. Recorded as migration note MN-9. Not scheduled: plan
 brief §5 keeps consumer fixes out of scope.
+
+---
+
+## Round 8 - 2026-09-26 (S1, after the branch review)
+
+### D-23 · Ban 4 is scoped by profile · `APPROVED` 2026-09-26
+
+Ban 4, carried verbatim from the contract, said `--shadow-1/2/3` are "for true overlays only". The
+contract was written for GlobalVision, which is operations-only, so the sentence was never tested
+against `presentation`. Applied system-wide it contradicts D-19, where presentation draws hierarchy
+from space and elevation. **Ban 4 keeps its number and still bans raw shadow utilities everywhere;
+the overlays-only clause applies to `operations` (ban 21 states it), and `presentation` may elevate
+cards.** Rejected: keeping ban 4 absolute, which would force D-19's elevation onto surface and border
+alone.
+
+### D-24 · `udesign-docs` v0.9.0 is cut in S1 and pairs with design system v2.0.0 · `APPROVED` 2026-09-26
+
+`udesign-docs` links the design system at `v2.0.0`, which S4 tags. Cut `v0.9.0` now and state the
+pairing in `udesign-docs/AGENTS.md`: a product pinned below `v2.0.0` stays on `udesign-docs` `v0.8.0`
+or earlier and moves both pins together. The links resolve when `v2.0.0` exists. Rejected: holding
+the tag until S4, which only moves the dead links to the other repo.
+
+### D-25 · The provenance rule is written into `knowledge-governance.md` · `APPROVED` 2026-09-26
+
+D-04 item 4, in its own words: provenance is not established by a document asserting its own
+provenance; agent-authored content in a consumer repository is evidence of what an agent did, never
+of what UDesign wants.
+
+### Recorded in S1, not asked
+
+- **Bans 1 and 2 were generalized on the move.** Ban 1's GlobalVision paths became examples ("for
+  example `app/`, `components/`, `lib/`"); ban 2 lost "The default palette will be deleted from the
+  Tailwind theme; these classes will not compile", which is GlobalVision implementation detail and
+  goes with D-18. The banned artifacts themselves are unchanged.
+- **Ban 26 is countable.** D-10's "uniform emphasis everywhere" is written as "more accent-filled
+  controls than 'Emphasis and hierarchy' allows", so it cannot be read as asking for more accent.

@@ -77,6 +77,9 @@ describe("UDesign registry accessibility contracts", () => {
     render(ui())
     const padding = screen.getByRole("dialog").className.split(/\s+/).filter((c) => /^(?:[\w-]+:)*p-/.test(c))
     expect(padding.filter((c) => c.includes(":"))).toEqual([])
+    // D-22's hook: a profile or shell sets --dialog-padding from outside, so
+    // the element may only declare the fallback, never the variable itself.
+    expect(screen.getByRole("dialog").className).not.toContain("[--dialog-padding:")
   })
 
   it("opens a labeled dialog with a mobile-safe content contract", async () => {

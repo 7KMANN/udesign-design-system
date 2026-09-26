@@ -75,23 +75,31 @@ const PRESS = /active:(?:scale-\[var\(--motion-press-scale|bg-\[var\(--interacti
 // Anything that renders a native button or a Radix part a user can press.
 const RENDERS_PRESSABLE = /<button\b|role="button"|["']button["']|Primitive\.(?:Root|Trigger|Item|Thumb|Close)\b/
 
-// Fail-closed, same shape as EXEMPT: a pressable file with no press state
-// needs a reason a reviewer can read.
-const PRESS_EXEMPT = {
-  "tooltip.tsx": "TooltipTrigger wraps the consumer's own control via asChild; the press state belongs to that control",
-}
+// Per component, not per file: a file-level check let SelectItem ship unpressed
+// because SelectTrigger in the same file had a press state.
+// ponytail: components are split at React.forwardRef; a part assigned directly
+// (const DialogTrigger = DialogPrimitive.Trigger) renders the consumer's own
+// element, so its press state belongs to that element.
+const RENDERS_PRESSABLE_JSX = /<button\b|role="button"|["']button["']|<\w+Primitive\.(?:Root|Trigger|Item|Thumb|Close)\b/
+const components = Object.entries(sources).flatMap(([file, source]) =>
+  source.split(/(?=React\.forwardRef)/).slice(1).map((chunk, i) => [`${file}#${i + 1}`, chunk]),
+)
+
+// Fail-closed, same shape as EXEMPT: a pressable component with no press state
+// needs a reason a reviewer can read, keyed file#n.
+const PRESS_EXEMPT = {}
 
 test("every interactive primitive acknowledges a press", () => {
   // Derived, not listed. The hand-kept list this replaced never named slider or
   // table, which is how both shipped without anyone noticing.
-  const pressable = Object.keys(sources).filter((file) => RENDERS_PRESSABLE.test(sources[file]))
+  const pressable = components.filter(([, chunk]) => RENDERS_PRESSABLE_JSX.test(chunk))
   assert.ok(pressable.length >= 9, `expected the interactive primitives, found ${pressable.length}`)
-  const unpressed = pressable.filter((file) => !(file in PRESS_EXEMPT) && !PRESS.test(sources[file]))
+  const unpressed = pressable.filter(([id, chunk]) => !(id in PRESS_EXEMPT) && !PRESS.test(chunk)).map(([id]) => id)
   assert.deepEqual(unpressed, [], `no pressed state - the single most commonly missing thing in machine-written UI: ${unpressed.join(", ")}`)
 })
 
 test("no press exemption outlives its usefulness", () => {
-  const stale = Object.keys(PRESS_EXEMPT).filter((file) => !sources[file] || PRESS.test(sources[file]))
+  const stale = Object.keys(PRESS_EXEMPT).filter((id) => !components.some(([key, chunk]) => key === id && !PRESS.test(chunk)))
   assert.deepEqual(stale, [], `now pressed or gone - delete the exemption: ${stale.join(", ")}`)
 })
 

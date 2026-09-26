@@ -2,7 +2,7 @@
 
 **This file is both the map and the state.** Every segment updates the ledger in §4 before it ends. An orchestrator resuming after a limit, a crash, or a week away reads this file first and knows exactly where things stand.
 
-**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0 complete and merged. S1 ready to start (re-verified 2026-09-25).
+**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0 and S1 complete. S1.5 ready to start once S1 merges.
 
 ---
 
@@ -165,10 +165,10 @@ Append-only. Newest at the bottom. One line per event: date, who, what happened,
 | 2026-09-25 | **Round 7**, from the GlobalVision density evidence (`ee7dab0`), all claims re-verified. **D-21:** `Dialog`/`Sheet` padding moves into a variable so `p-0` actually wins; new Phase 0 item 0.7. **D-22:** `Card`/`Dialog`/`Sheet` get a padding axis per profile; amends D-19, adds plan item 2.7, S1.5 becomes 7-9 days. Two checker rules (Δ-07) and migration notes MN-9/MN-10 added. No `NEEDS-APPROVAL` remains. **Next concrete action: cut `v2/s1-language-and-boundary` off `master` and paste `S1-language-and-boundary.md` into a fresh session.** |
 
 ### S1 — Language & Boundary
-**Status:** ready to start
-**Branch:** `v2/s1-language-and-boundary` (to be cut off `master` after S0 merges)
+**Status:** complete on its branches, pending merge.
+**Branch:** `v2/s1-language-and-boundary` in both repos.
 **Handoff:** [`S1-language-and-boundary.md`](./S1-language-and-boundary.md)
-**Next action:** Kaleb pastes that handoff into a fresh session.
+**Next action:** merge both branches, cut `udesign-docs` `v0.9.0` on the merge (D-24), push, then paste [`S1.5-profile-archetype.md`](./S1.5-profile-archetype.md) into a fresh session.
 **Owns:** plan Phase 0 (all seven items) and Phase 1 (items 1.1-1.11), plus the next `udesign-docs` minor tag (`v0.9.0` as of 2026-09-25; `v0.7.0` and `v0.8.0` were taken by platform docs, Δ-08).
 
 | Date | Event |
@@ -183,6 +183,12 @@ Append-only. Newest at the bottom. One line per event: date, who, what happened,
 | 2026-09-26 | Subagent B hit the session limit before writing anything (tree clean, no report). Usage reset. **Both subagents resumed** from their own transcripts with their original briefs; A resumes from the next-step list in its report. |
 | 2026-09-26 | **Subagent A returned, DONE_WITH_CONCERNS.** `udesign-docs` commits `488b010`, `f654e43`, `e0a1661`, `305eee2`, `9fa5786` on `v2/s1-language-and-boundary`. Here: `docs/motion-contract.md` (all 11 drifts corrected; orchestrator re-checked every value against `dist/tokens.css`), `docs/checker-rules.md`, `package.json` `files` gains it. M3 stopped honestly: the contract's GlobalVision tone map and ratified entity map exist nowhere else. Resolved by the existing overlay convention (`udesign-docs/AGENTS.md`, overlay section), not a new question: move them verbatim to `globalvision-functional-profile.md`, then finish M3. A sent back for that, plus Level 3 in two gamification references and three dangling contract mentions. |
 | 2026-09-26 | **Δ-06 was a misdiagnosis.** `~/.claude/skills/interface-responsiveness` is a Windows **junction** into the `udesign-docs` working tree (`Get-Item` LinkType `Junction`), not a copy; identical md5s meant the same file. No re-install exists to do. The installed skill serves whatever `udesign-docs` has checked out, so it is correct once `v2/s1-language-and-boundary` merges to `main` and `main` is checked out. The done-state box "re-installed" is met by that merge, not by a copy. |
+| 2026-09-26 | On Kaleb's request, `udesign-docs` `4fdae0e` (plugins and MCP index, unrelated to S1) fast-forward pushed to `origin/main` (`ca0ec6d..4fdae0e`). The S1 branch was already based on it, so no rebase: `origin/main..v2/s1-language-and-boundary` is now exactly S1's 10 commits, hashes unchanged. |
+| 2026-09-26 | **Subagent A follow-ups landed**: M3 finished by moving GlobalVision's tone and entity maps verbatim to its overlay; Level 3 removed from the two gamification references; three dangling contract mentions fixed. Orchestrator then moved the contract's two parked tone rules into `DESIGN.md` (metric and tone roles), restated the contract's ownership line as D-03, and made the one ground-truth edit (1.9, D-15 verbatim). **Placement note:** the line went after the "Never" bullet, not after "Tone", so every `CANON udesign-ground-truth.md:139-147` citation still holds. |
+| 2026-09-26 | **Phase 1 committed, `23e6624`**, then `91408fa` after `ponytail-review` cut 168 lines (flat `lint-design.mjs`, one scope test and one emitter test instead of seven). Cold read: a haiku agent given only `AGENTS.md` stated the accent budget and picked `operations` for "an internal production scheduling screen"; it hedged `secondary` vs `ghost` for a card grid, so `AGENTS.md` now names `secondary` for cards and `ghost` for toolbars and rows. Read paths traced by following each link: design-system `AGENTS.md` reaches everything in one or two hops; `udesign-docs/AGENTS.md` in two. |
+| 2026-09-26 | **Branch review (opus): with fixes.** C1 docs links to `v2.0.0` resolved by D-24 (pairing note, MN-11). I1 `--dialog-padding` was declared on the element, so no profile could reach it: now a fallback (`p-[var(--dialog-padding,var(--dialog-padding-default))]`), a test forbids the element declaring the variable, showcase build confirms Tailwind compiles it, tailwind-merge still lets `p-0` win. I2 `SelectItem` had no pressed state and passed because the guard was per file: the guard is now per component (split at `React.forwardRef`), ran red on `select.tsx#6` only, then fixed. I3 ban 4 vs D-19: put to Kaleb, D-23. I4 intensity ownership worded accurately in `skills/README.md`; the "spacing" claim removed from the contract and `motion-contract.md`. I5 this ledger. |
+| 2026-09-26 | Round 8 decisions D-23, D-24, D-25 recorded; migration notes MN-11, MN-12 added; the ban 1/2 generalizations recorded in `DECISIONS.md`. D-25's governance line was first blocked by auto mode as a shared-standard change and written after Kaleb approved it. |
+| 2026-09-26 | **S1 done-state:** Phase 0 committed with each new test red first; `npm pack --dry-run` lists `AGENTS.md`; cold read passed; every personality sentence tagged; bans 1-19 keep their numbers, 20-26 appended, pointers in the contract, `.cursorrules`, `.gemini/rules` (the two `udesignpages` lists are consumer files, not edited, per standing rule 7); both read paths traced; `MOTION-SYSTEM.md` values match `dist/tokens.css`; 0.7's test red then green; false density claims deleted; the installed skill is a junction, so it is correct on merge (Δ-06 corrected); S1.5 handoff written. **Open, not blocking:** `udesign-docs` `v0.9.0` not yet cut; README's component lists (`:15`, `:106`) predate v1.5.0; the showcase and e2e still use the alias names. |
 
 Note: plan §3 proposes that **Phase 0 runs at the top of S1 rather than in S3**. It is about two
 hours of correctness fixes that depend on nothing. Leaving it in S3 means the repo ships five known
@@ -190,7 +196,7 @@ defects for three more segments. This is a proposal from S0, not a decision Kale
 S1 may execute it as written or push it back to S3, but should say which.
 
 ### S1.5 — Profile Archetype
-**Status:** blocked on S1
+**Status:** ready once S1 merges. Handoff: [`S1.5-profile-archetype.md`](./S1.5-profile-archetype.md)
 **Owns:** plan Phase 2. Decisions **D-19** (which supersedes D-05), **D-20**, and **D-22** (which amends D-19).
 **Read D-19 before D-05.** The space-scale and control-height token fork was dropped on 2026-09-02
 after a measurement showed the two profiles share the same type scale shape, so forking density on

@@ -27,7 +27,7 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 grid w-[var(--dialog-inline-size-mobile)] max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] [--dialog-padding:var(--content-gutter-mobile)] sm:[--dialog-padding:1.5rem] p-[var(--dialog-padding)] text-[var(--surface-raised-foreground)] shadow-[var(--shadow-3)] max-h-[var(--dialog-block-size-max)]",
+          "fixed left-1/2 top-1/2 z-50 grid w-[var(--dialog-inline-size-mobile)] max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] [--dialog-padding-default:var(--content-gutter-mobile)] sm:[--dialog-padding-default:1.5rem] p-[var(--dialog-padding,var(--dialog-padding-default))] text-[var(--surface-raised-foreground)] shadow-[var(--shadow-3)] max-h-[var(--dialog-block-size-max)]",
           className,
         )}
         {...props}
