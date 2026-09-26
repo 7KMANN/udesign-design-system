@@ -295,7 +295,8 @@ describe("UDesign page shells", () => {
   it("lets the page scroll again on phones, where a fixed viewport traps content", () => {
     const { container } = render(operationsScreen())
     expect(container.firstElementChild).toHaveClass("min-h-svh")
-    expect(container.firstElementChild?.className).not.toMatch(/(?:^|s)(?:h-svh|overflow-hidden)(?:s|$)/)
+    expect(container.firstElementChild).not.toHaveClass("h-svh")
+    expect(container.firstElementChild).not.toHaveClass("overflow-hidden")
   })
 
   it("renders the operations shell without axe violations", async () => {

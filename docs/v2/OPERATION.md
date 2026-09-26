@@ -2,7 +2,7 @@
 
 **This file is both the map and the state.** Every segment updates the ledger in §4 before it ends. An orchestrator resuming after a limit, a crash, or a week away reads this file first and knows exactly where things stand.
 
-**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0 and S1 complete and merged. S1.5 ready to start. Order from here: S1.5, S3, S2, S4 (D-26).
+**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0 and S1 merged. S1.5 complete on its branch, awaiting close-out. Order from here: S3, S2, S4 (D-26).
 
 ---
 
@@ -222,7 +222,9 @@ defects for three more segments. This is a proposal from S0, not a decision Kale
 S1 may execute it as written or push it back to S3, but should say which.
 
 ### S1.5 — Profile Archetype
-**Status:** ready to start. S1 merged 2026-09-26. Handoff: [`S1.5-profile-archetype.md`](./S1.5-profile-archetype.md)
+**Status:** complete on branch `v2/s1.5-profile-archetype`, not merged. Close-out is the master orchestrator's. Handoff: [`S1.5-profile-archetype.md`](./S1.5-profile-archetype.md)
+**Branches:** `v2/s1.5-profile-archetype` (merge to `master`); `v2/s1.5-prototype` (throwaway, holds both prototypes as the primary source; keep until S4, never merge).
+**Next action:** master orchestrator gate check and merge, then paste [`S3-enforcement.md`](./S3-enforcement.md) into a fresh session.
 **Writes next:** the **S3** handoff (`S3-enforcement.md`), not S2's (D-26).
 **Owns:** plan Phase 2. Decisions **D-19** (which supersedes D-05), **D-20**, and **D-22** (which amends D-19).
 **Read D-19 before D-05.** The space-scale and control-height token fork was dropped on 2026-09-02
@@ -242,9 +244,13 @@ axis (plan item 2.7), and D-19's "density falls out of the app shell for free" i
 | 2026-09-26 | **Finding for 2.2:** registry components use `rounded-sm/md/lg` 18 times. Those are Tailwind theme aliases, so the consumer's config picks the radius and `--radius: 0px` never reaches a button or input. 2.2 moves them to `rounded-[var(--radius*)]` and a registry test forbids the aliases. |
 | 2026-09-26 | Plan: prototype both shells in both profiles (`prototype`, `frontend-design`), put the scale steps, shell structure and compact padding to Kaleb, then build test-first. No subagent dispatched yet. |
 | 2026-09-26 | **Prototype verdict: two products.** Built on the real `dist/tokens.css`, published privately (`https://claude.ai/artifact/39cLxHx2WsUCM8BtDSiThW`), source on `v2/s1.5-prototype` (`090bfde`). Kaleb approved the type steps, 12px compact padding and `--shadow-2` presentation cards: **D-27**. Derived and recorded: Δ-10 radius utilities become variables, Δ-11 `--dialog-padding` becomes `--surface-padding`, Δ-12 the type scale is emitted as `--text-*` variables. **No subagents:** the build is one coherent change across tokens, `build.mjs`, and the same test files, so two agents would collide in `test-registry.mjs` and `public/r`. Next: red tests for 2.1, 2.2, 2.4 and 2.7, then tokens and build. |
+| 2026-09-26 | **Built test-first, `56741b3`.** Four token-contract tests ran red (type shape, radius and elevation, surface padding, numeric pair), then green. Registry guards ran red one at a time: item list, radius aliases, `--surface-padding`, numeric pair. Vitest: both shells render, hold or release the viewport by breakpoint, and pass axe. The responsive family left the `emitPrimitives` gate, which is the only part of the D-19 asymmetry that mattered: the dual operations block now emits its own `--surface-padding`. Prose `781dc71`: `DESIGN.md` hierarchy rule and true density claims, `AGENTS.md` rule 6 names the shells, ban 27 appended, MN-10 amended, MN-13 to MN-16 added. |
+| 2026-09-26 | **Cut line 2 met.** Comparison rendered only from the branch's registry and tokens (Vite SSR, Tailwind from the markup, each screen its own document with `data-design` on the root), published privately at `https://claude.ai/artifact/J7pXM5KvJfZC9C8MJ2UZPZ`. **Kaleb's verdict: two products.** The render found **Δ-13**: Tailwind 3 compiles `shadow-[var(--shadow-N)]` as a shadow colour, so seven components never rendered elevation; fixed with `[box-shadow:...]` and a guard (`8d76e40`). Kaleb approved **D-28**: `TableCell` vertical padding reads `--surface-padding`, operations rows sit on the 44px floor (`7528ab9`). Next: capture the harness on `v2/s1.5-prototype`, `verification-before-completion`, `ponytail-review`, then the S3 handoff. |
+| 2026-09-26 | Harness captured on `v2/s1.5-prototype` (`146aaf3`). `ponytail-review` cut two redundant asserts and two one-use interfaces, and found a vitest regex that had lost its `s` and could never fail; replaced with `not.toHaveClass`, then shown red by adding a bare `h-svh` to `AppShell` and green on revert. |
+| 2026-09-26 | **S1.5 done-state.** 2.1-2.4, 2.6, 2.7 meet their plan rows (2.5 was S1's). **One stated deviation:** 2.4 gives `Badge` tabular figures but not mono, because badge text is words and `DESIGN.md` limits mono to codes and readouts. `npm run validate` exit 0 on the final tree: lint clean, contracts 63/63, registry 30 items, components 24/24, clean registry install, showcase build, e2e 4/4. Kaleb's verdict on the rendered comparison: two products. S3 handoff written. **Not done, and not S1.5's:** the shells' CSS classes (S2, D-20); showcase pages for the shells (S4 reference screens); GlobalVision's local `Card`/`Dialog` forks still miss every registry fix (MN-9). **Next concrete action:** master orchestrator gate-checks and merges `v2/s1.5-profile-archetype`, then S3. |
 
 ### S3 — Enforcement
-**Status:** blocked on S1.5. **Runs before S2** (D-26).
+**Status:** ready once S1.5 merges. Handoff: [`S3-enforcement.md`](./S3-enforcement.md). **Runs before S2** (D-26).
 **Owns:** plan Phase 4, the portable checker. Its in-repo test half moved to S1 Phase 0.
 Language question is settled: Node, shipped as a `bin`, run with `npx`. Both consumers run Node.
 **Writes next:** the S2 handoff, and hands S2 the checker as its acceptance test.

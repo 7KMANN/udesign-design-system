@@ -218,7 +218,6 @@ test('operations sets a compact surface padding; presentation leaves the fallbac
   }
   // Declaring it here would override the 16px phone fallback Dialog and Sheet carry.
   assert.equal(varValue(presentationBlock, '--surface-padding'), undefined);
-  assertTouchFloor(dualCss);
 });
 
 test('operations numbers are tabular mono; presentation numbers stay proportional', () => {
