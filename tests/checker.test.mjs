@@ -119,7 +119,7 @@ test('accent-colour-name flags an identifier or custom property named gold, not 
 });
 
 test('profile-pin flags data-design off the root and runtime switching', () => {
-  assert.deepEqual(hits('a.html', '<html data-design="brand">\n<div data-design="operations"></div>'), ['profile-pin:2']);
+  assert.deepEqual(hits('a.html', '<html data-design="presentation">\n<div data-design="operations"></div>'), ['profile-pin:2']);
   const tsx = [
     '<html lang="fr" data-design="operations">',
     '<section data-design="presentation">',
@@ -131,9 +131,15 @@ test('profile-pin flags data-design off the root and runtime switching', () => {
 
 test('shell flags an operations document outside ud-app-shell and a presentation one inside it', () => {
   assert.deepEqual(hits('a.html', '<html data-design="operations">\n<body><div class="ud-app-shell"></div>'), []);
-  assert.deepEqual(hits('a.html', '<html data-design="functional">\n<body><div class="x"></div>'), ['shell:1']);
-  assert.deepEqual(hits('a.html', '<html data-design="brand">\n<body><div class="ud-app-shell"></div>'), ['shell:2']);
-  assert.deepEqual(hits('a.html', '<html data-design="brand">\n<body><div class="ud-page-canvas"></div>'), []);
+  assert.deepEqual(hits('a.html', '<html data-design="operations">\n<body><div class="x"></div>'), ['shell:1']);
+  assert.deepEqual(hits('a.html', '<html data-design="presentation">\n<body><div class="ud-app-shell"></div>'), ['shell:2']);
+  assert.deepEqual(hits('a.html', '<html data-design="presentation">\n<body><div class="ud-page-canvas"></div>'), []);
+});
+
+test('profile-pin flags the profile names removed in v3, which now match nothing', () => {
+  assert.deepEqual(hits('a.html', '<html data-design="functional">\n<body><div class="ud-app-shell"></div>'), ['profile-pin:1']);
+  assert.deepEqual(hits('a.html', '<html data-design="brand">\n<body><div class="ud-page-canvas"></div>'), ['profile-pin:1']);
+  assert.deepEqual(hits('app/layout.tsx', '<html lang="fr" data-design="functional">\n<AppShell />'), ['profile-pin:1']);
 });
 
 test('shell looks across the whole React tree for AppShell', () => {

@@ -130,7 +130,7 @@ A screen that is genuinely both is a question for the owner, not a mix.
 
 **Pin once.** One profile per document, declared once on the document root, never nested, never switched at runtime. The only exception is a review or documentation surface whose job is to show both profiles, such as the showcase.
 
-`data-design="brand"` and `data-design="functional"` still resolve, as aliases of `presentation` and `operations`, for one release. Write the new names.
+`data-design="brand"` and `data-design="functional"` were the v1 and v2 names. They were removed in v3 and now select nothing, so a page still using them renders with the presentation defaults; `udesign-check` flags them.
 
 Each profile combines with `data-theme="light"` or `data-theme="dark"`. Presentation and light are the defaults when the attributes are absent.
 

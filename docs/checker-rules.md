@@ -9,8 +9,8 @@ Governing principle: see
 (`udesign-docs@v0.9.0`, canonical). It applies to every rule below. Suppression discipline, gate
 placement, browser checks, and review questions stay in that file.
 
-Profiles: this document names the two profiles `presentation` and `operations`. The v1.x
-selector strings `brand` and `functional` remain as selector aliases for one release.
+Profiles: `presentation` and `operations`. The old names `brand` and `functional` were removed
+in v3; `profile-pin` flags a root that still uses them.
 
 ---
 
@@ -28,8 +28,8 @@ was chosen by running the candidates over real consumer source first (S3 ledger,
 | `ud-primitive` | ban 1 | `var(--ud-*)`. | A synced copy of `dist/tokens.css`, recognized by its header. |
 | `em-dash` | ban 14 | An em-dash (U+2014, `&mdash;`, `&#8212;`) in HTML markup or JS/TS source, including a lone placeholder (D-29). | Comments, `<style>`, `<script>`. |
 | `accent-colour-name` | `AGENTS.md` rule 5 | A declared identifier with `gold` as a word part (`GOLD`, `goldAccent`); a CSS custom property with one (`--brand-gold`). | A product colour in copy or data ("Athletic Gold"). |
-| `profile-pin` | `AGENTS.md` rule 6 | `data-design` on any element but `<html>`; `dataset.design =`; `setAttribute("data-design", ...)`. | `[data-design=...]` selectors. |
-| `shell` | ban 27 | HTML: an `operations` (or `functional`) root with no `ud-app-shell`; a `presentation` (or `brand`) root with one. React: an `operations` `<html>` with no `<AppShell>` anywhere in the scanned tree; a `presentation` one with any. | A document with no `data-design`. |
+| `profile-pin` | `AGENTS.md` rule 6 | `data-design` on any element but `<html>`; `dataset.design =`; `setAttribute("data-design", ...)`; a root still on `brand` or `functional`, removed in v3. | `[data-design=...]` selectors. |
+| `shell` | ban 27 | HTML: an `operations` root with no `ud-app-shell`; a `presentation` root with one. React: an `operations` `<html>` with no `<AppShell>` anywhere in the scanned tree; a `presentation` one with any. | A document with no `data-design`. |
 
 **Scope.** `.html`, `.css`, `.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`. Skips `node_modules`, `.git`,
 `.next`, `dist`, `build`, `out`, `coverage`, `__tests__`, `*.test.*`, `*.spec.*`, `*.min.*` and

@@ -119,22 +119,22 @@ test('emits the complete semantic vocabulary in the functional-only build', () =
   assertVariables(functionalCss, semanticVariables);
 });
 
-test('emits composable brand and functional dark selectors', () => {
+test('emits composable presentation and operations dark selectors', () => {
   assert.match(dualCss, /:root\[data-theme="dark"\],\s*\.dark/);
-  assert.match(dualCss, /:root\[data-design="functional"\]\[data-theme="dark"\]/);
-  assert.match(dualCss, /:root\[data-design="functional"\]\.dark/);
-  assert.match(dualCss, /\.dark \.design-functional/);
+  assert.match(dualCss, /:root\[data-design="operations"\]\[data-theme="dark"\]/);
+  assert.match(dualCss, /:root\[data-design="operations"\]\.dark/);
+  assert.match(dualCss, /\.dark \.design-operations/);
 });
 
 // Per block, not file-wide: a file-wide match is satisfied by the brand block
-// alone, so a functional --control-height of 36px would pass unnoticed.
+// alone, so an operations --control-height of 36px would pass unnoticed.
 function assertTouchFloor(css) {
-  const brand = block(css, ':root, :root[data-design="brand"]');
-  const functional = block(css, ':root[data-design="functional"], .design-functional');
-  assert.ok(brand && functional, 'profile blocks not found');
+  const presentation = block(css, ':root, :root[data-design="presentation"]');
+  const operations = block(css, ':root[data-design="operations"], .design-operations');
+  assert.ok(presentation && operations, 'profile blocks not found');
   for (const name of ['--touch-target-min', '--control-height']) {
-    assert.match(brand, new RegExp(`${name}:\\s*44px`), `${name} must be 44px in the brand block`);
-    for (const [label, body] of [['brand', brand], ['functional', functional]]) {
+    assert.match(presentation, new RegExp(`${name}:\\s*44px`), `${name} must be 44px in the presentation block`);
+    for (const [label, body] of [['presentation', presentation], ['operations', operations]]) {
       for (const [, value] of body.matchAll(new RegExp(`${name}:\\s*([^;]+);`, 'g'))) {
         assert.equal(value.trim(), '44px', `${name} is ${value.trim()} in the ${label} block; the touch floor is 44px in both profiles`);
       }
@@ -144,23 +144,16 @@ function assertTouchFloor(css) {
 
 test('holds the 44px touch floor in every profile block', () => {
   assertTouchFloor(dualCss);
-  const overridden = dualCss.replace(/(:root\[data-design="functional"\], \.design-functional[^{]*\{)/, '$1\n  --control-height: 36px;');
+  const overridden = dualCss.replace(/(:root\[data-design="operations"\], \.design-operations[^{]*\{)/, '$1\n  --control-height: 36px;');
   assert.notEqual(overridden, dualCss, 'mutation did not apply');
-  assert.throws(() => assertTouchFloor(overridden), /36px in the functional block/);
+  assert.throws(() => assertTouchFloor(overridden), /36px in the operations block/);
 });
 
-// D-07: presentation and operations are the names; brand and functional stay
-// as aliases for one release. An alias must select the very same block.
-test('presentation and operations resolve to the same blocks as their aliases', () => {
-  for (const [name, alias] of [
-    [':root[data-design="presentation"]', ':root[data-design="brand"]'],
-    [':root[data-design="operations"]', ':root[data-design="functional"]'],
-    ['.design-operations', '.design-functional'],
-    [':root[data-design="operations"][data-theme="dark"]', ':root[data-design="functional"][data-theme="dark"]'],
-  ]) {
-    const named = block(dualCss, name);
-    assert.ok(named, `${name} is not emitted`);
-    assert.equal(named, block(dualCss, alias), `${name} does not share a block with ${alias}`);
+// D-07 aliases were removed after v2.1.0 (v3): the old names must select nothing,
+// or a consumer still writing them would keep a profile the docs say is gone.
+test('brand and functional no longer select a profile', () => {
+  for (const css of [dualCss, functionalCss]) {
+    assert.doesNotMatch(css, /data-design="(brand|functional)"|\.design-functional\b/);
   }
   assert.match(dualCss, /\[data-design="operations"\] \.ud-body/, 'operations typography helpers missing');
 });
@@ -168,9 +161,9 @@ test('presentation and operations resolve to the same blocks as their aliases', 
 // --- The profile archetype (D-19, D-22, D-27) ---
 // Each check runs on the dual stylesheet's operations block and on the
 // standalone operations stylesheet, which must agree.
-const presentationBlock = block(dualCss, ':root, :root[data-design="brand"]');
+const presentationBlock = block(dualCss, ':root, :root[data-design="presentation"]');
 const operationsBlocks = [
-  ['dual operations', block(dualCss, ':root[data-design="functional"], .design-functional')],
+  ['dual operations', block(dualCss, ':root[data-design="operations"], .design-operations')],
   ['standalone operations', block(functionalCss, ':root')],
 ];
 
@@ -238,11 +231,11 @@ test('emits the responsive contract with mobile-safe values', () => {
 test('emits functional typography helpers in the combined stylesheet', () => {
   assert.match(
     dualCss,
-    /:root\[data-design="functional"\] \.ud-display,[^{]*\.design-functional \.ud-display[^{]*\{[^}]*font-size:1\.5rem/,
+    /:root\[data-design="operations"\] \.ud-display,[^{]*\.design-operations \.ud-display[^{]*\{[^}]*font-size:1\.5rem/,
   );
   assert.match(
     dualCss,
-    /:root\[data-design="functional"\] \.ud-body,[^{]*\.design-functional \.ud-body[^{]*\{[^}]*font-size:0\.875rem/,
+    /:root\[data-design="operations"\] \.ud-body,[^{]*\.design-operations \.ud-body[^{]*\{[^}]*font-size:0\.875rem/,
   );
 });
 
@@ -267,8 +260,8 @@ test('generates token CSS deterministically', () => {
 // globalvision's docs/adr/0001-0002.
 
 test('motion is byte-identical in the brand and functional profile blocks', () => {
-  const brand = block(dualCss, ':root, :root[data-design="brand"]');
-  const functional = block(dualCss, ':root[data-design="functional"], .design-functional');
+  const brand = block(dualCss, ':root, :root[data-design="presentation"]');
+  const functional = block(dualCss, ':root[data-design="operations"], .design-operations');
   assert.ok(brand, 'brand profile block not found');
   assert.ok(functional, 'functional profile block not found');
   // Derived, not listed: a hardcoded list silently stops covering any token

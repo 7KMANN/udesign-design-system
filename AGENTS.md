@@ -51,8 +51,7 @@ Shipped values: [`docs/motion-contract.md`](docs/motion-contract.md).
 - Mark every figure: `TableCell numeric`, or `--font-numeric` with `--font-numeric-variant`.
   Title and heading sizes come from `--text-*`.
 - A screen that is genuinely both: ask the owner. Do not mix.
-- `brand` and `functional` still resolve as aliases of `presentation` and `operations` for one
-  release. Write the new names.
+- `brand` and `functional` were removed in v3 and select nothing; `udesign-check` flags them.
 
 ## Auditing ("fix drifted stuff")
 

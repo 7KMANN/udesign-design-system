@@ -459,34 +459,34 @@ StyleDictionary.registerFormat({
 
     const L = [];
     L.push('/*');
-    L.push(' * UDesign design tokens (Dual Style: Brand & Functional). Compiled from DTCG sources.');
+    L.push(' * UDesign design tokens (presentation and operations profiles). Compiled from DTCG sources.');
     L.push(' * Do not hand-edit this file: edit the token source or css/components.css and run `npm run build`.');
     L.push(' */');
     
-    // D-07: presentation/operations are the names; brand/functional are aliases for one release.
-    L.push(formatVarsBlock(baseTree, baseTree, ':root, :root[data-design="brand"], :root[data-design="presentation"]', { emitPrimitives: true, emitStructure: true }));
+    // D-07: presentation and operations. The brand/functional aliases were removed after v2.1.0 (v3).
+    L.push(formatVarsBlock(baseTree, baseTree, ':root, :root[data-design="presentation"]', { emitPrimitives: true, emitStructure: true }));
     L.push('');
-    L.push(formatVarsBlock(functionalTree, baseTree, ':root[data-design="functional"], .design-functional, :root[data-design="operations"], .design-operations', { emitStructure: true }));
+    L.push(formatVarsBlock(functionalTree, baseTree, ':root[data-design="operations"], .design-operations', { emitStructure: true }));
     L.push('');
     L.push(formatVarsBlock(brandDarkTree, baseTree, ':root[data-theme="dark"], .dark', {}));
     L.push('');
     L.push(formatVarsBlock(
       functionalDarkTree,
       baseTree,
-      ':root[data-design="functional"][data-theme="dark"], :root[data-design="functional"].dark, .design-functional[data-theme="dark"], .design-functional.dark, .dark .design-functional, :root[data-design="operations"][data-theme="dark"], :root[data-design="operations"].dark, .design-operations[data-theme="dark"], .design-operations.dark, .dark .design-operations',
+      ':root[data-design="operations"][data-theme="dark"], :root[data-design="operations"].dark, .design-operations[data-theme="dark"], .design-operations.dark, .dark .design-operations',
       {},
     ));
     L.push('');
     L.push(formatMomentBlock(baseTree, ':root[data-game="on"]'));
     L.push('');
     L.push(formatReducedMotionBlock(
-      ':root, :root[data-design="brand"], :root[data-design="functional"], .design-functional, :root[data-design="presentation"], :root[data-design="operations"], .design-operations',
+      ':root, :root[data-design="presentation"], :root[data-design="operations"], .design-operations',
       ':root[data-game="on"]',
     ));
     L.push('');
     L.push(formatTypographyHelpers(baseTree, baseTree));
     L.push('');
-    L.push(formatTypographyHelpers(functionalBaseTree, baseTree, [':root[data-design="functional"]', '.design-functional', ':root[data-design="operations"]', '.design-operations']));
+    L.push(formatTypographyHelpers(functionalBaseTree, baseTree, [':root[data-design="operations"]', '.design-operations']));
     L.push('');
     L.push(componentLayer());
 

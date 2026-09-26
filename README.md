@@ -67,7 +67,7 @@ Declare one profile and one theme on the document root:
 <html data-design="operations" data-theme="dark">
 ```
 
-The profile is pinned once per document and never switched at runtime; [DESIGN.md](DESIGN.md) "Profiles" has the rule and how to choose. `brand` and `functional` still resolve as aliases for one release. If the attributes are absent, the stylesheet uses the presentation and light defaults. Set both attributes before first paint when possible to avoid a visible theme change during hydration.
+The profile is pinned once per document and never switched at runtime; [DESIGN.md](DESIGN.md) "Profiles" has the rule and how to choose. `brand` and `functional` were removed in v3 and select nothing; `udesign-check` flags them. If the attributes are absent, the stylesheet uses the presentation and light defaults. Set both attributes before first paint when possible to avoid a visible theme change during hydration.
 
 `dist/tokens-functional.css` remains available for applications that only use the operations profile. The combined stylesheet is for everything else, including review and documentation surfaces that show both profiles side by side, which is the only case where a profile may switch.
 

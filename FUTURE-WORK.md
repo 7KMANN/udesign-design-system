@@ -9,6 +9,8 @@ the CHANGELOG records what shipped.
 GlobalVision's design-system adoption run has switched it to `data-design="operations"`
 (`globalvision/docs/impl/briefs/DS-V2-ADOPTION.md`, Phase 2). Releasing earlier breaks nothing that
 is pinned, but it leaves GlobalVision a major version behind for no gain.
+In the same change, `udesign-docs` needs its own release: `standards/design/udesign-contract.md`
+(ratified decision 1) and the GlobalVision overlay still say `data-design="functional"`.
 
 ## Checker rules cut in S3 (`docs/v2/DECISIONS.md` Δ-15)
 

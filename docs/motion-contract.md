@@ -9,8 +9,8 @@ Every value below is read from the compiled artifact, `dist/tokens.css`. If this
 
 **A consuming app never picks a duration, an easing curve, or a press-scale factor.** It selects an intent. If the intent it needs does not exist, that is a design-system change, proposed upstream - not a local literal.
 
-Profiles: this document names the two profiles `presentation` and `operations`. The v1.x
-selector strings `brand` and `functional` remain as selector aliases for one release.
+Profiles: `presentation` and `operations`. The old names `brand` and `functional` were removed
+in v3.
 
 ---
 

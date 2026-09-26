@@ -1,8 +1,8 @@
 /*
- * UDesign design tokens (Dual Style: Brand & Functional). Compiled from DTCG sources.
+ * UDesign design tokens (presentation and operations profiles). Compiled from DTCG sources.
  * Do not hand-edit this file: edit the token source or css/components.css and run `npm run build`.
  */
-:root, :root[data-design="brand"], :root[data-design="presentation"] {
+:root, :root[data-design="presentation"] {
   /* Primitives: brand */
   --ud-accent-wash: #f3ead9;
   --ud-accent-300: #dec5a6;
@@ -209,7 +209,7 @@
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-:root[data-design="functional"], .design-functional, :root[data-design="operations"], .design-operations {
+:root[data-design="operations"], .design-operations {
   /* Semantic roles */
   --background: var(--ud-panel);
   --foreground: var(--ud-ink);
@@ -414,7 +414,7 @@
   --surface-console-foreground: #bfdfb7;
 }
 
-:root[data-design="functional"][data-theme="dark"], :root[data-design="functional"].dark, .design-functional[data-theme="dark"], .design-functional.dark, .dark .design-functional, :root[data-design="operations"][data-theme="dark"], :root[data-design="operations"].dark, .design-operations[data-theme="dark"], .design-operations.dark, .dark .design-operations {
+:root[data-design="operations"][data-theme="dark"], :root[data-design="operations"].dark, .design-operations[data-theme="dark"], .design-operations.dark, .dark .design-operations {
   /* Semantic roles */
   --background: #11100e;
   --foreground: var(--ud-panel);
@@ -547,7 +547,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root, :root[data-design="brand"], :root[data-design="functional"], .design-functional, :root[data-design="presentation"], :root[data-design="operations"], .design-operations {
+  :root, :root[data-design="presentation"], :root[data-design="operations"], .design-operations {
     /* B4: bakes the reduced-motion path into the compiled tokens so any
        consumer - a moment, a loading spinner, anything - gets it for free. */
     --motion-duration-instant: 0ms;
@@ -578,13 +578,13 @@
 .ud-data{font-family:var(--font-data);font-weight:var(--fw-regular);font-size:0.85rem;line-height:1.4;letter-spacing:0em}
 
 /* Typography helpers */
-:root[data-design="functional"] .ud-display,.design-functional .ud-display,:root[data-design="operations"] .ud-display,.design-operations .ud-display{font-family:var(--font-display);font-weight:var(--fw-bold);font-size:1.5rem;line-height:1.15;letter-spacing:-0.01em}
-:root[data-design="functional"] .ud-h1,.design-functional .ud-h1,:root[data-design="operations"] .ud-h1,.design-operations .ud-h1{font-family:var(--font-display);font-weight:var(--fw-bold);font-size:1.25rem;line-height:1.2;letter-spacing:-0.005em}
-:root[data-design="functional"] .ud-h2,.design-functional .ud-h2,:root[data-design="operations"] .ud-h2,.design-operations .ud-h2{font-family:var(--font-display);font-weight:var(--fw-semibold);font-size:1.0625rem;line-height:1.3;letter-spacing:0em}
-:root[data-design="functional"] .ud-h3,.design-functional .ud-h3,:root[data-design="operations"] .ud-h3,.design-operations .ud-h3{font-family:var(--font-display);font-weight:var(--fw-semibold);font-size:0.9375rem;line-height:1.35;letter-spacing:0em}
-:root[data-design="functional"] .ud-body,.design-functional .ud-body,:root[data-design="operations"] .ud-body,.design-operations .ud-body{font-family:var(--font-body);font-weight:var(--fw-regular);font-size:0.875rem;line-height:1.5;letter-spacing:0em}
-:root[data-design="functional"] .ud-label,.design-functional .ud-label,:root[data-design="operations"] .ud-label,.design-operations .ud-label{font-family:var(--font-display);font-weight:var(--fw-medium);font-size:0.75rem;line-height:1.25;letter-spacing:0em;color:var(--muted-foreground)} /* Title case, no uppercase/tracking */
-:root[data-design="functional"] .ud-data,.design-functional .ud-data,:root[data-design="operations"] .ud-data,.design-operations .ud-data{font-family:var(--font-data);font-weight:var(--fw-regular);font-size:0.8125rem;line-height:1.4;letter-spacing:0em}
+:root[data-design="operations"] .ud-display,.design-operations .ud-display{font-family:var(--font-display);font-weight:var(--fw-bold);font-size:1.5rem;line-height:1.15;letter-spacing:-0.01em}
+:root[data-design="operations"] .ud-h1,.design-operations .ud-h1{font-family:var(--font-display);font-weight:var(--fw-bold);font-size:1.25rem;line-height:1.2;letter-spacing:-0.005em}
+:root[data-design="operations"] .ud-h2,.design-operations .ud-h2{font-family:var(--font-display);font-weight:var(--fw-semibold);font-size:1.0625rem;line-height:1.3;letter-spacing:0em}
+:root[data-design="operations"] .ud-h3,.design-operations .ud-h3{font-family:var(--font-display);font-weight:var(--fw-semibold);font-size:0.9375rem;line-height:1.35;letter-spacing:0em}
+:root[data-design="operations"] .ud-body,.design-operations .ud-body{font-family:var(--font-body);font-weight:var(--fw-regular);font-size:0.875rem;line-height:1.5;letter-spacing:0em}
+:root[data-design="operations"] .ud-label,.design-operations .ud-label{font-family:var(--font-display);font-weight:var(--fw-medium);font-size:0.75rem;line-height:1.25;letter-spacing:0em;color:var(--muted-foreground)} /* Title case, no uppercase/tracking */
+:root[data-design="operations"] .ud-data,.design-operations .ud-data{font-family:var(--font-data);font-weight:var(--fw-regular);font-size:0.8125rem;line-height:1.4;letter-spacing:0em}
 
 /*
  * UDesign component classes for static HTML. Source file: css/components.css.

@@ -15,8 +15,11 @@ const CITE = {
   shell: 'ban 27',
 };
 
-const OPERATIONS = /^(operations|functional)$/;
-const PRESENTATION = /^(presentation|brand)$/;
+const OPERATIONS = /^operations$/;
+const PRESENTATION = /^presentation$/;
+// Removed in v3 (D-07 aliases). They now match no profile, so the page renders unstyled.
+const REMOVED = { brand: 'presentation', functional: 'operations' };
+const removedName = (profile) => REMOVED[profile.toLowerCase()] && `\`${profile}\` is no longer a profile (removed in v3); write \`${REMOVED[profile.toLowerCase()]}\``;
 const VOID = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);
 
 const blank = (s) => s.replace(/[^\n]/g, ' ');
@@ -112,6 +115,7 @@ function checkHtml(text, add) {
     const profile = attrs.match(/\bdata-design\s*=\s*["']?([\w-]+)/i)?.[1];
     if (profile && tag === 'html') root = { profile, index: m.index };
     else if (profile) add('profile-pin', m.index, `\`data-design\` on <${tag}>; set it once, on <html>`);
+    if (profile && tag === 'html' && removedName(profile)) add('profile-pin', m.index, removedName(profile));
     if (classes.includes('ud-app-shell') && shellAt < 0) shellAt = m.index;
     if (classes.includes('ud-btn-primary')) {
       const where = stack.map((s) => s.id).join(' > ');
@@ -156,6 +160,7 @@ function checkJs(text, add, tree) {
     const profile = code.slice(m.index).match(/^data-design\s*=\s*["']([\w-]+)/)?.[1];
     if (tag === 'html' && profile) tree.roots.push({ add, index: m.index, profile });
     else if (tag) add('profile-pin', m.index, `\`data-design\` on <${tag}>; set it once, on <html>`);
+    if (tag === 'html' && profile && removedName(profile)) add('profile-pin', m.index, removedName(profile));
   }
   for (const m of code.matchAll(/<AppShell(?![\w.])/g)) tree.shells.push({ add, index: m.index });
 
