@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0 (2026-09-26)
+
+CardTitle takes an as prop for its heading level, the showcase shows the v2 type scale and compares v1 snapshots correctly, and line endings are pinned to LF.
+
 ## 2.0.0 (2026-09-26)
 
 Two profiles that differ in structure, a merged ban list, a portable checker, static component classes, and reference screens.
