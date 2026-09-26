@@ -58,7 +58,7 @@ Start by invoking `superpowers:executing-plans`.
 | When | Invoke | Why here |
 |---|---|---|
 | Every rule | `superpowers:test-driven-development` | Each rule is a detector: a fixture that must flag and one that must pass, red first. |
-| The three-catalog proof | none; it is the verification | Plan Phase 4: flag `019e34a7` and pass the other two. It is a controlled experiment that already happened. |
+| The three-catalog proof | none; it is the verification | Plan Phase 4, as corrected by **Δ-10**: the three real catalogs must produce zero findings, and a committed fixture rebuilt from `019e34a7` with its card CTAs switched to `ud-btn-primary` must be flagged. The divergent state was never committed, so "flag `019e34a7`" alone would pass everything. |
 | Before claiming done | `superpowers:verification-before-completion`, then `ponytail:ponytail-review` | §8 risk 3: a checker that cries wolf gets switched off. Expect the review to cut rules. |
 
 ## What you may delegate, and what you may not
@@ -80,7 +80,9 @@ decides whether a finding is real, and the S2 handoff.
 ## Done when
 
 - [ ] The checker ships as a `bin`, runs with `npx`, and every rule ran red on a fixture first.
-- [ ] Run against the three real catalogs it flags `019e34a7` and passes the other two.
+- [ ] Run against the three real catalogs it reports zero accent-budget findings, and it flags
+      `tests/fixtures/catalog-divergent.html` (Δ-10). Build the fixture first and watch the rule
+      fail to catch it before the rule exists.
 - [ ] Every finding names a ban number or an `AGENTS.md` rule, plus file and line.
 - [ ] `npm test` is green.
 - [ ] The **S2** handoff is written (`S2-css-layer.md`), pointing and not restating. Tell S2 the

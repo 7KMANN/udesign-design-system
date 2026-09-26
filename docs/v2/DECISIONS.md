@@ -760,3 +760,25 @@ D-22's one variable; no new token. **Rejected:** leaving tables for S2 or S4.
   thumbs never showed their elevation in a Tailwind 3 consumer. They now use
   `[box-shadow:var(--shadow-N)]`, and a registry guard forbids the ambiguous form. Found only by
   rendering; no unit test could see it.
+
+
+---
+
+## Round 12 - 2026-09-26 (master orchestrator, closing S1.5)
+
+### Δ-10 · S3's catalog proof needs a committed fixture · derived, not asked
+
+Found in the pre-S3 gate check. Plan Phase 4 was verified by "flag the known-divergent catalog
+(`019e34a7`) and pass the other two". **The divergent state was never committed.** Every version of
+`udesignpages/public/019e34a7-.../index.html` in git (six commits, 2026-08-03 to 2026-08-27) has zero
+`ud-btn-primary` usages; the two textual hits are the CSS rule definitions. All three catalogs now use
+`ud-btn-secondary` on every card. Run as written, the proof would pass all three and prove nothing.
+
+**Correction:** the verification splits into two halves, both required.
+1. **No false positives:** the three real catalogs produce zero accent-budget findings.
+2. **Catches the incident:** `tests/fixtures/catalog-divergent.html`, rebuilt from today's `019e34a7`
+   with every repeated card CTA switched to `ud-btn-primary` as research 7.1 records, is flagged.
+
+Derived rather than asked: it is test-fixture design that reconstructs a documented incident, and
+makes no new claim about UDesign. The fixture lives in this repo so the proof survives changes to a
+consumer that is out of scope (plan brief 5).

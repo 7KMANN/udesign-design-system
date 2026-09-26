@@ -529,9 +529,19 @@ on it. **No Python port. No second implementation.**
 a clever rule that needs judgement. A checker that cries wolf gets switched off, and then P2 is worse
 than it was before the checker existed.
 
-**Verification:** run it against the three real catalogs. It must flag the known-divergent one
-(`019e34a7`) and pass the other two. That is a controlled experiment that already happened, with a
-known right answer, and it is the best test available anywhere in this operation.
+**Verification:** two halves, both required (Δ-10).
+
+- **No false positives:** run it against the three real catalogs in `udesignpages/public/`. All three
+  must produce **zero** accent-budget findings. The gold-button divergence was fixed in the working
+  tree before it was ever committed (every committed version of `019e34a7` has zero `ud-btn-primary`
+  usages; its two hits are the CSS rule definitions), so all three are now correct inputs.
+- **Catches the incident:** a committed fixture, `tests/fixtures/catalog-divergent.html`, rebuilt from
+  today's `019e34a7` by switching every repeated card CTA from `ud-btn-secondary` to `ud-btn-primary`,
+  as research 7.1 records it. The checker must flag it. The fixture lives in this repo so the proof
+  does not depend on a consumer that keeps changing.
+
+Together that is still the controlled experiment that already happened, with a known right answer,
+and the false-positive half is the one `ENFORCEMENT.md:5` cares about most.
 
 **P1: no.** **P2: this is what makes P2 real rather than aspirational.**
 

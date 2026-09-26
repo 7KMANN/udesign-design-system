@@ -2,7 +2,7 @@
 
 **This file is both the map and the state.** Every segment updates the ledger in §4 before it ends. An orchestrator resuming after a limit, a crash, or a week away reads this file first and knows exactly where things stand.
 
-**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0 and S1 merged. S1.5 complete on its branch, awaiting close-out. Order from here: S3, S2, S4 (D-26).
+**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0, S1 and S1.5 complete and merged. S3 ready to start. Order from here: S3, S2, S4 (D-26).
 
 ---
 
@@ -222,9 +222,9 @@ defects for three more segments. This is a proposal from S0, not a decision Kale
 S1 may execute it as written or push it back to S3, but should say which.
 
 ### S1.5 — Profile Archetype
-**Status:** complete on branch `v2/s1.5-profile-archetype`, not merged. Close-out is the master orchestrator's. Handoff: [`S1.5-profile-archetype.md`](./S1.5-profile-archetype.md)
+**Status:** complete. Merged to `master` 2026-09-26 (`fb13053`) and pushed. Handoff: [`S1.5-profile-archetype.md`](./S1.5-profile-archetype.md)
 **Branches:** `v2/s1.5-profile-archetype` (merge to `master`); `v2/s1.5-prototype` (throwaway, holds both prototypes as the primary source; keep until S4, never merge).
-**Next action:** master orchestrator gate check and merge, then paste [`S3-enforcement.md`](./S3-enforcement.md) into a fresh session.
+**Next action:** none. S3 is next.
 **Writes next:** the **S3** handoff (`S3-enforcement.md`), not S2's (D-26).
 **Owns:** plan Phase 2. Decisions **D-19** (which supersedes D-05), **D-20**, and **D-22** (which amends D-19).
 **Read D-19 before D-05.** The space-scale and control-height token fork was dropped on 2026-09-02
@@ -248,9 +248,11 @@ axis (plan item 2.7), and D-19's "density falls out of the app shell for free" i
 | 2026-09-26 | **Cut line 2 met.** Comparison rendered only from the branch's registry and tokens (Vite SSR, Tailwind from the markup, each screen its own document with `data-design` on the root), published privately at `https://claude.ai/artifact/J7pXM5KvJfZC9C8MJ2UZPZ`. **Kaleb's verdict: two products.** The render found **Δ-13**: Tailwind 3 compiles `shadow-[var(--shadow-N)]` as a shadow colour, so seven components never rendered elevation; fixed with `[box-shadow:...]` and a guard (`8d76e40`). Kaleb approved **D-28**: `TableCell` vertical padding reads `--surface-padding`, operations rows sit on the 44px floor (`7528ab9`). Next: capture the harness on `v2/s1.5-prototype`, `verification-before-completion`, `ponytail-review`, then the S3 handoff. |
 | 2026-09-26 | Harness captured on `v2/s1.5-prototype` (`146aaf3`). `ponytail-review` cut two redundant asserts and two one-use interfaces, and found a vitest regex that had lost its `s` and could never fail; replaced with `not.toHaveClass`, then shown red by adding a bare `h-svh` to `AppShell` and green on revert. |
 | 2026-09-26 | **S1.5 done-state.** 2.1-2.4, 2.6, 2.7 meet their plan rows (2.5 was S1's). **One stated deviation:** 2.4 gives `Badge` tabular figures but not mono, because badge text is words and `DESIGN.md` limits mono to codes and readouts. `npm run validate` exit 0 on the final tree: lint clean, contracts 63/63, registry 30 items, components 24/24, clean registry install, showcase build, e2e 4/4. Kaleb's verdict on the rendered comparison: two products. S3 handoff written. **Not done, and not S1.5's:** the shells' CSS classes (S2, D-20); showcase pages for the shells (S4 reference screens); GlobalVision's local `Card`/`Dialog` forks still miss every registry fix (MN-9). **Next concrete action:** master orchestrator gate-checks and merges `v2/s1.5-profile-archetype`, then S3. |
+| 2026-09-26 | **S1.5 closed by the master orchestrator.** Gate check on the branch: 63/63 contract and 24/24 component tests, `lint-design` 0 errors, Playwright 4/4, registry 30 items with `page-canvas` and `app-shell`, D-27 and D-28 recorded, S3 handoff present and aligned with D-26. Fast-forwarded into `master` (`fb13053`), pushed, branch deleted. `v2/s1.5-prototype` kept unmerged per the ledger (throwaway, holds the prototypes until S4). No `udesign-docs` changes in S1.5 and no drift there since `v0.9.0`. Also deleted the stale local `codex/udesign-1.3.0` (fully merged, v1.3.0 era) on Kaleb's request. |
+| 2026-09-26 | **Δ-10, found in the pre-S3 gate check:** the gold-button divergence in `019e34a7` was never committed, so "flag `019e34a7`" would pass all three catalogs and prove nothing. S3's proof is now two halves: zero findings on the three real catalogs, and a flag on a committed fixture rebuilt from `019e34a7` with its card CTAs switched to primary. Plan Phase 4 and the S3 handoff updated. **Next concrete action: paste `S3-enforcement.md` into a fresh session.** |
 
 ### S3 — Enforcement
-**Status:** ready once S1.5 merges. Handoff: [`S3-enforcement.md`](./S3-enforcement.md). **Runs before S2** (D-26).
+**Status:** ready to start. Handoff: [`S3-enforcement.md`](./S3-enforcement.md). **Runs before S2** (D-26).
 **Owns:** plan Phase 4, the portable checker. Its in-repo test half moved to S1 Phase 0.
 Language question is settled: Node, shipped as a `bin`, run with `npx`. Both consumers run Node.
 **Writes next:** the S2 handoff, and hands S2 the checker as its acceptance test.
