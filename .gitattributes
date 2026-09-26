@@ -1,0 +1,4 @@
+# Every text file is LF in the working tree too, not only in the index. Without this,
+# core.autocrlf checked sources out as CRLF and the registry build copied those line
+# endings into the JSON strings in public/r/ (docs/TOOLING-PITFALLS.md section 1).
+* text=auto eol=lf

@@ -13,7 +13,7 @@ Playwright), and then the release fails with:
 Release failed and was rolled back: CHANGELOG.md must start with the canonical header.
 ```
 
-**Root cause:** this repo has `core.autocrlf=true` and no `.gitattributes`. Git checks text files
+**Root cause (before the fix below):** this repo had `core.autocrlf=true` and no `.gitattributes`. Git checks text files
 out with CRLF and stores them as LF. `prependChangelog` in `scripts/release-utils.mjs` detects the
 newline style with `changelog.includes("\r\n") ? "\r\n" : "\n"` and then asserts the file starts
 with `# Changelog<newline><newline>` in that style. A file with **mixed** endings (some lines LF,
@@ -35,14 +35,18 @@ git checkout -- CHANGELOG.md                  # restores Git's canonical checkou
 re-checks-out the bytes Git has recorded. Match what is committed, not an assumption, so check
 `HEAD`'s stored encoding before normalizing anything.
 
-**Permanent fix, not yet applied:** a `.gitattributes` pinning one convention (for example
-`* text=auto eol=lf`) would make this class of bug impossible.
+**Permanent fix, applied 2026-09-26:** `.gitattributes` pins `* text=auto eol=lf`, so the working
+tree is LF too. It also ended the `public/r/` churn: the registry build no longer copies CRLF from
+the sources into the JSON strings, and `npm run validate` leaves the tree clean. A clone made
+before that date keeps its CRLF files until they are checked out again
+(`git ls-files -z | xargs -0 rm -f && git checkout -- .` on a clean tree).
+The history below explains the failure for anyone on an old checkout.
 
 ## 2. The same risk applies to any newline-sensitive script
 
 Any script here that parses a hand-maintained file byte-exactly (not only `prependChangelog`, and
 now also the README pin rewrite in `scripts/release.mjs`) is exposed to the same failure under
-`autocrlf=true` with no `.gitattributes`. If a release failure looks like an assertion or format
+`autocrlf=true` without the `.gitattributes`. If a release failure looks like an assertion or format
 error, check the file's line endings before debugging the script.
 
 ## 3. Downstream consumers do not re-resolve a locked Git tag
