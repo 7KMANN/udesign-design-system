@@ -136,7 +136,10 @@ for (const item of registry.items) {
   const output = JSON.parse(fs.readFileSync(outputPath, "utf8"))
   assert.equal(output.$schema, "https://ui.shadcn.com/schema/registry-item.json")
   for (const file of output.files ?? []) {
-    assert.equal(file.content, fs.readFileSync(path.join(root, file.path), "utf8"), `${item.name} output is stale: ${file.path}`)
+    // autocrlf checks sources out as CRLF on Windows; which ending the build
+    // embedded depends on the machine that ran it, so compare content, not bytes.
+    const lf = (text) => text.replace(/\r\n/g, "\n")
+    assert.equal(lf(file.content), lf(fs.readFileSync(path.join(root, file.path), "utf8")), `${item.name} output is stale: ${file.path}`)
   }
 }
 
