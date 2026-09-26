@@ -71,6 +71,25 @@ The profile is pinned once per document and never switched at runtime; [DESIGN.m
 
 `dist/tokens-functional.css` remains available for applications that only use the operations profile. The combined stylesheet is for everything else, including review and documentation surfaces that show both profiles side by side, which is the only case where a profile may switch.
 
+## Static HTML, no build step
+
+Both compiled stylesheets carry the component classes (source: `css/components.css`), so a
+generated page gets real components from the one file it already links:
+
+```html
+<link rel="stylesheet" href="udesign-tokens.css">
+<body class="ud-page-canvas">
+  <section class="ud-page-section">
+    <div class="ud-card"><a class="ud-btn ud-btn-secondary" href="item.html">View details</a></div>
+  </section>
+</body>
+```
+
+A consumer with no npm dependencies copies `dist/tokens.css` **byte-identically** and asserts the
+copy matches, the pattern `udesignpages` already uses for canon (`tools/sync-canon.mjs`). Never
+edit the copy: a hand-paraphrase is how a rule silently drops. The class list and naming rule are
+at the top of the component block in the file; `npx udesign-check` audits the result.
+
 ## Install registry components
 
 Initialize shadcn in the consuming application and add the tagged namespace to `components.json`:

@@ -820,3 +820,50 @@ grow, to keep AI-looking UI out.
   cited by MN-13) and round 12's Δ-10 (the committed catalog fixture, cited by plan Phase 4 and the S3
   handoff). The record is append-only, so neither is renumbered: cite them as "Δ-10 (radius)" and
   "Δ-10 (fixture)". The next derived ID is Δ-17.
+
+---
+
+## Round 14 - 2026-09-26 (S2, the component layer)
+
+**Evidence:** a census of every class in `udesignpages/public` (95 pages), recorded in the S2 ledger,
+and two acceptance pages rendered at 1280px and 375px from the compiled tokens.
+
+### D-30 · The header lockup and confidential footer stay with the consumer · `APPROVED` 2026-09-26
+
+`DESIGN.md` specs `header-lockup` and `confidential-footer`, and 66 pages hand-copy them. They get no
+class in S2: no registry component exists to hold them in lockstep, they are not interactive, and
+their consumer CSS carries zero checker findings. **Rejected:** shipping them without a React twin.
+
+### D-31 · The component layer ships inside the compiled tokens · `APPROVED` 2026-09-26
+
+Source `css/components.css`; `npm run build` appends it to `dist/tokens.css` and
+`dist/tokens-functional.css` (a `udesignpages` page links the second). This is plan 3.4's
+distribution: consumers copy the compiled file byte-identically and assert identity, the
+`tools/sync-canon.mjs` pattern, and every page that already links a tokens file gets the classes with
+no markup change. **Rejected:** a separate `components.css`, which every page would have to add.
+
+### D-32 · The React registry wins over the `DESIGN.md` component frontmatter · `APPROVED` 2026-09-26
+
+The frontmatter (`DESIGN.md` lines 60-100) and the registry disagree on five points: a hairline
+border on `button-secondary`, a 1.5px ink border on `button-outline`, Montserrat 600 at 14.5px on
+buttons, and card padding (20px against `--surface-padding`) and corners (10px against 16px). The
+frontmatter is v1.x text that `patterns.html` copied; the registry is tested and was moved on purpose
+by D-22, D-27 and Δ-10 (radius). Kaleb saw both rendered side by side. The static classes follow the
+registry; **S4 corrects the frontmatter** to match. **Rejected:** moving the registry back toward
+the frontmatter; classes that diverge from React on purpose.
+
+### Derived in round 14, not asked
+
+- **Δ-17 · No component rule is scoped by profile.** Plan 3.2 said to extend the build's scoped
+  emission. Nothing needs it: every difference between the profiles that a class reaches arrives
+  through a variable (`--surface-padding`, `--shadow-2`, `--text-*`, `--font-numeric*`), so one
+  plain block serves both.
+- **Δ-18 · The static layer owns `AppShell`'s `md:` breakpoints.** Static HTML has no `md:` prefix,
+  so a pane template or a column nav written inline also applied on phones and widened the page to
+  483px at 375px. Fixed with `--pane-columns` (read from 768px only) and a `nav` inside the sidebar
+  laid out as a row, then a column from 768px. Found only by rendering.
+- **Δ-19 · `ud-table-scroll` ships.** React wraps every `Table` in a focusable scrolling region;
+  the first cut skipped it and a four-column table widened the page on a phone. Found by rendering.
+- **Δ-20 · `ud-btn-ghost` ships without generator evidence.** `AGENTS.md` rule 5 prescribes `ghost`
+  for toolbars and table rows, and `AppShellToolbar` (D-20) is where it lands; without it a static
+  toolbar forces a generator to invent one. The next derived ID is Δ-21.

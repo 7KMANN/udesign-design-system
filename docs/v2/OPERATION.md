@@ -2,7 +2,7 @@
 
 **This file is both the map and the state.** Every segment updates the ledger in §4 before it ends. An orchestrator resuming after a limit, a crash, or a week away reads this file first and knows exactly where things stand.
 
-**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0, S1 and S1.5 complete and merged. S3 complete and merged. S2 ready to start. Order from here: S2, S4 (D-26).
+**Owner:** Kaleb · **Started:** 2026-08-29 · **Status:** S0, S1 and S1.5 complete and merged. S3 complete and merged. S2 complete on its branch, awaiting the master orchestrator. Next: S4 (D-26).
 
 ---
 
@@ -271,16 +271,23 @@ Language question is settled: Node, shipped as a `bin`, run with `npx`. Both con
 | 2026-09-26 | **The git form of the checker is proven** after the push, from a directory outside any repo: `npx --yes github:7KMANN/udesign-design-system#master <paths>` flags the fixture under ban 26 and exits 1 (about 70 s on first fetch, 5 s cached). The package name alone runs the bin; adding `udesign-check` after it passes that word as a path, which now fails with a clear error. `AGENTS.md` "Auditing" already gives the right form. |
 
 ### S2 — CSS Component Layer
-**Status:** ready to start. Handoff: [`S2-css-layer.md`](./S2-css-layer.md). The checker is its acceptance test.
+**Status:** complete on `v2/s2-css-layer`, not merged. Handoff: [`S2-css-layer.md`](./S2-css-layer.md). The checker is its acceptance test.
+**Branch:** `v2/s2-css-layer` (merge to `master`).
+**Writes next:** the S4 handoff, [`S4-reference-release.md`](./S4-reference-release.md).
 **Owns:** plan Phase 3. Scope discipline is the risk: 27 components is the wrong answer and the
 tempting one.
 
 | Date | Event |
 |---|---|
 | 2026-09-26 | S2 started. Branch `v2/s2-css-layer` cut off `master` (`2354885`). **Census of `udesignpages/public` (95 pages) before choosing:** `ud-btn` 125 uses (secondary 62, outline 62, primary 1); `product-card`/`card` 135; `badge`/`tag` 46 plus one `ud-badge`; tables 15 in 4 pages (three order forms, one spec page); inputs 4 in 2 pages; empty states in 3 pages; every catalog card carries a hover and a raw-motion press on a non-focusable `div` (the `Pressable` pattern done wrong), and one page uses a `pressable` class 42 times. **Shipping:** `ud-btn` (primary, secondary, outline, plus ghost for the toolbar AGENTS.md rule 5 prescribes), `ud-card`, `ud-badge`, `ud-table`, `ud-input`, `ud-empty-state`, `ud-pressable`, and the Δ-14 shell classes. **Kaleb, round 14:** the header lockup and confidential footer are skipped (no registry twin, zero findings in their consumer CSS); distribution is inside `dist/tokens.css`, source `css/components.css`. No per-profile rules: every profile difference the classes need is already a variable (`--surface-padding`, `--shadow-2`, `--text-*`, `--font-numeric*`). **No subagents yet:** one stylesheet and one test file, written test-first, collide if split. Next: parity tests red, then `css/components.css`, then the acceptance fixture. |
+| 2026-09-26 | **Built test-first, `39bead2`.** `tests/component-css.test.mjs` written against an empty stylesheet, then each detector shown red on a stylesheet carrying its violation: a clickable class with no press, a press with no ring, `:focus`, a transition with a literal time, raw hex, `--ud-*`, an undeclared class. Then `css/components.css`, appended to both compiled token files by `build.mjs`: green. The acceptance case in `tests/checker.test.mjs` was shown red by injecting `transition: transform 100ms ease` into the catalog page, then green. |
+| 2026-09-26 | **Acceptance pages.** `tests/fixtures/catalog-components.html` is `udesignpages` `b7ed968` `2b1a3e5c` (the Toque catalog, 6 ban 19 findings today) rebuilt from the classes with both inline `<style>` blocks removed: **0 findings**. `tests/fixtures/app-shell-components.html` puts every class in an operations `AppShell`: **0 findings**. Rendered through a local server at 1280px and 375px: centred column, fixed operations viewport with independently scrolling panes, operations card with no shadow and 12px padding, tabular mono figures. **Rendering found two defects no test could see**, both fixed: Δ-18 (static HTML has no `md:`, so AppShell overflowed to 483px on a phone) and Δ-19 (a table widened the page until `ud-table-scroll` shipped). |
+| 2026-09-26 | **Round 14.** Kaleb: skip the header lockup and footer (**D-30**); ship inside `dist/tokens.css` (**D-31**); after seeing the `DESIGN.md` frontmatter and the registry rendered side by side, the registry wins and S4 corrects the frontmatter (**D-32**). Derived: Δ-17 to Δ-20. MN-17 (`udesignpages`) and MN-18 (GlobalVision, nothing to do: no React consumer uses a `ud-` component class) added. `AGENTS.md` rule 6 gains the static-HTML pointer (`writing-for-agents`); README gains the distribution section; `docs/checker-rules.md` marks the shell classes shipped. |
+| 2026-09-26 | **Skipped, each with its reason in `MIRROR`:** alert, select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, icon-button, progress-ring, rolling-consistency-chip, moment, status-badge, metric-card, responsive-collection, spinner, skeleton, core. `ponytail-review` cut one line (`position: relative`, a React spinner anchor the static layer has no use for). **No subagents:** one stylesheet and one test file, written test-first; two agents would have collided in both. **Observation, not acted on:** the `.ud-*` typography helpers in `dist/tokens.css` hard-code font sizes that equal the `--text-*` variables today; two homes for one value. |
+| 2026-09-26 | **S2 done-state.** The evidenced classes plus the Δ-14 shells ship in the stylesheet, every skip named. The 3.3 parity tests ran red first and are green. Both acceptance pages report zero findings and are held in `tests/checker.test.mjs`. 3.4 is D-31, written in README. `npm run validate` exit 0: lint clean, contracts 87/87, registry 30 items, components 24/24, clean registry install, showcase build, e2e 4/4 (`public/r/` CRLF churn restored, content unchanged). S4 handoff written. **Not done, and not S2's:** the frontmatter correction (D-32, S4); `udesignpages` adopting the layer (MN-17, consumer work). **Next concrete action:** master orchestrator gate-checks and merges `v2/s2-css-layer`, then S4. |
 
 ### S4 — Reference & Release
-**Status:** blocked on S2.
+**Status:** ready to start once S2 merges. Handoff: [`S4-reference-release.md`](./S4-reference-release.md).
 **Owns:** plan Phase 5.
 
 ---

@@ -45,6 +45,9 @@ Shipped values: [`docs/motion-contract.md`](docs/motion-contract.md).
   both profiles may switch.
 - Build the page in its shell: a `presentation` screen in `PageCanvas` (sections, centered column),
   an `operations` screen in `AppShell` (sidebar, toolbar, panes). Both are in `core`.
+- Static HTML: link `dist/tokens.css` and compose from its component classes, `ud-` plus the
+  component's name with a variant appended (`ud-app-shell`, `ud-pressable`, `ud-btn-secondary`).
+  The list and usage notes open the component block in that file.
 - Mark every figure: `TableCell numeric`, or `--font-numeric` with `--font-numeric-variant`.
   Title and heading sizes come from `--text-*`.
 - A screen that is genuinely both: ask the owner. Do not mix.

@@ -42,7 +42,7 @@ already defines. The reason is for the reviewer; the checker only looks for the 
 
 ### The shells' static-HTML classes (Δ-14)
 
-S2 implements these; the `shell` rule reads `ud-app-shell` today. Each is `ud-` plus the React
+They ship in `dist/tokens.css` (S2, source `css/components.css`); the `shell` rule reads `ud-app-shell`. Each is `ud-` plus the React
 component's name in kebab case, and a variant appends `-<variant>`, as `ud-btn-primary` does.
 
 | React (registry) | Class |

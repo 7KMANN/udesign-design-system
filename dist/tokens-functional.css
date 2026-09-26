@@ -376,8 +376,10 @@
  *
  * One class per registry component a generator reaches for: `ud-` plus the React
  * name in kebab case, a variant appended (`ud-btn-primary`). `ud-btn` keeps the name
- * generators already wrote. The mirrored and skipped components, each with its
- * reason, are listed in tests/component-css.test.mjs.
+ * generators already wrote. Each block below opens with when to use it. A component
+ * with no class here (dialog, tabs, select, and the rest) needs script: build that
+ * screen with the React registry. The repository's tests/component-css.test.mjs gives
+ * each skip its reason.
  *
  * No rule here is scoped by profile: every difference between presentation and
  * operations arrives through a variable (--surface-padding, --shadow-2, --text-*,
@@ -387,7 +389,6 @@
 /* Button. One ud-btn-primary per screen, none in a repeated block (AGENTS.md rule 5). */
 .ud-btn {
   box-sizing: border-box;
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
