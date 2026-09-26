@@ -3,3 +3,6 @@ dist-showcase/
 playwright-report/
 test-results/
 *.png
+
+# Per-machine preview config
+.claude/launch.json
