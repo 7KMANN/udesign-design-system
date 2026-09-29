@@ -21,7 +21,10 @@ const CITE = {
 // Fill roles (DESIGN.md "Core roles"): each pairs with its own -foreground, never used as text.
 const FILL = 'primary|secondary|muted|destructive|accent';
 const FILL_CSS = new RegExp(`(?<![\\w-])color\\s*:\\s*["'\`]?var\\(--(${FILL})\\)`, 'g');
-const FILL_TW = new RegExp(`(?<![\\w-])text-(?:\\[(?:color:)?var\\(--(?:${FILL})\\)\\]|(?:${FILL}))(?![\\w-])`, 'g');
+const FILL_TW = new RegExp(`(?<![\\w-])text-(?:\\[(?:color:)?var\\(--(${FILL})\\)\\]|(${FILL}))(?![\\w-])`, 'g');
+// What each fill becomes as text (D-37): the accent's readable shade, the danger tone, the quiet ink.
+const FILL_TEXT = { primary: '--primary-text', destructive: '--tone-danger-foreground', muted: '--muted-foreground', secondary: '--secondary-foreground', accent: '--accent-foreground' };
+const fillMessage = (m) => `\`${m[0].replace(/["'`]/g, '').trim()}\` uses a fill role as text; write \`var(${FILL_TEXT[m[1] ?? m[2]]})\``;
 // A shared primitive folder (seed spec R7): application code gets press feedback by using these.
 const PRIMITIVES = /(?:^|[\\/])(?:components[\\/]ui|registry[\\/][\w-]+[\\/]ui)[\\/]/;
 
@@ -179,7 +182,7 @@ function checkJs(text, add, tree) {
     }
   }
 
-  for (const m of code.matchAll(FILL_TW)) add('fill-as-text', m.index, `\`${m[0]}\` uses a fill role as text; pair the fill with its -foreground, or use a tone foreground`);
+  for (const m of code.matchAll(FILL_TW)) add('fill-as-text', m.index, fillMessage(m));
 
   for (const m of code.matchAll(/(?<!\[)data-design\s*=/g)) {
     const tag = code.slice(0, m.index).match(/<([A-Za-z][\w.]*)[^<]*$/)?.[1];
@@ -224,7 +227,7 @@ export function check(files) {
     else code = checkJs(text, add, tree);
 
     for (const [index, message] of rawMotion(code)) add('raw-motion', index, message);
-    for (const m of code.matchAll(FILL_CSS)) add('fill-as-text', m.index, `\`${m[0]}\` uses a fill role as text; pair the fill with its -foreground, or use a tone foreground`);
+    for (const m of code.matchAll(FILL_CSS)) add('fill-as-text', m.index, fillMessage(m));
     // group-active: counts. An overlay's Trigger is left out: it wraps a Button through asChild.
     if (PRIMITIVES.test(file) && ext !== 'css' && !/\bactive:|:active\b/.test(code)) {
       const el = code.search(/<(?:button|\w*(?:Checkbox|Switch|Toggle)\w*\.Root|(?!(?:Tooltip|Popover|HoverCard|Dialog|AlertDialog|Sheet|Drawer|DropdownMenu|ContextMenu|Menubar)\w*\.Trigger)[A-Z]\w*\.(?:Trigger|Item|Close|Thumb))(?![\w.])|role\s*=\s*["']button["']/);

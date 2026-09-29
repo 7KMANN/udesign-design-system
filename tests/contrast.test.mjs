@@ -128,6 +128,15 @@ for (const [themeName, tree] of profiles) {
     assertPair(tree, 'role.foreground', 'role.highlight');
   });
 
+  // The replacements ban 28 points at: the accent and danger as text, on every surface text sits on.
+  test(`${themeName} accent and danger text meet 4.5:1 on every surface`, () => {
+    for (const text of ['role.primary-text', 'tone.danger.foreground']) {
+      for (const surface of ['role.background', 'role.card', 'role.popover', 'role.muted', 'surface.raised', 'interactive.hover']) {
+        assertPair(tree, text, surface);
+      }
+    }
+  });
+
   test(`${themeName} chart colors meet graphical-object contrast`, () => {
     for (let series = 1; series <= 8; series += 1) {
       const ratio = contrast(resolveHex(tree, `data.${series}`), resolveHex(tree, 'role.background'));

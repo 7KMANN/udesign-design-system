@@ -64,6 +64,7 @@ const semanticVariables = [
   '--data-muted', '--data-grid', '--data-axis', '--data-tooltip', '--data-tooltip-foreground',
   ...Array.from({ length: 4 }, (_, index) => ['foreground', 'surface', 'border', 'solid']
     .map((role) => `--entity-${index + 1}-${role}`)).flat(),
+  '--primary-text', '--highlight',
   '--interactive-hover', '--interactive-pressed', '--interactive-selected',
   '--interactive-selected-foreground', '--interactive-selected-border', '--interactive-focus',
   '--interactive-disabled', '--interactive-disabled-foreground',
@@ -76,7 +77,7 @@ const semanticVariables = [
 
 const legacyVariables = [
   '--ud-accent-wash', '--ud-accent-300', '--ud-accent-400', '--ud-accent',
-  '--ud-accent-deep', '--ud-cream', '--ud-ink', '--ud-white', '--ud-panel',
+  '--ud-accent-deep', '--ud-accent-700', '--ud-cream', '--ud-ink', '--ud-white', '--ud-panel',
   '--ud-panel-2', '--ud-border', '--ud-border-strong', '--ud-muted',
   '--ud-muted-soft', '--ud-success', '--ud-success-bg', '--ud-warning',
   '--ud-warning-bg', '--ud-danger', '--ud-danger-bg', '--border-color',

@@ -175,13 +175,13 @@ Interface copy follows `udesign-ground-truth.md` §5 verbatim; the lines below p
 
 ### Core roles
 
-Use `--background`, `--foreground`, `--card`, `--card-foreground`, `--primary`, `--primary-foreground`, `--primary-hover`, `--secondary`, `--secondary-foreground`, `--muted`, `--muted-foreground`, `--border-color`, `--border-strong`, `--ring`, `--destructive`, `--highlight`, and `--client` for their named purposes.
+Use `--background`, `--foreground`, `--card`, `--card-foreground`, `--primary`, `--primary-foreground`, `--primary-hover`, `--secondary`, `--secondary-foreground`, `--muted`, `--muted-foreground`, `--border-color`, `--border-strong`, `--ring`, `--destructive`, `--primary-text`, `--highlight`, and `--client` for their named purposes.
 
-A role is either a fill or a foreground, never both (ban 28). `--primary`, `--secondary`, `--muted` and `--destructive` are fills and pair with their own `-foreground`. Destructive text and icons, such as a Delete item in a menu, use `--tone-danger-foreground`: `--destructive` as text is 2.6:1 on a dark popover.
+A role is either a fill or a foreground, never both (ban 28). `--primary`, `--secondary`, `--muted` and `--destructive` are fills and pair with their own `-foreground`. Accent text uses `--primary-text`. Destructive text and icons, such as a Delete item in a menu, use `--tone-danger-foreground`: `--destructive` as text is 2.6:1 on a dark popover.
 
 `--highlight` marks matched text, as in search results: a `<mark>` with `--highlight` behind text that keeps its own colour. A tone family is never a highlighter, because a warning tone reads as a warning.
 
-The accent is not safe as small text merely because it is a brand color. Filled primary controls pair `--primary` with `--primary-foreground`. Links and text must use a semantic foreground whose contrast has been verified against the actual surface.
+The accent is not safe as small text merely because it is a brand color: `--primary` reads 2.4:1 on white. Filled primary controls pair `--primary` with `--primary-foreground`. Text, links and icons in the accent colour use `--primary-text`: the accent's darker shade in light themes and its lighter shade in dark, the same logic the fills already follow. `APPROVED 2026-09-29 D-37`
 
 ### Tone roles
 
@@ -476,7 +476,7 @@ This is the one numbered list. Bans 1-19 keep the numbers they carried in `udesi
 
 From GlobalVision's UI polish sweep, where 149 of 168 defects were valid components composed badly.
 
-28. A fill role used as a text or icon colour: `--primary`, `--secondary`, `--muted`, `--destructive` or `--accent` as `color` (`text-destructive`, `text-[var(--primary)]`, `color: var(--muted)`). Pair a fill with its `-foreground`; destructive text is `--tone-danger-foreground`.
+28. A fill role used as a text or icon colour: `--primary`, `--secondary`, `--muted`, `--destructive` or `--accent` as `color` (`text-destructive`, `text-[var(--primary)]`, `color: var(--muted)`). Pair a fill with its `-foreground`; accent text is `--primary-text` and destructive text is `--tone-danger-foreground`. The checker names the replacement.
 29. Uncontained content (see "Containment"): content touching a container's edge, a second inset inside a body that already has one, or a card stripped of its own surface to fake either.
 30. A toolbar that wraps from `md` up: `flex-wrap` on `AppShellToolbar` without a `max-md:` prefix. It holds one row; what does not fit moves into a menu.
 31. A card stretched to a taller neighbour's height, leaving a band under its content (see "Card grids").

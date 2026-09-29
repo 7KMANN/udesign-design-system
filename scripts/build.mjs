@@ -15,6 +15,7 @@ const BRAND_VAR = {
   'color.accent.400': '--ud-accent-400',
   'color.accent.base': '--ud-accent',
   'color.accent.deep': '--ud-accent-deep',
+  'color.accent.700': '--ud-accent-700',
   'color.cream': '--ud-cream',
   'color.ink': '--ud-ink',
   'color.white': '--ud-white',
@@ -70,6 +71,7 @@ const ROLE_VAR = {
   'sidebar-border': '--sidebar-border',
   'sidebar-ring': '--sidebar-ring',
   highlight: '--highlight',
+  'primary-text': '--primary-text',
   client: '--client',
 };
 

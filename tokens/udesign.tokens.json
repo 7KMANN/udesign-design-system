@@ -11,7 +11,8 @@
       "300":   { "$value": { "colorSpace": "srgb", "components": [0.871, 0.773, 0.651], "hex": "#dec5a6" } },
       "400":   { "$value": { "colorSpace": "srgb", "components": [0.824, 0.698, 0.537], "hex": "#d2b289" } },
       "base":  { "$value": { "colorSpace": "srgb", "components": [0.780, 0.624, 0.420], "hex": "#c79f6b" } },
-      "deep":  { "$description": "WCAG-safe accent for text on cream/white.", "$value": { "colorSpace": "srgb", "components": [0.620, 0.459, 0.271], "hex": "#9e7545" } }
+      "deep":  { "$description": "Hover, selected markers and the light focus ring: 3:1 on light surfaces, not a text colour (4.13:1 on white).", "$value": { "colorSpace": "srgb", "components": [0.620, 0.459, 0.271], "hex": "#9e7545" } },
+      "700":   { "$description": "The accent as text or an icon in light themes. The dark themes use 300: a darker shade on light, a lighter one on dark.", "$value": { "colorSpace": "srgb", "components": [0.459, 0.322, 0.180], "hex": "#75522e" } }
     },
 
     "cream": { "$value": { "colorSpace": "srgb", "components": [0.957, 0.925, 0.882], "hex": "#f4ece1" } },
@@ -71,6 +72,7 @@
     "sidebar-accent-foreground": { "$value": "{color.ink}" },
     "sidebar-border":    { "$value": "{color.neutral.border}" },
     "sidebar-ring":      { "$value": "{color.accent.deep}" },
+    "primary-text":      { "$description": "The accent as text or an icon on a surface. --primary is a fill (2.4:1 as text on white); this is its readable shade.", "$value": "{color.accent.700}" },
     "highlight":         { "$description": "Marks matched text, as in search results. Not a status: never a tone family.", "$value": "{color.accent.300}" },
     "client":            { "$description": "Adaptive per-page accent. Overridden with the client's own brand color; everything else stays fixed.", "$value": "{color.accent.base}" }
   },
@@ -121,7 +123,7 @@
       "solid-foreground": { "$value": "{color.white}" }
     },
     "brand": {
-      "foreground": { "$value": { "colorSpace": "srgb", "components": [0.459, 0.322, 0.18], "hex": "#75522e" } },
+      "foreground": { "$value": "{color.accent.700}" },
       "surface": { "$value": "{color.accent.wash}" },
       "border": { "$value": "{color.accent.400}" },
       "solid": { "$value": { "colorSpace": "srgb", "components": [0.478, 0.341, 0.184], "hex": "#7a572f" } },
@@ -271,7 +273,8 @@
       "sidebar-accent-foreground": { "$value": "{color.neutral.panel}" },
       "sidebar-border": { "$value": { "colorSpace": "srgb", "components": [0.278, 0.251, 0.212], "hex": "#474036" } },
       "sidebar-ring": { "$value": "{color.accent.300}" },
-      "highlight": { "$value": { "colorSpace": "srgb", "components": [0.369, 0.294, 0.173], "hex": "#5e4b2c" } }
+      "highlight": { "$value": { "colorSpace": "srgb", "components": [0.369, 0.294, 0.173], "hex": "#5e4b2c" } },
+      "primary-text": { "$value": "{color.accent.300}" }
     },
     "tone": {
       "$type": "color",

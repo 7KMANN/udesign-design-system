@@ -6,6 +6,7 @@
   --ud-accent-400: #d2b289;
   --ud-accent: #c79f6b;
   --ud-accent-deep: #9e7545;
+  --ud-accent-700: #75522e;
   --ud-cream: #f4ece1;
   --ud-ink: #1b1b1b;
   --ud-white: #ffffff;
@@ -59,6 +60,7 @@
   --sidebar-border: var(--ud-border-strong);
   --sidebar-ring: var(--ud-accent-deep);
   --highlight: var(--ud-accent-300);
+  --primary-text: var(--ud-accent-700);
   --client: var(--ud-accent);
   --tone-neutral-foreground: #4f463b;
   --tone-neutral-surface: #f1eee8;
@@ -90,7 +92,7 @@
   --tone-progress-border: #9f87ce;
   --tone-progress-solid: #6549a5;
   --tone-progress-solid-foreground: var(--ud-white);
-  --tone-brand-foreground: #75522e;
+  --tone-brand-foreground: var(--ud-accent-700);
   --tone-brand-surface: var(--ud-accent-wash);
   --tone-brand-border: var(--ud-accent-400);
   --tone-brand-solid: #7a572f;
@@ -242,6 +244,7 @@
   --sidebar-border: #524a3e;
   --sidebar-ring: var(--ud-accent-300);
   --highlight: #5e4b2c;
+  --primary-text: var(--ud-accent-300);
   --client: var(--ud-accent);
   --tone-neutral-foreground: #d7cfc1;
   --tone-neutral-surface: #27241f;

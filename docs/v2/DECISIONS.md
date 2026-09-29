@@ -952,3 +952,18 @@ install a v2.1.0 `sheet` without this round's focus fixes. **Rejected:** a propo
 - **Δ-28 · `SheetContent` is a flex column, not a grid.** A grid stretched its rows over the full height
   of a side sheet, so a nav floated mid-panel. Found only by rendering the phone nav. `SheetFooter`
   already expected a column (`mt-auto`). The next derived ID is Δ-29.
+
+---
+
+## Round 17 - 2026-09-29 (the accent as text)
+
+### D-37 · Accent text is the accent's darker shade in light, lighter in dark · `APPROVED` 2026-09-29
+
+`--primary` (#c79f6b) is a fill: as text it reads 1.8 to 2.4:1 on light surfaces, and GlobalVision
+used it that way 102 times, udesignpages 101. Kaleb saw the options rendered: since dark themes
+already use the lighter accent 300, light themes use a darker shade for text. `--primary-text` is
+new primitive `accent.700` (#75522e, the value `--tone-brand-foreground` already had) in light and
+accent 300 in dark, 5.2:1 or better on every surface. Fills, the focus ring, hover and the selected
+marker keep their shades. **Rejected:** ink text with the accent moved to tiles, dots and bars
+(adds elements Kaleb does not want); reusing `--tone-brand-foreground` (tones are statuses only).
+`accent.deep`'s description said it was text-safe; it is 4.13:1 on white, now stated as 3:1-only.
