@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.1 (2026-09-29)
+
+The checker no longer flags linear in an infinite animation: a continuous loop has no other correct curve.
+
 ## 3.1.0 (2026-09-29)
 
 Accent text and icons get their own role, --primary-text: the accent's darker shade in light themes and its lighter shade in dark. The checker names the replacement for every fill used as text.
