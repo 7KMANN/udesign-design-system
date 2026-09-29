@@ -1,0 +1,600 @@
+/* Standalone UDesign Functional Brutalist Wire Tokens */
+:root {
+  /* Primitives: brand */
+  --ud-accent-wash: #f3ead9;
+  --ud-accent-300: #dec5a6;
+  --ud-accent-400: #d2b289;
+  --ud-accent: #c79f6b;
+  --ud-accent-deep: #9e7545;
+  --ud-cream: #f4ece1;
+  --ud-ink: #1b1b1b;
+  --ud-white: #ffffff;
+
+  /* Primitives: warm stone neutrals (never slate) */
+  --ud-panel: #f4f1ea;
+  --ud-panel-2: #efe9dd;
+  --ud-border: #e4ded0;
+  --ud-border-strong: #d6cdb9;
+  --ud-muted: #8a8172;
+  --ud-muted-soft: #b7af9f;
+
+  /* Primitives: status */
+  --ud-success: #3f7d4e;
+  --ud-success-bg: #e7f0e7;
+  --ud-warning: #b7791f;
+  --ud-warning-bg: #f7efdd;
+  --ud-danger: #b23a2f;
+  --ud-danger-bg: #f6e6e3;
+
+  /* Semantic roles */
+  --background: var(--ud-panel);
+  --foreground: var(--ud-ink);
+  --card: var(--ud-white);
+  --card-foreground: var(--ud-ink);
+  --popover: var(--ud-white);
+  --popover-foreground: var(--ud-ink);
+  --backdrop: var(--ud-ink);
+  --primary: var(--ud-accent);
+  --primary-foreground: var(--ud-ink);
+  --primary-hover: var(--ud-accent-deep);
+  --secondary: var(--ud-panel-2);
+  --secondary-foreground: var(--ud-ink);
+  --muted: var(--ud-panel-2);
+  --muted-foreground: #706759;
+  --accent: var(--ud-panel-2);
+  --accent-foreground: var(--ud-ink);
+  --border-color: var(--ud-border-strong);
+  --border: var(--border-color);
+  --border-strong: var(--ud-muted);
+  --input: var(--ud-border-strong);
+  --ring: var(--ud-accent-deep);
+  --destructive: var(--ud-danger);
+  --destructive-foreground: var(--ud-white);
+  --sidebar: var(--ud-white);
+  --sidebar-foreground: var(--ud-ink);
+  --sidebar-primary: var(--ud-accent);
+  --sidebar-primary-foreground: var(--ud-ink);
+  --sidebar-accent: var(--ud-panel-2);
+  --sidebar-accent-foreground: var(--ud-ink);
+  --sidebar-border: var(--ud-border-strong);
+  --sidebar-ring: var(--ud-accent-deep);
+  --highlight: var(--ud-accent-300);
+  --client: var(--ud-accent);
+  --tone-neutral-foreground: #4f463b;
+  --tone-neutral-surface: #f1eee8;
+  --tone-neutral-border: #b7af9f;
+  --tone-neutral-solid: #5f574c;
+  --tone-neutral-solid-foreground: var(--ud-white);
+  --tone-info-foreground: #24567a;
+  --tone-info-surface: #e7f2f8;
+  --tone-info-border: #7db8d9;
+  --tone-info-solid: #27678f;
+  --tone-info-solid-foreground: var(--ud-white);
+  --tone-success-foreground: #28623a;
+  --tone-success-surface: var(--ud-success-bg);
+  --tone-success-border: #74ad80;
+  --tone-success-solid: #327346;
+  --tone-success-solid-foreground: var(--ud-white);
+  --tone-warning-foreground: #6f4700;
+  --tone-warning-surface: var(--ud-warning-bg);
+  --tone-warning-border: #be9442;
+  --tone-warning-solid: #765000;
+  --tone-warning-solid-foreground: var(--ud-white);
+  --tone-danger-foreground: #8c2d26;
+  --tone-danger-surface: var(--ud-danger-bg);
+  --tone-danger-border: #c96b61;
+  --tone-danger-solid: #9b332b;
+  --tone-danger-solid-foreground: var(--ud-white);
+  --tone-progress-foreground: #5a4292;
+  --tone-progress-surface: #eee9fa;
+  --tone-progress-border: #9f87ce;
+  --tone-progress-solid: #6549a5;
+  --tone-progress-solid-foreground: var(--ud-white);
+  --tone-brand-foreground: #75522e;
+  --tone-brand-surface: var(--ud-accent-wash);
+  --tone-brand-border: var(--ud-accent-400);
+  --tone-brand-solid: #7a572f;
+  --tone-brand-solid-foreground: var(--ud-white);
+  --metric-positive-foreground: var(--tone-success-foreground);
+  --metric-positive-surface: var(--tone-success-surface);
+  --metric-positive-border: var(--tone-success-border);
+  --metric-negative-foreground: var(--tone-danger-foreground);
+  --metric-negative-surface: var(--tone-danger-surface);
+  --metric-negative-border: var(--tone-danger-border);
+  --metric-neutral-foreground: var(--tone-neutral-foreground);
+  --metric-neutral-surface: var(--tone-neutral-surface);
+  --metric-neutral-border: var(--tone-neutral-border);
+  --data-1: #27678f;
+  --data-2: #327346;
+  --data-3: #b2691a;
+  --data-4: #6549a5;
+  --data-5: #a73c6a;
+  --data-6: #147b7e;
+  --data-7: #9b332b;
+  --data-8: #7a572f;
+  --data-muted: var(--ud-muted-soft);
+  --data-grid: var(--ud-border);
+  --data-axis: var(--ud-muted);
+  --data-tooltip: var(--ud-ink);
+  --data-tooltip-foreground: var(--ud-white);
+  --entity-1-foreground: var(--tone-info-foreground);
+  --entity-1-surface: var(--tone-info-surface);
+  --entity-1-border: var(--tone-info-border);
+  --entity-1-solid: var(--tone-info-solid);
+  --entity-2-foreground: var(--tone-progress-foreground);
+  --entity-2-surface: var(--tone-progress-surface);
+  --entity-2-border: var(--tone-progress-border);
+  --entity-2-solid: var(--tone-progress-solid);
+  --entity-3-foreground: var(--tone-success-foreground);
+  --entity-3-surface: var(--tone-success-surface);
+  --entity-3-border: var(--tone-success-border);
+  --entity-3-solid: var(--tone-success-solid);
+  --entity-4-foreground: var(--tone-brand-foreground);
+  --entity-4-surface: var(--tone-brand-surface);
+  --entity-4-border: var(--tone-brand-border);
+  --entity-4-solid: var(--tone-brand-solid);
+  --interactive-hover: var(--ud-border);
+  --interactive-pressed: var(--ud-border-strong);
+  --interactive-selected: var(--ud-accent-wash);
+  --interactive-selected-foreground: var(--ud-ink);
+  --interactive-selected-border: var(--ud-accent-deep);
+  --interactive-focus: var(--ud-accent-deep);
+  --interactive-disabled: var(--ud-panel-2);
+  --interactive-disabled-foreground: var(--ud-muted);
+  --surface-raised: var(--ud-white);
+  --surface-raised-foreground: var(--ud-ink);
+  --surface-sunken: var(--ud-panel-2);
+  --surface-sunken-foreground: var(--ud-ink);
+  --surface-overlay: var(--ud-white);
+  --surface-overlay-foreground: var(--ud-ink);
+  --surface-console: var(--ud-ink);
+  --surface-console-foreground: var(--ud-white);
+  /* --client overrides per page: :root{ --client:#E23A2E } */
+
+  /* Type */
+  --font-display: 'Geist', sans-serif;
+  --font-body: 'Geist', system-ui, sans-serif;
+  --font-data: 'JetBrains Mono', monospace;
+  --font-numeric: var(--font-data);
+  --font-numeric-variant: tabular-nums;
+  --text-display: 1.5rem;
+  --text-h1: 1.25rem;
+  --text-h2: 1.0625rem;
+  --text-h3: 0.9375rem;
+  --text-body: 0.875rem;
+  --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700; --fw-extrabold:800; --fw-black:900;
+
+  /* Radius */
+  --radius-sm: 0px;
+  --radius: 0px;
+  --radius-lg: 0px;
+  --radius-pill: 999px;
+
+  /* Space */
+  --space-1:0.25rem; --space-2:0.5rem; --space-3:0.75rem; --space-4:1rem; --space-6:1.5rem; --space-8:2rem;
+
+  /* Elevation */
+  --shadow-1: none;
+  --shadow-2: none;
+  --shadow-3: 0px 12px 32px -8px rgba(27,27,27,0.2);
+
+  /* Motion: read from baseTree only, never from t - the structural
+     enforcement of "identical in both profiles" (contract Motion section).
+     tokens/functional.tokens.json has no motion key to override this with. */
+  --motion-duration-instant: 70ms; /* Press compression, toggle flip. Short enough to read as direct manipulation rather than as an animation. */
+  --motion-duration-fast: 150ms; /* Crisp state transition inside a control - hover, focus, an in-place swap, a message settling into a thread. */
+  --motion-duration-standard: 250ms; /* Panels, dialogs, list enter and exit, tab change - something arriving or leaving the screen. */
+  --motion-duration-emphasis: 280ms; /* The owning component reacts within its own bounds - an outcome resolves, a commit completes. Intensity 2. */
+  --motion-duration-slow: 350ms; /* Full route transition or shared-element morph. The interaction ceiling - no interaction-path duration above this exists, and none may be added. */
+  --motion-duration-ambient: 1200ms; /* One period of a continuous, non-interaction loop: a skeleton shimmer, a pulse. Exempt from the interaction ceiling because nobody is waiting on a single period of it. */
+  --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1); /* Ease-out, for a state change that begins and ends on screen. The default. No overshoot - most of these fire many times a day. */
+  --motion-easing-fast: cubic-bezier(0.4, 0, 0.2, 1); /* Compatibility alias of standard, published since v1.4.0 under this name. Prefer standard in new code. */
+  --motion-easing-enter: cubic-bezier(0, 0, 0.2, 1); /* Decelerate, for something arriving: it comes in at speed and settles. */
+  --motion-easing-exit: cubic-bezier(0.4, 0, 1, 1); /* Accelerate, for something leaving: it starts still and speeds away. Never the overshoot curve - an exit that overshoots reads as a glitch, and an overshoot on anything that must not cross a layout boundary is a bug. */
+  --motion-easing-emphasis: cubic-bezier(0.34, 1.56, 0.64, 1); /* A small settle-in overshoot, reserved for the rarer intensity-2 moment. Exits and layout-bounded elements do not use it. */
+  --motion-delay-indicator: 200ms; /* Hold before revealing a pending indicator, so an operation that finishes quickly never flashes a spinner. Deliberately NOT collapsed under reduced motion - zeroing it would reintroduce the flash it exists to prevent. */
+  --motion-loop-spin: 900ms; /* One full rotation of a busy indicator. Collapses to 0ms under reduced motion: the indicator still renders and still reports aria-busy, it just stops moving. */
+  --motion-press-scale: 0.97; /* Transform scale for a pressed control - button, chip, tab, icon button. The acknowledgement half of the feedback floor, pairs with the --interactive-pressed background, which is what survives when motion is removed. */
+  --motion-press-scale-subtle: 0.995; /* Transform scale for a pressed large surface - a card, a table row. 0.97 across a full-width row reads as a layout bug rather than a press. */
+
+  /* Responsive contracts */
+  --touch-target-min: 44px;
+  --control-height: 44px;
+  --control-height-compact: 36px;
+  --content-gutter-mobile: 16px;
+  --dialog-inline-size-mobile: 95vw;
+  --dialog-block-size-max: 100svh;
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --surface-padding: 12px;
+}
+
+:root[data-theme="dark"], .dark {
+  /* Semantic roles */
+  --background: #11100e;
+  --foreground: var(--ud-panel);
+  --card: #191714;
+  --card-foreground: var(--ud-panel);
+  --popover: #191714;
+  --popover-foreground: var(--ud-panel);
+  --backdrop: var(--ud-ink);
+  --primary: var(--ud-accent-300);
+  --primary-foreground: var(--ud-ink);
+  --primary-hover: var(--ud-accent-400);
+  --secondary: #25211c;
+  --secondary-foreground: var(--ud-panel);
+  --muted: #25211c;
+  --muted-foreground: #c4b9a8;
+  --accent: #25211c;
+  --accent-foreground: var(--ud-panel);
+  --border-color: #524a3e;
+  --border: var(--border-color);
+  --border-strong: #786c5a;
+  --input: #786c5a;
+  --ring: var(--ud-accent-300);
+  --destructive: #a14037;
+  --destructive-foreground: var(--ud-white);
+  --sidebar: #13110f;
+  --sidebar-foreground: var(--ud-panel);
+  --sidebar-primary: var(--ud-accent-300);
+  --sidebar-primary-foreground: var(--ud-ink);
+  --sidebar-accent: #25211c;
+  --sidebar-accent-foreground: var(--ud-panel);
+  --sidebar-border: #524a3e;
+  --sidebar-ring: var(--ud-accent-300);
+  --highlight: #5e4b2c;
+  --client: var(--ud-accent);
+  --tone-neutral-foreground: #d7cfc1;
+  --tone-neutral-surface: #27241f;
+  --tone-neutral-border: #5d564b;
+  --tone-neutral-solid: #c7bdac;
+  --tone-neutral-solid-foreground: var(--ud-ink);
+  --tone-info-foreground: #98c8e3;
+  --tone-info-surface: #132b3a;
+  --tone-info-border: #4385aa;
+  --tone-info-solid: #79badf;
+  --tone-info-solid-foreground: var(--ud-ink);
+  --tone-success-foreground: #9ecfa8;
+  --tone-success-surface: #17331e;
+  --tone-success-border: #559663;
+  --tone-success-solid: #7dbd8b;
+  --tone-success-solid-foreground: var(--ud-ink);
+  --tone-warning-foreground: #ecc274;
+  --tone-warning-surface: #392507;
+  --tone-warning-border: #a3792b;
+  --tone-warning-solid: #e0b45f;
+  --tone-warning-solid-foreground: var(--ud-ink);
+  --tone-danger-foreground: #f0a59d;
+  --tone-danger-surface: #3e1a16;
+  --tone-danger-border: #a9574f;
+  --tone-danger-solid: #e28a80;
+  --tone-danger-solid-foreground: var(--ud-ink);
+  --tone-progress-foreground: #c7b6ed;
+  --tone-progress-surface: #281e3e;
+  --tone-progress-border: #775eac;
+  --tone-progress-solid: #b6a1e1;
+  --tone-progress-solid-foreground: var(--ud-ink);
+  --tone-brand-foreground: #e3caab;
+  --tone-brand-surface: #382f25;
+  --tone-brand-border: #8d6f4c;
+  --tone-brand-solid: var(--ud-accent-300);
+  --tone-brand-solid-foreground: var(--ud-ink);
+  --metric-positive-foreground: var(--tone-success-foreground);
+  --metric-positive-surface: var(--tone-success-surface);
+  --metric-positive-border: var(--tone-success-border);
+  --metric-negative-foreground: var(--tone-danger-foreground);
+  --metric-negative-surface: var(--tone-danger-surface);
+  --metric-negative-border: var(--tone-danger-border);
+  --metric-neutral-foreground: var(--tone-neutral-foreground);
+  --metric-neutral-surface: var(--tone-neutral-surface);
+  --metric-neutral-border: var(--tone-neutral-border);
+  --data-1: #98c8e3;
+  --data-2: #9ecfa8;
+  --data-3: #ecc274;
+  --data-4: #c7b6ed;
+  --data-5: #e3a0bd;
+  --data-6: #81c9c0;
+  --data-7: #f0a59d;
+  --data-8: #e3caab;
+  --data-muted: #695e4e;
+  --data-grid: #474036;
+  --data-axis: #c4b9a8;
+  --data-tooltip: var(--ud-panel);
+  --data-tooltip-foreground: var(--ud-ink);
+  --entity-1-foreground: var(--tone-info-foreground);
+  --entity-1-surface: var(--tone-info-surface);
+  --entity-1-border: var(--tone-info-border);
+  --entity-1-solid: var(--tone-info-solid);
+  --entity-2-foreground: var(--tone-progress-foreground);
+  --entity-2-surface: var(--tone-progress-surface);
+  --entity-2-border: var(--tone-progress-border);
+  --entity-2-solid: var(--tone-progress-solid);
+  --entity-3-foreground: var(--tone-success-foreground);
+  --entity-3-surface: var(--tone-success-surface);
+  --entity-3-border: var(--tone-success-border);
+  --entity-3-solid: var(--tone-success-solid);
+  --entity-4-foreground: var(--tone-brand-foreground);
+  --entity-4-surface: var(--tone-brand-surface);
+  --entity-4-border: var(--tone-brand-border);
+  --entity-4-solid: var(--tone-brand-solid);
+  --interactive-hover: #322d26;
+  --interactive-pressed: #38322a;
+  --interactive-selected: #382f25;
+  --interactive-selected-foreground: var(--ud-panel);
+  --interactive-selected-border: var(--ud-accent-300);
+  --interactive-focus: var(--ud-accent-300);
+  --interactive-disabled: #27241f;
+  --interactive-disabled-foreground: #8e8474;
+  --surface-raised: #211e1a;
+  --surface-raised-foreground: var(--ud-panel);
+  --surface-sunken: #12100e;
+  --surface-sunken-foreground: var(--ud-panel);
+  --surface-overlay: #2b2722;
+  --surface-overlay-foreground: var(--ud-panel);
+  --surface-console: #090807;
+  --surface-console-foreground: #bfdfb7;
+}
+
+:root[data-game="on"] {
+  /* Gamification-exclusive (ADR-0001). Inert without data-game="on": */
+  /* this block is the only place these two custom properties are emitted. */
+  --moment-intensity-1-scale: 1.015;
+  --moment-intensity-2-scale: 1.04;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    /* B4: bakes the reduced-motion path into the compiled tokens so any
+       consumer - a moment, a loading spinner, anything - gets it for free. */
+    --motion-duration-instant: 0ms;
+    --motion-duration-fast: 0ms;
+    --motion-duration-standard: 0ms;
+    --motion-duration-emphasis: 0ms;
+    --motion-duration-slow: 0ms;
+    --motion-duration-ambient: 0ms;
+    --motion-loop-spin: 0ms;
+    /* Press scale collapses; --interactive-pressed does not. A control
+       still darkens on press with motion removed. */
+    --motion-press-scale: 1;
+    --motion-press-scale-subtle: 1;
+  }
+  :root[data-game="on"] {
+    --moment-intensity-1-scale: 1;
+    --moment-intensity-2-scale: 1;
+  }
+}
+
+/* Typography helpers */
+.ud-display{font-family:var(--font-display);font-weight:var(--fw-bold);font-size:1.5rem;line-height:1.15;letter-spacing:-0.01em}
+.ud-h1{font-family:var(--font-display);font-weight:var(--fw-bold);font-size:1.25rem;line-height:1.2;letter-spacing:-0.005em}
+.ud-h2{font-family:var(--font-display);font-weight:var(--fw-semibold);font-size:1.0625rem;line-height:1.3;letter-spacing:0em}
+.ud-h3{font-family:var(--font-display);font-weight:var(--fw-semibold);font-size:0.9375rem;line-height:1.35;letter-spacing:0em}
+.ud-body{font-family:var(--font-body);font-weight:var(--fw-regular);font-size:0.875rem;line-height:1.5;letter-spacing:0em}
+.ud-label{font-family:var(--font-display);font-weight:var(--fw-medium);font-size:0.75rem;line-height:1.25;letter-spacing:0em;color:var(--muted-foreground)} /* Sentence case, no uppercase or tracking */
+.ud-data{font-family:var(--font-data);font-weight:var(--fw-regular);font-size:0.8125rem;line-height:1.4;letter-spacing:0em}
+
+/*
+ * UDesign component classes for static HTML. Source file: css/components.css.
+ * `npm run build` appends it to dist/tokens.css, so linking the tokens gives you these.
+ *
+ * One class per registry component a generator reaches for: `ud-` plus the React
+ * name in kebab case, a variant appended (`ud-btn-primary`). `ud-btn` keeps the name
+ * generators already wrote. Each block below opens with when to use it. A component
+ * with no class here (dialog, tabs, select, and the rest) needs script: build that
+ * screen with the React registry. The repository's tests/component-css.test.mjs gives
+ * each skip its reason.
+ *
+ * No rule here is scoped by profile: every difference between presentation and
+ * operations arrives through a variable (--surface-padding, --shadow-2, --text-*,
+ * --font-numeric*). Pin the profile once on <html data-design="...">.
+ */
+
+/* Button. One ud-btn-primary per screen, none in a repeated block (AGENTS.md rule 5). */
+.ud-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: var(--control-height);
+  min-height: var(--touch-target-min);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--motion-duration-instant) var(--motion-easing-standard);
+  transition-property: transform, background-color, color, opacity;
+}
+.ud-btn:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: 2px; }
+.ud-btn:active { transform: scale(var(--motion-press-scale)); }
+.ud-btn-primary { background: var(--primary); color: var(--primary-foreground); }
+.ud-btn-primary:hover { background: var(--primary-hover); }
+.ud-btn-primary:active { background: var(--primary-hover); opacity: 0.9; }
+.ud-btn-secondary { background: var(--secondary); color: var(--secondary-foreground); }
+.ud-btn-outline { border-color: var(--border); background: var(--background); }
+.ud-btn-secondary:hover, .ud-btn-outline:hover, .ud-btn-ghost:hover { background: var(--interactive-hover); }
+.ud-btn-secondary:active, .ud-btn-outline:active, .ud-btn-ghost:active { background: var(--interactive-pressed); }
+.ud-btn:disabled, .ud-btn[aria-disabled="true"] {
+  pointer-events: none;
+  border-color: transparent;
+  background: var(--interactive-disabled);
+  color: var(--interactive-disabled-foreground);
+}
+
+/* Pressable: a clickable card, row or item, on an <a> or <button>, never a <div>.
+   Declared before ud-card so `class="ud-pressable ud-card"` keeps the card's surface. */
+.ud-pressable {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-height: var(--touch-target-min);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--motion-duration-instant) var(--motion-easing-standard);
+  transition-property: transform, background-color, border-color;
+}
+.ud-pressable:hover { background: var(--interactive-hover); }
+.ud-pressable:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: 2px; }
+.ud-pressable:active { transform: scale(var(--motion-press-scale-subtle)); background: var(--interactive-pressed); }
+.ud-pressable:disabled { pointer-events: none; background: var(--interactive-disabled); color: var(--interactive-disabled-foreground); }
+
+/* Card. Floats on --shadow-2, which is none in operations (ban 21). */
+.ud-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--surface-padding, 1.5rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  color: var(--card-foreground);
+  box-shadow: var(--shadow-2);
+}
+
+/* Badge: a label, never the only carrier of a status (ban 11). */
+.ud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 1.5rem;
+  padding: 0.125rem 0.625rem;
+  border: 1px solid var(--tone-neutral-border);
+  border-radius: var(--radius-pill);
+  background: var(--tone-neutral-surface);
+  color: var(--tone-neutral-foreground);
+  font-size: 0.75rem;
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: var(--font-numeric-variant);
+}
+
+/* Table. Wrap it so a wide table scrolls instead of widening the page:
+   <div class="ud-table-scroll" role="region" aria-label="Orders" tabindex="0">.
+   Rows have no press state; a clickable row is a ud-pressable inside a cell.
+   Mark every column of figures ud-table-numeric, on its th and each td. */
+.ud-table-scroll { width: 100%; overflow-x: auto; }
+.ud-table-scroll:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: -2px; }
+.ud-table { width: 100%; border-collapse: collapse; caption-side: bottom; font-size: 0.875rem; }
+.ud-table tr {
+  border-bottom: 1px solid var(--border);
+  transition: var(--motion-duration-instant) var(--motion-easing-standard);
+  transition-property: background-color;
+}
+.ud-table tbody tr:last-child { border-bottom: 0; }
+.ud-table tbody tr:hover { background: var(--interactive-hover); }
+.ud-table th {
+  height: var(--touch-target-min);
+  padding: 0 var(--space-4);
+  text-align: left;
+  vertical-align: middle;
+  font-weight: var(--fw-medium);
+  color: var(--muted-foreground);
+}
+.ud-table td { height: var(--touch-target-min); padding: var(--surface-padding, 1rem) var(--space-4); vertical-align: middle; }
+.ud-table tfoot { border-top: 1px solid var(--border); background: var(--muted); font-weight: var(--fw-medium); }
+.ud-table caption { margin-top: var(--space-4); font-size: 0.875rem; color: var(--muted-foreground); }
+.ud-table .ud-table-numeric { text-align: right; font-family: var(--font-numeric); font-variant-numeric: var(--font-numeric-variant); }
+
+/* Input, on <input> and <textarea>. */
+.ud-input {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  height: var(--control-height);
+  min-height: var(--touch-target-min);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--input);
+  border-radius: var(--radius);
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+}
+textarea.ud-input { height: auto; min-height: 6rem; }
+.ud-input::placeholder { color: var(--muted-foreground); }
+.ud-input:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: -2px; }
+.ud-input:disabled { cursor: not-allowed; background: var(--interactive-disabled); color: var(--interactive-disabled-foreground); }
+
+/* Empty state: a title (.ud-h3), a line of help (.ud-label), and at most one action. */
+.ud-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 12rem;
+  padding: var(--space-6);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+  color: var(--surface-sunken-foreground);
+  text-align: center;
+}
+
+/* PageCanvas: the presentation shell. The page scrolls; each ud-page-section runs
+   edge to edge and centres its content in a 72rem column without a wrapper.
+   Works on <body> too, which is why it zeroes the margin. */
+.ud-page-canvas { min-height: 100svh; margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-body); }
+.ud-page-section {
+  padding-block: clamp(var(--space-8), 8vw, calc(var(--space-8) * 2));
+  padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--content-gutter-mobile));
+}
+.ud-page-section-band { border-block: 1px solid var(--border); background: var(--card); }
+@media (min-width: 640px) {
+  .ud-page-section { padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--space-8)); }
+}
+
+/* AppShell: the operations shell. Children in this order: ud-app-shell-sidebar (put a
+   <nav> of ud-btn-ghost links in it), ud-app-shell-toolbar, ud-app-shell-panes holding
+   ud-app-shell-pane sections, each with an aria-label. From 768px the viewport is fixed
+   and panes scroll; below it the page scrolls, so a phone keyboard never traps content.
+   Panes are equal width; size them with style="--pane-columns: minmax(0, 1fr) 20rem",
+   which applies from 768px only, as React's md:grid-cols-[...] does.
+   Phones: the sidebar is an off-canvas sheet opened from the toolbar, with no script, by
+   the native popover API: <aside class="ud-app-shell-sidebar" id="nav" popover> and, first
+   in the toolbar, <button class="ud-btn ud-btn-ghost ud-app-shell-menu" type="button"
+   popovertarget="nav">Menu</button>. From 768px the sidebar sits in its column and the
+   menu button hides. On a desktop mouse the toolbar's controls go compact (36px). */
+.ud-app-shell { display: grid; min-height: 100svh; margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-body); font-variant-numeric: var(--font-numeric-variant); }
+.ud-app-shell-sidebar { background: var(--sidebar); color: var(--sidebar-foreground); }
+.ud-app-shell-sidebar:not(:popover-open) { display: none; }
+.ud-app-shell-sidebar:popover-open { position: fixed; inset: 0 auto 0 0; width: min(20rem, 85vw); height: 100svh; max-height: none; margin: 0; padding: 0; border: 0; border-right: 1px solid var(--sidebar-border); overflow-y: auto; box-shadow: var(--shadow-3); }
+.ud-app-shell-sidebar::backdrop { background: var(--backdrop); opacity: 0.6; }
+.ud-app-shell-sidebar > nav { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-2); }
+.ud-app-shell-sidebar > nav > .ud-btn { justify-content: flex-start; }
+.ud-app-shell-toolbar {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-height);
+  padding-inline: var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+.ud-app-shell-panes { display: grid; }
+.ud-app-shell-pane { min-width: 0; border-top: 1px solid var(--border); }
+.ud-app-shell-pane:first-child { border-top: 0; }
+@media (min-width: 768px) {
+  .ud-app-shell { height: 100svh; grid-template-columns: 14rem minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); overflow: hidden; }
+  .ud-app-shell-sidebar, .ud-app-shell-sidebar:not(:popover-open) { display: block; position: static; inset: auto; width: auto; height: auto; margin: 0; padding: 0; border: 0; grid-row: span 2; overflow: hidden auto; border-right: 1px solid var(--sidebar-border); box-shadow: none; }
+  .ud-app-shell-menu { display: none; }
+  .ud-app-shell-panes { min-height: 0; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); grid-template-columns: var(--pane-columns, none); grid-template-rows: minmax(0, 1fr); }
+  .ud-app-shell-pane { min-height: 0; overflow-y: auto; border-top: 0; border-left: 1px solid var(--border); }
+  .ud-app-shell-pane:first-child { border-left: 0; }
+}
+@media (min-width: 768px) and (pointer: fine) {
+  .ud-app-shell-toolbar > * { --control-height: var(--control-height-compact); --touch-target-min: var(--control-height-compact); }
+}

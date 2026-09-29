@@ -1,5 +1,43 @@
 # Changelog
 
+## 3.0.0 (2026-09-29)
+
+The brand and functional aliases are removed, and GlobalVision's recommendations ship: focus, hover and Switch states that meet their contrast rules, phone navigation in a sheet, compact desktop toolbars, composition bans 28 to 32 with new checker rules, and a measured layout audit.
+
+Decisions and measurements: `docs/v2/DECISIONS.md` round 16 (D-33 to D-36, Δ-22 to Δ-28).
+
+### Pairing
+
+- `udesign-docs` needs its own release beside this one: `standards/design/udesign-contract.md` (ratified decision 1) and the GlobalVision overlay still say `data-design="functional"`. Move both pins in one change.
+
+### Breaking or visible changes
+
+- **Profile aliases removed.** `data-design="brand"` and `"functional"` select nothing; write `presentation` and `operations`. `udesign-check` flags a root still on the old names.
+- **Phone navigation.** `AppShellSidebar` hides below `md`. Render the same nav in a `Sheet` (`side="left"`) opened from a menu `Button` first in the toolbar, as `examples/operations-queue.tsx` does. Static HTML: add `popover` and an `id` to `ud-app-shell-sidebar`, and a `ud-app-shell-menu` button with `popovertarget` (D-36).
+- **Compact toolbars on a desktop mouse.** From `md` on a fine pointer, every control inside `AppShellToolbar` (and `ud-app-shell-toolbar`) is 36px; touch keeps 44px. Ban 20 is now a touch rule (D-33). Remove any per-route compact recipe.
+- **Focus.** Light themes draw focus in the deep accent (`--interactive-focus`, `--ring`, `--sidebar-ring`): the accent base was 2.1 to 2.4:1. Fields ring inside their border; other controls draw an outline with a transparent gap instead of Tailwind's white ring offset.
+- **Hover and pressed** step off the page floor, `--secondary` and each other in every profile and theme: operations light hover was invisible on the floor, presentation hover invisible on a secondary button.
+- **Switch** off state: `--muted` track, `--muted-foreground` border and thumb. **Checkbox and Switch** change colour on press. **Tabs** no longer shift 2px on selection.
+- **Select and Tooltip** float on `--shadow-3`, visible in `operations`. **`SheetContent`** is a flex column, so content starts at the top of a side sheet. **Dialog and Sheet headers** reserve the close button's space.
+- **Button `size="compact"`** keeps its touch floor under Tailwind 3 too: `[@media(pointer:coarse)]:` replaces `pointer-coarse:`, which Tailwind 3 dropped.
+
+### Additive
+
+- **`--highlight`** marks matched text. Never a tone family.
+- **`Card`** carries `data-slot="card"`. **`Slider`** forwards `aria-valuetext` to its thumbs. `closeLabel` and `scrollLabel` document their English defaults.
+- **`DESIGN.md`**: fill and foreground roles, one `h1` per screen, "Containment" and "Card grids" promoted from GlobalVision, and bans 28 to 32 (D-35).
+- **Checker**: `fill-as-text` (ban 28), `toolbar-wrap` (ban 30), `press-missing` (ban 16, primitive folders only); `raw-motion` also flags framer-motion literals, `delay-<n>`, `duration-[<n>]` and `--animate-*`; `div-onclick` covers `motion.div`; `em-dash` catches the `\u2014` escape.
+- **`tests/e2e/layout-audit.spec.ts`** measures stretched cards, toolbar edges and phone overflow on the reference screens, served at `showcase/examples.html`.
+
+### For GlobalVision
+
+- Retire the workarounds for the toolbar tokens (`components/app-toolbar.tsx`), field rings (`input`, `textarea`, `select`, `input-group`, combobox), `switch.tsx`, `tabs.tsx`, `components/highlight-text.tsx` (use `--highlight`) and the Slider `aria-valuetext` forward. Its shadcn copies pick up the new `--ring` automatically.
+- Expect about 180 `fill-as-text` findings, each a contrast failure in one theme, 1 `press-missing` (`toggle-group.tsx`) and 2 new `raw-motion`.
+
+### For `udesignpages`
+
+- Resync `dist/tokens.css`. Four page stylesheets use `color: var(--destructive)` or `color: var(--primary)` (ban 28).
+
 ## 2.1.0 (2026-09-26)
 
 CardTitle takes an as prop for its heading level, the showcase shows the v2 type scale and compares v1 snapshots correctly, and line endings are pinned to LF.
