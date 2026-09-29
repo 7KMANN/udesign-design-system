@@ -231,7 +231,10 @@ export function check(files) {
     for (const [index, message] of rawMotion(code)) add('raw-motion', index, message);
     for (const m of code.matchAll(FILL_CSS)) add('fill-as-text', m.index, fillMessage(m));
     // group-active: counts. An overlay's Trigger is left out: it wraps a Button through asChild.
-    if (PRIMITIVES.test(file) && ext !== 'css' && !/\bactive:|:active\b/.test(code)) {
+    // A primitive that renders through a sibling's variants helper (toggleVariants from ./toggle)
+    // gets its press from that file, which the checker reads on its own.
+    const borrowsPress = /import\s*\{[^}]*\b\w+Variants\b[^}]*\}\s*from\s*["'](?:\.\/|@\/components\/ui\/)/.test(code);
+    if (PRIMITIVES.test(file) && ext !== 'css' && !borrowsPress && !/\bactive:|:active\b/.test(code)) {
       const el = code.search(/<(?:button|\w*(?:Checkbox|Switch|Toggle)\w*\.Root|(?!(?:Tooltip|Popover|HoverCard|Dialog|AlertDialog|Sheet|Drawer|DropdownMenu|ContextMenu|Menubar)\w*\.Trigger)[A-Z]\w*\.(?:Trigger|Item|Close|Thumb))(?![\w.])|role\s*=\s*["']button["']/);
       if (el >= 0) add('press-missing', el, 'an interactive primitive with no `active:` treatment; give it --interactive-pressed or --motion-press-scale');
     }

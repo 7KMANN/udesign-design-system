@@ -139,6 +139,8 @@ test('press-missing flags a primitive with no active: treatment, only in a primi
   assert.deepEqual(hits('components/ui/y.tsx', '<button className="active:bg-[var(--interactive-pressed)]" />'), []);
   assert.deepEqual(hits('components/ui/z.tsx', '<span className="group-active:scale-95" /><SliderPrimitive.Thumb />'), []);
   assert.deepEqual(hits('components/ui/tooltip.tsx', '<TooltipPrimitive.Trigger {...props} />'), []);
+  const borrowed = 'import { toggleVariants } from "@/components/ui/toggle"\n<ToggleGroupPrimitive.Item className={toggleVariants()} />';
+  assert.deepEqual(hits('components/ui/toggle-group.tsx', borrowed), []);
 });
 
 test('ud-primitive flags var(--ud-*) in consumer source but not in a synced copy of the tokens', () => {
