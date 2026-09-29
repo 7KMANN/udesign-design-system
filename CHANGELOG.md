@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.2 (2026-09-29)
+
+The checker reads a primitive that renders through a sibling's variants helper as having that helper's press.
+
 ## 3.1.1 (2026-09-29)
 
 The checker no longer flags linear in an infinite animation: a continuous loop has no other correct curve.

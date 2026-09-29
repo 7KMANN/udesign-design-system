@@ -6,7 +6,7 @@ Do not source brand values from Icitte. It is a separate product line with its o
 
 **License:** proprietary, UDesign Productions only. See [LICENSE.md](LICENSE.md). Public visibility does not grant permission to use the work.
 
-## What ships in 3.1.1
+## What ships in 3.1.2
 
 - A semantic token foundation for light and dark themes.
 - Two profiles, `presentation` and `operations`, pinned once per document. They differ in structure: type scale shape, source of hierarchy, page shell, and figures. Controls keep the 44px touch floor on touch in both; on a desktop mouse a compact control and the operations toolbar go to 36px.
@@ -47,7 +47,7 @@ Pin the Git dependency to a release tag. Do not install from a moving branch.
 ```json
 {
   "dependencies": {
-    "udesign-design-system": "github:7KMANN/udesign-design-system#v3.1.1"
+    "udesign-design-system": "github:7KMANN/udesign-design-system#v3.1.2"
   }
 }
 ```
@@ -97,7 +97,7 @@ Initialize shadcn in the consuming application and add the tagged namespace to `
 ```json
 {
   "registries": {
-    "@udesign": "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.1.1/public/r/{name}.json"
+    "@udesign": "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.1.2/public/r/{name}.json"
   }
 }
 ```
@@ -111,13 +111,13 @@ npx shadcn@latest add @udesign/core
 The direct tagged URL remains available when a consumer does not configure a namespace:
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.1.1/public/r/core.json
+npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.1.2/public/r/core.json
 ```
 
 Install a single item by replacing `core` with its registry name:
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.1.1/public/r/button.json
+npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.1.2/public/r/button.json
 ```
 
 Available base items:
