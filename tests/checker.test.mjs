@@ -87,7 +87,7 @@ test('raw-motion flags literal durations and easings in CSS', () => {
     '.d { transition-timing-function: cubic-bezier(0.2, 0, 0, 1); }',
     '.e { transition-duration: 0ms; transition: opacity var(--motion-ease-out); }',
     '@theme { --animate-pop: pop 300ms ease-out; }',
-    '@theme { --animate-spin: spin var(--motion-loop-spin) infinite; }',
+    '@theme { --animate-spin: spin var(--motion-loop-spin) linear infinite; }',
   ].join('\n');
   assert.deepEqual(hits('a.css', css), ['raw-motion:6', 'raw-motion:1', 'raw-motion:3', 'raw-motion:4']);
 });

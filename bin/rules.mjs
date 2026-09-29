@@ -103,7 +103,9 @@ function* rawMotion(code) {
   for (const m of code.matchAll(decl)) {
     const value = m[1].replace(/var\([^)]*\)/g, '');
     const duration = [...value.matchAll(/(?<![\w.-])(\d*\.?\d+)m?s\b/g)].some((d) => Number(d[1]) !== 0);
-    const easing = /cubic-bezier\(|steps\(|(?<![\w-])(ease|ease-in|ease-out|ease-in-out|linear|step-start|step-end)(?![\w-])/.test(value);
+    // `linear` is exempt in an infinite loop: a rotation has no other correct curve, and no role names it.
+    const keywords = /(?<![\w-])(ease|ease-in|ease-out|ease-in-out|step-start|step-end)(?![\w-])/.test(value) || (/(?<![\w-])linear(?![\w-])/.test(value) && !/(?<![\w-])infinite(?![\w-])/.test(value));
+    const easing = /cubic-bezier\(|steps\(/.test(value) || keywords;
     if (duration || easing) yield [m.index, `\`${m[0].trim()}\`; use --motion-* roles`];
   }
   // framer-motion: `transition={{ duration: 0.3, ease: "easeOut" }}`, seconds with no unit.
