@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.0 (2026-09-29)
+
+Accent text and icons get their own role, --primary-text: the accent's darker shade in light themes and its lighter shade in dark. The checker names the replacement for every fill used as text.
+
 ## 3.0.0 (2026-09-29)
 
 The brand and functional aliases are removed, and GlobalVision's recommendations ship: focus, hover and Switch states that meet their contrast rules, phone navigation in a sheet, compact desktop toolbars, composition bans 28 to 32 with new checker rules, and a measured layout audit.
