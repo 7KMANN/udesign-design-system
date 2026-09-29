@@ -22,7 +22,7 @@
     "border":            { "$value": "{color.neutral.border-strong}" },
     "border-strong":     { "$value": "{color.neutral.muted}" },
     "input":             { "$value": "{color.neutral.border-strong}" },
-    "ring":              { "$value": "{color.accent.base}" },
+    "ring":              { "$description": "The accent base is 2.1 to 2.4:1 on light surfaces; the deep accent clears the 3:1 focus minimum.", "$value": "{color.accent.deep}" },
     "destructive":       { "$value": "{color.status.danger}" },
     "destructive-foreground": { "$value": "{color.white}" },
     "sidebar":           { "$value": "{color.white}" },
@@ -32,8 +32,14 @@
     "sidebar-accent":    { "$value": "{color.neutral.panel-2}" },
     "sidebar-accent-foreground": { "$value": "{color.ink}" },
     "sidebar-border":    { "$value": "{color.neutral.border-strong}" },
-    "sidebar-ring":      { "$value": "{color.accent.base}" },
+    "sidebar-ring":      { "$value": "{color.accent.deep}" },
     "client":            { "$value": "{color.accent.base}" }
+  },
+
+  "interactive": {
+    "$type": "color",
+    "hover": { "$value": "{color.neutral.border}" },
+    "pressed": { "$value": "{color.neutral.border-strong}" }
   },
 
   "font": {

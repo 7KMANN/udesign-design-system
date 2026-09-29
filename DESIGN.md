@@ -175,7 +175,11 @@ Interface copy follows `udesign-ground-truth.md` §5 verbatim; the lines below p
 
 ### Core roles
 
-Use `--background`, `--foreground`, `--card`, `--card-foreground`, `--primary`, `--primary-foreground`, `--primary-hover`, `--secondary`, `--secondary-foreground`, `--muted`, `--muted-foreground`, `--border-color`, `--border-strong`, `--ring`, `--destructive`, and `--client` for their named purposes.
+Use `--background`, `--foreground`, `--card`, `--card-foreground`, `--primary`, `--primary-foreground`, `--primary-hover`, `--secondary`, `--secondary-foreground`, `--muted`, `--muted-foreground`, `--border-color`, `--border-strong`, `--ring`, `--destructive`, `--highlight`, and `--client` for their named purposes.
+
+A role is either a fill or a foreground, never both (ban 28). `--primary`, `--secondary`, `--muted` and `--destructive` are fills and pair with their own `-foreground`. Destructive text and icons, such as a Delete item in a menu, use `--tone-danger-foreground`: `--destructive` as text is 2.6:1 on a dark popover.
+
+`--highlight` marks matched text, as in search results: a `<mark>` with `--highlight` behind text that keeps its own colour. A tone family is never a highlighter, because a warning tone reads as a warning.
 
 The accent is not safe as small text merely because it is a brand color. Filled primary controls pair `--primary` with `--primary-foreground`. Links and text must use a semantic foreground whose contrast has been verified against the actual surface.
 
@@ -234,7 +238,9 @@ Use `--interactive-hover`, `--interactive-pressed`, `--interactive-selected`, `-
 
 Hover is supplemental. Every action must also work by keyboard and touch. Selected state needs more than a subtle color shift. Use a clear boundary, marker, or text state. Pressed state should be immediate and should not move surrounding layout.
 
-Focus indicators must remain visible in every profile and theme. Use at least a 2px outline with separation from the component edge when the surrounding colors could merge. Do not remove the browser outline without supplying an equivalent `:focus-visible` treatment.
+Focus indicators must remain visible in every profile and theme. Use at least a 2px outline with separation from the component edge when the surrounding colors could merge. Do not remove the browser outline without supplying an equivalent `:focus-visible` treatment. A field (input, textarea, select trigger) draws its ring inside its border, so a table cell, toolbar or sheet body that clips cannot cut it off. Any other control draws an outline with a transparent offset gap; a painted offset band (Tailwind 3's `ring-offset`, white by default) shows as a white stripe in dark themes.
+
+Hover and pressed each differ from the page floor, from `--secondary`, and from each other, in every profile and theme; `tests/contrast.test.mjs` holds the ladder.
 
 Disabled controls use the disabled surface and foreground roles, preserve readable labels, and expose native `disabled` or `aria-disabled` semantics. Opacity alone is not a complete disabled treatment.
 
@@ -259,13 +265,15 @@ Montserrat carries the UDesign lockup and display headings in the presentation p
 
 Figures go through one pair of roles, `--font-numeric` and `--font-numeric-variant`: `operations` renders them in JetBrains Mono with tabular figures so columns align, `presentation` keeps them proportional in Geist. In the registry, mark a column of figures with `TableHead numeric` and `TableCell numeric`. `APPROVED 2026-09-02 D-19`
 
+Each screen has one `h1`, and heading levels never skip. A card's title is `h3` by default; `CardTitle as` sets the level its place in the outline needs.
+
 Labels use sentence case with normal tracking. Do not turn metadata, navigation, or field labels into wide-tracked uppercase mono text. Body copy uses the semantic foreground. Muted foreground is for secondary information only after its contrast has been verified on the selected surface.
 
 Display type may scale fluidly. Controls and body text must remain readable without horizontal zoom at 375px.
 
 ## Layout and responsive behavior
 
-Use the shared spacing roles for component rhythm. The space scale and control height are the same in both profiles; the shells and one padding role make the difference. `PageSection` separates presentation blocks generously. In operations, `AppShell` panes butt against each other and `--surface-padding` sets 12px inside `Card`, `Dialog` and `Sheet` and above and below each table cell, while every control and table row keeps the 44px touch floor. `APPROVED 2026-09-25 D-22`, `APPROVED 2026-09-26 D-27, D-28`
+Use the shared spacing roles for component rhythm. The space scale and control height are the same in both profiles; the shells and one padding role make the difference. `PageSection` separates presentation blocks generously. In operations, `AppShell` panes butt against each other and `--surface-padding` sets 12px inside `Card`, `Dialog` and `Sheet` and above and below each table cell, while every control and table row keeps the 44px touch floor on touch. `APPROVED 2026-09-25 D-22`, `APPROVED 2026-09-26 D-27, D-28`, `APPROVED 2026-09-29 D-33` for "on touch"
 
 The responsive contract includes:
 
@@ -278,7 +286,7 @@ The responsive contract includes:
 - `--safe-area-bottom`
 - `--surface-padding` (set by `operations` only; unset, `Card` pads 24px, `Dialog`/`Sheet` 16px on phones and 24px from `sm`, table cells 16px)
 
-Interactive controls need a minimum inline and block target of `--touch-target-min`. Compact controls can reduce their visible field height while preserving the touch area around the trigger.
+Interactive controls need a minimum inline and block target of `--touch-target-min`, and so does each option in a list, menu, or command palette. Compact controls can reduce their visible field height while preserving the touch area around the trigger. On a fine pointer from `md`, a compact control may drop to `--control-height-compact`: `Button size="compact"` does, and `AppShellToolbar` sets the compact tokens for everything inside it. Touch keeps the floor. `APPROVED 2026-09-29 D-33`
 
 At narrow widths:
 
@@ -289,6 +297,20 @@ At narrow widths:
 - Primary actions remain reachable without covering required content.
 
 Full-height mobile layouts use small viewport units. Validate at 375px, not only at a desktop browser narrowed by eye.
+
+In `operations` below `md`, `AppShellSidebar` hides and the same navigation opens in a `Sheet` (`side="left"`) from a menu button first in the toolbar: one nav component rendered in both places, so they never drift. Static HTML does the same with the native `popover` attribute. Owned by `udesign-docs` [`standards/design/mobile-accessibility.md`](https://github.com/7KMANN/udesign-docs/blob/v0.9.0/standards/design/mobile-accessibility.md). `APPROVED 2026-09-29 D-36`
+
+### Containment
+
+Density is not the defect; uncontained content is. Promoted from GlobalVision, where Kaleb ratified it on 2026-09-28. `APPROVED 2026-09-29 D-35`
+
+- Regions may sit flush with a tight gutter (`--surface-padding` or the spacing scale), but content never touches a container's edge.
+- Every dialog, sheet and pane body has exactly one inset. `DialogContent`, `SheetContent` and `Card` carry theirs; a section inside adds no second one, and a component passed in is not stripped of its own card to fake one.
+- Each section is either a card or separated from its neighbour by a rule. Never floating.
+
+### Card grids
+
+A card never stretches to a taller neighbour's height and leaves a band under its content. Independent cards flow in CSS columns (`columns-2`, each card `break-inside-avoid`); when a row must align, each card's last block takes `mt-auto`. `APPROVED 2026-09-29 D-35`
 
 ## Elevation
 
@@ -435,7 +457,7 @@ This is the one numbered list. Bans 1-19 keep the numbers they carried in `udesi
 
 ### Added in v2.0.0
 
-20. Tiny interactive targets hidden inside visually compact controls. A control may look shorter than 44px; the hit area behind it may not (see the responsive contract's `--touch-target-min`).
+20. Tiny interactive targets hidden inside visually compact controls on touch. On a touch pointer or a phone, a control may look shorter than 44px; the hit area behind it may not (see the responsive contract's `--touch-target-min`). A fine pointer from `md` may use `--control-height-compact` (D-33).
 21. A shadow, raw or semantic, on an ordinary content card in the operations profile. `--shadow-1/2/3` stay reserved for true overlays (dialogs, menus, popovers) there.
 22. Screen-level celebration: full-viewport overlays, particle bursts, confetti, or any reaction beyond intensity 2.
 23. Motion as the sole indicator that a state changed. The non-motion signal (state, text, or icon) must exist independent of the animation.
@@ -449,6 +471,16 @@ This is the one numbered list. Bans 1-19 keep the numbers they carried in `udesi
 ### Added with the page shells `APPROVED 2026-09-02 D-20`
 
 27. A screen outside its profile's shell: an `operations` screen not composed in `AppShell`, or a `presentation` screen composed in `AppShell`.
+
+### Added in v3.0.0 `APPROVED 2026-09-29 D-35`
+
+From GlobalVision's UI polish sweep, where 149 of 168 defects were valid components composed badly.
+
+28. A fill role used as a text or icon colour: `--primary`, `--secondary`, `--muted`, `--destructive` or `--accent` as `color` (`text-destructive`, `text-[var(--primary)]`, `color: var(--muted)`). Pair a fill with its `-foreground`; destructive text is `--tone-danger-foreground`.
+29. Uncontained content (see "Containment"): content touching a container's edge, a second inset inside a body that already has one, or a card stripped of its own surface to fake either.
+30. A toolbar that wraps from `md` up: `flex-wrap` on `AppShellToolbar` without a `max-md:` prefix. It holds one row; what does not fit moves into a menu.
+31. A card stretched to a taller neighbour's height, leaving a band under its content (see "Card grids").
+32. A scroll region sized by `flex-1` with no definite height above it. It never scrolls and spills over what follows. Every flex ancestor up to a fixed or `svh` height takes `min-h-0`.
 
 ## Known limits
 

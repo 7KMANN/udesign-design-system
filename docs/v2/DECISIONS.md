@@ -883,3 +883,72 @@ properties they set, so `min-height: 44px` reaches every `ud-btn` (38.5px to 44p
 two catalogs, cards 5.5px taller) and the `ud-badge` on `patterns.html` gains a border. Screenshots
 show the change is the intended touch-target minimum, not breakage. MN-17 now states it. The next
 derived ID is Δ-22.
+
+---
+
+## Round 16 - 2026-09-29 (GlobalVision's design-system recommendations)
+
+**Evidence:** GlobalVision's DS-V2 adoption ledger and UI polish sweep, each item confirmed in the
+registry source, and every colour pair measured from `dist/tokens.css` in the four profile and theme
+combinations. The per-item outcome is in `FUTURE-WORK.md` and the v3.0.0 changelog.
+
+### D-33 · Ban 20 is a touch rule · `APPROVED` 2026-09-29
+
+`Button size="compact"` already dropped to 36px on a desktop mouse while ban 20 said a hit area may
+never be under 44px. Kaleb: desktop more compact, mobile keeps 44px. Ban 20 now covers touch
+pointers and phones; on a fine pointer from `md`, a compact control may be `--control-height-compact`.
+`AppShellToolbar` applies the compact tokens to its children there, so toolbar fields stop filling
+the bar edge to edge. **Rejected:** a 52px toolbar with 44px controls everywhere.
+
+### D-34 · These fixes ride v3.0.0 · `APPROVED` 2026-09-29
+
+GlobalVision already runs `data-design="operations"` on v2.1.0, which meets the v3.0.0 gate.
+**Rejected:** a v2.2.0 cut from v2.1.0 first.
+
+### Derived in round 16, not asked
+
+- **Δ-22 · The light focus ring was below its own 3:1 rule.** The accent base measured 2.1 to
+  2.4:1 on every light surface. `--interactive-focus`, `--ring` and `--sidebar-ring` move to the deep
+  accent (3.5 to 4.1:1). Dark themes keep accent 300.
+- **Δ-23 · Hover and pressed are a ladder.** Operations light hover equalled the page floor (1.00:1),
+  presentation hover equalled `--secondary` in both themes, and operations light pressed equalled
+  `--secondary`, which left a secondary button with a scale-only press. Each step now differs from
+  what it sits on; `tests/contrast.test.mjs` holds it.
+
+### D-35 · Composition bans 28 to 32, and GlobalVision's layout rules promoted · `APPROVED` 2026-09-29
+
+Kaleb: work on all ideas. GlobalVision's "Containment" (ratified there 2026-09-28) and card-grid rule
+(2026-09-29) hold for every UDesign interface, so they move to `DESIGN.md` "Layout". Bans 28 to 32
+name what the sweep kept finding. Each checker rule was measured on GlobalVision first:
+`fill-as-text` 215 hits before its sweep and 194 after, each a contrast failure in one theme;
+`toolbar-wrap` 4 before, 0 after; `press-missing` 1 real hit (its toggle group) once overlay
+triggers and non-interactive roots were left out. A stripped `Card` (0 hits in both trees) and
+`h-full` on a card (9 legitimate survivors) get no lexical rule; the layout audit measures ban 31.
+**Rejected:** a lexical rule for bans 29, 31 and 32.
+
+### D-36 · Phones get the nav in an off-canvas sheet · `APPROVED` 2026-09-29
+
+The registry sidebar was a sideways row below `md`; canonical `udesign-docs`
+`mobile-accessibility.md` says an off-canvas sheet from a menu control. Kaleb picked canon after
+seeing both. `AppShellSidebar` hides below `md`; the reference screen renders one `Nav` in the
+sidebar and in a `Sheet`. Static HTML does it with the native `popover` attribute, no script.
+**Rejected:** an `AppShellMenu` part. Registry items pin each other by published tag, so it would
+install a v2.1.0 `sheet` without this round's focus fixes. **Rejected:** a proposal to change canon.
+
+### Derived in round 16, not asked (continued)
+
+- **Δ-24 · Tailwind 3 has no pointer variants.** `pointer-coarse:` on `Button size="compact"` compiled
+  to nothing here; it worked in GlobalVision only because that app runs Tailwind 4. The registry
+  uses `[@media(pointer:coarse)]:`, which both compile. `scripts/test-registry.mjs` holds it.
+- **Δ-25 · The close button cannot align with the title at 12px padding.** Centring a 44px target on
+  a 15px title needs a negative top, and the scroll container then clips its focus ring, which is
+  why GlobalVision reverted. The header reserves the space instead (`pr-10`, enough at every
+  `--surface-padding`), so a long title never runs under it.
+- **Δ-26 · No card-grid or dialog-body primitive.** `DialogContent`, `SheetContent` and `Card` already
+  carry the one inset, and a card grid is two utilities (`columns-2`, `break-inside-avoid`). A
+  component would add a name, not remove a decision.
+- **Δ-27 · `Card` carries `data-slot="card"`,** the shadcn convention GlobalVision's audit selects,
+  so one measurement runs on both sides.
+- **Δ-28 · `SheetContent` is a flex column, not a grid.** A grid stretched its rows over the full height
+  of a side sheet, so a nav floated mid-panel. Found only by rendering the phone nav. `SheetFooter`
+  already expected a column (`mt-auto`). The next derived ID is Δ-29.

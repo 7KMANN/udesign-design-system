@@ -21,7 +21,7 @@ const Pressable = React.forwardRef<HTMLButtonElement, PressableProps>(({ asChild
     <Comp
       ref={ref}
       className={cn(
-        "block w-full min-h-[var(--touch-target-min)] cursor-pointer text-left transition-[transform,background-color,border-color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] hover:bg-[var(--interactive-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] focus-visible:ring-offset-2 active:scale-[var(--motion-press-scale-subtle)] active:bg-[var(--interactive-pressed)] disabled:pointer-events-none disabled:bg-[var(--interactive-disabled)] disabled:text-[var(--interactive-disabled-foreground)]",
+        "block w-full min-h-[var(--touch-target-min)] cursor-pointer text-left transition-[transform,background-color,border-color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] hover:bg-[var(--interactive-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--interactive-focus)] active:scale-[var(--motion-press-scale-subtle)] active:bg-[var(--interactive-pressed)] disabled:pointer-events-none disabled:bg-[var(--interactive-disabled)] disabled:text-[var(--interactive-disabled-foreground)]",
         className,
       )}
       {...props}

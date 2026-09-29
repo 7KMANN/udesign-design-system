@@ -150,7 +150,7 @@
 }
 textarea.ud-input { height: auto; min-height: 6rem; }
 .ud-input::placeholder { color: var(--muted-foreground); }
-.ud-input:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: 2px; }
+.ud-input:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: -2px; }
 .ud-input:disabled { cursor: not-allowed; background: var(--interactive-disabled); color: var(--interactive-disabled-foreground); }
 
 /* Empty state: a title (.ud-h3), a line of help (.ud-label), and at most one action. */
@@ -187,10 +187,19 @@ textarea.ud-input { height: auto; min-height: 6rem; }
    ud-app-shell-pane sections, each with an aria-label. From 768px the viewport is fixed
    and panes scroll; below it the page scrolls, so a phone keyboard never traps content.
    Panes are equal width; size them with style="--pane-columns: minmax(0, 1fr) 20rem",
-   which applies from 768px only, as React's md:grid-cols-[...] does. */
+   which applies from 768px only, as React's md:grid-cols-[...] does.
+   Phones: the sidebar is an off-canvas sheet opened from the toolbar, with no script, by
+   the native popover API: <aside class="ud-app-shell-sidebar" id="nav" popover> and, first
+   in the toolbar, <button class="ud-btn ud-btn-ghost ud-app-shell-menu" type="button"
+   popovertarget="nav">Menu</button>. From 768px the sidebar sits in its column and the
+   menu button hides. On a desktop mouse the toolbar's controls go compact (36px). */
 .ud-app-shell { display: grid; min-height: 100svh; margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-body); font-variant-numeric: var(--font-numeric-variant); }
-.ud-app-shell-sidebar { overflow-x: auto; border-bottom: 1px solid var(--sidebar-border); background: var(--sidebar); color: var(--sidebar-foreground); }
-.ud-app-shell-sidebar > nav { display: flex; gap: var(--space-1); padding: var(--space-2); }
+.ud-app-shell-sidebar { background: var(--sidebar); color: var(--sidebar-foreground); }
+.ud-app-shell-sidebar:not(:popover-open) { display: none; }
+.ud-app-shell-sidebar:popover-open { position: fixed; inset: 0 auto 0 0; width: min(20rem, 85vw); height: 100svh; max-height: none; margin: 0; padding: 0; border: 0; border-right: 1px solid var(--sidebar-border); overflow-y: auto; box-shadow: var(--shadow-3); }
+.ud-app-shell-sidebar::backdrop { background: var(--backdrop); opacity: 0.6; }
+.ud-app-shell-sidebar > nav { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-2); }
+.ud-app-shell-sidebar > nav > .ud-btn { justify-content: flex-start; }
 .ud-app-shell-toolbar {
   box-sizing: border-box;
   display: flex;
@@ -206,10 +215,12 @@ textarea.ud-input { height: auto; min-height: 6rem; }
 .ud-app-shell-pane:first-child { border-top: 0; }
 @media (min-width: 768px) {
   .ud-app-shell { height: 100svh; grid-template-columns: 14rem minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); overflow: hidden; }
-  .ud-app-shell-sidebar { grid-row: span 2; overflow: hidden auto; border-bottom: 0; border-right: 1px solid var(--sidebar-border); }
-  .ud-app-shell-sidebar > nav { flex-direction: column; }
-  .ud-app-shell-sidebar > nav > .ud-btn { justify-content: flex-start; }
+  .ud-app-shell-sidebar, .ud-app-shell-sidebar:not(:popover-open) { display: block; position: static; inset: auto; width: auto; height: auto; margin: 0; padding: 0; border: 0; grid-row: span 2; overflow: hidden auto; border-right: 1px solid var(--sidebar-border); box-shadow: none; }
+  .ud-app-shell-menu { display: none; }
   .ud-app-shell-panes { min-height: 0; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); grid-template-columns: var(--pane-columns, none); grid-template-rows: minmax(0, 1fr); }
   .ud-app-shell-pane { min-height: 0; overflow-y: auto; border-top: 0; border-left: 1px solid var(--border); }
   .ud-app-shell-pane:first-child { border-left: 0; }
+}
+@media (min-width: 768px) and (pointer: fine) {
+  .ud-app-shell-toolbar > * { --control-height: var(--control-height-compact); --touch-target-min: var(--control-height-compact); }
 }

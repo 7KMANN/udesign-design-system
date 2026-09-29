@@ -15,7 +15,7 @@ const SelectTrigger = React.forwardRef<React.ElementRef<typeof SelectPrimitive.T
     <SelectPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex h-[var(--control-height)] min-h-[var(--touch-target-min)] w-full items-center justify-between rounded-[var(--radius)] border border-[var(--input)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] transition-[transform,background-color,color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] active:bg-[var(--interactive-pressed)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[var(--interactive-disabled)] disabled:text-[var(--interactive-disabled-foreground)] [&>span]:truncate",
+        "flex h-[var(--control-height)] min-h-[var(--touch-target-min)] w-full items-center justify-between rounded-[var(--radius)] border border-[var(--input)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] transition-[transform,background-color,color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] active:bg-[var(--interactive-pressed)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--interactive-focus)] disabled:cursor-not-allowed disabled:bg-[var(--interactive-disabled)] disabled:text-[var(--interactive-disabled-foreground)] [&>span]:truncate",
         className,
       )}
       {...props}
@@ -44,7 +44,7 @@ const SelectContent = React.forwardRef<React.ElementRef<typeof SelectPrimitive.C
         ref={ref}
         position={position}
         className={cn(
-          "relative z-50 max-h-96 min-w-32 overflow-hidden rounded-[var(--radius)] border border-[var(--border)] bg-[var(--popover)] text-[var(--popover-foreground)] [box-shadow:var(--shadow-2)]",
+          "relative z-50 max-h-96 min-w-32 overflow-hidden rounded-[var(--radius)] border border-[var(--border)] bg-[var(--popover)] text-[var(--popover-foreground)] [box-shadow:var(--shadow-3)]",
           position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
           className,
         )}

@@ -14,7 +14,7 @@ const AppShell = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
     <div
       ref={ref}
       className={cn(
-        "grid min-h-svh bg-[var(--background)] text-[var(--foreground)] [font-variant-numeric:var(--font-numeric-variant)] md:h-svh md:grid-cols-[14rem_minmax(0,1fr)] md:grid-rows-[auto_minmax(0,1fr)] md:overflow-hidden",
+        "grid min-h-svh max-md:grid-cols-[minmax(0,1fr)] bg-[var(--background)] text-[var(--foreground)] [font-variant-numeric:var(--font-numeric-variant)] md:h-svh md:grid-cols-[14rem_minmax(0,1fr)] md:grid-rows-[auto_minmax(0,1fr)] md:overflow-hidden",
         className,
       )}
       {...props}
@@ -23,14 +23,16 @@ const AppShell = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
 )
 AppShell.displayName = "AppShell"
 
-// Put a <nav> inside. Lay it out `flex md:flex-col`: on phones the sidebar is a
-// row above the toolbar that scrolls sideways.
+// Put a <nav> inside, laid out as a column. From md only: on phones the same
+// nav opens in a Sheet (side="left") from a menu Button in the toolbar, one nav
+// component rendered in both places so they never drift (udesign-docs
+// standards/design/mobile-accessibility.md). examples/operations-queue.tsx shows it.
 const AppShellSidebar = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
   ({ className, ...props }, ref) => (
     <aside
       ref={ref}
       className={cn(
-        "overflow-x-auto border-b border-[var(--sidebar-border)] bg-[var(--sidebar)] text-[var(--sidebar-foreground)] md:row-span-2 md:overflow-y-auto md:overflow-x-hidden md:border-b-0 md:border-r",
+        "max-md:hidden border-r border-[var(--sidebar-border)] bg-[var(--sidebar)] text-[var(--sidebar-foreground)] md:row-span-2 md:overflow-y-auto md:overflow-x-hidden",
         className,
       )}
       {...props}
@@ -39,11 +41,15 @@ const AppShellSidebar = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLE
 )
 AppShellSidebar.displayName = "AppShellSidebar"
 
+// On a desktop mouse the toolbar's controls go compact (36px), the way Button
+// size="compact" does, so a field does not fill the 44px bar edge to edge. The
+// tokens are set on the children, not the bar, which keeps its own 44px height.
+// Touch keeps the 44px floor (ban 20).
 const AppShellToolbar = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
   ({ className, ...props }, ref) => (
     <header
       ref={ref}
-      className={cn("flex min-h-[var(--control-height)] items-center gap-2 border-b border-[var(--border)] bg-[var(--card)] px-4", className)}
+      className={cn("flex min-h-[var(--control-height)] items-center gap-2 md:[@media(pointer:fine)]:[&>*]:[--control-height:var(--control-height-compact)] md:[@media(pointer:fine)]:[&>*]:[--touch-target-min:var(--control-height-compact)] border-b border-[var(--border)] bg-[var(--card)] px-4", className)}
       {...props}
     />
   ),
@@ -56,7 +62,7 @@ const AppShellPanes = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLEle
   ({ className, ...props }, ref) => (
     <main
       ref={ref}
-      className={cn("grid md:min-h-0 md:grid-flow-col md:auto-cols-[minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)]", className)}
+      className={cn("grid max-md:grid-cols-[minmax(0,1fr)] md:min-h-0 md:grid-flow-col md:auto-cols-[minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)]", className)}
       {...props}
     />
   ),

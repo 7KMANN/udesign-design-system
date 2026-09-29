@@ -74,8 +74,9 @@ test('div-onclick flags a clickable div, not a stopPropagation wrapper or a butt
     '>',
     '<div onClick={(e) => e.stopPropagation()}>',
     '<button onClick={save}>Save</button>',
+    '<motion.div onClick={open} />',
   ].join('\n');
-  assert.deepEqual(hits('a.tsx', tsx), ['div-onclick:1']);
+  assert.deepEqual(hits('a.tsx', tsx), ['div-onclick:1', 'div-onclick:7']);
 });
 
 test('raw-motion flags literal durations and easings in CSS', () => {
@@ -85,8 +86,10 @@ test('raw-motion flags literal durations and easings in CSS', () => {
     '.c { animation: spin 1s linear infinite; }',
     '.d { transition-timing-function: cubic-bezier(0.2, 0, 0, 1); }',
     '.e { transition-duration: 0ms; transition: opacity var(--motion-ease-out); }',
+    '@theme { --animate-pop: pop 300ms ease-out; }',
+    '@theme { --animate-spin: spin var(--motion-loop-spin) infinite; }',
   ].join('\n');
-  assert.deepEqual(hits('a.css', css), ['raw-motion:1', 'raw-motion:3', 'raw-motion:4']);
+  assert.deepEqual(hits('a.css', css), ['raw-motion:6', 'raw-motion:1', 'raw-motion:3', 'raw-motion:4']);
 });
 
 test('raw-motion flags Tailwind duration and easing utilities, not the token forms', () => {
@@ -94,8 +97,48 @@ test('raw-motion flags Tailwind duration and easing utilities, not the token for
     '<div className="transition-colors duration-200 ease-out" />',
     '<div className="duration-[var(--motion-duration-fast)] ease-[var(--motion-easing-standard)]" />',
     '<div style={{ transitionDuration: "150ms" }} />',
+    '<div className="delay-150" />',
+    '<div className="duration-[250ms]" />',
+    '<div className="delay-[var(--motion-delay-indicator)]" />',
+  ].join('\n');
+  assert.deepEqual(hits('a.tsx', tsx), ['raw-motion:1', 'raw-motion:4', 'raw-motion:5', 'raw-motion:3']);
+});
+
+test('raw-motion flags framer-motion literals, not a zero or a token read', () => {
+  const tsx = [
+    '<motion.div transition={{ duration: 0.3 }} />',
+    '<motion.div transition={{ duration: 0 }} />',
+    'const t = { transition: { ease: "easeOut" } }',
+    '<motion.div transition={{ duration: seconds("--motion-duration-fast") }} />',
   ].join('\n');
   assert.deepEqual(hits('a.tsx', tsx), ['raw-motion:1', 'raw-motion:3']);
+});
+
+test('fill-as-text flags a fill role used as text, not its foreground pair or a fill', () => {
+  const tsx = [
+    '<p className="text-destructive">Échec</p>',
+    '<p className="text-destructive-foreground bg-[var(--destructive)]">OK</p>',
+    '<a className="text-[var(--primary)]">Lien</a>',
+    '<p className="text-[var(--tone-danger-foreground)]">OK</p>',
+    '<p style={{ color: "var(--muted)" }}>Note</p>',
+  ].join('\n');
+  assert.deepEqual(hits('a.tsx', tsx), ['fill-as-text:1', 'fill-as-text:3', 'fill-as-text:5']);
+  const css = '.a { color: var(--muted); }\n.b { background-color: var(--muted); color: var(--muted-foreground); }';
+  assert.deepEqual(hits('a.css', css), ['fill-as-text:1']);
+});
+
+test('toolbar-wrap flags a toolbar that wraps from md up, not one that wraps on phones', () => {
+  const tsx = '<AppShellToolbar className="flex-wrap" />\n<AppShellToolbar className="max-md:flex-wrap" />\n<AppShellToolbar className="md:flex-wrap" />';
+  assert.deepEqual(hits('a.tsx', tsx), ['toolbar-wrap:1', 'toolbar-wrap:3']);
+});
+
+test('press-missing flags a primitive with no active: treatment, only in a primitive folder', () => {
+  const bare = 'export const X = () => <button className="px-2" />';
+  assert.deepEqual(hits('components/ui/x.tsx', bare), ['press-missing:1']);
+  assert.deepEqual(hits('app/page.tsx', bare), []);
+  assert.deepEqual(hits('components/ui/y.tsx', '<button className="active:bg-[var(--interactive-pressed)]" />'), []);
+  assert.deepEqual(hits('components/ui/z.tsx', '<span className="group-active:scale-95" /><SliderPrimitive.Thumb />'), []);
+  assert.deepEqual(hits('components/ui/tooltip.tsx', '<TooltipPrimitive.Trigger {...props} />'), []);
 });
 
 test('ud-primitive flags var(--ud-*) in consumer source but not in a synced copy of the tokens', () => {
@@ -109,6 +152,7 @@ test('em-dash flags interface copy, not comments', () => {
   assert.deepEqual(hits('a.html', html), ['em-dash:3', 'em-dash:4']);
   const tsx = '// fetches — no polling\n/* also — fine */\nconst msg = "Échec — réessayez";\n<p>A — B</p>';
   assert.deepEqual(hits('a.tsx', tsx), ['em-dash:3', 'em-dash:4']);
+  assert.deepEqual(hits('b.ts', 'const a = "x \\u2014 y";\nconst b = `x \\u{2014} y`;'), ['em-dash:1', 'em-dash:2']);
 });
 
 test('accent-colour-name flags an identifier or custom property named gold, not a product colour', () => {

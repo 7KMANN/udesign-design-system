@@ -79,8 +79,8 @@
   block-size: var(--touch-target-min, 2.75rem);
   flex: 0 0 auto;
   border-radius: var(--radius-sm);
-  background: var(--foreground);
-  color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
   font-family: Montserrat, sans-serif;
   font-weight: 900;
 }

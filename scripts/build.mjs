@@ -69,6 +69,7 @@ const ROLE_VAR = {
   'sidebar-accent-foreground': '--sidebar-accent-foreground',
   'sidebar-border': '--sidebar-border',
   'sidebar-ring': '--sidebar-ring',
+  highlight: '--highlight',
   client: '--client',
 };
 
@@ -430,7 +431,7 @@ function formatTypographyHelpers(t, baseTree, scopes = []) {
       })?.[0] || 'regular';
 
     const extra = key === 'label' ? ';color:var(--muted-foreground)' : '';
-    const comment = key === 'label' ? ' /* Title case, no uppercase/tracking */' : '';
+    const comment = key === 'label' ? ' /* Sentence case, no uppercase or tracking */' : '';
     const selector = scopes.length
       ? scopes.map((scope) => `${scope} .ud-${key}`).join(',')
       : `.ud-${key}`;

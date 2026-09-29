@@ -32,7 +32,7 @@ const buttonVariants = {
 } as const
 
 const buttonSizes = {
-  compact: "h-[var(--control-height-compact)] max-md:min-h-[var(--touch-target-min)] pointer-coarse:min-h-[var(--touch-target-min)] px-3 text-sm",
+  compact: "h-[var(--control-height-compact)] max-md:min-h-[var(--touch-target-min)] [@media(pointer:coarse)]:min-h-[var(--touch-target-min)] px-3 text-sm",
   default: "h-[var(--control-height)] min-h-[var(--touch-target-min)] px-4 py-2",
   icon: "size-[var(--touch-target-min)] p-0",
 } as const
@@ -47,7 +47,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={pending || undefined}
         disabled={asChild ? undefined : disabled || pending}
         className={cn(
-          "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius)] font-medium transition-[transform,background-color,color,opacity] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] focus-visible:ring-offset-2 disabled:pointer-events-none",
+          "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius)] font-medium transition-[transform,background-color,color,opacity] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--interactive-focus)] disabled:pointer-events-none",
           // A pending button keeps its own colours. Greying it out reads as
           // "broken", which is the opposite of what it is doing.
           busy ? "active:scale-100" : "disabled:bg-[var(--interactive-disabled)] disabled:text-[var(--interactive-disabled-foreground)]",

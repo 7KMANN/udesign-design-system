@@ -4,6 +4,7 @@ export default {
     "./showcase/index.html",
     "./showcase/src/**/*.{js,ts,jsx,tsx}",
     "./registry/new-york/ui/**/*.{ts,tsx}",
+    "./examples/**/*.tsx",
   ],
   theme: {
     extend: {

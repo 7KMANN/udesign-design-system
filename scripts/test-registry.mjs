@@ -110,8 +110,10 @@ assert.match(checkboxRoot, /size-\[var\(--touch-target-min\)\]/)
 assert.match(switchRoot, /h-\[var\(--touch-target-min\)\]/)
 
 // Regression guards for the GlobalVision UI-sweep upstream bug patches (v1.3.1).
-assert.doesNotMatch(files["button.tsx"], /compact:\s*"[^"]*h-\[var\(--control-height-compact\)\] min-h-\[var\(--touch-target-min\)\]/, "button compact size must not flatten to a fixed 44px; use the max-md/pointer-coarse promotion pattern")
-assert.match(files["button.tsx"], /max-md:min-h-\[var\(--touch-target-min\)\] pointer-coarse:min-h-\[var\(--touch-target-min\)\]/)
+assert.doesNotMatch(files["button.tsx"], /compact:\s*"[^"]*h-\[var\(--control-height-compact\)\] min-h-\[var\(--touch-target-min\)\]/, "button compact size must not flatten to a fixed 44px; use the max-md/pointer:coarse promotion pattern")
+// An arbitrary media variant, not `pointer-coarse:`: Tailwind 3 has no pointer variants and drops it.
+assert.match(files["button.tsx"], /max-md:min-h-\[var\(--touch-target-min\)\] \[@media\(pointer:coarse\)\]:min-h-\[var\(--touch-target-min\)\]/)
+assert.match(files["app-shell.tsx"], /md:\[@media\(pointer:fine\)\]:\[&>\*\]:\[--touch-target-min:var\(--control-height-compact\)\]/)
 assert.doesNotMatch(files["checkbox.tsx"], /disabled:opacity-50/, "checkbox disabled state must use --interactive-disabled roles, not opacity")
 assert.doesNotMatch(files["switch.tsx"], /disabled:opacity-50/, "switch disabled state must use --interactive-disabled roles, not opacity")
 assert.doesNotMatch(files["dialog.tsx"], /bg-\[var\(--backdrop\)\] opacity-60/, "dialog overlay scrim alpha must ride on the color, not an opacity utility")

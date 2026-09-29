@@ -27,7 +27,7 @@ const MIRROR = {
   "empty-state": ["ud-empty-state"],
   pressable: ["ud-pressable"],
   "page-canvas": ["ud-page-canvas", "ud-page-section", "ud-page-section-band"],
-  "app-shell": ["ud-app-shell", "ud-app-shell-sidebar", "ud-app-shell-toolbar", "ud-app-shell-panes", "ud-app-shell-pane"],
+  "app-shell": ["ud-app-shell", "ud-app-shell-sidebar", "ud-app-shell-toolbar", "ud-app-shell-panes", "ud-app-shell-pane", "ud-app-shell-menu"],
   alert: "no generator wrote one",
   select: "Radix behaviour, and a native <select> is ban 9",
   checkbox: "Radix behaviour, and a native checkbox is ban 9",

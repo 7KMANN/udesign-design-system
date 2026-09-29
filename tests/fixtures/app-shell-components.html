@@ -15,7 +15,7 @@
 
 <body class="ud-app-shell">
 
-    <aside class="ud-app-shell-sidebar">
+    <aside class="ud-app-shell-sidebar" id="nav" popover>
         <nav aria-label="Sections">
             <a class="ud-btn ud-btn-ghost" href="queue.html" aria-current="page">Queue</a>
             <a class="ud-btn ud-btn-ghost" href="schedule.html">Schedule</a>
@@ -24,6 +24,7 @@
     </aside>
 
     <header class="ud-app-shell-toolbar">
+        <button class="ud-btn ud-btn-ghost ud-app-shell-menu" type="button" popovertarget="nav">Menu</button>
         <h1 class="ud-h2" style="margin: 0;">Production Queue</h1>
         <input class="ud-input" type="search" aria-label="Search orders" placeholder="Search orders" style="max-width: 16rem; margin-left: auto;">
         <button class="ud-btn ud-btn-outline" type="button">Export</button>

@@ -3,6 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
+  /** Accessible name for the scroll region. English by default: pass the interface's language (fr-CA first). */
   scrollLabel?: string
 }
 

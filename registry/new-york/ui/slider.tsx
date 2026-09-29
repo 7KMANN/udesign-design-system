@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
->(({ className, value, defaultValue, min = 0, max = 100, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, ...props }, ref) => {
+>(({ className, value, defaultValue, min = 0, max = 100, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, "aria-valuetext": ariaValueText, ...props }, ref) => {
   const thumbValues = value ?? defaultValue ?? [min]
   return (
     <SliderPrimitive.Root
@@ -31,7 +31,8 @@ const Slider = React.forwardRef<
           key={index}
           aria-label={ariaLabel}
           aria-labelledby={ariaLabelledBy}
-          className="group relative flex size-[var(--touch-target-min)] items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] focus-visible:ring-offset-2 data-[disabled]:cursor-not-allowed"
+          aria-valuetext={ariaValueText}
+          className="group relative flex size-[var(--touch-target-min)] items-center justify-center rounded-full outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--interactive-focus)] data-[disabled]:cursor-not-allowed"
         >
           <span className="pointer-events-none block size-5 rounded-full border border-[var(--border)] bg-[var(--background)] [box-shadow:var(--shadow-1)] transition-[transform,background-color,border-color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] group-active:scale-[var(--motion-press-scale)] group-active:bg-[var(--interactive-pressed)] group-data-[disabled]:border-[var(--interactive-disabled-foreground)] group-data-[disabled]:bg-[var(--interactive-disabled)]" />
         </SliderPrimitive.Thumb>

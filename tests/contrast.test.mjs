@@ -102,6 +102,32 @@ for (const [themeName, tree] of profiles) {
     }
   });
 
+  test(`${themeName} focus ring and switch boundary meet 3:1 on every surface`, () => {
+    for (const surface of ['role.background', 'role.card', 'role.popover', 'surface.raised']) {
+      for (const boundary of ['interactive.focus', 'role.muted-foreground']) {
+        const ratio = contrast(resolveHex(tree, boundary), resolveHex(tree, surface));
+        assert(ratio >= 3, `${boundary} on ${surface} has ${ratio.toFixed(2)}:1 contrast`);
+      }
+    }
+  });
+
+  // Hover and pressed are a ladder: each must show against the page floor, a
+  // secondary fill, and the step before it. Equal values made hover vanish on
+  // the operations floor and press vanish on a secondary button.
+  test(`${themeName} hover and pressed differ from what they sit on`, () => {
+    for (const [a, b] of [
+      ['interactive.hover', 'role.background'], ['interactive.hover', 'role.secondary'],
+      ['interactive.pressed', 'role.secondary'], ['interactive.pressed', 'interactive.hover'],
+    ]) {
+      const ratio = contrast(resolveHex(tree, a), resolveHex(tree, b));
+      assert(ratio >= 1.03, `${a} on ${b} is ${ratio.toFixed(2)}:1, indistinguishable`);
+    }
+  });
+
+  test(`${themeName} highlighted text stays readable`, () => {
+    assertPair(tree, 'role.foreground', 'role.highlight');
+  });
+
   test(`${themeName} chart colors meet graphical-object contrast`, () => {
     for (let series = 1; series <= 8; series += 1) {
       const ratio = contrast(resolveHex(tree, `data.${series}`), resolveHex(tree, 'role.background'));

@@ -13,7 +13,17 @@ const CITE = {
   'accent-colour-name': 'AGENTS.md rule 5',
   'profile-pin': 'AGENTS.md rule 6',
   shell: 'ban 27',
+  'fill-as-text': 'ban 28',
+  'toolbar-wrap': 'ban 30',
+  'press-missing': 'ban 16',
 };
+
+// Fill roles (DESIGN.md "Core roles"): each pairs with its own -foreground, never used as text.
+const FILL = 'primary|secondary|muted|destructive|accent';
+const FILL_CSS = new RegExp(`(?<![\\w-])color\\s*:\\s*["'\`]?var\\(--(${FILL})\\)`, 'g');
+const FILL_TW = new RegExp(`(?<![\\w-])text-(?:\\[(?:color:)?var\\(--(?:${FILL})\\)\\]|(?:${FILL}))(?![\\w-])`, 'g');
+// A shared primitive folder (seed spec R7): application code gets press feedback by using these.
+const PRIMITIVES = /(?:^|[\\/])(?:components[\\/]ui|registry[\\/][\w-]+[\\/]ui)[\\/]/;
 
 const OPERATIONS = /^operations$/;
 const PRESENTATION = /^presentation$/;
@@ -83,15 +93,23 @@ function balanced(code, start) {
 const isAccentButton = (tag) => !/\bvariant\s*=/.test(tag) || /\bvariant\s*=\s*(\{\s*)?["']default["']/.test(tag);
 
 function* rawMotion(code) {
-  for (const m of code.matchAll(/(?<![\w-])(duration-\d+|ease-(in-out|in|out|linear)|ease-\[cubic-bezier[^\]]*\])(?![\w-])/g)) {
+  for (const m of code.matchAll(/(?<![\w-])((?:duration|delay)-\d+|(?:duration|delay)-\[(?!var\()[^\]]*\]|ease-(in-out|in|out|linear)|ease-\[cubic-bezier[^\]]*\])(?![\w-])/g)) {
     yield [m.index, `\`${m[1]}\`; use a --motion-* role`];
   }
-  const decl = /(?<![\w-])(?:transition|animation)(?:-duration|-timing-function|-delay|Duration|TimingFunction|Delay)?\s*:\s*["'`]?([^;{}\n"'`]*)/g;
+  const decl = /(?<![\w-])(?:transition|animation|--animate-[\w-]+)(?:-duration|-timing-function|-delay|Duration|TimingFunction|Delay)?\s*:\s*["'`]?([^;{}\n"'`]*)/g;
   for (const m of code.matchAll(decl)) {
     const value = m[1].replace(/var\([^)]*\)/g, '');
     const duration = [...value.matchAll(/(?<![\w.-])(\d*\.?\d+)m?s\b/g)].some((d) => Number(d[1]) !== 0);
     const easing = /cubic-bezier\(|steps\(|(?<![\w-])(ease|ease-in|ease-out|ease-in-out|linear|step-start|step-end)(?![\w-])/.test(value);
     if (duration || easing) yield [m.index, `\`${m[0].trim()}\`; use --motion-* roles`];
+  }
+  // framer-motion: `transition={{ duration: 0.3, ease: "easeOut" }}`, seconds with no unit.
+  for (const m of code.matchAll(/(?<![\w-])transition\s*(?:=\s*\{|:)\s*(?=\{)/g)) {
+    const body = balanced(code, m.index + m[0].length);
+    for (const d of body.matchAll(/(?<![\w-])(duration|delay)\s*:\s*(\d*\.?\d+)(?![\w.])/g)) {
+      if (Number(d[2]) !== 0) yield [m.index, `\`${d[0]}\` in a motion transition; read the --motion-* role`];
+    }
+    if (/(?<![\w-])ease\s*:\s*["'`[]/.test(body)) yield [m.index, 'a literal `ease` in a motion transition; read the --motion-* role'];
   }
 }
 
@@ -147,13 +165,21 @@ function checkJs(text, add, tree) {
     }
   }
 
-  for (const m of code.matchAll(/<div(?![\w.-])/g)) {
+  for (const m of code.matchAll(/<(?:motion\.)?div(?![\w.-])/g)) {
     const tag = tagAt(code, m.index);
     const on = tag.search(/\bonClick\s*=\s*\{/);
     if (on < 0) continue;
     const handler = balanced(tag, tag.indexOf('{', on)).replace(/\s/g, '');
-    if (!/^\{\(?\w+\)?=>\w+\.stopPropagation\(\)\}$/.test(handler)) add('div-onclick', m.index, 'a <div> with onClick; a clickable row, card or item is Pressable');
+    if (!/^\{\(?\w+\)?=>\w+\.stopPropagation\(\)\}$/.test(handler)) add('div-onclick', m.index, 'a <div> or <motion.div> with onClick; a clickable row, card or item is Pressable');
   }
+
+  for (const m of code.matchAll(/<AppShellToolbar(?![\w.])/g)) {
+    if (/(?<![\w:-])(?:(?:sm|md|lg|xl|2xl):)?flex-wrap(?![\w-])/.test(tagAt(code, m.index))) {
+      add('toolbar-wrap', m.index, 'the toolbar wraps from md up; prefix it `max-md:flex-wrap` and move what does not fit into a menu');
+    }
+  }
+
+  for (const m of code.matchAll(FILL_TW)) add('fill-as-text', m.index, `\`${m[0]}\` uses a fill role as text; pair the fill with its -foreground, or use a tone foreground`);
 
   for (const m of code.matchAll(/(?<!\[)data-design\s*=/g)) {
     const tag = code.slice(0, m.index).match(/<([A-Za-z][\w.]*)[^<]*$/)?.[1];
@@ -168,7 +194,8 @@ function checkJs(text, add, tree) {
     add('profile-pin', m.index, 'the profile switched at runtime; pin it once, on <html>');
   }
 
-  for (const m of code.matchAll(/\u2014/g)) add('em-dash', m.index, 'em-dash in interface copy; use a hyphen or a colon');
+  // The character itself, or its escape in a string literal.
+  for (const m of code.matchAll(/\u2014|\\u2014|\\u\{2014\}/g)) add('em-dash', m.index, 'em-dash in interface copy; use a hyphen or a colon');
 
   for (const m of blankJs(text, true).matchAll(/\b(?:const|let|var|function|class|type|interface|enum)\s+([A-Za-z_$][\w$]*)/g)) {
     const parts = m[1].replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase().split(/[_$]+/);
@@ -197,6 +224,12 @@ export function check(files) {
     else code = checkJs(text, add, tree);
 
     for (const [index, message] of rawMotion(code)) add('raw-motion', index, message);
+    for (const m of code.matchAll(FILL_CSS)) add('fill-as-text', m.index, `\`${m[0]}\` uses a fill role as text; pair the fill with its -foreground, or use a tone foreground`);
+    // group-active: counts. An overlay's Trigger is left out: it wraps a Button through asChild.
+    if (PRIMITIVES.test(file) && ext !== 'css' && !/\bactive:|:active\b/.test(code)) {
+      const el = code.search(/<(?:button|\w*(?:Checkbox|Switch|Toggle)\w*\.Root|(?!(?:Tooltip|Popover|HoverCard|Dialog|AlertDialog|Sheet|Drawer|DropdownMenu|ContextMenu|Menubar)\w*\.Trigger)[A-Z]\w*\.(?:Trigger|Item|Close|Thumb))(?![\w.])|role\s*=\s*["']button["']/);
+      if (el >= 0) add('press-missing', el, 'an interactive primitive with no `active:` treatment; give it --interactive-pressed or --motion-press-scale');
+    }
     if (!TOKENS_COPY.test(text)) {
       for (const m of code.matchAll(/var\(--ud-[\w-]*/g)) add('ud-primitive', m.index, `\`${m[0]})\` is a primitive; use a semantic role`);
     }

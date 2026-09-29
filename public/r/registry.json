@@ -250,7 +250,7 @@
       "type": "registry:component",
       "title": "App Shell",
       "description": "The operations page shell: a persistent sidebar, a toolbar, and panes that scroll inside a fixed viewport.",
-      "docs": "Use for a screen operated by someone, under data-design=\"operations\". Compose AppShell > AppShellSidebar (put a nav inside, laid out flex md:flex-col) + AppShellToolbar + AppShellPanes > AppShellPane (give each an aria-label). From md the viewport is fixed and panes scroll; below md the page scrolls and the sidebar becomes a row. Panes butt against each other on hairlines: no gap, no elevation. A presentation screen uses PageCanvas instead. See DESIGN.md \"Profiles\".",
+      "docs": "Use for a screen operated by someone, under data-design=\"operations\". Compose AppShell > AppShellSidebar (put a nav inside, laid out as a column) + AppShellToolbar + AppShellPanes > AppShellPane (give each an aria-label). From md the viewport is fixed and panes scroll, and the toolbar's controls go compact on a desktop mouse. Below md the page scrolls and the sidebar hides: render the same nav in a Sheet (side=\"left\") opened from a menu Button first in the toolbar, as examples/operations-queue.tsx does. Panes butt against each other on hairlines: no gap, no elevation. A presentation screen uses PageCanvas instead. See DESIGN.md \"Profiles\".",
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/app-shell.tsx", "type": "registry:component", "target": "components/ui/app-shell.tsx" }]
     },

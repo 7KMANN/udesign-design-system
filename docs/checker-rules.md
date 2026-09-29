@@ -23,12 +23,15 @@ was chosen by running the candidates over real consumer source first (S3 ledger,
 | Rule | Cites | Flags | Does not flag |
 |---|---|---|---|
 | `accent-repeated` | ban 26 | HTML: two or more `ud-btn-primary` under the same ancestor path (tag and classes), which is a repeated block. React: a `<Button>` with no `variant`, or `variant="default"`, inside a `.map()` callback. | One accent in a hero and one in a footer: different paths. |
-| `div-onclick` | `AGENTS.md` rule 2 | A JSX `<div>` with `onClick`, whatever its `role` or `tabIndex`. | A handler that only calls `stopPropagation()`, which makes nothing clickable. |
-| `raw-motion` | ban 19 | `duration-<n>`, `ease-in`/`-out`/`-in-out`/`-linear`, `ease-[cubic-bezier(...)]`; a `transition` or `animation` declaration (CSS or a style object) whose value holds a non-zero literal time, an easing keyword, `cubic-bezier()` or `steps()`. | Anything inside `var()`; a zero duration. |
+| `div-onclick` | `AGENTS.md` rule 2 | A JSX `<div>` or `<motion.div>` with `onClick`, whatever its `role` or `tabIndex`. | A handler that only calls `stopPropagation()`, which makes nothing clickable. |
+| `raw-motion` | ban 19 | `duration-<n>`, `delay-<n>`, `duration-[<literal>]`, `delay-[<literal>]`, `ease-in`/`-out`/`-in-out`/`-linear`, `ease-[cubic-bezier(...)]`; a `transition`, `animation` or `--animate-*` declaration (CSS or a style object) whose value holds a non-zero literal time, an easing keyword, `cubic-bezier()` or `steps()`; a framer-motion `transition` object with a non-zero `duration` or `delay` number or a literal `ease`. | Anything inside `var()`; a zero duration; a duration read from a function call. |
 | `ud-primitive` | ban 1 | `var(--ud-*)`. | A synced copy of `dist/tokens.css`, recognized by its header. |
-| `em-dash` | ban 14 | An em-dash (U+2014, `&mdash;`, `&#8212;`) in HTML markup or JS/TS source, including a lone placeholder (D-29). | Comments, `<style>`, `<script>`. |
+| `em-dash` | ban 14 | An em-dash (U+2014, `&mdash;`, `&#8212;`) in HTML markup or JS/TS source, including a lone placeholder (D-29), and its string escape (`\u2014`, `\u{2014}`). Developer-only strings (`console`, `Error`) too: ban 14 covers every string. | Comments, `<style>`, `<script>`. |
 | `accent-colour-name` | `AGENTS.md` rule 5 | A declared identifier with `gold` as a word part (`GOLD`, `goldAccent`); a CSS custom property with one (`--brand-gold`). | A product colour in copy or data ("Athletic Gold"). |
 | `profile-pin` | `AGENTS.md` rule 6 | `data-design` on any element but `<html>`; `dataset.design =`; `setAttribute("data-design", ...)`; a root still on `brand` or `functional`, removed in v3. | `[data-design=...]` selectors. |
+| `fill-as-text` | ban 28 | A fill role (`primary`, `secondary`, `muted`, `destructive`, `accent`) as text: `text-destructive`, `text-[var(--primary)]`, `color: var(--muted)` in CSS or a style object. Measured on GlobalVision: 215 before its sweep, 194 after, each a contrast failure in one theme. | The `-foreground` pair; the same role as a background or border. |
+| `toolbar-wrap` | ban 30 | `<AppShellToolbar>` whose classes hold `flex-wrap` unprefixed or from a breakpoint up. Measured: 4 hits on GlobalVision's toolbars before its sweep, 0 after. | `max-md:flex-wrap` or `max-sm:flex-wrap`. |
+| `press-missing` | ban 16 | Seed spec R7: a file in a primitive folder (`components/ui/`, `registry/*/ui/`) that renders `<button>`, `role="button"`, a Checkbox, Switch or Toggle root, or a Radix Trigger, Item, Close or Thumb, and holds no `active:` (`group-active:` counts) and no `:active`. | Application code, which gets its press from the primitives; an overlay's Trigger (Tooltip, Popover, Dialog, menus), which wraps a Button through `asChild`. |
 | `shell` | ban 27 | HTML: an `operations` root with no `ud-app-shell`; a `presentation` root with one. React: an `operations` `<html>` with no `<AppShell>` anywhere in the scanned tree; a `presentation` one with any. | A document with no `data-design`. |
 
 **Scope.** `.html`, `.css`, `.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`. Skips `node_modules`, `.git`,
@@ -71,7 +74,8 @@ Fewer rules (plan 8, risk 3). Each can ship later with a form that needs no judg
   from string handling (158 `.replace(` calls in GlobalVision), and no ban covers it yet.
 - **`shadow-[var(...)]` (Δ-13).** Only a Tailwind 3 bug. Tailwind 4.1.13 compiles it as a real
   `box-shadow`, so in GlobalVision every hit would be false.
-- **R2 to R7 below.** Seed specifications, not in the plan's list. R4 (ban 18) is the cheapest.
+- **R2 to R6 below.** Seed specifications, not in the plan's list. R4 (ban 18) is the cheapest. R7 ships as `press-missing`.
+- **Bans 29, 31 and 32** (containment, a stretched card, a `flex-1` scroll root). Each needs judgement: `h-full` on a card is right when a row aligns with `mt-auto`, and 9 GlobalVision cards survived its sweep that way. `tests/e2e/layout-audit.spec.ts` measures ban 31 on the reference screens instead, with the toolbar edge and phone overflow, and a consumer can port it.
 
 ---
 

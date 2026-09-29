@@ -7,12 +7,14 @@
 "use client"
 
 import * as React from "react"
+import { Menu } from "lucide-react"
 
 import { AppShell, AppShellPane, AppShellPanes, AppShellSidebar, AppShellToolbar } from "@/components/ui/app-shell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { MetricCard } from "@/components/ui/metric-card"
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
@@ -56,6 +58,27 @@ const history = [
 const sections = [["Tableau", ""], ["Commandes", "14"], ["Production", "10"], ["Soumissions", "5"], ["Inventaire", ""], ["Clients", ""], ["Factures", ""]]
 const counts = [["En attente", 4], ["En production", 3], ["Prêt", 2], ["En retard", 1]] as const
 
+// One nav, rendered in the sidebar from md and in the phone sheet below it, so the two never drift.
+// In the sheet each link also closes it; your router's navigation does the rest.
+function Nav({ inSheet = false }: { inSheet?: boolean }) {
+  const Item = inSheet ? SheetClose : React.Fragment
+  return (
+    <nav aria-label="Principal" className="flex flex-col py-2">
+      {sections.map(([name, count]) => (
+        <Item key={name} {...(inSheet ? { asChild: true } : {})}>
+          {/* Navigation is chrome: ghost, never the accent. The current page is marked by weight and surface. */}
+          <Button asChild variant="ghost" className="justify-between px-4 aria-[current=page]:bg-[var(--sidebar-accent)] aria-[current=page]:font-semibold">
+            <Link href={`/${name.toLowerCase()}`} aria-current={name === "Production" ? "page" : undefined}>
+              <span>{name}</span>
+              <span className={`text-[var(--muted-foreground)] ${num}`}>{count}</span>
+            </Link>
+          </Button>
+        </Item>
+      ))}
+    </nav>
+  )
+}
+
 export function OperationsQueue() {
   const [method, setMethod] = React.useState<string | null>(null)
   const visible = method ? orders.filter((o) => o.method.includes(method)) : orders
@@ -68,20 +91,21 @@ export function OperationsQueue() {
         <div className="flex min-h-[var(--control-height)] items-center border-b border-[var(--sidebar-border)] px-4">
           <span className="[font-family:'Montserrat',sans-serif] font-black">UDesign</span>
         </div>
-        <nav aria-label="Principal" className="flex py-2 md:flex-col">
-          {sections.map(([name, count]) => (
-            // Navigation is chrome: ghost, never the accent. The current page is marked by weight and surface.
-            <Button key={name} asChild variant="ghost" className="justify-between px-4 aria-[current=page]:bg-[var(--sidebar-accent)] aria-[current=page]:font-semibold">
-              <Link href={`/${name.toLowerCase()}`} aria-current={name === "Production" ? "page" : undefined}>
-                <span>{name}</span>
-                <span className={`text-[var(--muted-foreground)] ${num}`}>{count}</span>
-              </Link>
-            </Button>
-          ))}
-        </nav>
+        <Nav />
       </AppShellSidebar>
 
-      <AppShellToolbar className="flex-wrap">
+      {/* Wraps on phones only: from md the toolbar holds one row (ban 30). */}
+      <AppShellToolbar className="max-md:flex-wrap">
+        {/* Phones: the sidebar hides and the same nav opens from here, off canvas. */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden" aria-label="Menu"><Menu className="size-5" aria-hidden="true" /></Button>
+          </SheetTrigger>
+          <SheetContent side="left" closeLabel="Fermer" className="w-[min(20rem,85vw)] bg-[var(--sidebar)] text-[var(--sidebar-foreground)]">
+            <SheetHeader><SheetTitle className="[font-family:'Montserrat',sans-serif] font-black">UDesign</SheetTitle></SheetHeader>
+            <Nav inSheet />
+          </SheetContent>
+        </Sheet>
         <h1 className="ud-h1 mr-auto">File de production</h1>
         <Input aria-label="Rechercher une commande" placeholder="Rechercher une commande" className="w-full sm:w-56" />
         {/* A toolbar is a group of peers: ghost, with the active filter shown by aria-pressed. */}
@@ -137,7 +161,7 @@ export function OperationsQueue() {
         <AppShellPane aria-label="Détail de la commande" className="bg-[var(--card)]">
           <div className="grid gap-3 border-b border-[var(--border)] p-[var(--surface-padding,1.5rem)]">
             <div>
-              <p className={`ud-label ${num}`}>UD-1042</p>
+              <p className="ud-label"><span className={num}>UD-1042</span></p>
               <h2 className="ud-h2">Club exemple</h2>
             </div>
             <div className="flex flex-wrap gap-2">

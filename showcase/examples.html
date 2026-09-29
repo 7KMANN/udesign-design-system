@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<!-- The reference screens from examples/, one per document, for tests/e2e/layout-audit.spec.ts.
+     ?screen=operations or ?screen=presentation. The profile is pinned once, before first paint. -->
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UDesign reference screens</title>
+  <link rel="stylesheet" href="../dist/tokens.css">
+  <script>
+    document.documentElement.dataset.design = new URLSearchParams(location.search).get('screen') === 'operations' ? 'operations' : 'presentation';
+  </script>
+</head>
+<body class="bg-background text-foreground">
+  <div id="root"></div>
+  <script type="module" src="/src/examples-main.tsx"></script>
+</body>
+</html>

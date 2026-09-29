@@ -17,6 +17,7 @@ const SheetOverlay = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Ove
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 
 export interface SheetContentProps extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content> {
+  /** Accessible name for the close button. English by default: pass the interface's language (fr-CA first). */
   closeLabel?: string
   side?: "top" | "right" | "bottom" | "left"
 }
@@ -34,7 +35,7 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
       <SheetOverlay />
       <SheetPrimitive.Content
         ref={ref}
-        className={cn("fixed z-50 grid max-h-[var(--dialog-block-size-max)] gap-4 overflow-y-auto border-[var(--border)] bg-[var(--surface-raised)] [--surface-padding-default:var(--content-gutter-mobile)] sm:[--surface-padding-default:1.5rem] p-[var(--surface-padding,var(--surface-padding-default))] text-[var(--surface-raised-foreground)] [box-shadow:var(--shadow-3)]", sides[side], className)}
+        className={cn("fixed z-50 flex max-h-[var(--dialog-block-size-max)] flex-col gap-4 overflow-y-auto border-[var(--border)] bg-[var(--surface-raised)] [--surface-padding-default:var(--content-gutter-mobile)] sm:[--surface-padding-default:1.5rem] p-[var(--surface-padding,var(--surface-padding-default))] text-[var(--surface-raised-foreground)] [box-shadow:var(--shadow-3)]", sides[side], className)}
         {...props}
       >
         {children}
@@ -48,7 +49,8 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
 )
 SheetContent.displayName = SheetPrimitive.Content.displayName
 
-const SheetHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn("flex flex-col gap-1.5 text-left", className)} {...props} />
+// pr-10 keeps a long title clear of the close button (8px inset, 44px target) at every --surface-padding.
+const SheetHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn("flex flex-col gap-1.5 pr-10 text-left", className)} {...props} />
 SheetHeader.displayName = "SheetHeader"
 
 const SheetFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn("mt-auto flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)} {...props} />

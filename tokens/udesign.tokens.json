@@ -60,7 +60,7 @@
     "border":            { "$value": "{color.neutral.border}" },
     "border-strong":     { "$value": "{color.neutral.border-strong}" },
     "input":             { "$value": "{color.neutral.border-strong}" },
-    "ring":              { "$value": "{color.accent.base}" },
+    "ring":              { "$description": "The accent base is 2.1 to 2.4:1 on light surfaces; the deep accent clears the 3:1 focus minimum.", "$value": "{color.accent.deep}" },
     "destructive":       { "$value": "{color.status.danger}" },
     "destructive-foreground": { "$value": "{color.white}" },
     "sidebar":           { "$value": "{color.neutral.panel}" },
@@ -70,7 +70,8 @@
     "sidebar-accent":    { "$value": "{color.accent.wash}" },
     "sidebar-accent-foreground": { "$value": "{color.ink}" },
     "sidebar-border":    { "$value": "{color.neutral.border}" },
-    "sidebar-ring":      { "$value": "{color.accent.base}" },
+    "sidebar-ring":      { "$value": "{color.accent.deep}" },
+    "highlight":         { "$description": "Marks matched text, as in search results. Not a status: never a tone family.", "$value": "{color.accent.300}" },
     "client":            { "$description": "Adaptive per-page accent. Overridden with the client's own brand color; everything else stays fixed.", "$value": "{color.accent.base}" }
   },
 
@@ -163,12 +164,13 @@
 
   "interactive": {
     "$type": "color",
-    "hover": { "$value": "{color.neutral.panel}" },
-    "pressed": { "$value": "{color.neutral.panel-2}" },
+    "$description": "Hover and pressed each step off the page floor and off --secondary, so both states show on every surface.",
+    "hover": { "$value": "{color.neutral.panel-2}" },
+    "pressed": { "$value": "{color.neutral.border}" },
     "selected": { "$value": "{color.accent.wash}" },
     "selected-foreground": { "$value": "{color.ink}" },
     "selected-border": { "$value": "{color.accent.deep}" },
-    "focus": { "$value": "{color.accent.base}" },
+    "focus": { "$value": "{color.accent.deep}" },
     "disabled": { "$value": "{color.neutral.panel-2}" },
     "disabled-foreground": { "$value": "{color.neutral.muted}" }
   },
@@ -268,7 +270,8 @@
       "sidebar-accent": { "$value": { "colorSpace": "srgb", "components": [0.22, 0.184, 0.145], "hex": "#382f25" } },
       "sidebar-accent-foreground": { "$value": "{color.neutral.panel}" },
       "sidebar-border": { "$value": { "colorSpace": "srgb", "components": [0.278, 0.251, 0.212], "hex": "#474036" } },
-      "sidebar-ring": { "$value": "{color.accent.300}" }
+      "sidebar-ring": { "$value": "{color.accent.300}" },
+      "highlight": { "$value": { "colorSpace": "srgb", "components": [0.369, 0.294, 0.173], "hex": "#5e4b2c" } }
     },
     "tone": {
       "$type": "color",
@@ -340,7 +343,7 @@
     },
     "interactive": {
       "$type": "color",
-      "hover": { "$value": { "colorSpace": "srgb", "components": [0.169, 0.153, 0.133], "hex": "#2b2722" } },
+      "hover": { "$value": { "colorSpace": "srgb", "components": [0.196, 0.176, 0.149], "hex": "#322d26" } },
       "pressed": { "$value": { "colorSpace": "srgb", "components": [0.22, 0.196, 0.165], "hex": "#38322a" } },
       "selected": { "$value": { "colorSpace": "srgb", "components": [0.22, 0.184, 0.145], "hex": "#382f25" } },
       "selected-foreground": { "$value": "{color.neutral.panel}" },
