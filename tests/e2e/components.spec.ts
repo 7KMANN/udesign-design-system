@@ -45,7 +45,8 @@ const shown = (gallery: Locator) => gallery.locator('.ud-gallery-thumb[aria-pres
 
 async function open(page: Page, url: string, first: string, second: string) {
   await page.goto(url)
-  for (const selector of [first, second]) await expect(page.locator(`${selector} .swiper-initialized`)).toBeAttached()
+  // The first page of a run waits on the dev server's first build.
+  for (const selector of [first, second]) await expect(page.locator(`${selector} .swiper-initialized`)).toBeAttached({ timeout: 20_000 })
   return { a: page.locator(first), b: page.locator(second) }
 }
 
