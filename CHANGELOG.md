@@ -1,5 +1,58 @@
 # Changelog
 
+## 3.3.0 (2026-10-26)
+
+Boutique's appearance findings ship: fluid page titles, a badge that wraps, a choice group, spacing on the roles with a checker rule, a header, a contact footer and a compact section edge for presentation pages, one gallery for React and static pages, a description list, a skeleton inside a button, and an Alert that announces only when asked.
+
+Decisions and measurements: `docs/v2/DECISIONS.md` round 19 (D-46 to D-58), from Boutique's appearance findings, two items its builder added, and Kaleb's compact section edge. Every rule they add to `DESIGN.md` carries `NEEDS-APPROVAL` until Kaleb answers.
+
+### Visible on upgrade
+
+- **`Alert` is not a live region by default.** It rendered `role="status"`, so every banner shown with the page was announced. An alert whose appearance is the news passes `live` (`role="status"`) or `live="assertive"` (`role="alert"`); an explicit `role` still wins. Remove the `role="presentation"` that only kept an alert quiet. Re-add `alert` to pick it up (D-48).
+- **Page titles follow the screen.** `.ud-display` and `.ud-h1` read `--text-display-fluid` and `--text-h1-fluid`: in `presentation`, 40px and 28px on a phone, 56px and 40px from 800px; `operations` does not move. A presentation page that uses either class without a size of its own gets the smaller title below 800px. To hold one title at its fixed size, set the role on the element: `[--text-h1-fluid:var(--text-h1)]` (D-46).
+- **Headers space on the roles.** `DialogHeader`, `SheetHeader` and `CardHeader` put 8px between a title and its description (was 6px); a dialog's description still starts 4px under the close icon. Re-add `dialog`, `sheet` and `card` (D-50).
+- **`udesign-check` flags spacing off the roles (`spacing-role`, ban 33).** A gap, a stack or a margin between the roles is a finding: 20px, 48px, a stack spaced 2px or 6px. Padding, an icon beside its label, an icon's nudge, a negative margin, `var()` and the primitive folders are left alone (D-50).
+- **`press-missing`** reads a primitive that wears a static class of `dist/tokens.css` (the gallery's) as having that class's press.
+- **`dist/tokens.css` grows** by the gallery skin, `ud-page-header`, `ud-contact-footer`, the compact section edges, `ud-description-list`, and `ChoiceGroup`'s container queries: inert until used.
+- **The reference screens.** The presentation one opens with `PageHeader` and one action (it had three navigation links), meets its first band at a compact edge, announces the proof's approval in a status after the action row, and ends with `ContactFooter`; the operations one renders no count for a section with none; the static one uses `ud-page-header` and `ud-contact-footer`.
+
+### Additive
+
+- **`choice-group`**, in `core`: one choice shown as buttons, for sizes, options and colour swatches (`variant="swatch"`). One Tab stop, arrow keys that move, choose and stop at the group, a choice that cannot be had saying so in words, a note under the group tied by `aria-describedby`, and explicit columns by container query: one row when every choice gets 4rem, otherwise rows of one count, the last at most one shorter, never one alone (D-49).
+- **`gallery`**, installed on its own (it adds `swiper@14.3.0`), and **`dist/ud-gallery.js`** for pages without React: one gallery, one skin (`ud-gallery` in the tokens) and one behaviour (`gallery-core.ts`). It keeps UDesign Pages' `ud-gallery.js` markup and API byte for byte. The arrow keys move only the gallery in focus or under the pointer, and Page Up and Page Down scroll the page (D-54, D-55).
+- **`PageHeader`** and **`ContactFooter`**, in `page-canvas`, with `ud-page-header` and `ud-contact-footer`: the lockup and at most one action in one row a touch target high, and the public contact the page supplies (D-52, D-53).
+- **`PageSection compact="top" | "bottom" | "both"`**, with `ud-page-section-compact-top` and `-bottom`: a short head and its first band meet at `--space-8` each, 64px at every width instead of 129px on a desktop (D-56).
+- **`description-list`**, in `core`, with `ud-description-list`: labels beside their values, as UDesign Pages sets its specifications (D-57).
+- **`Badge wrap`**, for a long label in a narrow container; one line stays the default (D-47). **`Skeleton asChild`**, for a placeholder where only phrasing content may go, such as a price inside a `Pressable` (D-58).
+- **`DESIGN.md`**: the fluid title roles, a badge that wraps, choosing one of a few, the spacing roles and ban 33, nothing empty takes room (D-51), the page header and contact footer, compact section edges, showing photos, listing specifications, and the alert's live region.
+- **Tests.** The fluid roles in every block and helper; the badge, alert, skeleton and description list in jsdom with the real utilities where it matters; `ChoiceGroup`'s column rule for every count to 16 in every range, its keys, note and swatches; the checker's new rule and its calibration cases; the gallery's build, markup parity, API and key routing; the clean install of the gallery; and in Chromium: the titles, the badge in a narrow card, choice-group rows, both gallery builds (keys, Page Down, copies and alt text, centred arrows whichever stylesheet loads last, motion, no layout shift, a drag), the description list, the header, footer and compact edge, and a nothing-empty audit of the reference screens.
+
+### For Boutique
+
+Each item replaces a bridge; move to v3.3.0, re-add the changed registry components (`alert`, `badge`, `card`, `dialog`, `sheet`, `skeleton`, `page-canvas`) and add the new ones (`choice-group`, `description-list`, `gallery`).
+
+- Titles: drop `DISPLAY_SIZE` (`Frame.tsx`) and `NAME_SIZE` (`ItemView.tsx`); the opening skeleton can read `h-[var(--text-display-fluid)]`.
+- Badge: replace `BADGE_WRAPS` (`src/app/lib/badge.ts`) with `<Badge wrap>`.
+- Choices: replace `choiceClass` and `radioKeys` (`SizePicker.tsx`), the column part of `sizes.ts` (`FITS`, `sizeColumns`, `sizeColumnVars`) and `choices.css` with `ChoiceGroup`, passing `sizeNote(...)` as its `note`; `ColourPicker` becomes `variant="swatch"`. `sizeNote` and `surchargeOf` stay: they are Boutique's data.
+- Spacing: B6 drops its dialog-header exemption; `udesign-check` now reports seven spacing findings on its operations screens (`KitGrid.tsx`, `ShopList.tsx`, `BoutiqueList.tsx`, `Blocks.tsx`, `Organizers.tsx`).
+- Header and footer: `Header` and `Footer` in `Frame.tsx` become `PageHeader` (the lockup as children, "Ce n’est pas vous ?" as `action`) and `ContactFooter` fed by `contact.ts`.
+- Compact edge: drop the local padding override between the head and the items band; `compact="bottom"` on the head (beside `FIRST_SECTION`) and `compact="top"` on the band.
+- Gallery: drop `src/app/styles/ud-gallery.css`, its import, `tests/unit/gallery-copy.test.ts` with `scripts/lib/gallery-copy.ts`, and the Swiper code in `Gallery.tsx` (`SwipeGallery`, `speed`, `a11y`, the `keyboard` prop and `pageUpDown: false`); `Gallery.tsx` maps its slides onto the registry `Gallery`. Keep `@import "swiper/css/bundle"`.
+- Alerts: drop `role="presentation"` on its 22 alerts; add `live` to `JoinForm.tsx`'s closed or unreachable notice, the one alert that relied on the old default.
+- Specifications: `SpecsList`'s `dl` becomes `DescriptionList`.
+- Price placeholder: the tile's `<Skeleton className="h-5 w-16" />`, a div inside a button, becomes `<Skeleton asChild><span className="inline-block h-5 w-16" /></Skeleton>`.
+- Its appearance standard's rules marked "To move to DESIGN.md" (2, 6, 7, 10, 11 and 21) become pointers to `DESIGN.md`, and rule 16 points at the design system's gallery instead of UDesign Pages' README.
+
+### For GlobalVision
+
+- It pins v3.1.2, so nothing changes until it moves. Then `udesign-check` reports 142 `spacing-role` findings in `app`, `components`, `lib` and `hooks`, its only findings: 126 stacks spaced 2px or 6px and 16 gaps from 10px to 80px (`docs/checker-rules.md` has the breakdown; D-50 leaves the 2px and 6px stacks open for Kaleb). Its `alert.tsx` is a local fork with its own default role, so the `Alert` change reaches it only if it re-adds the component. `operations` titles do not move.
+
+### For `udesignpages`
+
+- Sync `dist/tokens.css` (and `tokens-functional.css`) into a new `public/design-system/v3.3.0/`. Its 1,500 or so product pages whose `.ud-h1` has no size of its own get the fluid title on phones; the 44 pages that set the clamp by hand see no change and can drop it.
+- The gallery: copy `dist/ud-gallery.js` beside the tokens, drop the `ud-gallery.css` link (the skin is in the tokens) and point the script at the copy in `scrapers/shared/ud_gallery.py` `head()`, then regenerate. Keep `swiper-14.3.0/`. The markup does not change: `ud_gallery.gallery()` and `udGallery.markup()` already write what the new file reads.
+- Optional, by hand: `ud-page-header`, `ud-contact-footer` and `ud-description-list` replace the header, footer and `.specs` CSS its generators write.
+
 ## 3.2.0 (2026-10-26)
 
 Boutique's registry findings ship: a native select for long lists, dense grids and phones, dialogs and sheets that hold or drop their close button, a pending button that keeps its name, a press that eases under Tailwind 4, and a shell that keeps its toolbar height on a short phone page.
