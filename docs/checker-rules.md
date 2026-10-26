@@ -33,6 +33,7 @@ was chosen by running the candidates over real consumer source first (S3 ledger,
 | `toolbar-wrap` | ban 30 | `<AppShellToolbar>` whose classes hold `flex-wrap` unprefixed or from a breakpoint up. Measured: 4 hits on GlobalVision's toolbars before its sweep, 0 after. | `max-md:flex-wrap` or `max-sm:flex-wrap`. |
 | `press-missing` | ban 16 | Seed spec R7: a file in a primitive folder (`components/ui/`, `registry/*/ui/`) that renders `<button>`, `role="button"`, a Checkbox, Switch or Toggle root, or a Radix Trigger, Item, Close or Thumb, and holds no `active:` (`group-active:` counts) and no `:active`. | Application code, which gets its press from the primitives; an overlay's Trigger (Tooltip, Popover, Dialog, menus), which wraps a Button through `asChild`; a primitive that imports a sibling's `*Variants` helper (`toggleVariants` from `./toggle`), which carries the press. |
 | `shell` | ban 27 | HTML: an `operations` root with no `ud-app-shell`; a `presentation` root with one. React: an `operations` `<html>` with no `<AppShell>` anywhere in the scanned tree; a `presentation` one with any. | A document with no `data-design`. |
+| `spacing-role` | ban 33 | In a class string (a JS/TS string literal, an HTML `class`): a gap, `space-*` or margin utility whose value is off the spacing roles (4, 8, 12, 16, 24, 32px), at any variant: `gap-5`, `md:gap-12`, `mt-[18px]`. A stack is held to the roles at every step: `space-y-*`, `gap-y-*`, the gap of a class string holding `grid` or `flex-col`, and a vertical margin, so `space-y-1.5` and `grid gap-0.5` count. The message gives the px and the roles (D-50). | 0, `px`, `auto`, the roles, any `var()`; a negative margin, which aligns an edge; a half step under 8px in a row (an icon beside its label: `flex items-center gap-1.5`, `mr-1.5`) or as a margin on an icon (`mt-0.5 size-4`); padding, which also carries geometry (`pl-9` for an icon in a field, a list's `pl-5`); a primitive folder (`components/ui/`, `registry/*/ui/`), where a component's own geometry lives and this repository's tests hold its headers to the roles; copy and comments. |
 
 **Scope.** `.html`, `.css`, `.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`. Skips `node_modules`, `.git`,
 `.next`, `dist`, `build`, `out`, `coverage`, `__tests__`, `*.test.*`, `*.spec.*`, `*.min.*` and
@@ -40,6 +41,23 @@ was chosen by running the candidates over real consumer source first (S3 ledger,
 
 **Suppression.** `design-ok: <reason>` on the flagged line or the line above, the convention ban 3
 already defines. The reason is for the reviewer; the checker only looks for the marker.
+
+**`spacing-role`, as calibrated (D-50, 2026-10-26).** Run read-only over real source before it
+shipped. A first cut that read every spacing utility found 57 in Boutique and 498 in GlobalVision,
+most of them geometry: padding (`pl-9` for a field's icon, `pl-5` for a list), an icon's 2px nudge
+onto a line of text, an icon's 6px gap beside its label, negative margins. Leaving those out leaves
+spacing between blocks:
+- Boutique (`src`): 7, all on its operations screens: four text stacks at 2px, one at 6px, two
+  section stacks at 20px (`gap-5`). Its participant screens, which its own appearance standard
+  measures in the browser, have none.
+- GlobalVision (`app`, `components`, `lib`, `hooks`): 142, its only findings: 2px and 6px stacks
+  (`gap-1.5` 34 in a grid or column, `space-y-1.5` 27, `space-y-0.5` 22, `mt-0.5` on text 20,
+  `gap-0.5` 11, and 12 more: `mt-1.5`, `mb-0.5`, `mb-1.5`, `gap-y-0.5`), and 10px to 80px
+  (`space-y-5` 8, `gap-2.5` 3, `mt-5` 2, `space-y-10`, `mt-20`, `mb-10`). Holding stacks only from
+  8px up would leave 16.
+- `udesignpages`: 0. Its pages carry no spacing utilities.
+- `examples/presentation-order.tsx` before this release: 3 (`mt-5`, `gap-5`, `md:gap-12`), which
+  consumers copied. Fixed with the rule.
 
 **Exit code.** 1 when anything is found, 0 otherwise.
 

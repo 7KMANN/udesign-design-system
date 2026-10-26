@@ -16,6 +16,7 @@ const CITE = {
   'fill-as-text': 'ban 28',
   'toolbar-wrap': 'ban 30',
   'press-missing': 'ban 16',
+  'spacing-role': 'ban 33',
 };
 
 // Fill roles (DESIGN.md "Core roles"): each pairs with its own -foreground, never used as text.
@@ -93,6 +94,46 @@ function balanced(code, start) {
   return code.slice(start);
 }
 
+// Ban 33: spacing off the roles (--space-1 to --space-8: 4, 8, 12, 16, 24 and 32px), read in
+// class strings only, so copy never counts. A stack (space-y, gap-y, a grid's or a column's gap,
+// a vertical margin) is held to the roles at every step. Calibrated on Boutique and GlobalVision
+// (docs/checker-rules.md): a row keeps a half step under 8px, an icon beside its label, and so
+// does a margin on an icon, a nudge onto the first line of text. Never read: padding, which
+// also carries geometry (room for an icon in a field, a list's indent); a negative margin, which
+// aligns an edge; a value through var(); a primitive folder, where a component's own geometry lives.
+const SPACING = /(?<![\w[-])((?:[\w-]+:|\[[^\]\s]*\]:)*)(-?)(gap-x|gap-y|gap|space-x|space-y|mx|my|mt|mr|mb|ml|ms|me|m)-(\[[^\]\s]+\]|\d+(?:\.\d+)?|px|auto)(?![\w.\]-])/g;
+const SPACING_ROLES_PX = [0, 4, 8, 12, 16, 24, 32];
+const ACROSS = new Set(['gap-x', 'space-x', 'mx', 'mr', 'ml', 'ms', 'me']);
+const STACK = /(?<![\w-])(?:flex-col|grid|inline-grid)(?![\w-])/;
+const ICON = /(?<![\w-])size-(?:\d|\[)|(?<![\w-])h-\d[\s\S]*(?<![\w-])w-\d|(?<![\w-])w-\d[\s\S]*(?<![\w-])h-\d/;
+
+// The px a spacing value sets, or null for a role, auto, a hairline or a var().
+function spacingPx(value) {
+  if (value === 'auto' || value === 'px') return null;
+  if (value.startsWith('[')) {
+    const literal = value.slice(1, -1).match(/^(\d*\.?\d+)(px|rem)$/);
+    if (!literal) return null;
+    const px = Number(literal[1]) * (literal[2] === 'rem' ? 16 : 1);
+    return SPACING_ROLES_PX.includes(px) ? null : px;
+  }
+  const px = Number(value) * 4;
+  return SPACING_ROLES_PX.includes(px) ? null : px;
+}
+
+function* spacingOffRole(classes) {
+  const stack = STACK.test(classes);
+  const icon = ICON.test(classes);
+  for (const m of classes.matchAll(SPACING)) {
+    const [whole, , negative, property, value] = m;
+    if (negative) continue;
+    const px = spacingPx(value);
+    if (px === null) continue;
+    // Under 8px: an icon beside its label (a row, or a margin across) or an icon's nudge.
+    if (px < 8 && (ACROSS.has(property) || (property === 'gap' && !stack) || (property.startsWith('m') && icon))) continue;
+    yield [m.index, `\`${whole}\` is ${px}px, off the spacing roles; space with 4, 8, 12, 16, 24 or 32px (\`-1\`, \`-2\`, \`-3\`, \`-4\`, \`-6\`, \`-8\`, or \`var(--space-*)\`)`];
+  }
+}
+
 const isAccentButton = (tag) => !/\bvariant\s*=/.test(tag) || /\bvariant\s*=\s*(\{\s*)?["']default["']/.test(tag);
 
 function* rawMotion(code) {
@@ -118,7 +159,7 @@ function* rawMotion(code) {
   }
 }
 
-function checkHtml(text, add) {
+function checkHtml(text, add, spacing) {
   const code = blankAll(blankAll(text, /<!--[\s\S]*?-->/g), /\/\*[\s\S]*?\*\//g);
   const markup = blankAll(code, /<(style|script)\b[\s\S]*?<\/\1\s*>/gi);
 
@@ -155,10 +196,16 @@ function checkHtml(text, add) {
   if (root && PRESENTATION.test(root.profile) && shellAt >= 0) add('shell', shellAt, `a \`${root.profile}\` document composed in ud-app-shell`);
 
   for (const m of markup.matchAll(/\u2014|&mdash;|&#8212;/g)) add('em-dash', m.index, 'em-dash in interface copy; use a hyphen or a colon');
+  if (spacing) {
+    for (const m of markup.matchAll(/\bclass\s*=\s*(["'])([^"']*)\1/gi)) {
+      const start = m.index + m[0].length - m[2].length - 1;
+      for (const [index, message] of spacingOffRole(m[2])) add('spacing-role', start + index, message);
+    }
+  }
   return code;
 }
 
-function checkJs(text, add, tree) {
+function checkJs(text, add, tree, spacing) {
   const code = blankJs(text);
 
   for (const m of code.matchAll(/\.map\(/g)) {
@@ -185,6 +232,12 @@ function checkJs(text, add, tree) {
   }
 
   for (const m of code.matchAll(FILL_TW)) add('fill-as-text', m.index, fillMessage(m));
+
+  if (spacing) {
+    for (const m of code.matchAll(/"([^"\n]*)"|'([^'\n]*)'|`([^`]*)`/g)) {
+      for (const [index, message] of spacingOffRole(m[1] ?? m[2] ?? m[3])) add('spacing-role', m.index + 1 + index, message);
+    }
+  }
 
   for (const m of code.matchAll(/(?<!\[)data-design\s*=/g)) {
     const tag = code.slice(0, m.index).match(/<([A-Za-z][\w.]*)[^<]*$/)?.[1];
@@ -223,10 +276,12 @@ export function check(files) {
     };
 
     const ext = file.slice(file.lastIndexOf('.') + 1).toLowerCase();
+    // A component's own geometry lives in its primitive folder; application code spaces on the roles.
+    const spacing = !PRIMITIVES.test(file);
     let code;
-    if (ext === 'html' || ext === 'htm') code = checkHtml(text, add);
+    if (ext === 'html' || ext === 'htm') code = checkHtml(text, add, spacing);
     else if (ext === 'css') code = blankAll(text, /\/\*[\s\S]*?\*\//g);
-    else code = checkJs(text, add, tree);
+    else code = checkJs(text, add, tree, spacing);
 
     for (const [index, message] of rawMotion(code)) add('raw-motion', index, message);
     for (const m of code.matchAll(FILL_CSS)) add('fill-as-text', m.index, fillMessage(m));

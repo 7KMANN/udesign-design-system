@@ -277,7 +277,9 @@ Controls and body text must remain readable without horizontal zoom at 375px.
 
 ## Layout and responsive behavior
 
-Use the shared spacing roles for component rhythm. The space scale and control height are the same in both profiles; the shells and one padding role make the difference. `PageSection` separates presentation blocks generously. In operations, `AppShell` panes butt against each other and `--surface-padding` sets 12px inside `Card`, `Dialog` and `Sheet` and above and below each table cell, while every control and table row keeps the 44px touch floor on touch. `APPROVED 2026-09-25 D-22`, `APPROVED 2026-09-26 D-27, D-28`, `APPROVED 2026-09-29 D-33` for "on touch"
+Space blocks with the spacing roles, `--space-1` to `--space-8`: 4, 8, 12, 16, 24 and 32px, Tailwind's `1`, `2`, `3`, `4`, `6` and `8`. A label and its control, and a title and its description, sit `--space-2` apart; a heading and what it heads, and the blocks of a section, `--space-4`; `PageSection` spaces the sections. A value between the roles, such as 20px or 48px, is ban 33 at every width (`md:gap-12` too), and so is a stack spaced 2px or 6px. A negative margin aligns an edge, and a 2px margin that sets an icon on the first line of text aligns it: neither is spacing. `NEEDS-APPROVAL D-50`
+
+The space scale and control height are the same in both profiles; the shells and one padding role make the difference. `PageSection` separates presentation blocks generously. In operations, `AppShell` panes butt against each other and `--surface-padding` sets 12px inside `Card`, `Dialog` and `Sheet` and above and below each table cell, while every control and table row keeps the 44px touch floor on touch. `APPROVED 2026-09-25 D-22`, `APPROVED 2026-09-26 D-27, D-28`, `APPROVED 2026-09-29 D-33` for "on touch"
 
 The responsive contract includes:
 
@@ -524,6 +526,10 @@ From GlobalVision's UI polish sweep, where 149 of 168 defects were valid compone
 30. A toolbar that wraps from `md` up: `flex-wrap` on `AppShellToolbar` without a `max-md:` prefix. It holds one row; what does not fit moves into a menu.
 31. A card stretched to a taller neighbour's height, leaving a band under its content (see "Card grids").
 32. A scroll region sized by `flex-1` with no definite height above it. It never scrolls and spills over what follows. Every flex ancestor up to a fixed or `svh` height takes `min-h-0`.
+
+### Added in v3.3.0 `NEEDS-APPROVAL D-50`
+
+33. Spacing off the roles (see "Layout and responsive behavior"): a gap, a stack's `space-*` or a margin of a value between the spacing roles, such as `gap-5` (20px), `md:gap-12` (48px), or a stack spaced 2px or 6px (`space-y-0.5`, `gap-1.5` in a grid). Geometry is not spacing: a control's padding, an icon's gap beside its label, a negative margin, a margin that aligns an icon.
 
 ## Known limits
 

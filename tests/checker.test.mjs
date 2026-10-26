@@ -143,6 +143,46 @@ test('press-missing flags a primitive with no active: treatment, only in a primi
   assert.deepEqual(hits('components/ui/toggle-group.tsx', borrowed), []);
 });
 
+// Ban 33 (D-50): spacing off the roles, read in class strings. Calibrated on Boutique and
+// GlobalVision (docs/checker-rules.md): a row keeps an icon's half step, an icon keeps its nudge.
+test('spacing-role flags a gap, a stack or a margin off the spacing roles', () => {
+  const tsx = [
+    '<p className="mt-5 max-w-[52ch]">Texte</p>',
+    '<div className="grid gap-8 md:grid-cols-[1fr_2fr] md:gap-12">',
+    '<ol className="grid gap-5">',
+    '<div className="space-y-1.5">',
+    '<div className="grid gap-1.5"><label /><input /></div>',
+    '<div className="flex flex-col gap-0.5">',
+    '<div className="gap-[18px] grid">',
+    '<p className="text-xs text-muted-foreground mt-0.5">Meta</p>',
+    '<section className="mb-10">',
+  ].join('\n');
+  assert.deepEqual(hits('app/page.tsx', tsx), ['spacing-role:1', 'spacing-role:2', 'spacing-role:3', 'spacing-role:4', 'spacing-role:5', 'spacing-role:6', 'spacing-role:7', 'spacing-role:8', 'spacing-role:9']);
+  const [finding] = check([{ file: 'app/page.tsx', text: '<div className="grid gap-8 md:gap-12" />' }]);
+  assert.equal(finding.cite, 'ban 33');
+  assert.match(finding.message, /`md:gap-12` is 48px/);
+  const html = ['<div class="grid gap-5">', '<p>gap-5 in copy is not a class</p>', '</div>'].join('\n');
+  assert.deepEqual(hits('a.html', html), ['spacing-role:1']);
+});
+
+test('spacing-role leaves the roles, alignment, geometry and the primitive folders alone', () => {
+  const tsx = [
+    '<div className="grid gap-1 gap-2 gap-3 gap-4 gap-6 gap-8 gap-0 space-y-4 mt-6 mb-8 m-0 mx-auto mt-auto gap-px">',
+    '<span className="flex items-center gap-1.5"><Icon /> Label</span>',
+    '<Info className="mt-0.5 size-4 shrink-0" />',
+    '<Button className="-ml-2 -mt-2.5 gap-1.5">',
+    '<Input className="pl-9 pr-14 py-2.5" />',
+    '<ul className="list-disc pl-5">',
+    '<div className="grid gap-[var(--space-4)] mt-[var(--surface-padding)] gap-x-1.5">',
+    '<div className="flex flex-wrap gap-1.5">',
+    '// mt-5 in a comment',
+  ].join('\n');
+  assert.deepEqual(hits('app/page.tsx', tsx), []);
+  assert.deepEqual(hits('components/ui/dialog.tsx', '<div className="grid gap-5 mt-12" />'), []);
+  assert.deepEqual(hits('registry/new-york/ui/x.tsx', '<div className="grid gap-5" />'), []);
+  assert.deepEqual(hits('app/page.tsx', '<div className="grid gap-5" /> {/* design-ok: matches the print sheet */}'), []);
+});
+
 test('ud-primitive flags var(--ud-*) in consumer source but not in a synced copy of the tokens', () => {
   assert.deepEqual(hits('a.css', '.a { color: var(--ud-stone-9); }'), ['ud-primitive:1']);
   const tokens = '/*\n * UDesign design tokens (Dual Style: Brand & Functional). Compiled from DTCG sources.\n */\n:root { --card: var(--ud-cream); }';

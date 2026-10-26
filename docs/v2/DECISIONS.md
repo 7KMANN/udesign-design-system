@@ -1208,3 +1208,33 @@ At 375px Boutique's cases come out as its standard says: 5 as 3 + 2, 6 as 3 + 3,
 **Rejected:** a static `ud-` class, since the columns and the keys need script; columns from
 Tailwind container variants, whose order Tailwind 3 and 4 do not guarantee; the arrow keys left to
 propagate, which is what moved Boutique's gallery.
+
+### D-50 · Spacing on the roles, ban 33, and the checker's `spacing-role` · `NEEDS-APPROVAL`
+
+**Question:** `examples/presentation-order.tsx` spaced with `mt-5`, `gap-5` and `md:gap-12` (20px,
+20px, 48px), so consumers copied values between the roles and the checker, with no rule for them,
+passed them. `DialogHeader` and `SheetHeader` set 6px between a title and its description, which
+Boutique's browser check of every gap found and had to exempt. `DESIGN.md` said only "use the shared
+spacing roles".
+
+**Proposed:**
+- `DESIGN.md` "Layout" names the roles and the common pairs (a label and its control, a title and
+  its description, `--space-2`; a heading and what it heads, the blocks of a section, `--space-4`),
+  and ban 33 bans a value between them, a 2px or 6px stack included. A negative margin and a margin
+  that sets an icon on a line of text align; they are not spacing.
+- The example uses `mt-4`, `gap-4` and `gap-8`. `DialogHeader`, `SheetHeader` and `CardHeader`
+  (the same 6px) use `gap-2`; the title row's minimum height loses the 2px, so the description
+  still starts 4px under the close button's icon (D-41).
+- `udesign-check` gains `spacing-role`, read in class strings only, never in copy or comments. It
+  holds stacks (`space-y`, `gap-y`, a grid's or column's gap, vertical margins) to the roles at every
+  step and leaves geometry alone: padding, an icon beside its label, an icon's nudge, a negative
+  margin, `var()`, and the primitive folders.
+
+**Calibration, measured read-only:** Boutique 7 (all on operations screens), GlobalVision 142 (126
+of them 2px and 6px stacks, the rest 10px to 80px), `udesignpages` 0, the example 3 before its fix;
+the full breakdown is in `docs/checker-rules.md`. A first cut that read every spacing utility found
+57 and 498, mostly geometry, which is why padding, rows and icons are out. **Open for Kaleb:** if
+2px and 6px text stacks in dense `operations` screens should stay, holding stacks only from 8px up
+leaves GlobalVision 16 findings; it is one condition in `bin/rules.mjs`. **Rejected:** checking
+padding, which would cry wolf on every field with an icon; checking the primitive folders, which
+hold each component's geometry and which this repository tests itself.
