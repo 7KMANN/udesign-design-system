@@ -18,5 +18,6 @@
       "type": "registry:ui",
       "target": "components/ui/select.tsx"
     }
-  ]
+  ],
+  "docs": "An open Select sets pointer-events and a scroll lock on <body>, so every choice makes the browser restyle the whole page. For a long list, a dense grid of many selects such as one per table row, or a phone, use native-select, which shares this trigger's look and states. See DESIGN.md \"Choosing a select\"."
 }
