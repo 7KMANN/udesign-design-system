@@ -417,7 +417,7 @@ Choose `NativeSelect` for:
 - A dense grid of many selects, such as one per table row. An open Radix list sets `pointer-events: none` and a scroll lock on `<body>`, so every choice makes the browser restyle every element of the page, and the cost grows with the page. A native select changes nothing on `<body>`.
 - Phones, where the system picker serves better than a list drawn in the page.
 
-Choose `Select` when an option needs more than a line of text, such as an icon or a second line, or when the list must look the same on every platform. Below `md`, `NativeSelect` text is 16px, as `Input`'s is: iOS zooms the page into a smaller field on focus.
+Choose `Select` when an option needs more than a line of text, such as an icon or a second line, or when the list must look the same on every platform. Below `md`, `NativeSelect` text is 16px, as `Input`'s is: iOS zooms the page into a smaller field on focus. `NEEDS-APPROVAL D-43`
 
 ## Registry components
 

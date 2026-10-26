@@ -3,6 +3,21 @@
 Open design-system work, newest first. Each item says why it waits. Remove an item when it ships;
 the CHANGELOG records what shipped.
 
+## A checker rule for a press scale that snaps (D-38)
+
+`tests/motion-adoption.test.mjs` catches a press scale whose transition misses `scale` or
+`transform` in the registry, but application code repeats the pattern: Boutique's own
+`Gallery.tsx`, `KitProduct.tsx`, `pickers.tsx` and `SizePicker.tsx` press with a jump under
+Tailwind 4. The same lexical check would fit `udesign-check`. Waits for D-38's approval and a
+numbered ban to cite: a finding must name its rule.
+
+## Stacked panes on a phone share a short page's spare height (D-42)
+
+Below `md` a short page's spare height now goes to `AppShellPanes`, and two panes stacked there
+split it, so the hairline between them floats mid-screen. One pane, the common case, takes all
+of it. Giving it to the last pane means a flex column below `md` instead of the grid. Waits for a
+screen that shows it.
+
 ## `udesign-docs` release paired with v3.0.0
 
 `standards/design/udesign-contract.md` (ratified decision 1) and the GlobalVision overlay still say
