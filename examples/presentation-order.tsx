@@ -45,7 +45,7 @@ export function PresentationOrder() {
       <PageSection aria-labelledby="commande">
         <p className="ud-label">Commande <span className={num}>UD-1042</span></p>
         <h1 id="commande" className="ud-display mt-3 max-w-[14ch]">Club exemple, saison 2026</h1>
-        <p className="mt-5 max-w-[52ch] text-[var(--muted-foreground)]">
+        <p className="mt-4 max-w-[52ch] text-[var(--muted-foreground)]">
           <span className={num}>108</span> pièces, trois articles. L’épreuve de broderie est prête.
           Livraison prévue le <span className={num}>9 octobre 2026</span>.
         </p>
@@ -82,9 +82,9 @@ export function PresentationOrder() {
       </PageSection>
 
       <PageSection aria-labelledby="suivi">
-        <div className="grid gap-8 md:grid-cols-[1fr_2fr] md:gap-12">
+        <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
           <h2 id="suivi" className="ud-h2">Où en est votre commande</h2>
-          <ol className="grid gap-5">
+          <ol className="grid gap-4">
             {steps.map(([step, date]) => (
               <li key={step} className="flex items-baseline justify-between gap-4 border-b border-[var(--border)] pb-4">
                 <span className="ud-h3">{step}</span>

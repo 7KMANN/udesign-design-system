@@ -168,7 +168,7 @@ describe("UDesign registry accessibility contracts", () => {
     // The room is the title row's alone, so a block in the description reaches the
     // footer's edge (measured in Chromium by tests/e2e/showcase.spec.ts).
     it("takes its room from the title row only, and none once hidden", () => {
-      const room = ["pr-10", "min-h-[calc(2.25rem_-_var(--surface-padding,var(--surface-padding-default)))]"]
+      const room = ["pr-10", "min-h-[calc(2.125rem_-_var(--surface-padding,var(--surface-padding-default)))]"]
       const { rerender } = render(
         <Root open>
           <Content closeLabel="Fermer"><Header><Title>Envoi</Title><Description>La commande part.</Description></Header></Content>

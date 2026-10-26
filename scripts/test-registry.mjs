@@ -145,6 +145,13 @@ assert.match(files["choice-group.tsx"], /tabIndex=\{choice\.value === stop \? 0 
 assert.match(files["choice-group.tsx"], /aria-describedby=/, "the note is tied to the group")
 assert.match(files["choice-group.tsx"], /--choice-columns-/, "the group writes its columns for the stylesheet's container queries")
 
+// D-50: a header's title and description sit --space-2 apart, a spacing role (they were 6px).
+for (const [file, part] of [["dialog.tsx", "DialogHeader"], ["sheet.tsx", "SheetHeader"], ["card.tsx", "CardHeader"]]) {
+  const header = files[file].match(new RegExp(`const ${part} = [\\s\\S]*?cn\\("([^"]*)"`))?.[1] ?? ""
+  assert.match(header, /(?<![\w.-])gap-2(?![\w.-])/, `${part} must space its title and description on --space-2`)
+  assert.doesNotMatch(header, /gap-1\.5/, `${part} spaces off the roles`)
+}
+
 const sliderThumb = files["slider.tsx"].match(/<SliderPrimitive\.Thumb[\s\S]*?>/)?.[0] ?? ""
 assert.match(sliderThumb, /size-\[var\(--touch-target-min\)\]/)
 
