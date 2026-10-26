@@ -1146,3 +1146,18 @@ fixed roles keep their values and meaning. **Visible:** every `presentation` pag
 about 1,500 product pages whose `ud-h1` has no clamp, once they sync. **Rejected:** tokens only,
 which leaves the inline size in place since the helper still wins; making `--text-display` itself
 fluid, which would change a role's meaning and break the type-shape contract test.
+
+### D-47 · A badge wraps inside its container when asked · `NEEDS-APPROVAL`
+
+**Question:** `Badge` is `whitespace-nowrap`, so a long label in a narrow card ran past the card's
+edge (ban 29), as on Boutique's product tiles at 375px. Boutique wraps it with its own classes
+(`BADGE_WRAPS`). Wrap by default, or on request?
+
+**Proposed:** on request, `wrap`: the label wraps inside its container (`max-w-full
+whitespace-normal`, a long word breaks rather than overflows) and its lines get room
+(`leading-tight`). One line stays the default because the consumers built on it: GlobalVision puts
+about 140 badges directly in table cells, where a one-line status keeps its column wide and the
+table scrolls; wrapping by default would let an automatic table layout squeeze those columns and
+break statuses in two the day GlobalVision re-adds the component. A guard in
+`scripts/test-registry.mjs` keeps one line the default. **Rejected:** wrapping by default, for that
+reason; a static `ud-badge` twin, since no static page has a badge in a narrow card yet.

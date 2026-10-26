@@ -387,6 +387,8 @@ The registry `Button` has three more variants. `ghost`: **use when** several con
 
 **`status-badge`** uses one complete tone family and includes a readable label. A dot or icon may reinforce meaning, but the label carries the state.
 
+A badge holds one line, so a status in a table column or a toolbar stays whole and the table scrolls instead. Where a label can be wider than its container, such as a card on a phone, `Badge wrap` wraps it inside the container instead of running past its edge (ban 29). `NEEDS-APPROVAL D-47`
+
 **`confidential-footer`** uses `{colors.canvas}`, `{colors.muted}`, and a `{colors.hairline}` top boundary. Its label remains sentence case and should only use the destructive role when the content represents a real warning.
 
 **`card`** uses `{colors.surface-card}`, a `{colors.hairline}` boundary, `{rounded.lg}`, and `--surface-padding` inside (24px unset, 12px in `operations`). Runtime components use raised or card semantic roles so dark themes and the operations profile can adapt it.

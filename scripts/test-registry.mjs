@@ -160,7 +160,10 @@ assert.doesNotMatch(files["card.tsx"], /\bp-6\b/, "a fixed p-6 ignores the opera
 const tableCell = files["table.tsx"].match(/const TableCell[\s\S]*?\n\)/)?.[0] ?? ""
 assert.match(tableCell, /py-\[var\(--surface-padding,1rem\)\]/, "TableCell must read its vertical padding from --surface-padding")
 assert.match(files["card.tsx"], /\[box-shadow:var\(--shadow-2\)\]/, "presentation cards float on --shadow-2 (D-27)")
-assert.match(files["badge.tsx"], /whitespace-nowrap/, "a badge label wrapping inside its pill reads as broken")
+assert.match(files["badge.tsx"], /: "whitespace-nowrap leading-none"/, "a badge holds one line by default: a status breaking in two in a table column reads as broken")
+// D-47: asked, a long label wraps inside its container instead of running past its edge (ban 29).
+assert.match(files["badge.tsx"], /wrap\?: boolean/)
+assert.match(files["badge.tsx"], /wrap \? "max-w-full whitespace-normal[^"]*\[overflow-wrap:anywhere\]"/, "a wrapping badge must stay inside its container")
 const NUMERIC = /\[font-family:var\(--font-numeric\)\] \[font-variant-numeric:var\(--font-numeric-variant\)\]/
 for (const name of ["metric-card.tsx", "progress-ring.tsx", "table.tsx"]) {
   assert.match(files[name], NUMERIC, `${name} must render figures through --font-numeric`)

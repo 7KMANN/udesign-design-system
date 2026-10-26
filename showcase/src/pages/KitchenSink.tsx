@@ -225,6 +225,10 @@ export function KitchenSink() {
                 <AlertTitle>Review required</AlertTitle>
                 <AlertDescription>The alert keeps text and color meaning paired.</AlertDescription>
               </Alert>
+              {/* A badge holds one line; asked to wrap, a long label stays inside a narrow card (ban 29). */}
+              <div data-testid="narrow-card" className="w-40 rounded-[var(--radius)] border border-[var(--border)] p-3">
+                <RegistryBadge tone="info" wrap>Embroidered with each player&apos;s name</RegistryBadge>
+              </div>
             </CardContent>
           </RegistryCard>
 

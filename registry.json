@@ -18,6 +18,7 @@
       "type": "registry:ui",
       "title": "Badge",
       "description": "Semantic UDesign badge with independent tone and visual treatment.",
+      "docs": "A badge holds one line, so a status in a table column or a toolbar stays whole. Where a label can be wider than its container, such as a card on a phone, pass wrap: the label wraps inside the container instead of running past its edge (ban 29). See DESIGN.md.",
       "dependencies": ["@radix-ui/react-slot"],
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/badge.tsx", "type": "registry:ui", "target": "components/ui/badge.tsx" }]

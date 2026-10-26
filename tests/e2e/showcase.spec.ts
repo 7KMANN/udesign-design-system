@@ -80,6 +80,18 @@ test("a pending button keeps its accessible name", async ({ page }) => {
   await expect(pending).toHaveAccessibleName("Save draft")
 })
 
+// D-47: asked to wrap, a long badge stays inside a narrow card instead of running past its edge.
+test("a badge asked to wrap stays inside a narrow card", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto("/")
+  const card = page.getByTestId("narrow-card")
+  const badge = card.getByText("Embroidered with each player's name")
+  const outer = (await card.boundingBox())!
+  const box = (await badge.boundingBox())!
+  expect(box.x + box.width, "the badge ends inside the card").toBeLessThanOrEqual(outer.x + outer.width)
+  expect(box.height, "the label takes a second line").toBeGreaterThan(28)
+})
+
 test("a dialog holds its close button while its action runs, and onOpenChange decides on Escape", async ({ page }) => {
   // The demo's send ends on a timer. The page's clock stands still while the test looks, so a
   // slow machine cannot let the send end first, and runs again at the end. axe needs a

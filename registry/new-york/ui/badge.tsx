@@ -10,6 +10,12 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   asChild?: boolean
   tone?: UDesignTone
   variant?: BadgeVariant
+  /**
+   * Wraps a long label inside its container instead of running past its edge (ban 29),
+   * as on a card on a phone. Off by default: a badge holds one line, so a status in a
+   * table column or a toolbar stays whole and the table scrolls instead.
+   */
+  wrap?: boolean
 }
 
 const toneClasses: Record<UDesignTone, Record<BadgeVariant, string>> = {
@@ -51,13 +57,14 @@ const toneClasses: Record<UDesignTone, Record<BadgeVariant, string>> = {
 }
 
 const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ asChild = false, className, tone = "neutral", variant = "subtle", ...props }, ref) => {
+  ({ asChild = false, className, tone = "neutral", variant = "subtle", wrap = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "span"
     return (
       <Comp
         ref={ref}
         className={cn(
-          "inline-flex min-h-6 items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-semibold leading-none [font-variant-numeric:var(--font-numeric-variant)]",
+          "inline-flex min-h-6 items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold [font-variant-numeric:var(--font-numeric-variant)]",
+          wrap ? "max-w-full whitespace-normal text-left leading-tight [overflow-wrap:anywhere]" : "whitespace-nowrap leading-none",
           toneClasses[tone][variant],
           className,
         )}

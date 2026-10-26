@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
 import { AppShell, AppShellPane, AppShellPanes, AppShellSidebar, AppShellToolbar } from "@/components/ui/app-shell"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -363,6 +364,28 @@ describe("UDesign registry accessibility contracts", () => {
       expect(button).toHaveAccessibleName("Save changes")
       expect(button).toHaveAttribute("aria-busy", "true")
       expect(screen.getByRole("button", { name: "Refresh" })).toHaveAttribute("aria-busy", "true")
+    } finally {
+      removeStyles()
+    }
+  })
+
+  // D-47: one line by default, so a status in a table column stays whole; asked, a long label
+  // wraps inside its container instead of running past a narrow card's edge (ban 29).
+  it("holds a badge on one line unless asked to wrap inside its container", async () => {
+    const { container } = render(
+      <>
+        <Badge tone="info">En production</Badge>
+        <Badge tone="info" wrap>Brodé au nom de chaque joueur</Badge>
+      </>,
+    )
+    const removeStyles = await applyTailwind(container)
+    try {
+      const line = getComputedStyle(screen.getByText("En production"))
+      expect(line.whiteSpace).toBe("nowrap")
+      const wrapped = getComputedStyle(screen.getByText("Brodé au nom de chaque joueur"))
+      expect(wrapped.whiteSpace).toBe("normal")
+      expect(wrapped.maxWidth).toBe("100%")
+      expect(wrapped.overflowWrap).toBe("anywhere")
     } finally {
       removeStyles()
     }
