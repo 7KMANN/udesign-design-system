@@ -96,6 +96,13 @@ components:
     textColor: "{colors.muted}"
     borderTop: "1px solid {colors.hairline}"
     padding: "28px 24px"
+  page-header:
+    minHeight: 44px
+    padding: "16px 16px"
+  contact-footer:
+    textColor: "{colors.muted}"
+    borderTop: "1px solid {colors.hairline}"
+    padding: "16px 16px"
   card:
     backgroundColor: "{colors.surface-card}"
     rounded: "{rounded.lg}"
@@ -391,7 +398,11 @@ The registry `Button` has three more variants. `ghost`: **use when** several con
 
 A badge holds one line, so a status in a table column or a toolbar stays whole and the table scrolls instead. Where a label can be wider than its container, such as a card on a phone, `Badge wrap` wraps it inside the container instead of running past its edge (ban 29). `NEEDS-APPROVAL D-47`
 
+**`page-header`** (registry `PageHeader`, static `ud-page-header`) opens a `presentation` page: the lockup at left and at most one action at right, such as the way back or "Not you?", in one row at least `--touch-target-min` high, on the sections' column and gutters. The row keeps its height whoever is on the page, with or without its action, and the action never wraps. Navigation beyond one action belongs in the page, not the header. `NEEDS-APPROVAL D-52`
+
 **`confidential-footer`** uses `{colors.canvas}`, `{colors.muted}`, and a `{colors.hairline}` top boundary. Its label remains sentence case and should only use the destructive role when the content represents a real warning.
+
+**`contact-footer`** (registry `ContactFooter`, static `ud-contact-footer`) ends a `presentation` page with the business's public contact, on the sections' column over a `{colors.hairline}` top boundary in `{colors.muted}`: its name and address, then its phone and email as links a thumb can reach. The page supplies all three; the design system holds no business data. `NEEDS-APPROVAL D-53`
 
 **`card`** uses `{colors.surface-card}`, a `{colors.hairline}` boundary, `{rounded.lg}`, and `--surface-padding` inside (24px unset, 12px in `operations`). Runtime components use raised or card semantic roles so dark themes and the operations profile can adapt it.
 

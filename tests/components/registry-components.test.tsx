@@ -24,7 +24,7 @@ import { NativeSelect } from "@/components/ui/native-select"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Moment } from "@/components/ui/moment"
-import { PageCanvas, PageSection } from "@/components/ui/page-canvas"
+import { ContactFooter, PageCanvas, PageHeader, PageSection } from "@/components/ui/page-canvas"
 import { ProgressRing } from "@/components/ui/progress-ring"
 import { ResponsiveCollection } from "@/components/ui/responsive-collection"
 import { RollingConsistencyChip } from "@/components/ui/rolling-consistency-chip"
@@ -471,6 +471,44 @@ describe("UDesign page shells", () => {
     expect(section.firstElementChild).toHaveClass("mx-auto", "max-w-6xl")
     expect(section).toHaveClass("bg-[var(--card)]")
     expect((await axe.run(container)).violations).toEqual([])
+  })
+
+  // D-52: the lockup at left, at most one action at right, one row a touch target high on the
+  // sections' column, whoever is on the page (measured in Chromium by the layout audit).
+  it("opens a presentation page with the lockup at left and at most one action at right, in one row", async () => {
+    const page = (action?: React.ReactNode) => (
+      <PageCanvas>
+        <PageHeader action={action}><span>UDesign</span></PageHeader>
+      </PageCanvas>
+    )
+    const { container, rerender } = render(page(<button type="button">Ce n’est pas vous ?</button>))
+    const row = screen.getByRole("banner").firstElementChild as HTMLElement
+    expect(row).toHaveClass("min-h-[var(--touch-target-min)]", "mx-auto", "max-w-6xl", "items-center", "justify-between")
+    expect(row.children).toHaveLength(2)
+    expect(screen.getByRole("button", { name: "Ce n’est pas vous ?" }).parentElement).toHaveClass("shrink-0", "whitespace-nowrap")
+    expect((await axe.run(container)).violations).toEqual([])
+    rerender(page())
+    expect(screen.getByRole("banner").firstElementChild?.children).toHaveLength(1)
+  })
+
+  // D-53: the page supplies the contact; the footer holds none of its own.
+  it("ends a presentation page with the public contact the page supplies, as links a thumb can reach", async () => {
+    const { container, rerender } = render(
+      <ContactFooter
+        address="Entreprise exemple, 1 rue Exemple, Ville QC"
+        phone={{ label: "819 555-0100", href: "tel:+18195550100" }}
+        email={{ label: "contact@example.com", href: "mailto:contact@example.com" }}
+      />,
+    )
+    expect(screen.getByRole("contentinfo")).toHaveTextContent("Entreprise exemple, 1 rue Exemple, Ville QC")
+    const phone = screen.getByRole("link", { name: "819 555-0100" })
+    expect(phone).toHaveAttribute("href", "tel:+18195550100")
+    expect(screen.getByRole("link", { name: "contact@example.com" })).toHaveAttribute("href", "mailto:contact@example.com")
+    expect(phone).toHaveClass("min-h-[var(--touch-target-min)]", "active:bg-[var(--interactive-pressed)]", "focus-visible:outline-[color:var(--interactive-focus)]")
+    expect((await axe.run(container)).violations).toEqual([])
+    rerender(<ContactFooter address="Entreprise exemple" />)
+    expect(screen.queryAllByRole("link")).toEqual([])
+    expect(screen.getByRole("contentinfo").textContent).toBe("Entreprise exemple")
   })
 
   it("marks a numeric table column so each profile can render its figures", () => {

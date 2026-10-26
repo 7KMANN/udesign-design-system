@@ -18,13 +18,14 @@
 <!-- ud-page-canvas: the presentation shell. The page scrolls; each ud-page-section centres a column (ban 27). -->
 <body class="ud-page-canvas">
 
-    <header class="ud-page-section ud-page-section-band">
+    <!-- ud-page-header: the lockup at left, at most one action at right, one row a touch target high. -->
+    <header class="ud-page-header ud-page-section-band">
         <p class="ud-h3">UDesign</p>
-        <p class="ud-label">Catalogue préparé pour Club exemple, saison 2026</p>
     </header>
 
     <main>
         <section class="ud-page-section" aria-labelledby="titre">
+            <p class="ud-label" style="margin-bottom: var(--space-2);">Catalogue préparé pour Club exemple, saison 2026</p>
             <h1 id="titre" class="ud-display">Les vêtements proposés</h1>
             <p class="ud-label" style="max-width: 52ch; margin-top: var(--space-4);">Chaque article a été choisi pour la façon dont votre équipe va le porter.</p>
             <!-- The one accent-filled control on this page: the action the catalog exists for. -->
@@ -93,6 +94,12 @@
             </div>
         </section>
     </main>
+
+    <!-- ud-contact-footer: the business's public contact, which the page writes. Placeholder data. -->
+    <footer class="ud-contact-footer">
+        <p class="ud-label">Entreprise exemple, 1 rue Exemple, Ville QC A1A 1A1</p>
+        <p class="ud-label"><a href="tel:+18195550100">819 555-0100</a> · <a href="mailto:contact@example.com">contact@example.com</a></p>
+    </footer>
 
 </body>
 </html>

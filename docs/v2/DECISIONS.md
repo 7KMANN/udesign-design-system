@@ -1253,3 +1253,31 @@ both widths, with a case proving it sees the mistake. Run for the first time, it
 operations screen's navigation rendered an empty count beside four sections, inside the link's gap;
 it renders no count now. **Rejected:** hiding an empty region with `display: none`, which takes it
 out of the accessibility tree, so a polite one is not reliably read when its words arrive.
+
+### D-52 · A presentation page's header · `NEEDS-APPROVAL` · amends D-30
+
+**Question:** each presentation consumer draws its own header. Boutique's standard sets one: the
+lockup at left, at most one action at right ("Ce n’est pas vous ?"), one row at least a touch target
+high, the same height whoever is on the page, so the title under it never moves when a person
+arrives. UDesign Pages' 1,500 pages hand-copy a lockup header. D-30 kept the lockup with the consumer
+because no React component could hold a static class in lockstep.
+
+**Proposed:** `PageHeader`, in `page-canvas` (the presentation shell, so `core` has it), with its
+static twin `ud-page-header`: the lockup as its children, one optional `action`, one row whose
+height does not depend on the action, the action never wrapping, on `PageSection`'s column and
+gutters. The lockup's own markup stays the consumer's, as D-30 said. The reference screens use it:
+the React one with one action, "Mes commandes", where it showed three navigation links before, and
+the static one with none, its catalogue line moved into the first section. **Rejected:** a slot for
+navigation, which the rule leaves to the page.
+
+### D-53 · A public-contact footer · `NEEDS-APPROVAL`
+
+**Question:** UDesign Pages ends every page with UDesign's public contact (about 1,500 pages, by
+hand), and Boutique copied it with its own `contact.ts`. `DESIGN.md` had only `confidential-footer`.
+
+**Proposed:** `ContactFooter`, in `page-canvas`, and the static `ud-contact-footer`: a hairline, the
+name and address in the label role, then the phone and the email as links a touch target high, with
+a press and a ring, on the sections' column. Every value is a prop the page supplies, from its own
+source of truth (for UDesign, `udesign-docs`' ground truth); the design system and its examples hold
+placeholder data only. **Rejected:** shipping UDesign's contact in the component, which would put
+business data in the design system and a second home for it.

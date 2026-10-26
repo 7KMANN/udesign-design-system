@@ -6,7 +6,7 @@ import * as React from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { PageCanvas, PageSection } from "@/components/ui/page-canvas"
+import { ContactFooter, PageCanvas, PageHeader, PageSection } from "@/components/ui/page-canvas"
 
 // Internal navigation goes through your framework's link primitive (ban 17):
 // replace this one line with next/link or react-router's Link.
@@ -33,15 +33,11 @@ export function PresentationOrder() {
   return (
     // PageCanvas: the page scrolls and each PageSection centres a column (ban 27).
     <PageCanvas>
-      <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-[var(--content-gutter-mobile)] py-6 sm:px-[var(--space-8)]">
-        {/* The lockup is the one Montserrat signature, so the navigation beside it stays quiet. */}
+      {/* The lockup at left, at most one action at right, one row whoever is on the page (D-52). The
+          lockup is the one Montserrat signature, so the action beside it stays quiet: ghost. */}
+      <PageHeader action={<Button asChild variant="ghost"><Link href="/commandes">Mes commandes</Link></Button>}>
         <span className="[font-family:var(--font-display)] text-xl font-black">UDesign</span>
-        <nav aria-label="Compte" className="flex flex-wrap gap-2">
-          <Button asChild variant="ghost"><Link href="/commandes" aria-current="page">Mes commandes</Link></Button>
-          <Button asChild variant="ghost"><Link href="/epreuves">Épreuves</Link></Button>
-          <Button asChild variant="ghost"><Link href="/factures">Factures</Link></Button>
-        </nav>
-      </header>
+      </PageHeader>
 
       <PageSection aria-labelledby="commande">
         <p className="ud-label">Commande <span className={num}>UD-1042</span></p>
@@ -98,6 +94,13 @@ export function PresentationOrder() {
           </ol>
         </div>
       </PageSection>
+
+      {/* The business's public contact ends the page. The page supplies it: placeholder data here. */}
+      <ContactFooter
+        address="Entreprise exemple, 1 rue Exemple, Ville QC A1A 1A1"
+        phone={{ label: "819 555-0100", href: "tel:+18195550100" }}
+        email={{ label: "contact@example.com", href: "mailto:contact@example.com" }}
+      />
     </PageCanvas>
   )
 }

@@ -182,6 +182,59 @@ textarea.ud-input { height: auto; min-height: 6rem; }
   .ud-page-section { padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--space-8)); }
 }
 
+/* PageHeader: a presentation page's header, on the sections' column. The lockup first, then at
+   most one action, such as the way back: <header class="ud-page-header"><p class="ud-h3">UDesign</p>
+   <a class="ud-btn ud-btn-ghost" href="...">Mes commandes</a></header>. One row, a touch target
+   high with or without the action; the action never wraps. Add ud-page-section-band for a band. */
+.ud-page-header {
+  box-sizing: content-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: var(--touch-target-min);
+  margin: 0;
+  padding-block: clamp(var(--space-4), 4vw, var(--space-6));
+  padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--content-gutter-mobile));
+}
+.ud-page-header > * { min-width: 0; margin: 0; }
+.ud-page-header > :last-child:not(:first-child) { flex-shrink: 0; white-space: nowrap; }
+
+/* ContactFooter: the end of a presentation page, the business's public contact, which the page
+   writes: <footer class="ud-contact-footer"><p class="ud-label">Name, address</p>
+   <p class="ud-label"><a href="tel:...">Phone</a> · <a href="mailto:...">Email</a></p></footer>.
+   Each link is a touch target high. */
+.ud-contact-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: var(--space-6);
+  margin: 0;
+  padding-block: clamp(var(--space-4), 4vw, var(--space-6));
+  padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--content-gutter-mobile));
+  border-top: 1px solid var(--border);
+}
+.ud-contact-footer > * { margin: 0; }
+.ud-contact-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target-min);
+  border-radius: var(--radius-sm);
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  transition: var(--motion-duration-instant) var(--motion-easing-standard);
+  transition-property: background-color;
+}
+.ud-contact-footer a:hover { text-decoration: underline; }
+.ud-contact-footer a:active { background: var(--interactive-pressed); }
+.ud-contact-footer a:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: 2px; }
+@media (min-width: 640px) {
+  .ud-page-header, .ud-contact-footer { padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--space-8)); }
+}
+
 /* AppShell: the operations shell. Children in this order: ud-app-shell-sidebar (put a
    <nav> of ud-btn-ghost links in it), ud-app-shell-toolbar, ud-app-shell-panes holding
    ud-app-shell-pane sections, each with an aria-label. From 768px the viewport is fixed

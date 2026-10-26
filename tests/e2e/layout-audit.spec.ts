@@ -146,6 +146,56 @@ test("presentation reference screen: the idle status speaks after the row, its w
   expect(words.y - (row.y + row.height), "--space-4 under the row").toBeCloseTo(16, 0)
 })
 
+// D-52, D-53: the presentation page's header and footer sit on the sections' column. The header
+// is one row a touch target high, the same height with or without its action; the footer's
+// links are touch targets.
+for (const viewport of viewports) {
+  test(`presentation reference screen, ${viewport.name}: one header row whoever is on the page, and a footer on the column`, async ({ page }) => {
+    await page.setViewportSize(viewport)
+    await page.goto("/examples.html?screen=presentation")
+    const header = page.locator("header").first()
+    await header.waitFor()
+    // The sections' content edge: the column's box less its gutter.
+    const column = { x: await page.locator("#root section > div").first().evaluate((el) => el.getBoundingClientRect().left + parseFloat(getComputedStyle(el).paddingLeft)) }
+    const lockup = (await header.getByText("UDesign", { exact: true }).boundingBox())!
+    const action = (await header.getByRole("link", { name: "Mes commandes" }).boundingBox())!
+    const row = (await header.locator(":scope > div").boundingBox())!
+    expect(row.height, "a touch target high").toBeGreaterThanOrEqual(44)
+    expect(Math.abs(lockup.x - column.x), "the lockup on the column's left edge").toBeLessThanOrEqual(1)
+    expect(Math.abs(lockup.y + lockup.height / 2 - (action.y + action.height / 2)), "one row").toBeLessThanOrEqual(1)
+    const withAction = (await header.boundingBox())!.height
+    await header.getByRole("link", { name: "Mes commandes" }).evaluate((el) => el.closest("header > div > div:last-child")!.remove())
+    expect((await header.boundingBox())!.height, "the same height without the action").toBeCloseTo(withAction, 1)
+
+    const footer = page.locator("footer")
+    const address = (await footer.getByText("Entreprise exemple", { exact: false }).boundingBox())!
+    expect(Math.abs(address.x - column.x), "the footer on the column's left edge").toBeLessThanOrEqual(1)
+    for (const name of ["819 555-0100", "contact@example.com"]) {
+      expect((await footer.getByRole("link", { name }).boundingBox())!.height, `${name} is a touch target`).toBeGreaterThanOrEqual(44)
+    }
+  })
+}
+
+test("static header and footer: one row a touch target high with or without the action, links a touch target high", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto("/examples.html")
+  await page.setContent(`<!doctype html><html data-design="presentation"><head><link rel="stylesheet" href="/dist/tokens.css">
+    <style>*, ::before, ::after { box-sizing: border-box; }</style></head>
+    <body class="ud-page-canvas">
+    <header class="ud-page-header" id="with"><p class="ud-h3">UDesign</p><a class="ud-btn ud-btn-ghost" href="#">Ce n’est pas vous ?</a></header>
+    <header class="ud-page-header" id="without"><p class="ud-h3">UDesign</p></header>
+    <section class="ud-page-section"><p id="column">Column</p></section>
+    <footer class="ud-contact-footer"><p class="ud-label">Entreprise exemple</p><p class="ud-label"><a href="tel:+18195550100">819 555-0100</a> · <a href="mailto:contact@example.com">contact@example.com</a></p></footer>
+    </body></html>`, { waitUntil: "load" })
+  const height = async (selector: string) => (await page.locator(selector).boundingBox())!.height
+  expect(await height("#with")).toBeCloseTo(await height("#without"), 1)
+  expect(await height("#without")).toBeGreaterThanOrEqual(44 + 32)
+  const column = (await page.locator("#column").boundingBox())!.x
+  expect((await page.locator("#with .ud-h3").boundingBox())!.x).toBeCloseTo(column, 0)
+  expect((await page.locator(".ud-contact-footer .ud-label").first().boundingBox())!.x).toBeCloseTo(column, 0)
+  expect(await height('a[href^="tel:"]')).toBeGreaterThanOrEqual(44)
+})
+
 // D-46: a page's title steps down one role on a phone, with no size of its own on the element.
 // Presentation: --text-h1 (40px) at 375, --text-display (56px) from 800. Operations does not move.
 for (const [screen, selector, phone, desktop] of [

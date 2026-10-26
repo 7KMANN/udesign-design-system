@@ -26,7 +26,7 @@ const MIRROR = {
   textarea: ["ud-input"],
   "empty-state": ["ud-empty-state"],
   pressable: ["ud-pressable"],
-  "page-canvas": ["ud-page-canvas", "ud-page-section", "ud-page-section-band"],
+  "page-canvas": ["ud-page-canvas", "ud-page-section", "ud-page-section-band", "ud-page-header", "ud-contact-footer"],
   "app-shell": ["ud-app-shell", "ud-app-shell-sidebar", "ud-app-shell-toolbar", "ud-app-shell-panes", "ud-app-shell-pane", "ud-app-shell-menu"],
   alert: "no generator wrote one",
   select: "Radix behaviour, and a native <select> is ban 9",
