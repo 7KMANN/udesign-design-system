@@ -122,6 +122,52 @@ describe("UDesign registry accessibility contracts", () => {
     expect(screen.getByRole("button", { name: "Open details" })).toHaveFocus()
   })
 
+  // closeDisabled and hideClose touch the button only. Escape and a press outside stay
+  // wired to onOpenChange, where the caller decides whether a running action may close.
+  describe.each([
+    ["dialog", Dialog, DialogContent, DialogTitle, DialogDescription],
+    ["sheet", Sheet, SheetContent, SheetTitle, SheetDescription],
+  ] as const)("%s close button", (_, Root, Content, Title, Description) => {
+    it("can be disabled while an action runs, and Escape still reaches onOpenChange", async () => {
+      const user = userEvent.setup()
+      const onOpenChange = vi.fn()
+      render(
+        <Root open onOpenChange={onOpenChange}>
+          <Content closeDisabled closeLabel="Fermer"><Title>Envoi</Title><Description>La commande part.</Description></Content>
+        </Root>,
+      )
+      const close = screen.getByRole("button", { name: "Fermer" })
+      expect(close).toBeDisabled()
+      expect(close).toHaveClass("disabled:bg-[var(--interactive-disabled)]", "disabled:text-[var(--interactive-disabled-foreground)]")
+      await user.click(close)
+      expect(onOpenChange).not.toHaveBeenCalled()
+      await user.keyboard("{Escape}")
+      expect(onOpenChange).toHaveBeenCalledWith(false)
+    })
+
+    it("can be hidden, and Escape still reaches onOpenChange", async () => {
+      const user = userEvent.setup()
+      const onOpenChange = vi.fn()
+      render(
+        <Root open onOpenChange={onOpenChange}>
+          <Content hideClose closeLabel="Fermer"><Title>Envoi</Title><Description>La commande part.</Description></Content>
+        </Root>,
+      )
+      expect(screen.queryByRole("button", { name: "Fermer" })).toBeNull()
+      await user.keyboard("{Escape}")
+      expect(onOpenChange).toHaveBeenCalledWith(false)
+    })
+
+    it("is enabled and present by default", () => {
+      render(
+        <Root open>
+          <Content closeLabel="Fermer"><Title>Envoi</Title><Description>La commande part.</Description></Content>
+        </Root>,
+      )
+      expect(screen.getByRole("button", { name: "Fermer" })).toBeEnabled()
+    })
+  })
+
   it("supports checkbox, switch, and tab keyboard state changes", async () => {
     const user = userEvent.setup()
     render(

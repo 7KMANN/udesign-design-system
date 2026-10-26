@@ -80,6 +80,21 @@ test("a pending button keeps its accessible name", async ({ page }) => {
   await expect(pending).toHaveAccessibleName("Save draft")
 })
 
+test("a dialog holds its close button while its action runs, and onOpenChange decides on Escape", async ({ page }) => {
+  await page.goto("/")
+  await page.getByRole("button", { name: "Open held dialog" }).click()
+  const dialog = page.getByRole("dialog", { name: "Send the order" })
+  const close = dialog.getByRole("button", { name: "Close order" })
+  await expect(close).toBeEnabled()
+  await dialog.getByRole("button", { name: "Send the order" }).click()
+  await expect(close).toBeDisabled()
+  expect((await new AxeBuilder({ page }).include('[role="dialog"]').analyze()).violations, "held dialog").toEqual([])
+  await page.keyboard.press("Escape")
+  await page.waitForTimeout(150)
+  await expect(dialog, "the caller ignores Escape while the order sends").toBeVisible()
+  await expect(dialog).toBeHidden()
+})
+
 test("motion tokens collapse to zero under prefers-reduced-motion, moment scale stays inert without it", async ({ page }) => {
   await page.goto("/")
 

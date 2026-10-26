@@ -1003,3 +1003,17 @@ stays the button's name, read with `aria-busy` as busy. `DESIGN.md` "Feedback pr
 and that a pending button needs no `aria-label`. The component test compiles the utilities the
 button uses with Tailwind and applies them in jsdom, because jsdom alone applies no Tailwind and
 the old markup would have passed; the showcase test asserts the name in Chromium.
+
+### D-40 · A dialog or sheet can hold or drop its close button · `NEEDS-APPROVAL`
+
+**Question:** while a dialog's action runs (an order being sent, a launch), its close button must
+not close it. `onOpenChange` could ignore the close, but the button still looked and focused as
+enabled, and Boutique disabled it through the DOM (`lastElementChild.disabled = busy`), which
+breaks the day the button stops being the last child.
+
+**Proposed:** `DialogContent` and `SheetContent` take `closeDisabled` (the button renders
+`disabled`, with the disabled surface and foreground roles) and `hideClose` (no button, for a
+dialog whose footer offers the way out). Neither touches Escape or a press outside: Radix still
+calls `onOpenChange(false)`, and the caller decides there. That keeps one owner for "may this close
+now", which a prop that also swallowed Escape would split in two. `DESIGN.md` "Dialogs and sheets"
+documents both, and the showcase's held dialog shows the pattern.

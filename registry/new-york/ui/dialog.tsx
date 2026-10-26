@@ -19,10 +19,22 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 export interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   /** Accessible name for the close button. English by default: pass the interface's language (fr-CA first). */
   closeLabel?: string
+  /**
+   * Disables the close button, for example while the dialog's action runs.
+   * Only the button: Escape and a press outside still call onOpenChange(false),
+   * and the caller decides there, ignoring the close while the action runs.
+   */
+  closeDisabled?: boolean
+  /**
+   * Renders no close button. Escape and a press outside still call
+   * onOpenChange(false), and the dialog needs another visible way out,
+   * such as a Cancel button in its footer.
+   */
+  hideClose?: boolean
 }
 
 const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Content>, DialogContentProps>(
-  ({ children, className, closeLabel = "Close", ...props }, ref) => (
+  ({ children, className, closeDisabled = false, closeLabel = "Close", hideClose = false, ...props }, ref) => (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
@@ -34,10 +46,15 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute right-2 top-2 inline-flex size-[var(--touch-target-min)] items-center justify-center rounded-[var(--radius)] text-[var(--muted-foreground)] transition-[transform,scale,background-color,color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] active:bg-[var(--interactive-pressed)] hover:bg-[var(--interactive-hover)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] disabled:pointer-events-none">
-          <X className="size-4" aria-hidden="true" />
-          <span className="sr-only">{closeLabel}</span>
-        </DialogPrimitive.Close>
+        {hideClose ? null : (
+          <DialogPrimitive.Close
+            disabled={closeDisabled}
+            className="absolute right-2 top-2 inline-flex size-[var(--touch-target-min)] items-center justify-center rounded-[var(--radius)] text-[var(--muted-foreground)] transition-[transform,scale,background-color,color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] active:bg-[var(--interactive-pressed)] hover:bg-[var(--interactive-hover)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] disabled:pointer-events-none disabled:bg-[var(--interactive-disabled)] disabled:text-[var(--interactive-disabled-foreground)]"
+          >
+            <X className="size-4" aria-hidden="true" />
+            <span className="sr-only">{closeLabel}</span>
+          </DialogPrimitive.Close>
+        )}
       </DialogPrimitive.Content>
     </DialogPortal>
   ),
