@@ -9,7 +9,8 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   /**
    * The action is in flight. Disables the control, reports aria-busy, and
    * swaps in a spinner while preserving the button's width, so the layout
-   * does not jump when the work starts.
+   * does not jump when the work starts. The label stays the accessible name,
+   * so a pending button needs no aria-label of its own.
    *
    * Ignored for asChild, where the single child owns its own content.
    */
@@ -62,8 +63,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             <span aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <Spinner />
             </span>
-            {/* Kept in the layout, hidden from view: this is what preserves the width. */}
-            <span className="invisible inline-flex items-center gap-2">{children}</span>
+            {/* Transparent: it keeps the width and stays the button's accessible name.
+                visibility: hidden would drop the label from the accessibility tree. */}
+            <span className="inline-flex items-center gap-2 opacity-0">{children}</span>
           </>
         ) : (
           children

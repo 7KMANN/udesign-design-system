@@ -71,6 +71,15 @@ for (const viewport of viewports) {
   })
 }
 
+// In a browser, with the compiled utilities: a label hidden with visibility leaves no name.
+test("a pending button keeps its accessible name", async ({ page }) => {
+  await page.goto("/")
+  const pending = page.getByRole("button", { name: "Save draft" })
+  await expect(pending).toHaveAttribute("aria-busy", "true")
+  await expect(pending).toBeDisabled()
+  await expect(pending).toHaveAccessibleName("Save draft")
+})
+
 test("motion tokens collapse to zero under prefers-reduced-motion, moment scale stays inert without it", async ({ page }) => {
   await page.goto("/")
 

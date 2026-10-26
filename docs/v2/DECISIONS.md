@@ -991,3 +991,15 @@ and `DESIGN.md` "Motion" states the rule for application code. `tests/motion-ado
 fails on a registry or example class string whose press scale has no transition covering both;
 `tests/component-css.test.mjs` holds the static classes to the same rule. **Not proposed:** a
 checker rule for consumer code. A finding must cite a written ban, and this one has none yet.
+
+### D-39 · A pending `Button` keeps its accessible name · `NEEDS-APPROVAL`
+
+**Question:** with `pending`, the label sat in a `visibility: hidden` span to hold the button's
+width. Visibility removes it from the accessibility tree, so a waiting button had no name at all,
+and Boutique put an `aria-label` on every pending button to compensate.
+
+**Proposed:** the label turns transparent (`opacity-0`) instead. It still holds the width and
+stays the button's name, read with `aria-busy` as busy. `DESIGN.md` "Feedback primitives" says so
+and that a pending button needs no `aria-label`. The component test compiles the utilities the
+button uses with Tailwind and applies them in jsdom, because jsdom alone applies no Tailwind and
+the old markup would have passed; the showcase test asserts the name in Chromium.

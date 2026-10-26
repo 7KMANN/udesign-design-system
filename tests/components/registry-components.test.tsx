@@ -29,6 +29,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
+import { applyTailwind } from "./tailwind"
+
 describe("UDesign registry accessibility contracts", () => {
   it("lets a card title take the heading level its page outline needs, h3 by default", () => {
     render(
@@ -270,10 +272,29 @@ describe("UDesign registry accessibility contracts", () => {
   it("keeps a pending button's label in the layout so its width does not jump", () => {
     render(<Button pending>Save changes</Button>)
 
-    // Hidden from view, still measured: this is the whole point.
+    // Transparent, still measured: this is what keeps the width.
     const label = screen.getByText("Save changes")
-    expect(label).toHaveClass("invisible")
+    expect(label).toHaveClass("opacity-0")
     expect(screen.getByRole("button")).toContainElement(label)
+  })
+
+  it("keeps a pending button's accessible name while it waits", async () => {
+    const { container } = render(
+      <>
+        <Button pending>Save changes</Button>
+        <Button pending size="icon" aria-label="Refresh"><span aria-hidden="true">R</span></Button>
+      </>,
+    )
+    // With the real utilities applied, a label hidden with visibility drops out of the name.
+    const removeStyles = await applyTailwind(container)
+    try {
+      const button = screen.getByRole("button", { name: "Save changes" })
+      expect(button).toHaveAccessibleName("Save changes")
+      expect(button).toHaveAttribute("aria-busy", "true")
+      expect(screen.getByRole("button", { name: "Refresh" })).toHaveAttribute("aria-busy", "true")
+    } finally {
+      removeStyles()
+    }
   })
 
   it("does not fire a click on a pending action", async () => {

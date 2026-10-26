@@ -163,12 +163,14 @@ export function KitchenSink() {
           <RegistryCard>
             <CardHeader>
               <CardTitle>Actions and status</CardTitle>
-              <CardDescription>Button, IconButton, Badge, StatusBadge, Tooltip, Alert, and Card.</CardDescription>
+              <CardDescription>Button (pending included), IconButton, Badge, StatusBadge, Tooltip, Alert, and Card.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="flex flex-wrap items-center gap-2">
                 <RegistryButton>Primary action</RegistryButton>
                 <RegistryButton variant="outline" aria-pressed="true">Pressed action</RegistryButton>
+                {/* Pending keeps the label as the accessible name: no aria-label needed. */}
+                <RegistryButton variant="secondary" pending>Save draft</RegistryButton>
                 <IconButton icon={<span aria-hidden="true">+</span>} label="Add item" />
                 <RegistryBadge tone="info">Information</RegistryBadge>
                 <StatusBadge busy tone="progress">Loading</StatusBadge>
