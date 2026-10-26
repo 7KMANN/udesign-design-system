@@ -70,7 +70,8 @@ function Nav({ inSheet = false }: { inSheet?: boolean }) {
           <Button asChild variant="ghost" className="justify-between px-4 aria-[current=page]:bg-[var(--sidebar-accent)] aria-[current=page]:font-semibold">
             <Link href={`/${name.toLowerCase()}`} aria-current={name === "Production" ? "page" : undefined}>
               <span>{name}</span>
-              <span className={`text-[var(--muted-foreground)] ${num}`}>{count}</span>
+              {/* Nothing empty takes room: a section with no count renders no count. */}
+              {count ? <span className={`text-[var(--muted-foreground)] ${num}`}>{count}</span> : null}
             </Link>
           </Button>
         </Item>

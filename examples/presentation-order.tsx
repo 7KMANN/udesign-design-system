@@ -29,6 +29,7 @@ const steps = [
 ]
 
 export function PresentationOrder() {
+  const [approved, setApproved] = React.useState(false)
   return (
     // PageCanvas: the page scrolls and each PageSection centres a column (ban 27).
     <PageCanvas>
@@ -51,10 +52,13 @@ export function PresentationOrder() {
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           {/* The one accent-filled control on this screen: the action the page exists for. */}
-          <Button>Approuver l’épreuve</Button>
+          <Button onClick={() => setApproved(true)}>Approuver l’épreuve</Button>
           {/* Its negative half is secondary, never a second accent. */}
           <Button variant="secondary">Demander une modification</Button>
         </div>
+        {/* Says the result once there is one. Idle, a live region takes no room: it sits after the
+            row, never in its gap, and the margin is on its words (DESIGN.md "Feedback primitives"). */}
+        <div role="status">{approved ? <p className="mt-4">Épreuve approuvée. La production commence.</p> : null}</div>
       </PageSection>
 
       <PageSection variant="band" aria-labelledby="vetements">

@@ -403,6 +403,8 @@ Three primitives carry the feedback floor. They are part of `core`: an applicati
 - **Skeleton** (`skeleton`) - a loading placeholder, sized to the content it replaces. A fallback of a different height causes a jump on arrival, which reads worse than the pause it replaced.
 - **Pressable** (`pressable`) - a clickable card, row, or list item. Renders a real button, so Enter, Space, focus, and the accessible name come from the platform instead of from a div with an `onClick`. Uses the subtle press scale; the control scale reads as a layout bug across a full-width surface.
 
+Nothing empty takes room. An idle live region, a `role="status"` or `role="alert"` waiting for its words, stays in the page so a screen reader hears them when they arrive, but it is never a child of a container with a gap, where even empty it takes one. Render it after the stack, or space the blocks that render with their own margins, and put the margin on its words, not on the region. The same holds for any element that can be empty, such as a count with nothing to count: render nothing. `NEEDS-APPROVAL D-51`
+
 `Button` carries the same floor directly: `pending` disables it, reports `aria-busy`, and swaps in a spinner while preserving its width. Every interactive primitive here has a pressed state - a control that changes nothing on press is the single most common failure in machine-written UI.
 
 A pending `Button` keeps its accessible name: its label turns transparent, never `visibility: hidden`, which would remove it from the accessibility tree. A screen reader hears the action and that it is busy, and a pending button needs no `aria-label` of its own. `NEEDS-APPROVAL D-39`

@@ -80,6 +80,72 @@ for (const screen of ["operations", "presentation"]) {
   }
 }
 
+// D-51, ported from Boutique's appearance check: an element that shows nothing never takes a
+// gap, nor room of its own. An idle live region sits after a stack, never in its gap.
+const empties = (page: Page) =>
+  page.evaluate(() => {
+    const CONTENT = "img, svg, input, button, select, textarea, video, canvas, picture, iframe"
+    const painted = (el: Element) => {
+      const s = getComputedStyle(el)
+      const border = ["top", "right", "bottom", "left"].some((side) => parseFloat(s.getPropertyValue(`border-${side}-width`)) > 0 && s.getPropertyValue(`border-${side}-style`) !== "none")
+      return border || !["rgba(0, 0, 0, 0)", "transparent"].includes(s.backgroundColor) || s.backgroundImage !== "none" || s.boxShadow !== "none"
+    }
+    const empty = (el: Element) => (el.textContent ?? "").trim() === "" && !el.matches(CONTENT) && !el.querySelector(CONTENT) && !painted(el) && ![...el.querySelectorAll("*")].some(painted)
+    const inFlow = (el: Element) => {
+      const s = getComputedStyle(el)
+      return s.display !== "none" && s.display !== "contents" && s.position !== "absolute" && s.position !== "fixed"
+    }
+    const gapOf = (el: Element | null) => {
+      if (!el) return null
+      const s = getComputedStyle(el)
+      if (!/flex|grid/.test(s.display)) return null
+      const px = (v: string) => (v === "normal" ? 0 : parseFloat(v) || 0)
+      return { row: px(s.rowGap), column: px(s.columnGap), across: /flex/.test(s.display) && !s.flexDirection.startsWith("column") }
+    }
+    const found: string[] = []
+    for (const el of document.querySelectorAll("#root *")) {
+      if (!inFlow(el) || el.closest("svg") || !empty(el)) continue
+      const r = el.getBoundingClientRect()
+      const gap = gapOf(el.parentElement)
+      const name = `${el.tagName.toLowerCase()}${el.getAttribute("role") ? `[${el.getAttribute("role")}]` : ""}`
+      if (gap && (gap.across ? gap.column > 0 && r.width === 0 : gap.row > 0 && r.height === 0)) found.push(`in a gap: ${name}`)
+      else if (r.height > 0.5 && r.width > 0.5) found.push(`room: ${name} ${Math.round(r.height)}px`)
+    }
+    return found
+  })
+
+for (const screen of ["presentation", "operations"]) {
+  for (const viewport of viewports) {
+    test(`${screen} reference screen, ${viewport.name}: nothing empty takes room`, async ({ page }) => {
+      await page.setViewportSize(viewport)
+      await page.goto(`/examples.html?screen=${screen}`)
+      await page.locator("#root > *").first().waitFor()
+      expect(await empties(page)).toEqual([])
+    })
+  }
+}
+
+test("the empty-room audit sees an idle live region placed in a gap", async ({ page }) => {
+  await page.goto("/examples.html?screen=presentation")
+  const status = page.locator('#root [role="status"]')
+  await status.waitFor({ state: "attached" })
+  // The mistake the rule names: the idle region moved into the action row, whose gap it takes.
+  await status.evaluate((el) => el.previousElementSibling!.append(el))
+  expect(await empties(page)).toEqual(["in a gap: div[status]"])
+})
+
+test("presentation reference screen: the idle status speaks after the row, its words carrying the margin", async ({ page }) => {
+  await page.goto("/examples.html?screen=presentation")
+  const status = page.locator('#root [role="status"]')
+  await status.waitFor({ state: "attached" })
+  expect((await status.boundingBox())?.height ?? 0, "idle, it takes no room").toBe(0)
+  await page.getByRole("button", { name: "Approuver l’épreuve" }).click()
+  await expect(status).toHaveText("Épreuve approuvée. La production commence.")
+  const row = (await page.getByRole("button", { name: "Approuver l’épreuve" }).boundingBox())!
+  const words = (await status.locator("p").boundingBox())!
+  expect(words.y - (row.y + row.height), "--space-4 under the row").toBeCloseTo(16, 0)
+})
+
 // D-46: a page's title steps down one role on a phone, with no size of its own on the element.
 // Presentation: --text-h1 (40px) at 375, --text-display (56px) from 800. Operations does not move.
 for (const [screen, selector, phone, desktop] of [

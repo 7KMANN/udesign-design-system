@@ -1238,3 +1238,18 @@ the full breakdown is in `docs/checker-rules.md`. A first cut that read every sp
 leaves GlobalVision 16 findings; it is one condition in `bin/rules.mjs`. **Rejected:** checking
 padding, which would cry wolf on every field with an icon; checking the primitive folders, which
 hold each component's geometry and which this repository tests itself.
+
+### D-51 · Nothing empty takes room · `NEEDS-APPROVAL`
+
+**Question:** Boutique found idle live regions (an empty `role="status"` waiting for a result) as
+children of containers with a gap: empty, they still take the gap, so a form or a cart footer
+carried an empty row. "Feedback primitives" said nothing about where a live region goes.
+
+**Proposed:** the rule in "Feedback primitives": an idle live region stays in the page (a screen
+reader only hears a region that was there before its words), outside any gap container, with the
+margin on its words. The reference screen shows it: the proof's approval speaks in a status after
+the action row. Boutique's browser check comes here as a layout audit on both reference screens at
+both widths, with a case proving it sees the mistake. Run for the first time, it found one here: the
+operations screen's navigation rendered an empty count beside four sections, inside the link's gap;
+it renders no count now. **Rejected:** hiding an empty region with `display: none`, which takes it
+out of the accessibility tree, so a polite one is not reliably read when its words arrive.
