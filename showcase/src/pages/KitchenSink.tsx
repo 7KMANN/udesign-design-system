@@ -13,6 +13,7 @@ import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui
 import { IconButton } from '@/components/ui/icon-button';
 import { Input } from '@/components/ui/input';
 import { MetricCard } from '@/components/ui/metric-card';
+import { NativeSelect } from '@/components/ui/native-select';
 import { Moment } from '@/components/ui/moment';
 import { ProgressRing } from '@/components/ui/progress-ring';
 import { ResponsiveCollection } from '@/components/ui/responsive-collection';
@@ -230,7 +231,7 @@ export function KitchenSink() {
           <RegistryCard>
             <CardHeader>
               <CardTitle>Fields and controls</CardTitle>
-              <CardDescription>Field, Input, Textarea, Select, Checkbox, Switch, and Slider.</CardDescription>
+              <CardDescription>Field, Input, Textarea, Select, NativeSelect, Checkbox, Switch, and Slider. The name field shows the invalid state.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
               <Field>
@@ -247,6 +248,12 @@ export function KitchenSink() {
                   <SelectItem value="paused">Paused</SelectItem>
                 </SelectContent>
               </Select>
+              {/* The platform's own select, dressed as the trigger above: for long lists, dense grids and phones. */}
+              <NativeSelect aria-label="Record owner" defaultValue="operations">
+                <option value="operations">Operations</option>
+                <option value="sales">Sales</option>
+                <option value="studio">Studio</option>
+              </NativeSelect>
               <div className="flex flex-wrap gap-4">
                 <label className="flex items-center gap-2"><Checkbox defaultChecked /> Include archived</label>
                 <label className="flex items-center gap-2"><Switch defaultChecked /> Live updates</label>

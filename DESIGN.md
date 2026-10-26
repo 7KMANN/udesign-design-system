@@ -244,6 +244,8 @@ Hover and pressed each differ from the page floor, from `--secondary`, and from 
 
 Disabled controls use the disabled surface and foreground roles, preserve readable labels, and expose native `disabled` or `aria-disabled` semantics. Opacity alone is not a complete disabled treatment.
 
+A select control (`SelectTrigger`, `NativeSelect`) answers hover with `--interactive-hover`, as an outline button does. A field marked `aria-invalid="true"` (`Input`, `Textarea`, `SelectTrigger`, `NativeSelect`) draws its border in `--tone-danger-foreground`, 3:1 or better against the field in every state and against every surface a field sits on; `tests/contrast.test.mjs` holds it. `FieldError` says what is wrong, so the colour is never the only signal (ban 11). `NEEDS-APPROVAL D-44`
+
 ## Contrast and accessibility
 
 Target WCAG 2.2 AA:
@@ -405,9 +407,21 @@ A pending `Button` keeps its accessible name: its label turns transparent, never
 
 Only the title row keeps clear of the close button. `DialogTitle` and `SheetTitle` reserve its width, and its height where the padding is tight (operations), so the description and anything placed in it run the full width, out to the footer's edge. Without a close button (`hideClose`) the title reserves nothing. `NEEDS-APPROVAL D-41`
 
+### Choosing a select
+
+`Select` (`select`) is the Radix listbox, drawn in the page. `NativeSelect` (`native-select`) is the platform's own `<select>`, dressed as `SelectTrigger`: the same tokens, height, radius, focus ring, hover, press, disabled and invalid states, and the same chevron. Ban 9 allows it because it lives in `components/ui`; application code uses it, never a bare `<select>`. `NEEDS-APPROVAL D-43`
+
+Choose `NativeSelect` for:
+
+- A long list. The platform's picker scrolls, types ahead and fits the screen better than a list drawn in the page.
+- A dense grid of many selects, such as one per table row. An open Radix list sets `pointer-events: none` and a scroll lock on `<body>`, so every choice makes the browser restyle every element of the page, and the cost grows with the page. A native select changes nothing on `<body>`.
+- Phones, where the system picker serves better than a list drawn in the page.
+
+Choose `Select` when an option needs more than a line of text, such as an icon or a second line, or when the list must look the same on every platform. Below `md`, `NativeSelect` text is 16px, as `Input`'s is: iOS zooms the page into a smaller field on focus.
+
 ## Registry components
 
-The source registry includes these base components: button, badge, alert, card, input, textarea, select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
+The source registry includes these base components: button, badge, alert, card, input, textarea, select, native-select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
 
 The application patterns are icon-button, status-badge, metric-card, empty-state, and responsive-collection. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included.
 

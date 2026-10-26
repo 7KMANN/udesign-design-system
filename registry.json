@@ -64,6 +64,16 @@
       "files": [{ "path": "registry/new-york/ui/select.tsx", "type": "registry:ui", "target": "components/ui/select.tsx" }]
     },
     {
+      "name": "native-select",
+      "type": "registry:ui",
+      "title": "Native Select",
+      "description": "The platform's own select, styled as SelectTrigger: for long lists, dense grids of many selects, and phones.",
+      "docs": "NativeSelect shares SelectTrigger's tokens, height, radius, focus ring, hover, press, disabled and invalid states, and its chevron. Choose it over Select for a long list, a dense grid of many selects such as one per table row, or a phone, where the system picker serves better: a native select changes nothing on <body> when it opens, while a Radix Select makes the browser restyle the whole page on every choice. className and style land on the wrapper that holds the chevron; every other prop and the ref reach the <select>. See DESIGN.md \"Choosing a select\".",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/native-select.tsx", "type": "registry:ui", "target": "components/ui/native-select.tsx" }]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
@@ -280,6 +290,7 @@
         { "path": "registry/new-york/ui/input.tsx", "type": "registry:ui", "target": "components/ui/input.tsx" },
         { "path": "registry/new-york/ui/textarea.tsx", "type": "registry:ui", "target": "components/ui/textarea.tsx" },
         { "path": "registry/new-york/ui/select.tsx", "type": "registry:ui", "target": "components/ui/select.tsx" },
+        { "path": "registry/new-york/ui/native-select.tsx", "type": "registry:ui", "target": "components/ui/native-select.tsx" },
         { "path": "registry/new-york/ui/checkbox.tsx", "type": "registry:ui", "target": "components/ui/checkbox.tsx" },
         { "path": "registry/new-york/ui/switch.tsx", "type": "registry:ui", "target": "components/ui/switch.tsx" },
         { "path": "registry/new-york/ui/slider.tsx", "type": "registry:ui", "target": "components/ui/slider.tsx" },

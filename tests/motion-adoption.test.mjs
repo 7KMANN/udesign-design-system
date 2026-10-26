@@ -72,15 +72,15 @@ test("every transition in the registry names its duration token", () => {
 })
 
 const PRESS = /active:(?:scale-\[var\(--motion-press-scale|bg-\[var\(--interactive-pressed)/
-// Anything that renders a native button or a Radix part a user can press.
-const RENDERS_PRESSABLE = /<button\b|role="button"|["']button["']|Primitive\.(?:Root|Trigger|Item|Thumb|Close)\b/
+// Anything that renders a native button or select, or a Radix part a user can press.
+const RENDERS_PRESSABLE = /<button\b|<select\b|role="button"|["']button["']|Primitive\.(?:Root|Trigger|Item|Thumb|Close)\b/
 
 // Per component, not per file: a file-level check let SelectItem ship unpressed
 // because SelectTrigger in the same file had a press state.
 // ponytail: components are split at React.forwardRef; a part assigned directly
 // (const DialogTrigger = DialogPrimitive.Trigger) renders the consumer's own
 // element, so its press state belongs to that element.
-const RENDERS_PRESSABLE_JSX = /<button\b|role="button"|["']button["']|<\w+Primitive\.(?:Root|Trigger|Item|Thumb|Close)\b/
+const RENDERS_PRESSABLE_JSX = /<button\b|<select\b|role="button"|["']button["']|<\w+Primitive\.(?:Root|Trigger|Item|Thumb|Close)\b/
 const components = Object.entries(sources).flatMap(([file, source]) =>
   source.split(/(?=React\.forwardRef)/).slice(1).map((chunk, i) => [`${file}#${i + 1}`, chunk]),
 )
@@ -109,7 +109,8 @@ test("no press exemption outlives its usefulness", () => {
 // pressed with a jump in a Tailwind 4 consumer. The class string that holds the press
 // scale names a transition covering both properties, or a utility that covers both in
 // both versions (`transition`, `transition-all`, `transition-transform`).
-const PRESS_SCALE = /(?:^|\s)(?:[^\s:]+:)*(?:group-|peer-)?active(?:\/[\w-]+)?:scale-\[var\(--motion-press-scale/
+// Any variant chain that reads :active: `active:`, `group-active:`, `has-[select:active]:`.
+const PRESS_SCALE = /(?:^|\s)\S*active\S*:scale-\[var\(--motion-press-scale/
 const COVERS_SCALE = (classes) => {
   if (/(?:^|\s)transition(?:-all|-transform)?(?=\s|$)/.test(classes)) return true
   return [...classes.matchAll(/(?:^|\s)transition-\[([^\]\s]+)\]/g)].some(([, list]) => {
@@ -134,7 +135,7 @@ function snappingPresses(files) {
 
 test("a press scale eases in Tailwind 3 and 4: its transition covers transform and scale", () => {
   const pressing = Object.values(pressSources).flatMap(classStrings).filter((s) => PRESS_SCALE.test(s))
-  assert.ok(pressing.length >= 9, `expected the press-scaled controls, found ${pressing.length}`)
+  assert.ok(pressing.length >= 10, `expected the press-scaled controls, found ${pressing.length}`)
   assert.deepEqual(snappingPresses(pressSources), [], "a press scale whose transition misses `scale` (Tailwind 4) or `transform` (Tailwind 3) snaps")
 })
 
@@ -144,6 +145,8 @@ test("the press-scale check catches the Tailwind 4 mismatch it exists for", () =
   const groupSnapping = 'className="transition-[scale] group-active:scale-[var(--motion-press-scale)]"'
   assert.equal(snappingPresses({ "snapping.tsx": snapping }).length, 1)
   assert.equal(snappingPresses({ "group.tsx": groupSnapping }).length, 1, "scale alone leaves Tailwind 3, which scales through transform, snapping")
+  const hasSnapping = 'className="transition-[transform] has-[select:active]:scale-[var(--motion-press-scale)]"'
+  assert.equal(snappingPresses({ "has.tsx": hasSnapping }).length, 1, "a press read through :has() is a press")
   assert.deepEqual(snappingPresses({ "easing.tsx": easing, "utility.tsx": 'className="transition-transform active:scale-[var(--motion-press-scale-subtle)]"' }), [])
 })
 

@@ -1047,3 +1047,40 @@ reference screen with its panes emptied: the toolbar grew from 149px to 456px, a
 definite height the `1fr` row sizes to its content. Two panes stacked on a phone share the spare
 height between them; a single pane takes all of it. The Playwright layout audit measures both
 shells on a short phone page.
+
+### D-43 · `native-select` joins the registry, with a rule for choosing it · `NEEDS-APPROVAL`
+
+**Question:** an open Radix `Select` sets `pointer-events: none` on `<body>` (so a press meant to
+close the list cannot reach what is under it) and `react-remove-scroll-bar` locks the page scroll
+on `<body>` with an attribute and a custom property. Both make the browser restyle the whole page.
+Boutique measured about 240ms per choice on an operations grid of about 3,800 elements on a phone
+slowed down 4 times, against about 100ms with 10 rows.
+
+**Measured here,** Chromium 149, the showcase plus 3,800 elements (4,146 in all), five choices:
+the Radix `Select` restyled 63,266 elements in 15 full-page passes, three per choice (42,244 in 10
+once D-45 ships). The new `NativeSelect` restyled 318 elements in all, the largest pass 18, with
+no full-page pass: it changes nothing on `<body>`.
+
+**Proposed:** a registry `native-select` (ban 9 allows a native control inside `components/ui`),
+in `core`. It shares `SelectTrigger`'s tokens, height, radius, focus ring, hover, press, disabled
+and invalid states and its chevron, and a component test fails the day `SelectTrigger` gains a
+state `NativeSelect` lacks. Its text is 16px below `md`, as `Input`'s is, because iOS zooms the
+page into a smaller field. `className` lands on the wrapper that holds the chevron, so a width
+sizes both. `DESIGN.md` "Choosing a select": `NativeSelect` for long lists, dense grids of many
+selects, and phones; `Select` when an option needs more than a line of text or the list must look
+the same everywhere. **Not proposed:** a static `ud-` class, since no static page has needed a
+select yet (`FUTURE-WORK.md`, classes on evidence only).
+
+### D-44 · Select controls hover, and every field shows when it is invalid · `NEEDS-APPROVAL`
+
+**Question:** `NativeSelect` was to share `SelectTrigger`'s hover and invalid states, and
+`SelectTrigger` had neither. No field had an invalid state either: the showcase's invalid name
+field looked like a valid one beside its error text.
+
+**Proposed:** `SelectTrigger` and `NativeSelect` answer hover with `--interactive-hover`, as an
+outline button does. `Input`, `Textarea`, `SelectTrigger` and `NativeSelect` draw their border in
+`--tone-danger-foreground` under `aria-invalid="true"`. That role is 5.2:1 or better against the
+field in every state and every surface a field sits on, in all four profile and theme pairs;
+`--tone-danger-border` fell to 2.3:1 on the pressed surface and `--destructive` to 2.0:1 on the
+dark pressed surface, so neither qualifies. `tests/contrast.test.mjs` holds 3:1. `FieldError` keeps carrying the reason
+(ban 11). The variant is `aria-[invalid=true]:`, which Tailwind 3 and 4 both compile.

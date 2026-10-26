@@ -124,6 +124,19 @@ for (const [themeName, tree] of profiles) {
     }
   });
 
+  // A field marked aria-invalid draws its border in the danger foreground (Input, Textarea,
+  // SelectTrigger, NativeSelect). It must read as a boundary against the field in every state
+  // and against every surface a field sits on.
+  test(`${themeName} an invalid field's border meets 3:1 inside and around the field`, () => {
+    for (const surface of [
+      'role.background', 'interactive.hover', 'interactive.pressed', 'interactive.disabled',
+      'role.card', 'role.popover', 'surface.raised',
+    ]) {
+      const ratio = contrast(resolveHex(tree, 'tone.danger.foreground'), resolveHex(tree, surface));
+      assert(ratio >= 3, `tone.danger.foreground on ${surface} has ${ratio.toFixed(2)}:1 contrast`);
+    }
+  });
+
   test(`${themeName} highlighted text stays readable`, () => {
     assertPair(tree, 'role.foreground', 'role.highlight');
   });

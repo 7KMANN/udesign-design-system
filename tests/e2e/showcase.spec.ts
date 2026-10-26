@@ -121,6 +121,25 @@ for (const viewport of [{ width: 375, height: 812 }, { width: 1440, height: 1000
   }
 }
 
+// Why native-select exists: an open Radix Select sets pointer-events and a scroll lock on
+// <body>, and the browser restyles every element of the page on each choice. The
+// platform's select opens without touching <body>.
+test("a native select leaves <body> alone when it opens; a Radix Select does not", async ({ page }) => {
+  await page.goto("/")
+  const body = () => page.evaluate(() => ({ pointerEvents: document.body.style.pointerEvents, locked: document.body.hasAttribute("data-scroll-locked") }))
+  const native = page.getByRole("combobox", { name: "Record owner" })
+  await native.click()
+  expect(await body()).toEqual({ pointerEvents: "", locked: false })
+  await page.keyboard.press("Escape")
+  await native.selectOption("studio")
+  await expect(native).toHaveValue("studio")
+  const radix = page.getByRole("combobox", { name: "Record state" })
+  await radix.click()
+  await expect(page.getByRole("listbox")).toBeVisible()
+  expect(await body()).toEqual({ pointerEvents: "none", locked: true })
+  await page.keyboard.press("Escape")
+})
+
 test("motion tokens collapse to zero under prefers-reduced-motion, moment scale stays inert without it", async ({ page }) => {
   await page.goto("/")
 
