@@ -4,6 +4,7 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
+import { Alert } from "@/components/ui/alert"
 import { AppShell, AppShellPane, AppShellPanes, AppShellSidebar, AppShellToolbar } from "@/components/ui/app-shell"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -389,6 +390,25 @@ describe("UDesign registry accessibility contracts", () => {
     } finally {
       removeStyles()
     }
+  })
+
+  // D-55: an alert shown with the page is part of the page. Only one whose appearance is the
+  // news is a live region, so a banner never needs role="presentation" to stay quiet.
+  it("makes an alert a live region only when asked, and lets an explicit role win", () => {
+    render(
+      <>
+        <Alert tone="neutral">La boutique est fermée.</Alert>
+        <Alert tone="success" live>Commande envoyée.</Alert>
+        <Alert tone="danger" live="assertive">Le lien est perdu.</Alert>
+        <Alert tone="info" live="polite" role="note">Note de produit.</Alert>
+      </>,
+    )
+    expect(screen.getByText("La boutique est fermée.")).not.toHaveAttribute("role")
+    expect(screen.getByText("La boutique est fermée.")).toHaveAttribute("data-slot", "alert")
+    expect(screen.getAllByRole("status")).toHaveLength(1)
+    expect(screen.getByRole("status")).toHaveTextContent("Commande envoyée.")
+    expect(screen.getByRole("alert")).toHaveTextContent("Le lien est perdu.")
+    expect(screen.getByRole("note")).toHaveTextContent("Note de produit.")
   })
 
   it("does not fire a click on a pending action", async () => {

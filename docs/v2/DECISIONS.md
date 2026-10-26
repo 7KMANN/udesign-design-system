@@ -1161,3 +1161,21 @@ table scrolls; wrapping by default would let an automatic table layout squeeze t
 break statuses in two the day GlobalVision re-adds the component. A guard in
 `scripts/test-registry.mjs` keeps one line the default. **Rejected:** wrapping by default, for that
 reason; a static `ud-badge` twin, since no static page has a badge in a narrow card yet.
+
+### D-48 · An `Alert` is a live region only when asked · `NEEDS-APPROVAL`
+
+**Question:** `Alert` defaulted to `role="status"`, a live region, so every banner shown with the
+page was also announced as news, and Boutique passes `role="presentation"` on 22 of its 23 alerts to
+keep them quiet. Change the default, or keep it because consumers depend on it?
+
+**Checked:** Boutique relies on the default once (`JoinForm.tsx`, the notice of a closed shop or an
+unreachable server). GlobalVision's `components/ui/alert.tsx` is a local fork that defaults to
+`role="alert"` and passes a role on every alert that must announce, so it sees nothing until it
+re-adds the component. The showcase's one dependency was a test that found the dialog's alert by
+its role.
+
+**Proposed:** no role by default. `live` (or `live="polite"`) gives `role="status"`, and
+`live="assertive"` gives `role="alert"`, for an error that stops the work. A role passed explicitly
+still wins. The alert carries `data-slot="alert"`, the shadcn hook GlobalVision's fork already has.
+**Visible on upgrade:** an alert that should be read when it appears needs `live`; the
+`role="presentation"` workarounds can go.

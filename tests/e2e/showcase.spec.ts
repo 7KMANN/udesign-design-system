@@ -129,7 +129,7 @@ for (const viewport of [{ width: 375, height: 812 }, { width: 1440, height: 1000
       const box = async (locator: ReturnType<typeof page.locator>) => (await locator.boundingBox())!
       const close = await box(dialog.getByRole("button", { name: "Close order" }))
       const icon = await box(dialog.getByRole("button", { name: "Close order" }).locator("svg"))
-      const block = await box(dialog.getByRole("status"))
+      const block = await box(dialog.locator('[data-slot="alert"]'))
       const send = await box(dialog.getByRole("button", { name: "Send the order" }))
       const description = await box(dialog.getByText("While it sends", { exact: false }))
       // The title's content box: where a long title has to wrap.

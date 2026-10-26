@@ -405,6 +405,8 @@ Three primitives carry the feedback floor. They are part of `core`: an applicati
 
 A pending `Button` keeps its accessible name: its label turns transparent, never `visibility: hidden`, which would remove it from the accessibility tree. A screen reader hears the action and that it is busy, and a pending button needs no `aria-label` of its own. `NEEDS-APPROVAL D-39`
 
+An `Alert` is part of the page: a notice shown with the page, such as a closed shop or a product's note, is met in reading order and announces nothing. Only an alert whose appearance is the news is a live region: `live` (`role="status"`) for a result, such as an order sent, and `live="assertive"` (`role="alert"`) for an error that stops the work. `NEEDS-APPROVAL D-48`
+
 ### Dialogs and sheets
 
 `DialogContent` and `SheetContent` put a close button in the top-right corner. While the dialog's action runs, `closeDisabled` disables it. `hideClose` removes it, for a dialog whose footer already offers the way out, such as a Cancel button. Neither prop touches Escape or a press outside: both still call `onOpenChange(false)`, and the caller decides there, ignoring the close while its action runs. `NEEDS-APPROVAL D-40`

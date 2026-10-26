@@ -28,6 +28,7 @@
       "type": "registry:ui",
       "title": "Alert",
       "description": "Accessible message container covering every UDesign semantic tone.",
+      "docs": "An Alert is part of the page and is not a live region: a notice shown with the page is met in reading order. Pass live (role=\"status\") when its appearance is the news, such as a result, or live=\"assertive\" (role=\"alert\") for an error that stops the work. An explicit role wins. See DESIGN.md \"Feedback primitives\".",
       "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/badge.json"],
       "files": [{ "path": "registry/new-york/ui/alert.tsx", "type": "registry:ui", "target": "components/ui/alert.tsx" }]
     },
