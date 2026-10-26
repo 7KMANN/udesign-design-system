@@ -31,6 +31,7 @@ const MIRROR = {
   alert: "no generator wrote one",
   select: "Radix behaviour, and a native <select> is ban 9",
   "native-select": "no static page has needed a select yet; a class waits for one (FUTURE-WORK.md)",
+  "choice-group": "needs script for roving focus, the arrow keys and the column count; its container queries ship in css/registry.css",
   checkbox: "Radix behaviour, and a native checkbox is ban 9",
   switch: "Radix behaviour; no generator wrote one",
   slider: "Radix behaviour, and a native range is ban 9",

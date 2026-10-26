@@ -425,9 +425,18 @@ Choose `NativeSelect` for:
 
 Choose `Select` when an option needs more than a line of text, such as an icon or a second line, or when the list must look the same on every platform. Below `md`, `NativeSelect` text is 16px, as `Input`'s is: iOS zooms the page into a smaller field on focus. `NEEDS-APPROVAL D-43`
 
+### Choosing one of a few
+
+`ChoiceGroup` (`choice-group`) shows one choice as buttons, for a few short options read at a glance: a garment's sizes, a product's options, its colours as swatches (`variant="swatch"`). A long list is a select. `NEEDS-APPROVAL D-49`
+
+- It is a radio group with one Tab stop: the chosen choice, or the first that can be chosen. The arrow keys move and choose, Home and End jump, and the group stops the keys it handles, so a listener on the page, such as a gallery's, never sees them.
+- Each button holds its label alone, centred, `--control-height` high. What the buttons do not carry, such as a surcharge or the sizes a colour cannot be made in, is the note under the group, which the group points at with `aria-describedby`.
+- A choice that cannot be had is disabled, dashed and struck through, and says so in words: `unavailableLabel` follows its label for a screen reader.
+- Its columns are explicit: one row when every choice gets 4rem; otherwise rows of one count, the last at most one shorter, never one choice alone on a row, in the fewest rows; a cell never goes under the touch target. Container queries in `dist/tokens.css` lay them out, so the group needs the stylesheet of its own release, and it takes its width from its parent: in a table cell or a flex row, give it one.
+
 ## Registry components
 
-The source registry includes these base components: button, badge, alert, card, input, textarea, select, native-select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
+The source registry includes these base components: button, badge, alert, card, input, textarea, select, native-select, choice-group, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
 
 The application patterns are icon-button, status-badge, metric-card, empty-state, and responsive-collection. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included.
 

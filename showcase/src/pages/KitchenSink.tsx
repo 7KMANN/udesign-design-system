@@ -7,6 +7,7 @@ import { Badge as RegistryBadge } from '@/components/ui/badge';
 import { Button as RegistryButton } from '@/components/ui/button';
 import { Card as RegistryCard, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ChoiceGroup } from '@/components/ui/choice-group';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
@@ -79,6 +80,41 @@ function MomentDemo({ intensity }: { intensity: 1 | 2 }) {
           {intensity === 2 ? 'Loop closed' : 'Stage advanced'}
         </RegistryBadge>
       </Moment>
+    </div>
+  );
+}
+
+const SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+const COLOURS = [
+  // design-ok: product colours, the swatches' own data.
+  { value: 'bone', label: 'Bone', swatch: '#e8dfcf' },
+  // design-ok: product colour.
+  { value: 'pigment-black', label: 'Pigment Black', swatch: '#2b2b2b' },
+  // design-ok: product colour.
+  { value: 'navy', label: 'Navy', swatch: '#1f2a44', disabled: true },
+];
+
+// One choice shown as buttons: sizes in explicit columns, the note under the group naming what the
+// buttons do not carry, and colours as swatches. Arrow keys move and choose inside each group.
+function ChoicesDemo() {
+  const [size, setSize] = useState<string | null>('M');
+  const [colour, setColour] = useState<string | null>('bone');
+  return (
+    <div className="grid gap-6">
+      <div className="grid gap-2">
+        <p id="demo-size" className="text-sm font-medium">Size</p>
+        <ChoiceGroup
+          aria-labelledby="demo-size"
+          value={size}
+          onValueChange={setSize}
+          choices={SIZES.map((s) => ({ value: s, label: s, disabled: s === '3XL' }))}
+          note="2XL: +$2. Not available in Bone: 3XL."
+        />
+      </div>
+      <div className="grid gap-2">
+        <p id="demo-colour" className="text-sm font-medium">Colour</p>
+        <ChoiceGroup aria-labelledby="demo-colour" variant="swatch" value={colour} onValueChange={setColour} choices={COLOURS} />
+      </div>
     </div>
   );
 }
@@ -264,6 +300,16 @@ export function KitchenSink() {
               </div>
               <Slider aria-label="Match threshold" defaultValue={[40]} />
               <Slider aria-label="Match threshold (disabled)" defaultValue={[60]} disabled />
+            </CardContent>
+          </RegistryCard>
+
+          <RegistryCard>
+            <CardHeader>
+              <CardTitle>Choices</CardTitle>
+              <CardDescription>ChoiceGroup: one choice shown as buttons, in explicit columns, with a note under the group. A size that cannot be had says so in words.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChoicesDemo />
             </CardContent>
           </RegistryCard>
 

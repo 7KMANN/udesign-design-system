@@ -17,6 +17,7 @@ const requiredItems = [
   "textarea",
   "select",
   "native-select",
+  "choice-group",
   "checkbox",
   "switch",
   "slider",
@@ -101,7 +102,7 @@ assert.match(files["tabs.tsx"], /TabsPrimitive\.Trigger[\s\S]*?min-h-\[var\(--to
 assert.match(files["select.tsx"], /SelectPrimitive\.ScrollUpButton[\s\S]*?min-h-\[var\(--touch-target-min\)\]/)
 assert.match(files["select.tsx"], /SelectPrimitive\.ScrollDownButton[\s\S]*?min-h-\[var\(--touch-target-min\)\]/)
 
-for (const clientFile of ["select.tsx", "checkbox.tsx", "switch.tsx", "slider.tsx", "dialog.tsx", "sheet.tsx", "tooltip.tsx", "tabs.tsx"]) {
+for (const clientFile of ["select.tsx", "choice-group.tsx", "checkbox.tsx", "switch.tsx", "slider.tsx", "dialog.tsx", "sheet.tsx", "tooltip.tsx", "tabs.tsx"]) {
   assert.match(files[clientFile], /^"use client"\r?\n/, `${clientFile} must preserve its App Router client boundary`)
 }
 
@@ -134,6 +135,15 @@ for (const name of ["input.tsx", "textarea.tsx", "select.tsx", "native-select.ts
 // D-45: dist/tokens.css registers --removed-body-scroll-bar-size as non-inherited, which is
 // safe only while no component reads it below <body>, where it is now 0px.
 assert.doesNotMatch(Object.values(files).join("\n"), /removed-body-scroll-bar-size/, "a registry component reads --removed-body-scroll-bar-size, which does not inherit below <body>")
+
+// D-49: one choice shown as buttons. A radio group with one Tab stop whose arrow keys stop at
+// the group, and explicit columns that the stylesheet's container queries lay out.
+assert.match(files["choice-group.tsx"], /role="radiogroup"/)
+assert.match(files["choice-group.tsx"], /role="radio"/)
+assert.match(files["choice-group.tsx"], /event\.stopPropagation\(\)/, "the group must stop the arrow keys it handles")
+assert.match(files["choice-group.tsx"], /tabIndex=\{choice\.value === stop \? 0 : -1\}/, "one Tab stop per group")
+assert.match(files["choice-group.tsx"], /aria-describedby=/, "the note is tied to the group")
+assert.match(files["choice-group.tsx"], /--choice-columns-/, "the group writes its columns for the stylesheet's container queries")
 
 const sliderThumb = files["slider.tsx"].match(/<SliderPrimitive\.Thumb[\s\S]*?>/)?.[0] ?? ""
 assert.match(sliderThumb, /size-\[var\(--touch-target-min\)\]/)
@@ -175,7 +185,7 @@ for (const name of ["badge.tsx", "app-shell.tsx"]) {
 
 const core = registry.items.find((item) => item.name === "core")
 assert.equal(core.type, "registry:item")
-assert.equal(core.files.length, 27, "core must install the complete supported source set")
+assert.equal(core.files.length, 28, "core must install the complete supported source set")
 
 const outputDir = path.join(root, "public", "r")
 assert.ok(fs.existsSync(outputDir), "public/r must contain committed registry output")

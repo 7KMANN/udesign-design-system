@@ -1179,3 +1179,32 @@ its role.
 still wins. The alert carries `data-slot="alert"`, the shadcn hook GlobalVision's fork already has.
 **Visible on upgrade:** an alert that should be read when it appears needs `live`; the
 `role="presentation"` workarounds can go.
+
+### D-49 · `ChoiceGroup` joins the registry · `NEEDS-APPROVAL`
+
+**Question:** the registry had no radio group, so Boutique built its own sizes, options and colours
+from `choiceClass`, `radioKeys`, `sizes.ts` and `choices.css`, and UDesign Pages' size buttons have
+the same defects Boutique fixed: uneven rows, a size alone on the last row, a surcharge inside a
+button, an unavailable size marked by look only. Boutique also had to stop the arrow keys in the
+group, because the gallery listened for them on the document.
+
+**Proposed:** a registry `choice-group`, in `core`: a radio group of buttons with one Tab stop,
+whose arrow keys (and Home and End) move and choose, skip what cannot be had, and stop at the group.
+Each button holds its label alone; a choice that cannot be had is disabled, dashed, struck through,
+and says so in words (`unavailableLabel`, English by default as `closeLabel` is). A note under the
+group carries what the buttons do not, tied by `aria-describedby`. Colours are `variant="swatch"`:
+the colour in a 44px circle, its name for a screen reader, a ring when chosen.
+
+**Columns, measured in Chromium:** one row when every choice gets 4rem; otherwise rows of one count,
+the last at most one shorter, never one alone, in the fewest rows; never a cell under the 2.75rem
+touch target. Boutique's own rule took one more column than fits from 3 cells up; this generalizes
+it to every width up to 12 columns, adds the range from 9.25rem where three cells keep the touch
+target, and prefers fewer rows (ten sizes are 5 + 5, not five rows of two). The group writes the
+columns of each of 13 ranges as custom properties and `css/registry.css` reads them in container
+queries, so the layout needs no script and no Tailwind container plugin, and holds at first paint.
+At 375px Boutique's cases come out as its standard says: 5 as 3 + 2, 6 as 3 + 3, 7 as 4 + 3. Below
+9.25rem three choices leave one alone: nothing narrower keeps the touch target.
+
+**Rejected:** a static `ud-` class, since the columns and the keys need script; columns from
+Tailwind container variants, whose order Tailwind 3 and 4 do not guarantee; the arrow keys left to
+propagate, which is what moved Boutique's gallery.

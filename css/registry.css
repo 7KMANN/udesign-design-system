@@ -14,3 +14,26 @@
   inherits: false;
   initial-value: 0px;
 }
+
+/*
+ * ChoiceGroup (registry choice-group) lays its choices in explicit columns (DESIGN.md "Choosing one
+ * of a few"). Each width below is where one more 4rem cell fits, 0.5rem apart, and 9.25rem is where
+ * three cells keep the 2.75rem touch target. The group writes, for its number of choices, the
+ * columns of each range as --choice-columns-1 to --choice-columns-13; CHOICE_RANGES in
+ * choice-group.tsx holds the same widths. The group is a size container, so it takes its width
+ * from its parent: in a shrink-to-fit place, such as a table cell or a flex row, give it one.
+ */
+[data-slot="choice-group"] { container-type: inline-size; }
+[data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-1, 1), minmax(0, 1fr)); }
+@container (min-width: 8.5rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-2, 1), minmax(0, 1fr)); } }
+@container (min-width: 9.25rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-3, 1), minmax(0, 1fr)); } }
+@container (min-width: 13rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-4, 1), minmax(0, 1fr)); } }
+@container (min-width: 17.5rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-5, 1), minmax(0, 1fr)); } }
+@container (min-width: 22rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-6, 1), minmax(0, 1fr)); } }
+@container (min-width: 26.5rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-7, 1), minmax(0, 1fr)); } }
+@container (min-width: 31rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-8, 1), minmax(0, 1fr)); } }
+@container (min-width: 35.5rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-9, 1), minmax(0, 1fr)); } }
+@container (min-width: 40rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-10, 1), minmax(0, 1fr)); } }
+@container (min-width: 44.5rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-11, 1), minmax(0, 1fr)); } }
+@container (min-width: 49rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-12, 1), minmax(0, 1fr)); } }
+@container (min-width: 53.5rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-13, 1), minmax(0, 1fr)); } }

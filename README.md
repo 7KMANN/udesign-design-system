@@ -12,7 +12,7 @@ Do not source brand values from Icitte. It is a separate product line with its o
 - Two profiles, `presentation` and `operations`, pinned once per document. They differ in structure: type scale shape, source of hierarchy, page shell, and figures. Controls keep the 44px touch floor on touch in both; on a desktop mouse a compact control and the operations toolbar go to 36px.
 - Tone roles for neutral, info, success, warning, danger, progress, and brand states.
 - Metric, chart, entity, interaction, surface, and responsive roles.
-- A shadcn source registry with 20 base components, five application patterns, two page shells (`page-canvas`, `app-shell`), three motion primitives, and a `core` bundle.
+- A shadcn source registry with 21 base components, five application patterns, two page shells (`page-canvas`, `app-shell`), three motion primitives, and a `core` bundle.
 - A responsive showcase that exercises the full theme and profile matrix.
 
 This is not a bundled React runtime library. Registry components are copied into the consuming repository so the application can inspect, adapt, and test its own source while the shared semantic contract remains stable.
@@ -122,7 +122,7 @@ npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-sy
 
 Available base items:
 
-`button`, `badge`, `alert`, `card`, `input`, `textarea`, `select`, `native-select`, `checkbox`, `switch`, `slider`, `field`, `dialog`, `sheet`, `tooltip`, `tabs`, `table`, `spinner`, `skeleton`, and `pressable`.
+`button`, `badge`, `alert`, `card`, `input`, `textarea`, `select`, `native-select`, `choice-group`, `checkbox`, `switch`, `slider`, `field`, `dialog`, `sheet`, `tooltip`, `tabs`, `table`, `spinner`, `skeleton`, and `pressable`.
 
 Available patterns:
 
