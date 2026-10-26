@@ -288,7 +288,10 @@ export function check(files) {
     // group-active: counts. An overlay's Trigger is left out: it wraps a Button through asChild.
     // A primitive that renders through a sibling's variants helper (toggleVariants from ./toggle)
     // gets its press from that file, which the checker reads on its own.
-    const borrowsPress = /import\s*\{[^}]*\b\w+Variants\b[^}]*\}\s*from\s*["'](?:\.\/|@\/components\/ui\/)/.test(code);
+    // So does one that wears a static class of dist/tokens.css (the gallery's ud-gallery-thumb):
+    // that stylesheet carries the press, and the design system tests it.
+    const borrowsPress = /import\s*\{[^}]*\b\w+Variants\b[^}]*\}\s*from\s*["'](?:\.\/|@\/components\/ui\/)/.test(code)
+      || /className=\{?(?:cn\()?\s*["'`][^"'`]*(?<![\w-])ud-[a-z]/.test(code);
     if (PRIMITIVES.test(file) && ext !== 'css' && !borrowsPress && !/\bactive:|:active\b/.test(code)) {
       const el = code.search(/<(?:button|\w*(?:Checkbox|Switch|Toggle)\w*\.Root|(?!(?:Tooltip|Popover|HoverCard|Dialog|AlertDialog|Sheet|Drawer|DropdownMenu|ContextMenu|Menubar)\w*\.Trigger)[A-Z]\w*\.(?:Trigger|Item|Close|Thumb))(?![\w.])|role\s*=\s*["']button["']/);
       if (el >= 0) add('press-missing', el, 'an interactive primitive with no `active:` treatment; give it --interactive-pressed or --motion-press-scale');

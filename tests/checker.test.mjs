@@ -141,6 +141,9 @@ test('press-missing flags a primitive with no active: treatment, only in a primi
   assert.deepEqual(hits('components/ui/tooltip.tsx', '<TooltipPrimitive.Trigger {...props} />'), []);
   const borrowed = 'import { toggleVariants } from "@/components/ui/toggle"\n<ToggleGroupPrimitive.Item className={toggleVariants()} />';
   assert.deepEqual(hits('components/ui/toggle-group.tsx', borrowed), []);
+  // The gallery's buttons wear the static skin, whose press dist/tokens.css carries.
+  const skinned = '<div className={cn("ud-gallery", className)}>\n<button type="button" className="ud-gallery-thumb" />';
+  assert.deepEqual(hits('components/ui/gallery.tsx', skinned), []);
 });
 
 // Ban 33 (D-50): spacing off the roles, read in class strings. Calibrated on Boutique and

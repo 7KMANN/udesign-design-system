@@ -449,13 +449,22 @@ Choose `Select` when an option needs more than a line of text, such as an icon o
 - A choice that cannot be had is disabled, dashed and struck through, and says so in words: `unavailableLabel` follows its label for a screen reader.
 - Its columns are explicit: one row when every choice gets 4rem; otherwise rows of one count, the last at most one shorter, never one choice alone on a row, in the fewest rows; a cell never goes under the touch target. Container queries in `dist/tokens.css` lay them out, so the group needs the stylesheet of its own release, and it takes its width from its parent: in a table cell or a flex row, give it one.
 
+### Showing photos
+
+One gallery shows a product's photos everywhere: the registry `Gallery` (`gallery`) in React, and `dist/ud-gallery.js` with the same markup on a page without a build. Both run Swiper 14.3.0 with one behaviour (`gallery-core.ts`) and wear one skin, `ud-gallery` in `dist/tokens.css`; Swiper's own stylesheet loads beside the tokens, before or after them. Build no other carousel or thumbnail swapper. `NEEDS-APPROVAL D-54`
+
+- Every photo comes in copies with their widths (`srcSet`, such as 160, 640 and 1200px) for the slide's width (`sizes`), with its own alt text ("Front, Heavy Tee, White"), and its thumbnail is named by its view ("Front", "Back"). The opening photo can be fetched first (`priority`).
+- Nothing moves while it opens: the square slide and the thumbnail row hold their room before Swiper starts, and another set of photos, such as another colour's, opens in the same box on its first photo.
+- The photo moves on `--motion-duration-standard`, at once under reduced motion. The dots report the position; a swipe, the arrows on a mouse, the thumbnails and the arrow keys move it.
+- The arrow keys move only the gallery that has the focus, else the one under the pointer, never every gallery on screen, and Page Up and Page Down scroll the page. A widget that handles the arrows itself, such as `ChoiceGroup`, stops them before a gallery sees them. `NEEDS-APPROVAL D-55`
+
 ## Registry components
 
 The source registry includes these base components: button, badge, alert, card, input, textarea, select, native-select, choice-group, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
 
-The application patterns are icon-button, status-badge, metric-card, empty-state, and responsive-collection. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included.
+The application patterns are icon-button, status-badge, metric-card, empty-state, responsive-collection, and gallery. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included.
 
-The motion primitives - progress-ring, rolling-consistency-chip, and moment - are deliberately excluded from `core`. See "Motion primitives" above; `moment` in particular is gamification-exclusive and should only land in a repository that has declared `data-game="on"`.
+The motion primitives - progress-ring, rolling-consistency-chip, and moment - are deliberately excluded from `core`, and so is gallery, which adds swiper to an application's dependencies. See "Motion primitives" above; `moment` in particular is gamification-exclusive and should only land in a repository that has declared `data-game="on"`.
 
 Registry components must:
 

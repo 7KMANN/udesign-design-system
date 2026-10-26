@@ -8,6 +8,7 @@ import { Button as RegistryButton } from '@/components/ui/button';
 import { Card as RegistryCard, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ChoiceGroup } from '@/components/ui/choice-group';
+import { Gallery } from '@/components/ui/gallery';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
@@ -310,6 +311,25 @@ export function KitchenSink() {
             </CardHeader>
             <CardContent>
               <ChoicesDemo />
+            </CardContent>
+          </RegistryCard>
+
+          <RegistryCard>
+            <CardHeader>
+              <CardTitle>Photos</CardTitle>
+              <CardDescription>Gallery: swipe, arrows on a mouse, thumbnails named by their view. The arrow keys move it while it has the focus or the pointer.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Gallery
+                sizes="(min-width: 768px) 30rem, 100vw"
+                photos={[1, 2, 3].map((n, i) => ({
+                  src: `gallery/photo-${n}.svg?w=640`,
+                  srcSet: [160, 640, 1200].map((w) => `gallery/photo-${n}.svg?w=${w} ${w}w`).join(', '),
+                  thumb: `gallery/photo-${n}.svg?w=160`,
+                  alt: `${['Front', 'Back', 'Detail'][i]}, sample tee, natural`,
+                  label: ['Front', 'Back', 'Detail'][i],
+                }))}
+              />
             </CardContent>
           </RegistryCard>
 

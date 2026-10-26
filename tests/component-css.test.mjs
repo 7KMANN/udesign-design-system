@@ -32,6 +32,7 @@ const MIRROR = {
   select: "Radix behaviour, and a native <select> is ban 9",
   "native-select": "no static page has needed a select yet; a class waits for one (FUTURE-WORK.md)",
   "choice-group": "needs script for roving focus, the arrow keys and the column count; its container queries ship in css/registry.css",
+  gallery: ["ud-gallery", "ud-gallery-main", "ud-gallery-thumbs", "ud-gallery-thumb"],
   checkbox: "Radix behaviour, and a native checkbox is ban 9",
   switch: "Radix behaviour; no generator wrote one",
   slider: "Radix behaviour, and a native range is ban 9",
@@ -88,16 +89,18 @@ test("press implies a focus-visible ring (AGENTS.md rule 2)", () => {
 
 // The static twin of motion-adoption's press-scale check: an :active rule that scales a
 // class through `transform` or `scale` eases only if that class transitions the same property.
+// The pressed selector is the :active rule's own, less :active, so a descendant part (the
+// gallery's arrows and thumbnails) is matched as written, not by its first class.
 test("a pressed scale eases: the class transitions the property its :active rule sets", () => {
   const pressedScales = rules.flatMap((r) => r.selector.split(",").filter((s) => s.includes(":active")).flatMap((s) =>
-    [...r.body.matchAll(/(?:^|;|\s)(transform|scale)\s*:/g)].map((m) => ({ cls: classesIn(s)[0], property: m[1] })),
+    [...r.body.matchAll(/(?:^|;|\s)(transform|scale)\s*:/g)].map((m) => ({ pressed: s.trim().replace(":active", ""), property: m[1] })),
   ))
-  assert.ok(pressedScales.length >= 2, "expected the button and pressable press scales")
-  const transitioned = (cls) => rules
-    .filter((r) => r.selector.split(",").some((s) => s.trim() === `.${cls}`))
+  assert.ok(pressedScales.length >= 4, "expected the button, pressable and gallery press scales")
+  const transitioned = (pressed) => rules
+    .filter((r) => r.selector.split(",").some((s) => s.trim() === pressed))
     .flatMap((r) => [...r.body.matchAll(/transition-property\s*:\s*([^;]+)/g)].flatMap((m) => m[1].split(",").map((p) => p.trim())))
-  assert.deepEqual(pressedScales.filter(({ cls, property }) => {
-    const properties = transitioned(cls)
+  assert.deepEqual(pressedScales.filter(({ pressed, property }) => {
+    const properties = transitioned(pressed)
     return !properties.includes(property) && !properties.includes("all")
   }), [])
 })

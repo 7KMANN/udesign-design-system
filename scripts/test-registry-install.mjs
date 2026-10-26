@@ -84,13 +84,15 @@ try {
   )
 
   server = http.createServer((request, response) => {
-    if (request.url !== "/core.json") {
+    // core, and the items installed on their own (the gallery, which core leaves out for swiper).
+    const item = /^\/([a-z-]+)\.json$/.exec(request.url ?? "")?.[1]
+    if (!item || !["core", "gallery"].includes(item)) {
       response.writeHead(404).end()
       return
     }
 
     response.writeHead(200, { "content-type": "application/json" })
-    fs.createReadStream(path.join(root, "public", "r", "core.json")).pipe(response)
+    fs.createReadStream(path.join(root, "public", "r", `${item}.json`)).pipe(response)
   })
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve))
   const address = server.address()
@@ -131,6 +133,21 @@ try {
   ]) {
     assert.ok(installedPackage.dependencies?.[dependency], `clean install omitted ${dependency}`)
   }
+
+  // The gallery: two files into components/ui, its import of the core rewritten to the alias,
+  // and the Swiper release it was built on.
+  const galleryResult = await execFileAsync(
+    process.execPath,
+    [path.join(root, "node_modules", "shadcn", "dist", "index.js"), "add", "@udesign/gallery", "--cwd", fixture, "--yes", "--overwrite"],
+    { cwd: root },
+  )
+  if (galleryResult.stderr) process.stderr.write(galleryResult.stderr)
+  for (const file of ["gallery.tsx", "gallery-core.ts"]) {
+    assert.ok(fs.existsSync(path.join(fixture, "components", "ui", file)), `the gallery install omitted ${file}`)
+  }
+  assert.ok(fs.readFileSync(path.join(fixture, "components", "ui", "gallery.tsx"), "utf8").includes('from "@/components/ui/gallery-core"'), "the gallery must import its core through the ui alias")
+  const withGallery = JSON.parse(fs.readFileSync(path.join(fixture, "package.json"), "utf8"))
+  assert.match(withGallery.dependencies?.swiper ?? "", /^\^?14\.3\.0$/, `the gallery install must add swiper 14.3.0, got ${withGallery.dependencies?.swiper}`)
 
   console.log(`clean registry install passed in ${fixture}`)
 } finally {

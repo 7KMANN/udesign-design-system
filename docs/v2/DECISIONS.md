@@ -1281,3 +1281,51 @@ a press and a ring, on the sections' column. Every value is a prop the page supp
 source of truth (for UDesign, `udesign-docs`' ground truth); the design system and its examples hold
 placeholder data only. **Rejected:** shipping UDesign's contact in the component, which would put
 business data in the design system and a second home for it.
+
+### D-54 · One gallery, in the design system · `NEEDS-APPROVAL`
+
+**Question:** UDesign Pages vendors Swiper 14.3.0 with its own `ud-gallery.js` and `ud-gallery.css`
+(about 1,580 pages link them), and Boutique copied the skin verbatim and ported the script to React
+(`Gallery.tsx`), with a test that compares the copy with UDesign Pages. Two copies drift; where
+should the one source live, and can a page without React use it?
+
+**Proposed:**
+- The skin moves into `css/components.css`, so `dist/tokens.css` carries it as `ud-gallery`. Its
+  rules outrank Swiper's whichever stylesheet loads last, and the arrows are placed through Swiper's
+  own `--swiper-navigation-top-offset`, not a margin Swiper's later rule would override: UDesign
+  Pages links the tokens before Swiper's stylesheet, a React app imports them after. The thumbnails
+  outrank Tailwind 3's preflight, which reset their surface.
+- `gallery-core.ts` holds the behaviour: Swiper's options, the screen-reader words (French, or
+  English for `<html lang="en">`, as UDesign Pages), the motion duration, the thumbnail that follows
+  the photo, and the key routing (D-55). No React and no Swiper code, so both builds run it.
+- A registry `gallery` (React, `swiper@14.3.0`, not in `core`) and `dist/ud-gallery.js`, a readable
+  build from `js/ud-gallery.ts` that keeps `ud-gallery.js`'s markup and API (`udGallery(el)`,
+  `markup`, `show`, `setPhotos`, `destroy`, auto-mount). Its `markup()` writes the same bytes as
+  UDesign Pages' for every case its Python tests name, checked with `UDESIGNPAGES_DIR` set.
+- Kept from UDesign Pages: three copies per photo through `srcSet` and `sizes`, an alt per slide,
+  thumbnails named by their view, a square slide that holds its room (no layout shift on load, the
+  same box on a colour change), dots that report only, arrows only on a mouse, and the standard
+  duration, 0ms under reduced motion.
+
+**Consequence:** the React Gallery is the first registry component to wear a static class.
+`udesign-check`'s `press-missing` now reads a primitive that wears one as having that class's
+press, as it already did for a borrowed variants helper. **Rejected:** a separate
+`dist/gallery.css`, one more link for every page (D-31 rejected the same for the component layer);
+the skin rewritten in Tailwind utilities, a second source for the same rules; bundling Swiper into
+`dist/ud-gallery.js`, when UDesign Pages already vendors the exact release.
+
+### D-55 · The gallery's keys: the gallery in focus or under the pointer · `NEEDS-APPROVAL`
+
+**Question:** two behaviours of `ud-gallery.js` that Boutique found. Swiper's keyboard module
+listens on the document, so with two galleries on screen one arrow key moved both; Boutique turned
+the keyboard off on its kit's cards. And its default `pageUpDown` made Page Up and Page Down move the
+photo and stop the page from scrolling; Boutique turned that off.
+
+**Proposed:** Swiper's keyboard is off in both builds, and one listener per document routes the
+arrow keys: to the gallery that has the focus, else to the one under the pointer, else to none.
+Page Up and Page Down are never the gallery's. A key in a field, with a modifier, or already handled
+(a choice group stops its own and prevents it) is left alone. Measured in Chromium on both builds:
+two galleries side by side, the pointer's gallery alone moves, the focus wins over the pointer,
+Page Down scrolls with the focus in a gallery, and an arrow on a choice group moves the choice and
+no photo. **Rejected:** keeping Swiper's listener and toggling it per gallery on focus and hover,
+which leaves two listeners live whenever the focus and the pointer are in different galleries.

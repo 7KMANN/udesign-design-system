@@ -658,6 +658,97 @@ textarea.ud-input { height: auto; min-height: 6rem; }
   .ud-app-shell-toolbar > * { --control-height: var(--control-height-compact); --touch-target-min: var(--control-height-compact); }
 }
 
+/* Gallery: a product's photos to swipe, with thumbnails named by their view (DESIGN.md "Showing
+   photos"). The one skin for the React Gallery (registry gallery) and the plain-JS
+   dist/ud-gallery.js, over Swiper 14.3.0, whose own stylesheet the page loads before or after
+   this file: every rule here outranks Swiper's, and the arrows are placed through Swiper's own
+   properties. Markup: the header comment of dist/ud-gallery.js. Tokens only. */
+.ud-gallery { display: grid; gap: var(--space-3); min-width: 0; }
+.ud-gallery-main {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  --swiper-wrapper-transition-timing-function: var(--motion-easing-standard);
+  --swiper-navigation-size: 1rem;
+  --swiper-navigation-color: var(--foreground);
+  --swiper-navigation-sides-offset: var(--space-3);
+  /* Swiper centres an arrow by the icon's size: this centres the touch target instead. */
+  --swiper-navigation-top-offset: calc(50% - (var(--touch-target-min) - var(--swiper-navigation-size)) / 2);
+  --swiper-pagination-color: var(--foreground);
+  --swiper-pagination-bullet-inactive-color: var(--muted-foreground);
+  --swiper-pagination-bullet-inactive-opacity: 0.35;
+  --swiper-pagination-bottom: var(--space-2);
+}
+.ud-gallery-main .swiper-slide {
+  box-sizing: border-box;
+  aspect-ratio: 1;
+  display: grid;
+  /* A minmax(0) track keeps a tall photo inside the square: an auto row grows to the photo and crops its bottom. */
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  padding: var(--space-4) var(--space-4) var(--space-6);
+}
+.ud-gallery-main .swiper-slide img { width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+/* The dots only report the position: swiping, the arrows, the keys and the thumbnails move it. */
+.ud-gallery-main .swiper-pagination { pointer-events: none; }
+.ud-gallery .swiper-button-prev,
+.ud-gallery .swiper-button-next {
+  box-sizing: border-box;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--card);
+  box-shadow: var(--shadow-2);
+  cursor: pointer;
+  transition: var(--motion-duration-instant) var(--motion-easing-standard);
+  transition-property: transform, background-color, border-color;
+}
+.ud-gallery .swiper-button-prev:hover,
+.ud-gallery .swiper-button-next:hover { border-color: var(--border-strong); background: var(--interactive-hover); }
+.ud-gallery .swiper-button-prev:active,
+.ud-gallery .swiper-button-next:active { transform: scale(var(--motion-press-scale)); background: var(--interactive-pressed); }
+.ud-gallery .swiper-button-prev:focus-visible,
+.ud-gallery .swiper-button-next:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: 2px; }
+/* Swiper 14 stretches its chevron to the whole button: keep it icon-sized inside the 44px target. */
+.ud-gallery .swiper-navigation-icon { width: auto; height: var(--swiper-navigation-size); }
+/* Touch screens swipe; the arrows are for a mouse. */
+@media (hover: none) {
+  .ud-gallery .swiper-button-prev,
+  .ud-gallery .swiper-button-next { display: none; }
+}
+.ud-gallery-thumbs {
+  position: relative;
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: 2px;
+  /* Scrolls by touch, trackpad and the active thumbnail following the photo; no scrollbar, like the apps. */
+  scrollbar-width: none;
+}
+.ud-gallery-thumbs::-webkit-scrollbar { display: none; }
+.ud-gallery-thumbs > .ud-gallery-thumb {
+  box-sizing: border-box;
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  cursor: pointer;
+  transition: var(--motion-duration-instant) var(--motion-easing-standard);
+  transition-property: transform, border-color, background-color;
+}
+.ud-gallery-thumbs > .ud-gallery-thumb img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.ud-gallery-thumbs > .ud-gallery-thumb:hover { border-color: var(--border-strong); }
+.ud-gallery-thumbs > .ud-gallery-thumb:active { transform: scale(var(--motion-press-scale)); background: var(--interactive-pressed); }
+.ud-gallery-thumbs > .ud-gallery-thumb:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: 2px; }
+.ud-gallery-thumbs > .ud-gallery-thumb[aria-pressed="true"] { border: 2px solid var(--interactive-selected-border); }
+
 
 /*
  * What the React registry needs from the stylesheet. Source file: css/registry.css.

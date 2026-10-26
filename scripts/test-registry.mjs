@@ -32,6 +32,7 @@ const requiredItems = [
   "metric-card",
   "empty-state",
   "responsive-collection",
+  "gallery",
   "progress-ring",
   "rolling-consistency-chip",
   "moment",
@@ -102,7 +103,7 @@ assert.match(files["tabs.tsx"], /TabsPrimitive\.Trigger[\s\S]*?min-h-\[var\(--to
 assert.match(files["select.tsx"], /SelectPrimitive\.ScrollUpButton[\s\S]*?min-h-\[var\(--touch-target-min\)\]/)
 assert.match(files["select.tsx"], /SelectPrimitive\.ScrollDownButton[\s\S]*?min-h-\[var\(--touch-target-min\)\]/)
 
-for (const clientFile of ["select.tsx", "choice-group.tsx", "checkbox.tsx", "switch.tsx", "slider.tsx", "dialog.tsx", "sheet.tsx", "tooltip.tsx", "tabs.tsx"]) {
+for (const clientFile of ["select.tsx", "choice-group.tsx", "gallery.tsx", "checkbox.tsx", "switch.tsx", "slider.tsx", "dialog.tsx", "sheet.tsx", "tooltip.tsx", "tabs.tsx"]) {
   assert.match(files[clientFile], /^"use client"\r?\n/, `${clientFile} must preserve its App Router client boundary`)
 }
 
@@ -151,6 +152,16 @@ for (const [file, part] of [["dialog.tsx", "DialogHeader"], ["sheet.tsx", "Sheet
   assert.match(header, /(?<![\w.-])gap-2(?![\w.-])/, `${part} must space its title and description on --space-2`)
   assert.doesNotMatch(header, /gap-1\.5/, `${part} spaces off the roles`)
 }
+
+// D-54, D-55: one gallery for React and static pages. The React Gallery wears the static skin and
+// shares its behaviour with dist/ud-gallery.js through gallery-core.ts; Swiper's keyboard stays off.
+const gallery = registry.items.find((item) => item.name === "gallery")
+assert.deepEqual(gallery.dependencies, ["swiper@14.3.0"], "the gallery pins the Swiper release UDesign Pages vendors")
+assert.ok(!registry.items.find((item) => item.name === "core").files.some((f) => f.path.includes("gallery")), "core stays free of swiper")
+assert.ok(files["gallery.tsx"].includes('from "@/components/ui/gallery-core"'), "the React Gallery runs the shared core")
+assert.ok(files["gallery.tsx"].includes('className={cn("ud-gallery", className)}'), "the React Gallery wears the static skin")
+assert.ok(files["gallery-core.ts"].includes("keyboard: { enabled: false }"), "Swiper's own keyboard moves every gallery on screen")
+assert.doesNotMatch(files["gallery-core.ts"], /from "react"|import (?!type )[^\n]*from "swiper/, "the core is shared with the plain-JS build: no React, no Swiper code")
 
 const sliderThumb = files["slider.tsx"].match(/<SliderPrimitive\.Thumb[\s\S]*?>/)?.[0] ?? ""
 assert.match(sliderThumb, /size-\[var\(--touch-target-min\)\]/)
