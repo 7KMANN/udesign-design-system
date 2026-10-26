@@ -103,9 +103,10 @@ function HeldDialogDemo() {
           <DialogDescription asChild>
             <div className="grid gap-3">
               <p>While it sends, the close button, Escape and a press outside wait.</p>
+              {/* Only the title row leaves room for the X, so a block here runs out to the footer's edge. */}
               <Alert tone="warning">
                 <AlertTitle>Review before sending</AlertTitle>
-                <AlertDescription>A block placed in the dialog&apos;s description.</AlertDescription>
+                <AlertDescription>A block in the description lines up with the buttons below.</AlertDescription>
               </Alert>
             </div>
           </DialogDescription>

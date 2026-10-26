@@ -1017,3 +1017,19 @@ dialog whose footer offers the way out). Neither touches Escape or a press outsi
 calls `onOpenChange(false)`, and the caller decides there. That keeps one owner for "may this close
 now", which a prop that also swallowed Escape would split in two. `DESIGN.md` "Dialogs and sheets"
 documents both, and the showcase's held dialog shows the pattern.
+
+### D-41 · The close button's room is the title row's, not the header's · `NEEDS-APPROVAL` · amends Δ-25
+
+**Question:** Δ-25 gave the whole header `pr-10` so a long title never runs under the close
+button. The padding also narrowed the description, so a warning block placed in it stopped 40px
+short of the footer's buttons, measured in both profiles at 375px and 1440px.
+
+**Proposed:** `DialogHeader` and `SheetHeader` reserve nothing. `DialogTitle` and `SheetTitle`
+take `pr-10`, and a minimum height of 36px less `--surface-padding`, so the row after the title
+starts 4px below the button's icon. The height only acts at operations' 12px padding, where the
+description started 5px above the icon's bottom edge (a one-line title gains 9px there); a
+presentation title is already taller. Δ-25's reason for not centring the button on the title still
+holds, so the button stays where it is. With `hideClose` the title reserves nothing: the content
+tells it through a React context, not a class. Measured in Chromium after the change: the block
+and the footer share a right edge, and the description clears the icon by 4px or more, in both
+profiles at both widths (`tests/e2e/showcase.spec.ts`).

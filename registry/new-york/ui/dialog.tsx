@@ -11,6 +11,9 @@ const DialogTrigger = DialogPrimitive.Trigger
 const DialogPortal = DialogPrimitive.Portal
 const DialogClose = DialogPrimitive.Close
 
+// Whether the content renders its close button, so the title row keeps clear of it only then.
+const DialogCloseRoom = React.createContext(true)
+
 const DialogOverlay = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Overlay>, React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>>(
   ({ className, ...props }, ref) => <DialogPrimitive.Overlay ref={ref} className={cn("fixed inset-0 z-50 bg-[var(--backdrop)]/60", className)} {...props} />,
 )
@@ -45,7 +48,7 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
         )}
         {...props}
       >
-        {children}
+        <DialogCloseRoom.Provider value={!hideClose}>{children}</DialogCloseRoom.Provider>
         {hideClose ? null : (
           <DialogPrimitive.Close
             disabled={closeDisabled}
@@ -61,15 +64,26 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
 )
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
-// pr-10 keeps a long title clear of the close button (8px inset, 44px target) at every --surface-padding.
-const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn("flex flex-col gap-1.5 pr-10 text-left", className)} {...props} />
+// The header holds no room for the close button: only the title row does (DialogTitle), so the
+// description and anything placed in it run the full width, out to the footer's edge.
+const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn("flex flex-col gap-1.5 text-left", className)} {...props} />
 DialogHeader.displayName = "DialogHeader"
 
 const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)} {...props} />
 DialogFooter.displayName = "DialogFooter"
 
+// The title row is the close button's room. The button sits 8px from the corner, a 44px
+// target around a 16px icon, so the icon ends 38px below the top edge. pr-10 keeps a long
+// title clear of it at every --surface-padding. The min-height (38px, plus a 4px gap, less
+// the header's 6px gap and the padding) starts the next row under the icon, which only
+// operations' 12px padding needs: elsewhere a one-line title is already taller.
+const closeRoom = "min-h-[calc(2.25rem_-_var(--surface-padding,var(--surface-padding-default)))] pr-10"
+
 const DialogTitle = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Title>, React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>>(
-  ({ className, ...props }, ref) => <DialogPrimitive.Title ref={ref} className={cn("[font-family:var(--font-display)] text-[length:var(--text-h3)] font-semibold leading-none", className)} {...props} />,
+  ({ className, ...props }, ref) => {
+    const room = React.useContext(DialogCloseRoom)
+    return <DialogPrimitive.Title ref={ref} className={cn("[font-family:var(--font-display)] text-[length:var(--text-h3)] font-semibold leading-none", room && closeRoom, className)} {...props} />
+  },
 )
 DialogTitle.displayName = DialogPrimitive.Title.displayName
 

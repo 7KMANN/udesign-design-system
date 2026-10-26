@@ -401,6 +401,8 @@ A pending `Button` keeps its accessible name: its label turns transparent, never
 
 `DialogContent` and `SheetContent` put a close button in the top-right corner. While the dialog's action runs, `closeDisabled` disables it. `hideClose` removes it, for a dialog whose footer already offers the way out, such as a Cancel button. Neither prop touches Escape or a press outside: both still call `onOpenChange(false)`, and the caller decides there, ignoring the close while its action runs. `NEEDS-APPROVAL D-40`
 
+Only the title row keeps clear of the close button. `DialogTitle` and `SheetTitle` reserve its width, and its height where the padding is tight (operations), so the description and anything placed in it run the full width, out to the footer's edge. Without a close button (`hideClose`) the title reserves nothing. `NEEDS-APPROVAL D-41`
+
 ## Registry components
 
 The source registry includes these base components: button, badge, alert, card, input, textarea, select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.

@@ -95,6 +95,32 @@ test("a dialog holds its close button while its action runs, and onOpenChange de
   await expect(dialog).toBeHidden()
 })
 
+// Only the title row leaves room for the close button: a block in the description runs out
+// to the footer's edge, and still starts below the button's icon at every padding.
+for (const viewport of [{ width: 375, height: 812 }, { width: 1440, height: 1000 }]) {
+  for (const profile of ["presentation", "operations"]) {
+    test(`the close button's room is the title row, ${profile} at ${viewport.width}px`, async ({ page }) => {
+      await page.setViewportSize(viewport)
+      await page.goto("/")
+      if (profile === "operations") await page.getByTestId("profile-toggle").click()
+      await expect(page.locator("html")).toHaveAttribute("data-design", profile)
+      await page.getByRole("button", { name: "Open held dialog" }).click()
+      const dialog = page.getByRole("dialog", { name: "Send the order" })
+      const box = async (locator: ReturnType<typeof page.locator>) => (await locator.boundingBox())!
+      const close = await box(dialog.getByRole("button", { name: "Close order" }))
+      const icon = await box(dialog.getByRole("button", { name: "Close order" }).locator("svg"))
+      const block = await box(dialog.getByRole("status"))
+      const send = await box(dialog.getByRole("button", { name: "Send the order" }))
+      const description = await box(dialog.getByText("While it sends", { exact: false }))
+      // The title's content box: where a long title has to wrap.
+      const titleTextRight = await dialog.getByRole("heading", { name: "Send the order" }).evaluate((h) => h.getBoundingClientRect().right - parseFloat(getComputedStyle(h).paddingRight))
+      expect(Math.abs(block.x + block.width - (send.x + send.width)), "block and footer share a right edge").toBeLessThanOrEqual(1)
+      expect(description.y - (icon.y + icon.height), "the description starts below the close icon").toBeGreaterThanOrEqual(3.5)
+      expect(titleTextRight, "a long title wraps before the close button").toBeLessThanOrEqual(close.x + 0.5)
+    })
+  }
+}
+
 test("motion tokens collapse to zero under prefers-reduced-motion, moment scale stays inert without it", async ({ page }) => {
   await page.goto("/")
 

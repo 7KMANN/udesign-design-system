@@ -12,11 +12,12 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { IconButton } from "@/components/ui/icon-button"
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Moment } from "@/components/ui/moment"
 import { PageCanvas, PageSection } from "@/components/ui/page-canvas"
 import { ProgressRing } from "@/components/ui/progress-ring"
@@ -125,9 +126,9 @@ describe("UDesign registry accessibility contracts", () => {
   // closeDisabled and hideClose touch the button only. Escape and a press outside stay
   // wired to onOpenChange, where the caller decides whether a running action may close.
   describe.each([
-    ["dialog", Dialog, DialogContent, DialogTitle, DialogDescription],
-    ["sheet", Sheet, SheetContent, SheetTitle, SheetDescription],
-  ] as const)("%s close button", (_, Root, Content, Title, Description) => {
+    ["dialog", Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription],
+    ["sheet", Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription],
+  ] as const)("%s close button", (_, Root, Content, Header, Title, Description) => {
     it("can be disabled while an action runs, and Escape still reaches onOpenChange", async () => {
       const user = userEvent.setup()
       const onOpenChange = vi.fn()
@@ -156,6 +157,26 @@ describe("UDesign registry accessibility contracts", () => {
       expect(screen.queryByRole("button", { name: "Fermer" })).toBeNull()
       await user.keyboard("{Escape}")
       expect(onOpenChange).toHaveBeenCalledWith(false)
+    })
+
+    // The room is the title row's alone, so a block in the description reaches the
+    // footer's edge (measured in Chromium by tests/e2e/showcase.spec.ts).
+    it("takes its room from the title row only, and none once hidden", () => {
+      const room = ["pr-10", "min-h-[calc(2.25rem_-_var(--surface-padding,var(--surface-padding-default)))]"]
+      const { rerender } = render(
+        <Root open>
+          <Content closeLabel="Fermer"><Header><Title>Envoi</Title><Description>La commande part.</Description></Header></Content>
+        </Root>,
+      )
+      expect(screen.getByRole("heading", { name: "Envoi" })).toHaveClass(...room)
+      expect(screen.getByRole("heading", { name: "Envoi" }).parentElement).not.toHaveClass("pr-10")
+      expect(screen.getByText("La commande part.")).not.toHaveClass("pr-10")
+      rerender(
+        <Root open>
+          <Content hideClose closeLabel="Fermer"><Header><Title>Envoi</Title><Description>La commande part.</Description></Header></Content>
+        </Root>,
+      )
+      for (const cls of room) expect(screen.getByRole("heading", { name: "Envoi" })).not.toHaveClass(cls)
     })
 
     it("is enabled and present by default", () => {
