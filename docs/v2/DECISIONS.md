@@ -1113,3 +1113,36 @@ compiled files, with `initial-value: 0px` so that a read on `<body>` outside a l
 than nothing. The cost is a changed meaning for any application CSS that reads the property below
 `<body>` (a fixed header padding itself by the gap): it gets 0px. It must read it on `<body>`, or use
 the library's helper classes. Browsers without `@property` ignore the rule and behave as before.
+
+---
+
+## Round 19 - 2026-10-26 (Boutique's appearance findings)
+
+**Evidence:** the "Design-system changes" list in Boutique's appearance report (its participant
+pages' standard, `docs/appearance.md` on Boutique's `feat/appearance-standard`), each item read in
+Boutique's bridge and in UDesign Pages where it began, then reproduced here before it changed.
+None of this round is approved. Each entry waits for Kaleb, and the `DESIGN.md` sentence it adds or
+changes carries `NEEDS-APPROVAL` and the entry's number until he answers. Shipped as release
+candidate v3.3.0. French typography, the report's tenth item, belongs to `udesign-docs` and is not
+here.
+
+### D-46 · A title follows the screen: fluid title roles · `NEEDS-APPROVAL`
+
+**Question:** `.ud-display` and `.ud-h1` set literal sizes (56px and 40px in `presentation`) in
+`dist/tokens.css`, outside any cascade layer, so a Tailwind 4 size utility on the same element never
+won. UDesign Pages sizes its page titles and product names with a clamp in each page's own CSS (44
+pages: `clamp(var(--text-h1), 7vw, var(--text-display))` and
+`clamp(var(--text-h2), 5vw, var(--text-h1))`), and Boutique copied both inline (`DISPLAY_SIZE`,
+`NAME_SIZE`). At 375px a 56px title takes three lines for a short French name.
+
+**Proposed:** two roles, `--text-display-fluid` and `--text-h1-fluid`, declared in every block that
+declares the scale. In `presentation` they are UDesign Pages' clamps: 40px and 28px on a phone,
+56px and 40px from 800px. `operations`' flat scale (D-27) already fits a phone, so its fluid roles
+are its fixed ones and GlobalVision sees no change. The `.ud-display` and `.ud-h1` helpers read
+them, so a title needs no size of its own, and a consumer who wants one fixed title sets the role on
+the element (`[--text-h1-fluid:var(--text-h1)]`), which beats inheritance whatever the layer. The
+fixed roles keep their values and meaning. **Visible:** every `presentation` page that uses
+`ud-display` or `ud-h1` without its own size gets the smaller title below 800px: in UDesign Pages
+about 1,500 product pages whose `ud-h1` has no clamp, once they sync. **Rejected:** tokens only,
+which leaves the inline size in place since the helper still wins; making `--text-display` itself
+fluid, which would change a role's meaning and break the type-shape contract test.

@@ -271,7 +271,9 @@ Each screen has one `h1`, and heading levels never skip. A card's title is `h3` 
 
 Labels use sentence case with normal tracking. Do not turn metadata, navigation, or field labels into wide-tracked uppercase mono text. Body copy uses the semantic foreground. Muted foreground is for secondary information only after its contrast has been verified on the selected surface.
 
-Display type may scale fluidly. Controls and body text must remain readable without horizontal zoom at 375px.
+A page's title is `ud-display`, and its main heading, such as a product's name, is `ud-h1`. Both follow the screen: they read `--text-display-fluid` and `--text-h1-fluid`, which in `presentation` step down one role on a narrow screen, `clamp(var(--text-h1), 7vw, var(--text-display))` and `clamp(var(--text-h2), 5vw, var(--text-h1))`, full size from 800px. `operations`' flat scale already fits a phone, so its fluid roles are its fixed ones. A component that sizes its own title reads a fluid role, never a clamp of its own. The helper classes sit outside any cascade layer, so a size utility does not win over them; to hold one title at its fixed size, set the role on the element: `[--text-h1-fluid:var(--text-h1)]`. `NEEDS-APPROVAL D-46`
+
+Controls and body text must remain readable without horizontal zoom at 375px.
 
 ## Layout and responsive behavior
 

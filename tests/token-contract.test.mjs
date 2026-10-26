@@ -232,12 +232,33 @@ test('emits the responsive contract with mobile-safe values', () => {
 test('emits functional typography helpers in the combined stylesheet', () => {
   assert.match(
     dualCss,
-    /:root\[data-design="operations"\] \.ud-display,[^{]*\.design-operations \.ud-display[^{]*\{[^}]*font-size:1\.5rem/,
+    /:root\[data-design="operations"\] \.ud-display,[^{]*\.design-operations \.ud-display[^{]*\{[^}]*font-size:var\(--text-display-fluid\)/,
   );
   assert.match(
     dualCss,
     /:root\[data-design="operations"\] \.ud-body,[^{]*\.design-operations \.ud-body[^{]*\{[^}]*font-size:0\.875rem/,
   );
+});
+
+// D-46: a page's title steps down one role on a narrow screen, the clamps UDesign Pages set by
+// hand. The helpers read the fluid roles, so a title needs no inline size, and a consumer can
+// still hold one by setting the role on the element. Operations' flat scale does not move.
+test('publishes fluid title roles in every profile, and the title helpers read them', () => {
+  assert.equal(varValue(presentationBlock, '--text-display-fluid'), 'clamp(var(--text-h1), 7vw, var(--text-display))');
+  assert.equal(varValue(presentationBlock, '--text-h1-fluid'), 'clamp(var(--text-h2), 5vw, var(--text-h1))');
+  for (const [label, body] of operationsBlocks) {
+    assert.equal(varValue(body, '--text-display-fluid'), 'var(--text-display)', label);
+    assert.equal(varValue(body, '--text-h1-fluid'), 'var(--text-h1)', label);
+  }
+  for (const [file, css] of [['tokens.css', dualCss], ['tokens-functional.css', functionalCss]]) {
+    for (const step of ['display', 'h1']) {
+      const helpers = [...css.matchAll(new RegExp(`([^{}]*\\.ud-${step}(?![\\w-])[^{}]*)\\{([^{}]*)\\}`, 'g'))];
+      assert.ok(helpers.length > 0, `${file} has no .ud-${step} helper`);
+      for (const [, selector, body] of helpers) {
+        assert.match(body, new RegExp(`font-size:var\\(--text-${step}-fluid\\)`), `${file}: ${selector.trim()} sets a literal size`);
+      }
+    }
+  }
 });
 
 test('resolves every token reference in every profile', () => {

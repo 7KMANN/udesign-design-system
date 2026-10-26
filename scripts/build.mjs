@@ -304,6 +304,12 @@ function formatVarsBlock(t, baseTree, selector, { emitPrimitives = false, emitSt
     const token = t.typography?.[step] || baseTree.typography[step];
     L.push(`  --text-${step}: ${dim(token.$value.fontSize)};`);
   }
+  // D-46: a title's size on any screen. Declared in every block that declares the scale,
+  // since a var() resolves where it is declared: .design-operations needs its own.
+  for (const step of FLUID_STEPS) {
+    const token = t.fluid?.[step] || baseTree.fluid[step];
+    L.push(`  --text-${step}-fluid: ${token.$value};`);
+  }
 
   if (emitPrimitives) {
     const weightLine = Object.entries(baseTree.font.weight)
@@ -415,6 +421,10 @@ function formatReducedMotionBlock(motionSelector, gameSelector) {
   return L.join('\n');
 }
 
+// The title steps whose helper reads a fluid role (D-46) rather than a literal size, so a
+// title follows the screen with no inline style, and a consumer can still set the role.
+const FLUID_STEPS = ['display', 'h1'];
+
 function formatTypographyHelpers(t, baseTree, scopes = []) {
   const L = [];
   L.push('/* Typography helpers */');
@@ -437,8 +447,9 @@ function formatTypographyHelpers(t, baseTree, scopes = []) {
     const selector = scopes.length
       ? scopes.map((scope) => `${scope} .ud-${key}`).join(',')
       : `.ud-${key}`;
+    const size = FLUID_STEPS.includes(key) ? `var(--text-${key}-fluid)` : dim(v.fontSize);
     L.push(
-      `${selector}{font-family:var(${fontVar});font-weight:var(--fw-${weightName});font-size:${dim(v.fontSize)};line-height:${v.lineHeight};letter-spacing:${dim(v.letterSpacing)}${extra}}${comment}`
+      `${selector}{font-family:var(${fontVar});font-weight:var(--fw-${weightName});font-size:${size};line-height:${v.lineHeight};letter-spacing:${dim(v.letterSpacing)}${extra}}${comment}`
     );
   }
   return L.join('\n');

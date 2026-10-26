@@ -399,6 +399,12 @@
     "data":    { "$value": { "fontFamily": "{font.family.data}", "fontWeight": "{font.weight.regular}", "fontSize": { "value": 0.85, "unit": "rem" }, "lineHeight": 1.4, "letterSpacing": { "value": 0, "unit": "em" } } }
   },
 
+  "fluid": {
+    "$description": "A title's size on any screen (D-46): it steps down one role on a narrow screen, the clamps UDesign Pages set by hand. Each profile sets its own; the .ud-display and .ud-h1 helpers read them.",
+    "display": { "$type": "string", "$description": "A page's title: --text-h1 up to 571px wide, --text-display from 800px.", "$value": "clamp(var(--text-h1), 7vw, var(--text-display))" },
+    "h1":      { "$type": "string", "$description": "A page's main heading, such as a product's name: --text-h2 up to 560px wide, --text-h1 from 800px.", "$value": "clamp(var(--text-h2), 5vw, var(--text-h1))" }
+  },
+
   "radius": {
     "$type": "dimension",
     "sm":   { "$value": { "value": 7, "unit": "px" } },

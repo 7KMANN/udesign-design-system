@@ -80,6 +80,26 @@ for (const screen of ["operations", "presentation"]) {
   }
 }
 
+// D-46: a page's title steps down one role on a phone, with no size of its own on the element.
+// Presentation: --text-h1 (40px) at 375, --text-display (56px) from 800. Operations does not move.
+for (const [screen, selector, phone, desktop] of [
+  ["presentation", "h1.ud-display", 40, 56],
+  ["operations", "h1.ud-h1", 20, 20],
+] as const) {
+  test(`${screen} reference screen: the page title is ${phone}px on a phone and ${desktop}px on a desktop`, async ({ page }) => {
+    const size = async (width: number) => {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto(`/examples.html?screen=${screen}`)
+      const title = page.locator(selector).first()
+      await title.waitFor()
+      expect(await title.getAttribute("style"), "no inline size").toBeNull()
+      return title.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))
+    }
+    expect(await size(375)).toBeCloseTo(phone, 1)
+    expect(await size(1440)).toBeCloseTo(desktop, 1)
+  })
+}
+
 test("operations on a phone: the sidebar hides and the same nav opens in a sheet", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await page.goto("/examples.html?screen=operations")
