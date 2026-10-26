@@ -81,18 +81,26 @@ test("a pending button keeps its accessible name", async ({ page }) => {
 })
 
 test("a dialog holds its close button while its action runs, and onOpenChange decides on Escape", async ({ page }) => {
+  // The demo's send ends on a timer. The page's clock stands still while the test looks, so a
+  // slow machine cannot let the send end first, and runs again at the end. axe needs a
+  // running clock, so it scans the dialog before the clock stops.
+  await page.clock.install()
   await page.goto("/")
   await page.getByRole("button", { name: "Open held dialog" }).click()
   const dialog = page.getByRole("dialog", { name: "Send the order" })
   const close = dialog.getByRole("button", { name: "Close order" })
   await expect(close).toBeEnabled()
+  expect((await new AxeBuilder({ page }).include('[role="dialog"]').analyze()).violations, "held dialog").toEqual([])
+  await page.clock.pauseAt(Date.now() + 1000)
   await dialog.getByRole("button", { name: "Send the order" }).click()
   await expect(close).toBeDisabled()
-  expect((await new AxeBuilder({ page }).include('[role="dialog"]').analyze()).violations, "held dialog").toEqual([])
+  await expect(dialog.getByRole("button", { name: "Send the order" }), "the pending action keeps its name").toHaveAttribute("aria-busy", "true")
   await page.keyboard.press("Escape")
   await page.waitForTimeout(150)
   await expect(dialog, "the caller ignores Escape while the order sends").toBeVisible()
-  await expect(dialog).toBeHidden()
+  await expect(close).toBeDisabled()
+  await page.clock.runFor(2000)
+  await expect(dialog, "the dialog closes itself once the send ends").toBeHidden()
 })
 
 // Only the title row leaves room for the close button: a block in the description runs out
