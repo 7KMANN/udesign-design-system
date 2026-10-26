@@ -473,6 +473,21 @@ describe("UDesign page shells", () => {
     expect((await axe.run(container)).violations).toEqual([])
   })
 
+  // D-56: a short head and the section after it meet at --space-8 each, 64px at every width.
+  it("lets a section meet its neighbour at --space-8 on one edge, or both", () => {
+    const padding = (compact?: "top" | "bottom" | "both") => {
+      const { container, unmount } = render(<PageSection compact={compact}>Section</PageSection>)
+      const classes = [...(container.firstElementChild as HTMLElement).classList].filter((c) => /^p[tby]-/.test(c))
+      unmount()
+      return classes
+    }
+    const full = "clamp(var(--space-8),8vw,calc(var(--space-8)*2))"
+    expect(padding()).toEqual([`py-[${full}]`])
+    expect(padding("bottom")).toEqual([`pt-[${full}]`, "pb-[var(--space-8)]"])
+    expect(padding("top")).toEqual(["pt-[var(--space-8)]", `pb-[${full}]`])
+    expect(padding("both")).toEqual(["py-[var(--space-8)]"])
+  })
+
   // D-52: the lockup at left, at most one action at right, one row a touch target high on the
   // sections' column, whoever is on the page (measured in Chromium by the layout audit).
   it("opens a presentation page with the lockup at left and at most one action at right, in one row", async () => {

@@ -16,15 +16,30 @@ PageCanvas.displayName = "PageCanvas"
 export interface PageSectionProps extends React.HTMLAttributes<HTMLElement> {
   /** `band` runs a raised surface edge to edge; `canvas` sits on the page field. */
   variant?: "canvas" | "band"
+  /**
+   * The edge that meets its neighbour at --space-8 instead of the full fluid padding (D-56):
+   * "bottom" on a short head, such as a title, a greeting and one line, and "top" on the
+   * section after it, so the two meet at 64px at every width. "both" for a short section
+   * between two.
+   */
+  compact?: "top" | "bottom" | "both"
 }
 
-// One fluid padding class rather than a breakpoint pair, so a consumer's py-0 wins outright (D-21).
+// One fluid padding class per edge rather than a breakpoint pair, so a consumer's py-0 wins
+// outright (D-21). Whole class names, so Tailwind finds each one in the source.
+const sectionPadding = {
+  none: "py-[clamp(var(--space-8),8vw,calc(var(--space-8)*2))]",
+  top: "pt-[var(--space-8)] pb-[clamp(var(--space-8),8vw,calc(var(--space-8)*2))]",
+  bottom: "pt-[clamp(var(--space-8),8vw,calc(var(--space-8)*2))] pb-[var(--space-8)]",
+  both: "py-[var(--space-8)]",
+} as const
+
 const PageSection = React.forwardRef<HTMLElement, PageSectionProps>(
-  ({ children, className, variant = "canvas", ...props }, ref) => (
+  ({ children, className, compact, variant = "canvas", ...props }, ref) => (
     <section
       ref={ref}
       className={cn(
-        "py-[clamp(var(--space-8),8vw,calc(var(--space-8)*2))]",
+        sectionPadding[compact ?? "none"],
         variant === "band" && "border-y border-[var(--border)] bg-[var(--card)]",
         className,
       )}

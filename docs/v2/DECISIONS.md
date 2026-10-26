@@ -1329,3 +1329,19 @@ two galleries side by side, the pointer's gallery alone moves, the focus wins ov
 Page Down scrolls with the focus in a gallery, and an arrow on a choice group moves the choice and
 no photo. **Rejected:** keeping Swiper's listener and toggling it per gallery on focus and hover,
 which leaves two listeners live whenever the focus and the pointer are in different galleries.
+
+### D-56 · A short head meets its first band at `--space-8` · `NEEDS-APPROVAL`
+
+**Question (Kaleb, directly):** on a presentation page, a short head section (a title, a greeting,
+one line) followed by a band gets `PageSection`'s full padding twice: 64px under the head, the
+band's border, 64px above the band's content, 129px on a desktop. Kaleb found it too big; on a phone
+the same break is 65px.
+
+**Proposed:** `PageSection` takes `compact="top" | "bottom" | "both"`, the edge that meets its
+neighbour at `--space-8` instead of the fluid padding. A head takes `compact="bottom"` and the band
+after it `compact="top"`, so the two meet at 64px (65px with the band's border) at every width; the
+other edges keep their padding. Static twins: `ud-page-section-compact-top` and
+`ud-page-section-compact-bottom`. Each edge is still one class, so a consumer's `py-0` wins whole
+(D-21). The presentation reference screen uses it between its order head and the garments band,
+measured at 375px and 1440px. **Rejected:** a smaller padding for every section, which would
+flatten the hierarchy that space draws in `presentation` (D-19).

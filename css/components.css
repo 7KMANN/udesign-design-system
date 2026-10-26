@@ -178,6 +178,11 @@ textarea.ud-input { height: auto; min-height: 6rem; }
   padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--content-gutter-mobile));
 }
 .ud-page-section-band { border-block: 1px solid var(--border); background: var(--card); }
+/* A short section that leads into the next, such as a page's head before its first band, meets it
+   at --space-8 on each side, 64px in all at every width: ud-page-section-compact-bottom on the head,
+   ud-page-section-compact-top on the section after it. */
+.ud-page-section-compact-top { padding-top: var(--space-8); }
+.ud-page-section-compact-bottom { padding-bottom: var(--space-8); }
 @media (min-width: 640px) {
   .ud-page-section { padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--space-8)); }
 }

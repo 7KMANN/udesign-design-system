@@ -196,6 +196,35 @@ test("static header and footer: one row a touch target high with or without the 
   expect(await height('a[href^="tel:"]')).toBeGreaterThanOrEqual(44)
 })
 
+// D-56: a short head and its first band meet at --space-8 on each side, about 64px at every
+// width, where two full paddings made 129px on a desktop.
+for (const viewport of viewports) {
+  test(`presentation reference screen, ${viewport.name}: the head meets its first band at 64px`, async ({ page }) => {
+    await page.setViewportSize(viewport)
+    await page.goto("/examples.html?screen=presentation")
+    // The head's last block: the action row, which wraps on a phone.
+    const row = page.getByRole("button", { name: "Approuver l’épreuve" }).locator("..")
+    await row.waitFor()
+    const headEnd = (await row.boundingBox())!
+    const bandStart = (await page.getByRole("heading", { name: "Les vêtements choisis" }).boundingBox())!
+    // --space-8 under the head, the band's 1px border, --space-8 above its heading.
+    expect(bandStart.y - (headEnd.y + headEnd.height)).toBeCloseTo(65, 0)
+  })
+}
+
+test("static sections: a compact edge is --space-8 at every width", async ({ page }) => {
+  for (const width of [375, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto("/examples.html")
+    await page.setContent(`<!doctype html><html data-design="presentation"><head><link rel="stylesheet" href="/dist/tokens.css"></head>
+      <body class="ud-page-canvas"><section class="ud-page-section ud-page-section-compact-bottom" id="head"><h1 class="ud-display">Titre</h1></section>
+      <section class="ud-page-section ud-page-section-band ud-page-section-compact-top" id="band"><h2 class="ud-h2">Articles</h2></section></body></html>`, { waitUntil: "load" })
+    const padding = (id: string, side: string) => page.locator(`#${id}`).evaluate((el, s) => parseFloat(getComputedStyle(el).getPropertyValue(`padding-${s}`)), side)
+    expect([await padding("head", "bottom"), await padding("band", "top")], `${width}px`).toEqual([32, 32])
+    expect(await padding("head", "top"), "the other edge keeps the full padding").toBeCloseTo(width < 800 ? 32 : 64, 0)
+  }
+})
+
 // D-46: a page's title steps down one role on a phone, with no size of its own on the element.
 // Presentation: --text-h1 (40px) at 375, --text-display (56px) from 800. Operations does not move.
 for (const [screen, selector, phone, desktop] of [

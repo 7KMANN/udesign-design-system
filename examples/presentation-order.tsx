@@ -39,7 +39,8 @@ export function PresentationOrder() {
         <span className="[font-family:var(--font-display)] text-xl font-black">UDesign</span>
       </PageHeader>
 
-      <PageSection aria-labelledby="commande">
+      {/* A short head meets the first band at --space-8 on each side, 64px at every width (D-56). */}
+      <PageSection aria-labelledby="commande" compact="bottom">
         <p className="ud-label">Commande <span className={num}>UD-1042</span></p>
         <h1 id="commande" className="ud-display mt-3 max-w-[14ch]">Club exemple, saison 2026</h1>
         <p className="mt-4 max-w-[52ch] text-[var(--muted-foreground)]">
@@ -57,7 +58,7 @@ export function PresentationOrder() {
         <div role="status">{approved ? <p className="mt-4">Épreuve approuvée. La production commence.</p> : null}</div>
       </PageSection>
 
-      <PageSection variant="band" aria-labelledby="vetements">
+      <PageSection variant="band" compact="top" aria-labelledby="vetements">
         <h2 id="vetements" className="ud-h2 mb-8">Les vêtements choisis</h2>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {garments.map((g) => (
