@@ -84,6 +84,22 @@ test("press implies a focus-visible ring (AGENTS.md rule 2)", () => {
   assert.doesNotMatch(css, /:focus(?![-\w])/, "use :focus-visible, never :focus")
 })
 
+// The static twin of motion-adoption's press-scale check: an :active rule that scales a
+// class through `transform` or `scale` eases only if that class transitions the same property.
+test("a pressed scale eases: the class transitions the property its :active rule sets", () => {
+  const pressedScales = rules.flatMap((r) => r.selector.split(",").filter((s) => s.includes(":active")).flatMap((s) =>
+    [...r.body.matchAll(/(?:^|;|\s)(transform|scale)\s*:/g)].map((m) => ({ cls: classesIn(s)[0], property: m[1] })),
+  ))
+  assert.ok(pressedScales.length >= 2, "expected the button and pressable press scales")
+  const transitioned = (cls) => rules
+    .filter((r) => r.selector.split(",").some((s) => s.trim() === `.${cls}`))
+    .flatMap((r) => [...r.body.matchAll(/transition-property\s*:\s*([^;]+)/g)].flatMap((m) => m[1].split(",").map((p) => p.trim())))
+  assert.deepEqual(pressedScales.filter(({ cls, property }) => {
+    const properties = transitioned(cls)
+    return !properties.includes(property) && !properties.includes("all")
+  }), [])
+})
+
 test("every transition names a --motion-* duration (ban 19)", () => {
   const transitions = rules.flatMap((r) => [...r.body.matchAll(/transition\s*:([^;]+)/g)].map((m) => m[1]))
   assert.ok(transitions.length >= 2)

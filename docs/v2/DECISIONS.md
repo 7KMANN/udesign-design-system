@@ -967,3 +967,27 @@ accent 300 in dark, 5.2:1 or better on every surface. Fills, the focus ring, hov
 marker keep their shades. **Rejected:** ink text with the accent moved to tiles, dots and bars
 (adds elements Kaleb does not want); reusing `--tone-brand-foreground` (tones are statuses only).
 `accent.deep`'s description said it was text-safe; it is 4.13:1 on white, now stated as 3:1-only.
+
+---
+
+## Round 18 - 2026-10-26 (Boutique's registry findings)
+
+**Evidence:** issue #1, "Registry findings from building Boutique v1 (v3.1.2)". Each finding was
+reproduced here before it was fixed: in the registry source, in Chromium on the showcase and the
+reference screens, and for the Select cost in a performance trace. None of this round is approved.
+Each entry waits for Kaleb, and the `DESIGN.md` sentence it adds or changes carries
+`NEEDS-APPROVAL` and the entry's number until he answers. Shipped as release candidate v3.2.0.
+
+### D-38 · A press scale transitions `transform` and `scale` · `NEEDS-APPROVAL`
+
+**Question:** the nine registry controls that press with `active:scale-[var(--motion-press-scale)]`
+transitioned `transform` only. Tailwind 4 compiles `scale-*` to the separate `scale` property, so
+in a Tailwind 4 consumer (Boutique) the press jumped to its pressed size instead of easing over
+`--motion-duration-instant`. Tailwind 3 (this repository's showcase) compiles it to `transform`,
+which is why no test here saw it.
+
+**Proposed:** every press-scaled control lists both properties, `transition-[transform,scale,...]`,
+and `DESIGN.md` "Motion" states the rule for application code. `tests/motion-adoption.test.mjs`
+fails on a registry or example class string whose press scale has no transition covering both;
+`tests/component-css.test.mjs` holds the static classes to the same rule. **Not proposed:** a
+checker rule for consumer code. A finding must cite a written ban, and this one has none yet.
