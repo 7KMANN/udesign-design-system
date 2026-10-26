@@ -19,6 +19,7 @@ const expectedFiles = [
   "input",
   "textarea",
   "select",
+  "native-select",
   "checkbox",
   "switch",
   "field",

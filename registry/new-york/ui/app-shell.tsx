@@ -8,13 +8,15 @@ import { cn } from "@/lib/utils"
 // Figures align in columns wherever the profile makes them tabular.
 // Below md the viewport is released and the page scrolls, because a fixed
 // viewport on a phone traps content behind the keyboard and the browser chrome.
+// The rows are the same at every width: the toolbar keeps its own height and the
+// panes take the rest, so a page shorter than the screen never stretches the toolbar.
 
 const AppShell = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        "grid min-h-svh max-md:grid-cols-[minmax(0,1fr)] bg-[var(--background)] text-[var(--foreground)] [font-variant-numeric:var(--font-numeric-variant)] md:h-svh md:grid-cols-[14rem_minmax(0,1fr)] md:grid-rows-[auto_minmax(0,1fr)] md:overflow-hidden",
+        "grid min-h-svh grid-rows-[auto_minmax(0,1fr)] max-md:grid-cols-[minmax(0,1fr)] bg-[var(--background)] text-[var(--foreground)] [font-variant-numeric:var(--font-numeric-variant)] md:h-svh md:grid-cols-[14rem_minmax(0,1fr)] md:overflow-hidden",
         className,
       )}
       {...props}

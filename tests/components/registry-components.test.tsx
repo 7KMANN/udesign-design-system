@@ -12,11 +12,15 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { IconButton } from "@/components/ui/icon-button"
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
+import { Input } from "@/components/ui/input"
+import { NativeSelect } from "@/components/ui/native-select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Moment } from "@/components/ui/moment"
 import { PageCanvas, PageSection } from "@/components/ui/page-canvas"
 import { ProgressRing } from "@/components/ui/progress-ring"
@@ -27,7 +31,10 @@ import { StatusBadge } from "@/components/ui/status-badge"
 import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+
+import { applyTailwind } from "./tailwind"
 
 describe("UDesign registry accessibility contracts", () => {
   it("lets a card title take the heading level its page outline needs, h3 by default", () => {
@@ -118,6 +125,72 @@ describe("UDesign registry accessibility contracts", () => {
     await user.keyboard("{Escape}")
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Open details" })).toHaveFocus()
+  })
+
+  // closeDisabled and hideClose touch the button only. Escape and a press outside stay
+  // wired to onOpenChange, where the caller decides whether a running action may close.
+  describe.each([
+    ["dialog", Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription],
+    ["sheet", Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription],
+  ] as const)("%s close button", (_, Root, Content, Header, Title, Description) => {
+    it("can be disabled while an action runs, and Escape still reaches onOpenChange", async () => {
+      const user = userEvent.setup()
+      const onOpenChange = vi.fn()
+      render(
+        <Root open onOpenChange={onOpenChange}>
+          <Content closeDisabled closeLabel="Fermer"><Title>Envoi</Title><Description>La commande part.</Description></Content>
+        </Root>,
+      )
+      const close = screen.getByRole("button", { name: "Fermer" })
+      expect(close).toBeDisabled()
+      expect(close).toHaveClass("disabled:bg-[var(--interactive-disabled)]", "disabled:text-[var(--interactive-disabled-foreground)]")
+      await user.click(close)
+      expect(onOpenChange).not.toHaveBeenCalled()
+      await user.keyboard("{Escape}")
+      expect(onOpenChange).toHaveBeenCalledWith(false)
+    })
+
+    it("can be hidden, and Escape still reaches onOpenChange", async () => {
+      const user = userEvent.setup()
+      const onOpenChange = vi.fn()
+      render(
+        <Root open onOpenChange={onOpenChange}>
+          <Content hideClose closeLabel="Fermer"><Title>Envoi</Title><Description>La commande part.</Description></Content>
+        </Root>,
+      )
+      expect(screen.queryByRole("button", { name: "Fermer" })).toBeNull()
+      await user.keyboard("{Escape}")
+      expect(onOpenChange).toHaveBeenCalledWith(false)
+    })
+
+    // The room is the title row's alone, so a block in the description reaches the
+    // footer's edge (measured in Chromium by tests/e2e/showcase.spec.ts).
+    it("takes its room from the title row only, and none once hidden", () => {
+      const room = ["pr-10", "min-h-[calc(2.25rem_-_var(--surface-padding,var(--surface-padding-default)))]"]
+      const { rerender } = render(
+        <Root open>
+          <Content closeLabel="Fermer"><Header><Title>Envoi</Title><Description>La commande part.</Description></Header></Content>
+        </Root>,
+      )
+      expect(screen.getByRole("heading", { name: "Envoi" })).toHaveClass(...room)
+      expect(screen.getByRole("heading", { name: "Envoi" }).parentElement).not.toHaveClass("pr-10")
+      expect(screen.getByText("La commande part.")).not.toHaveClass("pr-10")
+      rerender(
+        <Root open>
+          <Content hideClose closeLabel="Fermer"><Header><Title>Envoi</Title><Description>La commande part.</Description></Header></Content>
+        </Root>,
+      )
+      for (const cls of room) expect(screen.getByRole("heading", { name: "Envoi" })).not.toHaveClass(cls)
+    })
+
+    it("is enabled and present by default", () => {
+      render(
+        <Root open>
+          <Content closeLabel="Fermer"><Title>Envoi</Title><Description>La commande part.</Description></Content>
+        </Root>,
+      )
+      expect(screen.getByRole("button", { name: "Fermer" })).toBeEnabled()
+    })
   })
 
   it("supports checkbox, switch, and tab keyboard state changes", async () => {
@@ -270,10 +343,29 @@ describe("UDesign registry accessibility contracts", () => {
   it("keeps a pending button's label in the layout so its width does not jump", () => {
     render(<Button pending>Save changes</Button>)
 
-    // Hidden from view, still measured: this is the whole point.
+    // Transparent, still measured: this is what keeps the width.
     const label = screen.getByText("Save changes")
-    expect(label).toHaveClass("invisible")
+    expect(label).toHaveClass("opacity-0")
     expect(screen.getByRole("button")).toContainElement(label)
+  })
+
+  it("keeps a pending button's accessible name while it waits", async () => {
+    const { container } = render(
+      <>
+        <Button pending>Save changes</Button>
+        <Button pending size="icon" aria-label="Refresh"><span aria-hidden="true">R</span></Button>
+      </>,
+    )
+    // With the real utilities applied, a label hidden with visibility drops out of the name.
+    const removeStyles = await applyTailwind(container)
+    try {
+      const button = screen.getByRole("button", { name: "Save changes" })
+      expect(button).toHaveAccessibleName("Save changes")
+      expect(button).toHaveAttribute("aria-busy", "true")
+      expect(screen.getByRole("button", { name: "Refresh" })).toHaveAttribute("aria-busy", "true")
+    } finally {
+      removeStyles()
+    }
   })
 
   it("does not fire a click on a pending action", async () => {
@@ -303,6 +395,15 @@ describe("UDesign page shells", () => {
     expect(container.firstElementChild).toHaveClass("md:h-svh", "md:overflow-hidden")
     for (const pane of screen.getAllByRole("region")) expect(pane).toHaveClass("md:overflow-y-auto", "md:min-h-0")
     expect(screen.getByRole("main")).toContainElement(screen.getByRole("region", { name: "Order detail" }))
+  })
+
+  // Below md the rows were implicit and auto, so a page shorter than the screen
+  // stretched the toolbar. The rows are explicit at every width now.
+  it("keeps the toolbar's own height and gives the panes the rest, at every width", () => {
+    const { container } = render(operationsScreen())
+    const shell = container.firstElementChild as HTMLElement
+    expect(shell).toHaveClass("grid-rows-[auto_minmax(0,1fr)]")
+    expect([...shell.classList].filter((c) => c.includes("grid-rows-"))).toEqual(["grid-rows-[auto_minmax(0,1fr)]"])
   })
 
   it("lets the page scroll again on phones, where a fixed viewport traps content", () => {
@@ -338,5 +439,89 @@ describe("UDesign page shells", () => {
     )
     expect(screen.getByText("108")).toHaveClass("text-right", "[font-family:var(--font-numeric)]")
     expect(screen.getByText("Qty")).toHaveClass("text-right")
+  })
+})
+
+// Ban 9 allows a native control inside components/ui. NativeSelect is the platform's select
+// dressed as SelectTrigger, for long lists, dense grids of selects, and phones.
+describe("NativeSelect", () => {
+  const options = (
+    <>
+      <option value="">Choisir une étape</option>
+      <option value="waiting">En attente</option>
+      <option value="production">En production</option>
+    </>
+  )
+
+  it("is the platform's select: labelled, form-ready, with the ref on the select", async () => {
+    const user = userEvent.setup()
+    const onChange = vi.fn()
+    const ref = React.createRef<HTMLSelectElement>()
+    render(<label>Étape <NativeSelect ref={ref} name="step" defaultValue="" onChange={onChange}>{options}</NativeSelect></label>)
+    const select = screen.getByRole("combobox", { name: "Étape" })
+    expect(select.tagName).toBe("SELECT")
+    expect(ref.current).toBe(select)
+    await user.selectOptions(select, "production")
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(select).toHaveValue("production")
+  })
+
+  it("puts className on the wrapper that holds the chevron, so a width sizes both", () => {
+    render(<NativeSelect aria-label="Étape" className="sm:w-48">{options}</NativeSelect>)
+    const select = screen.getByRole("combobox", { name: "Étape" })
+    const wrapper = select.parentElement as HTMLElement
+    expect(wrapper).toHaveAttribute("data-slot", "native-select")
+    expect(wrapper).toHaveClass("relative", "w-full", "sm:w-48")
+    expect(select).not.toHaveClass("sm:w-48")
+    expect(wrapper.querySelector("svg")).toHaveAttribute("aria-hidden", "true")
+  })
+
+  // One control family: if SelectTrigger gains a state, this fails until NativeSelect has it too.
+  it("shares SelectTrigger's tokens, height, radius, focus, hover, pressed, disabled and invalid states", () => {
+    render(
+      <>
+        <Select><SelectTrigger aria-label="Radix"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="a">A</SelectItem></SelectContent></Select>
+        <NativeSelect aria-label="Native">{options}</NativeSelect>
+      </>,
+    )
+    const shared = [...screen.getByRole("combobox", { name: "Radix" }).classList].filter((c) =>
+      /^(?:h-|min-h-|rounded-|border|bg-|text-\[|duration-|ease-|hover:|active:bg-|focus-visible:|disabled:|aria-)/.test(c),
+    )
+    expect(shared.length).toBeGreaterThanOrEqual(15)
+    const native = screen.getByRole("combobox", { name: "Native" })
+    expect([...native.classList]).toEqual(expect.arrayContaining(shared))
+    // The press scale sits on the wrapper, so the chevron moves with the field.
+    expect(native.parentElement).toHaveClass("has-[select:active]:scale-[var(--motion-press-scale)]")
+  })
+
+  it("marks an invalid field with the same boundary as every other field", () => {
+    render(
+      <>
+        <Input aria-label="Nom" aria-invalid="true" />
+        <Textarea aria-label="Notes" aria-invalid="true" />
+        <Select><SelectTrigger aria-label="Méthode" aria-invalid="true"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="a">A</SelectItem></SelectContent></Select>
+        <NativeSelect aria-label="Étape" aria-invalid="true">{options}</NativeSelect>
+      </>,
+    )
+    for (const field of [
+      screen.getByRole("textbox", { name: "Nom" }),
+      screen.getByRole("textbox", { name: "Notes" }),
+      screen.getByRole("combobox", { name: "Méthode" }),
+      screen.getByRole("combobox", { name: "Étape" }),
+    ]) {
+      expect(field).toHaveClass("aria-[invalid=true]:border-[var(--tone-danger-foreground)]")
+      expect(field).toHaveAttribute("aria-invalid", "true")
+    }
+  })
+
+  it("renders without axe violations, disabled included", async () => {
+    const { container } = render(
+      <main>
+        <label>Étape <NativeSelect defaultValue="waiting">{options}</NativeSelect></label>
+        <label>Poste <NativeSelect disabled defaultValue="">{options}</NativeSelect></label>
+      </main>,
+    )
+    expect(screen.getByRole("combobox", { name: "Poste" })).toBeDisabled()
+    expect((await axe.run(container)).violations).toEqual([])
   })
 })

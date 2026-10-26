@@ -967,3 +967,149 @@ accent 300 in dark, 5.2:1 or better on every surface. Fills, the focus ring, hov
 marker keep their shades. **Rejected:** ink text with the accent moved to tiles, dots and bars
 (adds elements Kaleb does not want); reusing `--tone-brand-foreground` (tones are statuses only).
 `accent.deep`'s description said it was text-safe; it is 4.13:1 on white, now stated as 3:1-only.
+
+---
+
+## Round 18 - 2026-10-26 (Boutique's registry findings)
+
+**Evidence:** issue #1, "Registry findings from building Boutique v1 (v3.1.2)". Each finding was
+reproduced here before it was fixed: in the registry source, in Chromium on the showcase and the
+reference screens, and for the Select cost in a performance trace. None of this round is approved.
+Each entry waits for Kaleb, and the `DESIGN.md` sentence it adds or changes carries
+`NEEDS-APPROVAL` and the entry's number until he answers. Shipped as release candidate v3.2.0.
+
+### D-38 · A press scale transitions `transform` and `scale` · `NEEDS-APPROVAL`
+
+**Question:** the nine registry controls that press with `active:scale-[var(--motion-press-scale)]`
+transitioned `transform` only. Tailwind 4 compiles `scale-*` to the separate `scale` property, so
+in a Tailwind 4 consumer (Boutique) the press jumped to its pressed size instead of easing over
+`--motion-duration-instant`. Tailwind 3 (this repository's showcase) compiles it to `transform`,
+which is why no test here saw it.
+
+**Proposed:** every press-scaled control lists both properties, `transition-[transform,scale,...]`,
+and `DESIGN.md` "Motion" states the rule for application code. `tests/motion-adoption.test.mjs`
+fails on a registry or example class string whose press scale has no transition covering both;
+`tests/component-css.test.mjs` holds the static classes to the same rule. **Not proposed:** a
+checker rule for consumer code. A finding must cite a written ban, and this one has none yet.
+
+### D-39 · A pending `Button` keeps its accessible name · `NEEDS-APPROVAL`
+
+**Question:** with `pending`, the label sat in a `visibility: hidden` span to hold the button's
+width. Visibility removes it from the accessibility tree, so a waiting button had no name at all,
+and Boutique put an `aria-label` on every pending button to compensate.
+
+**Proposed:** the label turns transparent (`opacity-0`) instead. It still holds the width and
+stays the button's name, read with `aria-busy` as busy. `DESIGN.md` "Feedback primitives" says so
+and that a pending button needs no `aria-label`. The component test compiles the utilities the
+button uses with Tailwind and applies them in jsdom, because jsdom alone applies no Tailwind and
+the old markup would have passed; the showcase test asserts the name in Chromium.
+
+### D-40 · A dialog or sheet can hold or drop its close button · `NEEDS-APPROVAL`
+
+**Question:** while a dialog's action runs (an order being sent, a launch), its close button must
+not close it. `onOpenChange` could ignore the close, but the button still looked and focused as
+enabled, and Boutique disabled it through the DOM (`lastElementChild.disabled = busy`), which
+breaks the day the button stops being the last child.
+
+**Proposed:** `DialogContent` and `SheetContent` take `closeDisabled` (the button renders
+`disabled`, with the disabled surface and foreground roles) and `hideClose` (no button, for a
+dialog whose footer offers the way out). Neither touches Escape or a press outside: Radix still
+calls `onOpenChange(false)`, and the caller decides there. That keeps one owner for "may this close
+now", which a prop that also swallowed Escape would split in two. `DESIGN.md` "Dialogs and sheets"
+documents both, and the showcase's held dialog shows the pattern.
+
+### D-41 · The close button's room is the title row's, not the header's · `NEEDS-APPROVAL` · amends Δ-25
+
+**Question:** Δ-25 gave the whole header `pr-10` so a long title never runs under the close
+button. The padding also narrowed the description, so a warning block placed in it stopped 40px
+short of the footer's buttons, measured in both profiles at 375px and 1440px.
+
+**Proposed:** `DialogHeader` and `SheetHeader` reserve nothing. `DialogTitle` and `SheetTitle`
+take `pr-10`, and a minimum height of 36px less `--surface-padding`, so the row after the title
+starts 4px below the button's icon. The height only acts at operations' 12px padding, where the
+description started 5px above the icon's bottom edge (a one-line title gains 9px there); a
+presentation title is already taller. Δ-25's reason for not centring the button on the title still
+holds, so the button stays where it is. With `hideClose` the title reserves nothing: the content
+tells it through a React context, not a class. Measured in Chromium after the change: the block
+and the footer share a right edge, and the description clears the icon by 4px or more, in both
+profiles at both widths (`tests/e2e/showcase.spec.ts`).
+
+### D-42 · The shell's rows are explicit at every width · `NEEDS-APPROVAL`
+
+**Question:** below `md`, `AppShell` set no rows, so its two children (toolbar and panes) sat in
+implicit `auto` rows that split a short page's spare height. Measured at 375x812 on the operations
+reference screen with its panes emptied: the toolbar grew from 149px to 456px, and the static
+`ud-app-shell` from 52px to 405px. Boutique overrode it at the call site
+(`max-md:grid-rows-[auto_minmax(0,1fr)]`).
+
+**Proposed:** `grid-rows-[auto_minmax(0,1fr)]` with no breakpoint, the rows `md` already had, and
+`grid-template-rows: auto minmax(0, 1fr)` on `.ud-app-shell`. A long page still scrolls: with no
+definite height the `1fr` row sizes to its content. Two panes stacked on a phone share the spare
+height between them; a single pane takes all of it. The Playwright layout audit measures both
+shells on a short phone page.
+
+### D-43 · `native-select` joins the registry, with a rule for choosing it · `NEEDS-APPROVAL`
+
+**Question:** an open Radix `Select` sets `pointer-events: none` on `<body>` (so a press meant to
+close the list cannot reach what is under it) and `react-remove-scroll-bar` locks the page scroll
+on `<body>` with an attribute and a custom property. Both make the browser restyle the whole page.
+Boutique measured about 240ms per choice on an operations grid of about 3,800 elements on a phone
+slowed down 4 times, against about 100ms with 10 rows.
+
+**Measured here,** Chromium 149, the showcase plus 3,800 elements (4,146 in all), five choices:
+the Radix `Select` restyled 63,266 elements in 15 full-page passes, three per choice (42,244 in 10
+once D-45 ships). The new `NativeSelect` restyled 318 elements in all, the largest pass 18, with
+no full-page pass: it changes nothing on `<body>`.
+
+**Proposed:** a registry `native-select` (ban 9 allows a native control inside `components/ui`),
+in `core`. It shares `SelectTrigger`'s tokens, height, radius, focus ring, hover, press, disabled
+and invalid states and its chevron, and a component test fails the day `SelectTrigger` gains a
+state `NativeSelect` lacks. Its text is 16px below `md`, as `Input`'s is, because iOS zooms the
+page into a smaller field. `className` lands on the wrapper that holds the chevron, so a width
+sizes both. `DESIGN.md` "Choosing a select": `NativeSelect` for long lists, dense grids of many
+selects, and phones; `Select` when an option needs more than a line of text or the list must look
+the same everywhere. **Not proposed:** a static `ud-` class, since no static page has needed a
+select yet (`FUTURE-WORK.md`, classes on evidence only).
+
+### D-44 · Select controls hover, and every field shows when it is invalid · `NEEDS-APPROVAL`
+
+**Question:** `NativeSelect` was to share `SelectTrigger`'s hover and invalid states, and
+`SelectTrigger` had neither. No field had an invalid state either: the showcase's invalid name
+field looked like a valid one beside its error text.
+
+**Proposed:** `SelectTrigger` and `NativeSelect` answer hover with `--interactive-hover`, as an
+outline button does. `Input`, `Textarea`, `SelectTrigger` and `NativeSelect` draw their border in
+`--tone-danger-foreground` under `aria-invalid="true"`. That role is 5.2:1 or better against the
+field in every state and every surface a field sits on, in all four profile and theme pairs;
+`--tone-danger-border` fell to 2.3:1 on the pressed surface and `--destructive` to 2.0:1 on the
+dark pressed surface, so neither qualifies. `tests/contrast.test.mjs` holds 3:1. `FieldError` keeps carrying the reason
+(ban 11). The variant is `aria-[invalid=true]:`, which Tailwind 3 and 4 both compile.
+
+### D-45 · `dist/tokens.css` registers the scroll lock's property as non-inherited · `NEEDS-APPROVAL`
+
+**Question:** while a `Select`, `Dialog` or `Sheet` is open, `react-remove-scroll-bar` sets
+`--removed-body-scroll-bar-size` on `body[data-scroll-locked]`. An unregistered custom property
+inherits, so clearing it restyled every element of the page. Boutique proposed
+`@property --removed-body-scroll-bar-size { syntax: "*"; inherits: false; }` and registers it
+itself. It is safe only if nothing reads the property below `<body>`.
+
+**What reads it, checked:**
+- The registry: no component, the static classes and the compiled tokens included.
+  `scripts/test-registry.mjs` and `tests/token-contract.test.mjs` now fail if one starts to.
+- `react-remove-scroll-bar` 2.3.8: only sets it. Its helper classes (`right-scroll-bar-position`,
+  `width-before-scroll-bar`, `with-scroll-bars-hidden`) write the gap in pixels. Nothing else in
+  `node_modules` reads it, `react-remove-scroll` and Radix included.
+- Consumers, read-only: GlobalVision and `udesignpages` do not mention it; Boutique registers it
+  and reads nothing.
+
+**Measured,** Chromium 149, the showcase plus 3,800 elements, five Radix `Select` choices: full-page
+style passes fell from 15 to 10 (three per choice to two) and restyled elements from 63,266 to
+42,244. On a plain page the lock's removal alone restyled all 3,801 elements unregistered and one
+registered. The two passes left come from `pointer-events: none` on `<body>`, which stays: it
+keeps a press meant to close the list from landing on what is under it.
+
+**Proposed:** ship it, from a new source file `css/registry.css` that the build appends to both
+compiled files, with `initial-value: 0px` so that a read on `<body>` outside a lock gives 0px rather
+than nothing. The cost is a changed meaning for any application CSS that reads the property below
+`<body>` (a fixed header padding itself by the gap): it gets 0px. It must read it on `<body>`, or use
+the library's helper classes. Browsers without `@property` ignore the rule and behave as before.

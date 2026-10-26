@@ -250,6 +250,22 @@ test('resolves every token reference in every profile', () => {
   ]) assertReferencesResolve(tree, label);
 });
 
+// D-45: react-remove-scroll-bar sets --removed-body-scroll-bar-size on <body> while a Select,
+// Dialog or Sheet is open. Registered non-inherited, setting and clearing it restyles <body>
+// alone instead of every element. Safe only while nothing reads it below <body>.
+test('registers the scroll-lock property as non-inherited, and nothing here reads it', () => {
+  for (const css of [dualCss, functionalCss]) {
+    const rule = css.match(/@property --removed-body-scroll-bar-size\s*\{([^}]*)\}/)?.[1];
+    assert.ok(rule, '@property --removed-body-scroll-bar-size is missing');
+    assert.match(rule, /syntax:\s*"\*";/);
+    assert.match(rule, /inherits:\s*false;/);
+    assert.match(rule, /initial-value:\s*0px;/);
+    assert.doesNotMatch(css, /var\(\s*--removed-body-scroll-bar-size/, 'the stylesheet reads a property that no longer inherits');
+  }
+  const source = fs.readFileSync(path.join(root, 'css/registry.css'), 'utf8').replace(/\r\n/g, '\n');
+  assert.ok(dualCss.includes(source) && functionalCss.includes(source), 'the build must append css/registry.css to both compiled files');
+});
+
 test('generates token CSS deterministically', () => {
   execFileSync(process.execPath, ['scripts/build.mjs'], { cwd: root, stdio: 'pipe' });
   assert.equal(fs.readFileSync(path.join(root, 'dist/tokens.css'), 'utf8'), dualCss);

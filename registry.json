@@ -8,7 +8,7 @@
       "type": "registry:ui",
       "title": "Button",
       "description": "UDesign action control with semantic variants, press and pending feedback, and accessible touch targets.",
-      "docs": "The pending prop disables the control, reports aria-busy, and swaps in a spinner while preserving the button's width so the layout does not jump when the work starts. Press treatment is per-variant: a neutral surface darkens to the pressed role while a solid surface has no deeper solid role to move to, and every variant keeps a non-motion colour signal since --motion-press-scale collapses to 1 under reduced motion. See DESIGN.md.",
+      "docs": "The pending prop disables the control, reports aria-busy, and swaps in a spinner while preserving the button's width so the layout does not jump when the work starts. The label turns transparent, never hidden, so it stays the accessible name: a pending button needs no aria-label. Press treatment is per-variant: a neutral surface darkens to the pressed role while a solid surface has no deeper solid role to move to, and every variant keeps a non-motion colour signal since --motion-press-scale collapses to 1 under reduced motion. See DESIGN.md.",
       "dependencies": ["@radix-ui/react-slot"],
       "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.5.0/public/r/spinner.json"],
       "files": [{ "path": "registry/new-york/ui/button.tsx", "type": "registry:ui", "target": "components/ui/button.tsx" }]
@@ -59,9 +59,20 @@
       "type": "registry:ui",
       "title": "Select",
       "description": "Accessible Radix select styled with UDesign semantic roles.",
+      "docs": "An open Select sets pointer-events and a scroll lock on <body>, so every choice makes the browser restyle the whole page. For a long list, a dense grid of many selects such as one per table row, or a phone, use native-select, which shares this trigger's look and states. See DESIGN.md \"Choosing a select\".",
       "dependencies": ["@radix-ui/react-select", "lucide-react"],
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/select.tsx", "type": "registry:ui", "target": "components/ui/select.tsx" }]
+    },
+    {
+      "name": "native-select",
+      "type": "registry:ui",
+      "title": "Native Select",
+      "description": "The platform's own select, styled as SelectTrigger: for long lists, dense grids of many selects, and phones.",
+      "docs": "NativeSelect shares SelectTrigger's tokens, height, radius, focus ring, hover, press, disabled and invalid states, and its chevron. Choose it over Select for a long list, a dense grid of many selects such as one per table row, or a phone, where the system picker serves better: a native select changes nothing on <body> when it opens, while a Radix Select makes the browser restyle the whole page on every choice. className and style land on the wrapper that holds the chevron; every other prop and the ref reach the <select>. See DESIGN.md \"Choosing a select\".",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/native-select.tsx", "type": "registry:ui", "target": "components/ui/native-select.tsx" }]
     },
     {
       "name": "checkbox",
@@ -250,7 +261,7 @@
       "type": "registry:component",
       "title": "App Shell",
       "description": "The operations page shell: a persistent sidebar, a toolbar, and panes that scroll inside a fixed viewport.",
-      "docs": "Use for a screen operated by someone, under data-design=\"operations\". Compose AppShell > AppShellSidebar (put a nav inside, laid out as a column) + AppShellToolbar + AppShellPanes > AppShellPane (give each an aria-label). From md the viewport is fixed and panes scroll, and the toolbar's controls go compact on a desktop mouse. Below md the page scrolls and the sidebar hides: render the same nav in a Sheet (side=\"left\") opened from a menu Button first in the toolbar, as examples/operations-queue.tsx does. Panes butt against each other on hairlines: no gap, no elevation. A presentation screen uses PageCanvas instead. See DESIGN.md \"Profiles\".",
+      "docs": "Use for a screen operated by someone, under data-design=\"operations\". Compose AppShell > AppShellSidebar (put a nav inside, laid out as a column) + AppShellToolbar + AppShellPanes > AppShellPane (give each an aria-label). From md the viewport is fixed and panes scroll, and the toolbar's controls go compact on a desktop mouse. The toolbar keeps its own height at every width and the panes take the rest, so a short page never stretches the toolbar. Below md the page scrolls and the sidebar hides: render the same nav in a Sheet (side=\"left\") opened from a menu Button first in the toolbar, as examples/operations-queue.tsx does. Panes butt against each other on hairlines: no gap, no elevation. A presentation screen uses PageCanvas instead. See DESIGN.md \"Profiles\".",
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/app-shell.tsx", "type": "registry:component", "target": "components/ui/app-shell.tsx" }]
     },
@@ -280,6 +291,7 @@
         { "path": "registry/new-york/ui/input.tsx", "type": "registry:ui", "target": "components/ui/input.tsx" },
         { "path": "registry/new-york/ui/textarea.tsx", "type": "registry:ui", "target": "components/ui/textarea.tsx" },
         { "path": "registry/new-york/ui/select.tsx", "type": "registry:ui", "target": "components/ui/select.tsx" },
+        { "path": "registry/new-york/ui/native-select.tsx", "type": "registry:ui", "target": "components/ui/native-select.tsx" },
         { "path": "registry/new-york/ui/checkbox.tsx", "type": "registry:ui", "target": "components/ui/checkbox.tsx" },
         { "path": "registry/new-york/ui/switch.tsx", "type": "registry:ui", "target": "components/ui/switch.tsx" },
         { "path": "registry/new-york/ui/slider.tsx", "type": "registry:ui", "target": "components/ui/slider.tsx" },

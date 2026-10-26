@@ -16,6 +16,7 @@ const requiredItems = [
   "input",
   "textarea",
   "select",
+  "native-select",
   "checkbox",
   "switch",
   "slider",
@@ -119,6 +120,21 @@ assert.doesNotMatch(files["switch.tsx"], /disabled:opacity-50/, "switch disabled
 assert.doesNotMatch(files["dialog.tsx"], /bg-\[var\(--backdrop\)\] opacity-60/, "dialog overlay scrim alpha must ride on the color, not an opacity utility")
 assert.match(files["dialog.tsx"], /bg-\[var\(--backdrop\)\]\/60/)
 
+// native-select (ban 9 allows a native control inside components/ui): the platform's
+// select, so nothing on <body> changes when it opens. It needs no client boundary.
+assert.match(files["native-select.tsx"], /<select\b/, "native-select must render the platform's select")
+assert.doesNotMatch(files["native-select.tsx"], /@radix-ui|"use client"/, "native-select must stay a plain native control")
+assert.match(files["native-select.tsx"], /appearance-none/, "native-select draws its own chevron in place of the platform's")
+assert.match(files["native-select.tsx"], /text-base[^"]*md:text-sm/, "native-select stays 16px below md, or iOS zooms the page on focus")
+// Every field answers aria-invalid with the same boundary (contrast.test.mjs measures it).
+for (const name of ["input.tsx", "textarea.tsx", "select.tsx", "native-select.tsx"]) {
+  assert.match(files[name], /aria-\[invalid=true\]:border-\[var\(--tone-danger-foreground\)\]/, `${name} must mark an invalid field`)
+}
+
+// D-45: dist/tokens.css registers --removed-body-scroll-bar-size as non-inherited, which is
+// safe only while no component reads it below <body>, where it is now 0px.
+assert.doesNotMatch(Object.values(files).join("\n"), /removed-body-scroll-bar-size/, "a registry component reads --removed-body-scroll-bar-size, which does not inherit below <body>")
+
 const sliderThumb = files["slider.tsx"].match(/<SliderPrimitive\.Thumb[\s\S]*?>/)?.[0] ?? ""
 assert.match(sliderThumb, /size-\[var\(--touch-target-min\)\]/)
 
@@ -126,7 +142,8 @@ assert.match(sliderThumb, /size-\[var\(--touch-target-min\)\]/)
 // and was still a dead control, so each gets a guard.
 assert.match(files["button.tsx"], /pending\?: boolean/, "Button must expose a pending state; every consumer otherwise reinvents it")
 assert.match(files["button.tsx"], /aria-busy=\{pending/, "a pending Button must report aria-busy")
-assert.match(files["button.tsx"], /invisible inline-flex/, "a pending Button must keep its children in the layout, or the width jumps")
+assert.match(files["button.tsx"], /className="inline-flex items-center gap-2 opacity-0"/, "a pending Button must keep its children in the layout, or the width jumps")
+assert.doesNotMatch(files["button.tsx"], /className="[^"]*\binvisible\b/, "a pending label hidden with visibility leaves the button with no accessible name")
 assert.match(files["spinner.tsx"], /motion-safe:animate-spin/, "the spinner must not animate under prefers-reduced-motion")
 assert.match(files["skeleton.tsx"], /\[animation-duration:var\(--motion-duration-ambient\)\]/)
 assert.match(files["pressable.tsx"], /active:scale-\[var\(--motion-press-scale-subtle\)\]/)
@@ -155,7 +172,7 @@ for (const name of ["badge.tsx", "app-shell.tsx"]) {
 
 const core = registry.items.find((item) => item.name === "core")
 assert.equal(core.type, "registry:item")
-assert.equal(core.files.length, 26, "core must install the complete supported source set")
+assert.equal(core.files.length, 27, "core must install the complete supported source set")
 
 const outputDir = path.join(root, "public", "r")
 assert.ok(fs.existsSync(outputDir), "public/r must contain committed registry output")

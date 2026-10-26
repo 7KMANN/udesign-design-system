@@ -7,12 +7,13 @@ import { Badge as RegistryBadge } from '@/components/ui/badge';
 import { Button as RegistryButton } from '@/components/ui/button';
 import { Card as RegistryCard, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { IconButton } from '@/components/ui/icon-button';
 import { Input } from '@/components/ui/input';
 import { MetricCard } from '@/components/ui/metric-card';
+import { NativeSelect } from '@/components/ui/native-select';
 import { Moment } from '@/components/ui/moment';
 import { ProgressRing } from '@/components/ui/progress-ring';
 import { ResponsiveCollection } from '@/components/ui/responsive-collection';
@@ -79,6 +80,45 @@ function MomentDemo({ intensity }: { intensity: 1 | 2 }) {
         </RegistryBadge>
       </Moment>
     </div>
+  );
+}
+
+// While its action runs, the dialog cannot close: closeDisabled holds the X, and
+// onOpenChange ignores Escape and a press outside. The caller owns that decision.
+function HeldDialogDemo() {
+  const [open, setOpen] = useState(false);
+  const [sending, setSending] = useState(false);
+  const send = () => {
+    setSending(true);
+    window.setTimeout(() => {
+      setSending(false);
+      setOpen(false);
+    }, 1500);
+  };
+  return (
+    <Dialog open={open} onOpenChange={(next) => { if (!sending) setOpen(next); }}>
+      <DialogTrigger asChild><RegistryButton variant="outline">Open held dialog</RegistryButton></DialogTrigger>
+      <DialogContent closeLabel="Close order" closeDisabled={sending}>
+        <DialogHeader>
+          <DialogTitle>Send the order</DialogTitle>
+          <DialogDescription asChild>
+            <div className="grid gap-3">
+              <p>While it sends, the close button, Escape and a press outside wait.</p>
+              {/* Only the title row leaves room for the X, so a block here runs out to the footer's edge. */}
+              <Alert tone="warning">
+                <AlertTitle>Review before sending</AlertTitle>
+                <AlertDescription>A block in the description lines up with the buttons below.</AlertDescription>
+              </Alert>
+            </div>
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <RegistryButton variant="secondary" disabled={sending} onClick={() => setOpen(false)}>Cancel</RegistryButton>
+          {/* The dialog's one accent: it commits the work. */}
+          <RegistryButton pending={sending} onClick={send}>Send the order</RegistryButton>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -163,12 +203,14 @@ export function KitchenSink() {
           <RegistryCard>
             <CardHeader>
               <CardTitle>Actions and status</CardTitle>
-              <CardDescription>Button, IconButton, Badge, StatusBadge, Tooltip, Alert, and Card.</CardDescription>
+              <CardDescription>Button (pending included), IconButton, Badge, StatusBadge, Tooltip, Alert, and Card.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="flex flex-wrap items-center gap-2">
                 <RegistryButton>Primary action</RegistryButton>
                 <RegistryButton variant="outline" aria-pressed="true">Pressed action</RegistryButton>
+                {/* Pending keeps the label as the accessible name: no aria-label needed. */}
+                <RegistryButton variant="secondary" pending>Save draft</RegistryButton>
                 <IconButton icon={<span aria-hidden="true">+</span>} label="Add item" />
                 <RegistryBadge tone="info">Information</RegistryBadge>
                 <StatusBadge busy tone="progress">Loading</StatusBadge>
@@ -189,7 +231,7 @@ export function KitchenSink() {
           <RegistryCard>
             <CardHeader>
               <CardTitle>Fields and controls</CardTitle>
-              <CardDescription>Field, Input, Textarea, Select, Checkbox, Switch, and Slider.</CardDescription>
+              <CardDescription>Field, Input, Textarea, Select, NativeSelect, Checkbox, Switch, and Slider. The name field shows the invalid state.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
               <Field>
@@ -206,6 +248,12 @@ export function KitchenSink() {
                   <SelectItem value="paused">Paused</SelectItem>
                 </SelectContent>
               </Select>
+              {/* The platform's own select, dressed as the trigger above: for long lists, dense grids and phones. */}
+              <NativeSelect aria-label="Record owner" defaultValue="operations">
+                <option value="operations">Operations</option>
+                <option value="sales">Sales</option>
+                <option value="studio">Studio</option>
+              </NativeSelect>
               <div className="flex flex-wrap gap-4">
                 <label className="flex items-center gap-2"><Checkbox defaultChecked /> Include archived</label>
                 <label className="flex items-center gap-2"><Switch defaultChecked /> Live updates</label>
@@ -218,7 +266,7 @@ export function KitchenSink() {
           <RegistryCard>
             <CardHeader>
               <CardTitle>Overlays and navigation</CardTitle>
-              <CardDescription>Dialog, Sheet, and Tabs preserve keyboard behavior and localized close labels.</CardDescription>
+              <CardDescription>Dialog, Sheet, and Tabs preserve keyboard behavior and localized close labels. A dialog can hold its close button while its action runs.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="flex flex-wrap gap-2">
@@ -229,6 +277,7 @@ export function KitchenSink() {
                     <DialogDescription>Width, viewport height, focus, and close controls follow the shared contract.</DialogDescription>
                   </DialogContent>
                 </Dialog>
+                <HeldDialogDemo />
                 <Sheet>
                   <SheetTrigger asChild><RegistryButton variant="outline">Open sheet</RegistryButton></SheetTrigger>
                   <SheetContent closeLabel="Close sheet">

@@ -9,7 +9,8 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   /**
    * The action is in flight. Disables the control, reports aria-busy, and
    * swaps in a spinner while preserving the button's width, so the layout
-   * does not jump when the work starts.
+   * does not jump when the work starts. The label stays the accessible name,
+   * so a pending button needs no aria-label of its own.
    *
    * Ignored for asChild, where the single child owns its own content.
    */
@@ -47,7 +48,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={pending || undefined}
         disabled={asChild ? undefined : disabled || pending}
         className={cn(
-          "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius)] font-medium transition-[transform,background-color,color,opacity] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--interactive-focus)] disabled:pointer-events-none",
+          "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius)] font-medium transition-[transform,scale,background-color,color,opacity] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--interactive-focus)] disabled:pointer-events-none",
           // A pending button keeps its own colours. Greying it out reads as
           // "broken", which is the opposite of what it is doing.
           busy ? "active:scale-100" : "disabled:bg-[var(--interactive-disabled)] disabled:text-[var(--interactive-disabled-foreground)]",
@@ -62,8 +63,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             <span aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <Spinner />
             </span>
-            {/* Kept in the layout, hidden from view: this is what preserves the width. */}
-            <span className="invisible inline-flex items-center gap-2">{children}</span>
+            {/* Transparent: it keeps the width and stays the button's accessible name.
+                visibility: hidden would drop the label from the accessibility tree. */}
+            <span className="inline-flex items-center gap-2 opacity-0">{children}</span>
           </>
         ) : (
           children

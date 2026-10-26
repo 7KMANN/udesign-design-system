@@ -244,6 +244,8 @@ Hover and pressed each differ from the page floor, from `--secondary`, and from 
 
 Disabled controls use the disabled surface and foreground roles, preserve readable labels, and expose native `disabled` or `aria-disabled` semantics. Opacity alone is not a complete disabled treatment.
 
+A select control (`SelectTrigger`, `NativeSelect`) answers hover with `--interactive-hover`, as an outline button does. A field marked `aria-invalid="true"` (`Input`, `Textarea`, `SelectTrigger`, `NativeSelect`) draws its border in `--tone-danger-foreground`, 3:1 or better against the field in every state and against every surface a field sits on; `tests/contrast.test.mjs` holds it. `FieldError` says what is wrong, so the colour is never the only signal (ban 11). `NEEDS-APPROVAL D-44`
+
 ## Contrast and accessibility
 
 Target WCAG 2.2 AA:
@@ -300,6 +302,8 @@ Full-height mobile layouts use small viewport units. Validate at 375px, not only
 
 In `operations` below `md`, `AppShellSidebar` hides and the same navigation opens in a `Sheet` (`side="left"`) from a menu button first in the toolbar: one nav component rendered in both places, so they never drift. Static HTML does the same with the native `popover` attribute. Owned by `udesign-docs` [`standards/design/mobile-accessibility.md`](https://github.com/7KMANN/udesign-docs/blob/v0.9.0/standards/design/mobile-accessibility.md). `APPROVED 2026-09-29 D-36`
 
+`AppShell` and `ud-app-shell` keep the same rows at every width: the toolbar takes its own height and the panes take the rest. Below `md` the page scrolls, and a page shorter than the screen gives its spare height to the panes, never to the toolbar, with no override at the call site. `NEEDS-APPROVAL D-42`
+
 ### Containment
 
 Density is not the defect; uncontained content is. Promoted from GlobalVision, where Kaleb ratified it on 2026-09-28. `APPROVED 2026-09-29 D-35`
@@ -334,6 +338,8 @@ Duration and easing are semantic roles, selected by intent, the same way every o
 Easing: `standard` (ease-out, the default), `enter` (decelerate, for arrivals), `exit` (accelerate, for departures), `emphasis` (a small settle-in overshoot, intensity 2 only - never an exit, never a layout-bounded element). `fast` remains published as a compatibility alias of `standard`.
 
 Also published: `--motion-delay-indicator` (hold before revealing a pending indicator, so a quick operation never flashes a spinner), `--motion-loop-spin` (one rotation of a busy indicator), and `--motion-press-scale` / `--motion-press-scale-subtle` (the pressed-control transform, at bare `:root` - press feedback is a floor for every application, not a gamification opt-in).
+
+A press scale eases only when the control transitions the property the scale sets. Tailwind 3 compiles `scale-*` to `transform`, Tailwind 4 to the separate `scale` property, so a transition list beside a press scale names both (`transition-[transform,scale,...]`); `transition-transform` covers both versions. A list with `transform` alone presses with a jump under Tailwind 4. `NEEDS-APPROVAL D-38`
 
 **The duration vocabulary is open; the reaction magnitude is capped.** These are two axes. A component that needs an intent the system does not publish is how a system ends up with 22 of 24 components hardcoding their own values, so a genuinely needed intent is added here. Magnitude is a separate question and does not move: **0 the minimum in-control reaction, 1 routine feedback, 2 a closed loop. Intensity 3 does not exist and is not reachable through any combination of published tokens** - no screen-level celebration, no overlay, no particle burst. `--moment-intensity-1-scale` and `--moment-intensity-2-scale` compile only inside `[data-game="on"]` (see `data-game` below); nothing larger is published. Level 0 is the *smallest* reaction, never the absence of one - a control that changes nothing on press is a defect at every level.
 
@@ -393,9 +399,29 @@ Three primitives carry the feedback floor. They are part of `core`: an applicati
 
 `Button` carries the same floor directly: `pending` disables it, reports `aria-busy`, and swaps in a spinner while preserving its width. Every interactive primitive here has a pressed state - a control that changes nothing on press is the single most common failure in machine-written UI.
 
+A pending `Button` keeps its accessible name: its label turns transparent, never `visibility: hidden`, which would remove it from the accessibility tree. A screen reader hears the action and that it is busy, and a pending button needs no `aria-label` of its own. `NEEDS-APPROVAL D-39`
+
+### Dialogs and sheets
+
+`DialogContent` and `SheetContent` put a close button in the top-right corner. While the dialog's action runs, `closeDisabled` disables it. `hideClose` removes it, for a dialog whose footer already offers the way out, such as a Cancel button. Neither prop touches Escape or a press outside: both still call `onOpenChange(false)`, and the caller decides there, ignoring the close while its action runs. `NEEDS-APPROVAL D-40`
+
+Only the title row keeps clear of the close button. `DialogTitle` and `SheetTitle` reserve its width, and its height where the padding is tight (operations), so the description and anything placed in it run the full width, out to the footer's edge. Without a close button (`hideClose`) the title reserves nothing. `NEEDS-APPROVAL D-41`
+
+### Choosing a select
+
+`Select` (`select`) is the Radix listbox, drawn in the page. `NativeSelect` (`native-select`) is the platform's own `<select>`, dressed as `SelectTrigger`: the same tokens, height, radius, focus ring, hover, press, disabled and invalid states, and the same chevron. Ban 9 allows it because it lives in `components/ui`; application code uses it, never a bare `<select>`. `NEEDS-APPROVAL D-43`
+
+Choose `NativeSelect` for:
+
+- A long list. The platform's picker scrolls, types ahead and fits the screen better than a list drawn in the page.
+- A dense grid of many selects, such as one per table row. An open Radix list sets `pointer-events: none` and a scroll lock on `<body>`, so every choice makes the browser restyle every element of the page, and the cost grows with the page. A native select changes nothing on `<body>`.
+- Phones, where the system picker serves better than a list drawn in the page.
+
+Choose `Select` when an option needs more than a line of text, such as an icon or a second line, or when the list must look the same on every platform. Below `md`, `NativeSelect` text is 16px, as `Input`'s is: iOS zooms the page into a smaller field on focus. `NEEDS-APPROVAL D-43`
+
 ## Registry components
 
-The source registry includes these base components: button, badge, alert, card, input, textarea, select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
+The source registry includes these base components: button, badge, alert, card, input, textarea, select, native-select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
 
 The application patterns are icon-button, status-badge, metric-card, empty-state, and responsive-collection. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included.
 
@@ -412,6 +438,8 @@ Registry components must:
 - Keep touch targets and mobile layout behavior in the source component.
 
 Generated registry JSON is not an authoring surface.
+
+`dist/tokens.css` registers `--removed-body-scroll-bar-size`, which the scroll lock of an open `Select`, `Dialog` or `Sheet` sets on `<body>`, as a property that does not inherit. Setting and clearing it then restyles `<body>` alone instead of every element of the page. Read it on `<body>` only: below `<body>` it is `0px`. `NEEDS-APPROVAL D-45`
 
 ## Showcase acceptance
 

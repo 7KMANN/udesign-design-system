@@ -15,7 +15,7 @@ const SelectTrigger = React.forwardRef<React.ElementRef<typeof SelectPrimitive.T
     <SelectPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex h-[var(--control-height)] min-h-[var(--touch-target-min)] w-full items-center justify-between rounded-[var(--radius)] border border-[var(--input)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] transition-[transform,background-color,color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] active:bg-[var(--interactive-pressed)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--interactive-focus)] disabled:cursor-not-allowed disabled:bg-[var(--interactive-disabled)] disabled:text-[var(--interactive-disabled-foreground)] [&>span]:truncate",
+        "flex h-[var(--control-height)] min-h-[var(--touch-target-min)] w-full items-center justify-between rounded-[var(--radius)] border border-[var(--input)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] transition-[transform,scale,background-color,color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] hover:bg-[var(--interactive-hover)] active:scale-[var(--motion-press-scale)] active:bg-[var(--interactive-pressed)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--interactive-focus)] disabled:cursor-not-allowed disabled:bg-[var(--interactive-disabled)] disabled:text-[var(--interactive-disabled-foreground)] aria-[invalid=true]:border-[var(--tone-danger-foreground)] [&>span]:truncate",
         className,
       )}
       {...props}

@@ -11,6 +11,9 @@ const DialogTrigger = DialogPrimitive.Trigger
 const DialogPortal = DialogPrimitive.Portal
 const DialogClose = DialogPrimitive.Close
 
+// Whether the content renders its close button, so the title row keeps clear of it only then.
+const DialogCloseRoom = React.createContext(true)
+
 const DialogOverlay = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Overlay>, React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>>(
   ({ className, ...props }, ref) => <DialogPrimitive.Overlay ref={ref} className={cn("fixed inset-0 z-50 bg-[var(--backdrop)]/60", className)} {...props} />,
 )
@@ -19,10 +22,22 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 export interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   /** Accessible name for the close button. English by default: pass the interface's language (fr-CA first). */
   closeLabel?: string
+  /**
+   * Disables the close button, for example while the dialog's action runs.
+   * Only the button: Escape and a press outside still call onOpenChange(false),
+   * and the caller decides there, ignoring the close while the action runs.
+   */
+  closeDisabled?: boolean
+  /**
+   * Renders no close button. Escape and a press outside still call
+   * onOpenChange(false), and the dialog needs another visible way out,
+   * such as a Cancel button in its footer.
+   */
+  hideClose?: boolean
 }
 
 const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Content>, DialogContentProps>(
-  ({ children, className, closeLabel = "Close", ...props }, ref) => (
+  ({ children, className, closeDisabled = false, closeLabel = "Close", hideClose = false, ...props }, ref) => (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
@@ -33,26 +48,42 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
         )}
         {...props}
       >
-        {children}
-        <DialogPrimitive.Close className="absolute right-2 top-2 inline-flex size-[var(--touch-target-min)] items-center justify-center rounded-[var(--radius)] text-[var(--muted-foreground)] transition-[transform,background-color,color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] active:bg-[var(--interactive-pressed)] hover:bg-[var(--interactive-hover)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] disabled:pointer-events-none">
-          <X className="size-4" aria-hidden="true" />
-          <span className="sr-only">{closeLabel}</span>
-        </DialogPrimitive.Close>
+        <DialogCloseRoom.Provider value={!hideClose}>{children}</DialogCloseRoom.Provider>
+        {hideClose ? null : (
+          <DialogPrimitive.Close
+            disabled={closeDisabled}
+            className="absolute right-2 top-2 inline-flex size-[var(--touch-target-min)] items-center justify-center rounded-[var(--radius)] text-[var(--muted-foreground)] transition-[transform,scale,background-color,color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] active:bg-[var(--interactive-pressed)] hover:bg-[var(--interactive-hover)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--interactive-focus)] disabled:pointer-events-none disabled:bg-[var(--interactive-disabled)] disabled:text-[var(--interactive-disabled-foreground)]"
+          >
+            <X className="size-4" aria-hidden="true" />
+            <span className="sr-only">{closeLabel}</span>
+          </DialogPrimitive.Close>
+        )}
       </DialogPrimitive.Content>
     </DialogPortal>
   ),
 )
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
-// pr-10 keeps a long title clear of the close button (8px inset, 44px target) at every --surface-padding.
-const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn("flex flex-col gap-1.5 pr-10 text-left", className)} {...props} />
+// The header holds no room for the close button: only the title row does (DialogTitle), so the
+// description and anything placed in it run the full width, out to the footer's edge.
+const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn("flex flex-col gap-1.5 text-left", className)} {...props} />
 DialogHeader.displayName = "DialogHeader"
 
 const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)} {...props} />
 DialogFooter.displayName = "DialogFooter"
 
+// The title row is the close button's room. The button sits 8px from the corner, a 44px
+// target around a 16px icon, so the icon ends 38px below the top edge. pr-10 keeps a long
+// title clear of it at every --surface-padding. The min-height (38px, plus a 4px gap, less
+// the header's 6px gap and the padding) starts the next row under the icon, which only
+// operations' 12px padding needs: elsewhere a one-line title is already taller.
+const closeRoom = "min-h-[calc(2.25rem_-_var(--surface-padding,var(--surface-padding-default)))] pr-10"
+
 const DialogTitle = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Title>, React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>>(
-  ({ className, ...props }, ref) => <DialogPrimitive.Title ref={ref} className={cn("[font-family:var(--font-display)] text-[length:var(--text-h3)] font-semibold leading-none", className)} {...props} />,
+  ({ className, ...props }, ref) => {
+    const room = React.useContext(DialogCloseRoom)
+    return <DialogPrimitive.Title ref={ref} className={cn("[font-family:var(--font-display)] text-[length:var(--text-h3)] font-semibold leading-none", room && closeRoom, className)} {...props} />
+  },
 )
 DialogTitle.displayName = DialogPrimitive.Title.displayName
 

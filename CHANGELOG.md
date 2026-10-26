@@ -1,5 +1,35 @@
 # Changelog
 
+## 3.2.0 (2026-10-26)
+
+Boutique's registry findings ship: a native select for long lists, dense grids and phones, dialogs and sheets that hold or drop their close button, a pending button that keeps its name, a press that eases under Tailwind 4, and a shell that keeps its toolbar height on a short phone page.
+
+Decisions and measurements: `docs/v2/DECISIONS.md` round 18 (D-38 to D-45), from Boutique's registry findings (issue #1). Every rule they add to `DESIGN.md` carries `NEEDS-APPROVAL` until Kaleb answers.
+
+### Visible changes
+
+- **The press eases under Tailwind 4.** The nine press-scaled controls transitioned `transform` only, and Tailwind 4 compiles `scale-*` to the separate `scale` property, so the press jumped. They transition both now; re-add `button`, `checkbox`, `dialog`, `pressable`, `select`, `sheet`, `slider`, `switch` and `tabs` to pick it up (D-38).
+- **A pending `Button` keeps its accessible name.** The label turns transparent instead of `visibility: hidden`, so it still holds the width and is still read. Remove any `aria-label` added only to name a pending button (D-39).
+- **Dialog and sheet headers.** The close button's room moves from `DialogHeader` and `SheetHeader` to `DialogTitle` and `SheetTitle`, so the description and a block placed in it run out to the footer's edge. In `operations` a one-line title row is 9px taller, so the description starts below the button's icon (D-41).
+- **`AppShell` below `md`.** The rows are `auto minmax(0, 1fr)` at every width, in `AppShell` and in `ud-app-shell`, so a short phone page no longer stretches the toolbar. Remove a `max-md:grid-rows-[auto_minmax(0,1fr)]` override (D-42).
+- **Fields.** `SelectTrigger` answers hover with `--interactive-hover`. `Input`, `Textarea`, `SelectTrigger` and `NativeSelect` draw their border in `--tone-danger-foreground` under `aria-invalid="true"`, so a field already marked invalid now shows it (D-44).
+
+### Additive
+
+- **`native-select`**, in `core`: the platform's own select, dressed as `SelectTrigger`, for long lists, dense grids of many selects and phones. It changes nothing on `<body>` when it opens. `DESIGN.md` "Choosing a select" says when to use it over `Select` (D-43).
+- **`closeDisabled` and `hideClose`** on `DialogContent` and `SheetContent`. Escape and a press outside still call `onOpenChange(false)`: the caller decides there (D-40).
+- **`dist/tokens.css` registers `--removed-body-scroll-bar-size`** as a property that does not inherit, from the new source `css/registry.css`. A `Select` choice costs one full-page style pass less, three down to two (measured on a 4,146-element page); `Dialog` and `Sheet` share the same scroll lock. Read the property on `<body>` only; below it, it is now `0px` (D-45).
+- **Tests.** A press-scale check over the registry, the examples and the static classes; the pending button's name asserted with the real utilities applied in jsdom and in Chromium; the held dialog, the title row's geometry and the native select's untouched `<body>` measured in the showcase; both shells measured on a short phone page; the invalid border's contrast on every field surface.
+
+### For Boutique
+
+- Remove the `aria-label` that only repeats a pending button's label, the DOM guard on the dialog's close button (`HeldDialog.tsx`, `SendDialog.tsx`: pass `closeDisabled={busy}`), the `AppShell` row override in `Shell.tsx`, and its own `@property` rule in `operations.css`.
+- Re-add the registry components for the press transition. Its own `Gallery.tsx`, `KitProduct.tsx`, `pickers.tsx` and `SizePicker.tsx` press with a scale and transition `transform` only: add `scale` to each list.
+
+### For GlobalVision
+
+- It pins this package by tag, so nothing changes until it moves to v3.2.0. Its shadcn copies of `select`, `input` and `textarea` pick up the hover and invalid states only when re-added.
+
 ## 3.1.2 (2026-09-29)
 
 The checker reads a primitive that renders through a sibling's variants helper as having that helper's press.

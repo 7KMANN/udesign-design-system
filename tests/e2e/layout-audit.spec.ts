@@ -92,6 +92,38 @@ test("operations on a phone: the sidebar hides and the same nav opens in a sheet
   await expect(sheet).toBeHidden()
 })
 
+// Below md the shell's rows were auto, so a page shorter than the screen gave half of its
+// spare height to the toolbar. The reference screen is longer than a phone, so its toolbar
+// height is the natural one; emptying the panes must not change it.
+test("operations on a phone, short page: the toolbar keeps its height and the panes take the rest", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto("/examples.html?screen=operations")
+  const toolbar = page.locator("header")
+  await page.locator("main").waitFor()
+  const natural = (await toolbar.boundingBox())!.height
+  await page.evaluate(() => {
+    for (const pane of document.querySelectorAll("main > section")) pane.replaceChildren(document.createTextNode("Short"))
+  })
+  expect((await toolbar.boundingBox())!.height).toBeCloseTo(natural, 0)
+  const main = (await page.locator("main").boundingBox())!
+  expect(main.y + main.height, "the panes reach the bottom of the screen").toBeCloseTo(812, 0)
+})
+
+test("static shell on a phone, short page: the toolbar keeps its height and the panes take the rest", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto("/examples.html")
+  const shell = (content: string) => `<!doctype html><html data-design="operations"><head><link rel="stylesheet" href="/dist/tokens.css"></head>
+    <body class="ud-app-shell"><aside class="ud-app-shell-sidebar" id="nav" popover><nav><a class="ud-btn ud-btn-ghost" href="#q">Commandes</a></nav></aside>
+    <header class="ud-app-shell-toolbar"><button class="ud-btn ud-btn-ghost ud-app-shell-menu" type="button" popovertarget="nav">Menu</button><h1 class="ud-h1">File</h1></header>
+    <main class="ud-app-shell-panes"><section class="ud-app-shell-pane" aria-label="Commandes">${content}</section></main></body></html>`
+  await page.setContent(shell('<div style="height: 2000px">Long</div>'), { waitUntil: "load" })
+  const natural = (await page.locator("header").boundingBox())!.height
+  await page.setContent(shell("<p>Short</p>"), { waitUntil: "load" })
+  expect((await page.locator("header").boundingBox())!.height).toBeCloseTo(natural, 0)
+  const main = (await page.locator("main").boundingBox())!
+  expect(main.y + main.height, "the panes reach the bottom of the screen").toBeCloseTo(812, 0)
+})
+
 test("operations on a desktop mouse: the sidebar shows and the menu hides", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 })
   await page.goto("/examples.html?screen=operations")

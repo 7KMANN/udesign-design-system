@@ -6,13 +6,13 @@ Do not source brand values from Icitte. It is a separate product line with its o
 
 **License:** proprietary, UDesign Productions only. See [LICENSE.md](LICENSE.md). Public visibility does not grant permission to use the work.
 
-## What ships in 3.1.2
+## What ships in 3.2.0
 
 - A semantic token foundation for light and dark themes.
 - Two profiles, `presentation` and `operations`, pinned once per document. They differ in structure: type scale shape, source of hierarchy, page shell, and figures. Controls keep the 44px touch floor on touch in both; on a desktop mouse a compact control and the operations toolbar go to 36px.
 - Tone roles for neutral, info, success, warning, danger, progress, and brand states.
 - Metric, chart, entity, interaction, surface, and responsive roles.
-- A shadcn source registry with 19 base components, five application patterns, two page shells (`page-canvas`, `app-shell`), three motion primitives, and a `core` bundle.
+- A shadcn source registry with 20 base components, five application patterns, two page shells (`page-canvas`, `app-shell`), three motion primitives, and a `core` bundle.
 - A responsive showcase that exercises the full theme and profile matrix.
 
 This is not a bundled React runtime library. Registry components are copied into the consuming repository so the application can inspect, adapt, and test its own source while the shared semantic contract remains stable.
@@ -47,7 +47,7 @@ Pin the Git dependency to a release tag. Do not install from a moving branch.
 ```json
 {
   "dependencies": {
-    "udesign-design-system": "github:7KMANN/udesign-design-system#v3.1.2"
+    "udesign-design-system": "github:7KMANN/udesign-design-system#v3.2.0"
   }
 }
 ```
@@ -97,7 +97,7 @@ Initialize shadcn in the consuming application and add the tagged namespace to `
 ```json
 {
   "registries": {
-    "@udesign": "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.1.2/public/r/{name}.json"
+    "@udesign": "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.2.0/public/r/{name}.json"
   }
 }
 ```
@@ -111,18 +111,18 @@ npx shadcn@latest add @udesign/core
 The direct tagged URL remains available when a consumer does not configure a namespace:
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.1.2/public/r/core.json
+npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.2.0/public/r/core.json
 ```
 
 Install a single item by replacing `core` with its registry name:
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.1.2/public/r/button.json
+npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.2.0/public/r/button.json
 ```
 
 Available base items:
 
-`button`, `badge`, `alert`, `card`, `input`, `textarea`, `select`, `checkbox`, `switch`, `slider`, `field`, `dialog`, `sheet`, `tooltip`, `tabs`, `table`, `spinner`, `skeleton`, and `pressable`.
+`button`, `badge`, `alert`, `card`, `input`, `textarea`, `select`, `native-select`, `checkbox`, `switch`, `slider`, `field`, `dialog`, `sheet`, `tooltip`, `tabs`, `table`, `spinner`, `skeleton`, and `pressable`.
 
 Available patterns:
 

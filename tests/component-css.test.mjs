@@ -30,6 +30,7 @@ const MIRROR = {
   "app-shell": ["ud-app-shell", "ud-app-shell-sidebar", "ud-app-shell-toolbar", "ud-app-shell-panes", "ud-app-shell-pane", "ud-app-shell-menu"],
   alert: "no generator wrote one",
   select: "Radix behaviour, and a native <select> is ban 9",
+  "native-select": "no static page has needed a select yet; a class waits for one (FUTURE-WORK.md)",
   checkbox: "Radix behaviour, and a native checkbox is ban 9",
   switch: "Radix behaviour; no generator wrote one",
   slider: "Radix behaviour, and a native range is ban 9",
@@ -82,6 +83,30 @@ test("press implies a focus-visible ring (AGENTS.md rule 2)", () => {
   assert.ok(pressed.length >= 2)
   assert.deepEqual(pressed.filter((c) => !hasOwnOrBaseState(c, ":focus-visible")), [])
   assert.doesNotMatch(css, /:focus(?![-\w])/, "use :focus-visible, never :focus")
+})
+
+// The static twin of motion-adoption's press-scale check: an :active rule that scales a
+// class through `transform` or `scale` eases only if that class transitions the same property.
+test("a pressed scale eases: the class transitions the property its :active rule sets", () => {
+  const pressedScales = rules.flatMap((r) => r.selector.split(",").filter((s) => s.includes(":active")).flatMap((s) =>
+    [...r.body.matchAll(/(?:^|;|\s)(transform|scale)\s*:/g)].map((m) => ({ cls: classesIn(s)[0], property: m[1] })),
+  ))
+  assert.ok(pressedScales.length >= 2, "expected the button and pressable press scales")
+  const transitioned = (cls) => rules
+    .filter((r) => r.selector.split(",").some((s) => s.trim() === `.${cls}`))
+    .flatMap((r) => [...r.body.matchAll(/transition-property\s*:\s*([^;]+)/g)].flatMap((m) => m[1].split(",").map((p) => p.trim())))
+  assert.deepEqual(pressedScales.filter(({ cls, property }) => {
+    const properties = transitioned(cls)
+    return !properties.includes(property) && !properties.includes("all")
+  }), [])
+})
+
+// Mirrors the React shell: explicit rows at every width, so a short phone page
+// does not stretch the toolbar (the implicit rows below 768px were auto).
+test("the static shell keeps the toolbar's height and gives the panes the rest at every width", () => {
+  const base = rules.find((r) => r.selector === ".ud-app-shell")
+  assert.ok(base, ".ud-app-shell rule missing")
+  assert.match(base.body, /grid-template-rows:\s*auto minmax\(0, 1fr\)/)
 })
 
 test("every transition names a --motion-* duration (ban 19)", () => {
