@@ -393,6 +393,15 @@ describe("UDesign page shells", () => {
     expect(screen.getByRole("main")).toContainElement(screen.getByRole("region", { name: "Order detail" }))
   })
 
+  // Below md the rows were implicit and auto, so a page shorter than the screen
+  // stretched the toolbar. The rows are explicit at every width now.
+  it("keeps the toolbar's own height and gives the panes the rest, at every width", () => {
+    const { container } = render(operationsScreen())
+    const shell = container.firstElementChild as HTMLElement
+    expect(shell).toHaveClass("grid-rows-[auto_minmax(0,1fr)]")
+    expect([...shell.classList].filter((c) => c.includes("grid-rows-"))).toEqual(["grid-rows-[auto_minmax(0,1fr)]"])
+  })
+
   it("lets the page scroll again on phones, where a fixed viewport traps content", () => {
     const { container } = render(operationsScreen())
     expect(container.firstElementChild).toHaveClass("min-h-svh")

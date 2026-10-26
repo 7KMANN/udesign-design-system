@@ -1033,3 +1033,17 @@ holds, so the button stays where it is. With `hideClose` the title reserves noth
 tells it through a React context, not a class. Measured in Chromium after the change: the block
 and the footer share a right edge, and the description clears the icon by 4px or more, in both
 profiles at both widths (`tests/e2e/showcase.spec.ts`).
+
+### D-42 · The shell's rows are explicit at every width · `NEEDS-APPROVAL`
+
+**Question:** below `md`, `AppShell` set no rows, so its two children (toolbar and panes) sat in
+implicit `auto` rows that split a short page's spare height. Measured at 375x812 on the operations
+reference screen with its panes emptied: the toolbar grew from 149px to 456px, and the static
+`ud-app-shell` from 52px to 405px. Boutique overrode it at the call site
+(`max-md:grid-rows-[auto_minmax(0,1fr)]`).
+
+**Proposed:** `grid-rows-[auto_minmax(0,1fr)]` with no breakpoint, the rows `md` already had, and
+`grid-template-rows: auto minmax(0, 1fr)` on `.ud-app-shell`. A long page still scrolls: with no
+definite height the `1fr` row sizes to its content. Two panes stacked on a phone share the spare
+height between them; a single pane takes all of it. The Playwright layout audit measures both
+shells on a short phone page.

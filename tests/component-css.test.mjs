@@ -100,6 +100,14 @@ test("a pressed scale eases: the class transitions the property its :active rule
   }), [])
 })
 
+// Mirrors the React shell: explicit rows at every width, so a short phone page
+// does not stretch the toolbar (the implicit rows below 768px were auto).
+test("the static shell keeps the toolbar's height and gives the panes the rest at every width", () => {
+  const base = rules.find((r) => r.selector === ".ud-app-shell")
+  assert.ok(base, ".ud-app-shell rule missing")
+  assert.match(base.body, /grid-template-rows:\s*auto minmax\(0, 1fr\)/)
+})
+
 test("every transition names a --motion-* duration (ban 19)", () => {
   const transitions = rules.flatMap((r) => [...r.body.matchAll(/transition\s*:([^;]+)/g)].map((m) => m[1]))
   assert.ok(transitions.length >= 2)

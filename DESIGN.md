@@ -300,6 +300,8 @@ Full-height mobile layouts use small viewport units. Validate at 375px, not only
 
 In `operations` below `md`, `AppShellSidebar` hides and the same navigation opens in a `Sheet` (`side="left"`) from a menu button first in the toolbar: one nav component rendered in both places, so they never drift. Static HTML does the same with the native `popover` attribute. Owned by `udesign-docs` [`standards/design/mobile-accessibility.md`](https://github.com/7KMANN/udesign-docs/blob/v0.9.0/standards/design/mobile-accessibility.md). `APPROVED 2026-09-29 D-36`
 
+`AppShell` and `ud-app-shell` keep the same rows at every width: the toolbar takes its own height and the panes take the rest. Below `md` the page scrolls, and a page shorter than the screen gives its spare height to the panes, never to the toolbar, with no override at the call site. `NEEDS-APPROVAL D-42`
+
 ### Containment
 
 Density is not the defect; uncontained content is. Promoted from GlobalVision, where Kaleb ratified it on 2026-09-28. `APPROVED 2026-09-29 D-35`
