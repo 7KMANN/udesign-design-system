@@ -1119,8 +1119,9 @@ the library's helper classes. Browsers without `@property` ignore the rule and b
 ## Round 19 - 2026-10-26 (Boutique's appearance findings)
 
 **Evidence:** the "Design-system changes" list in Boutique's appearance report (its participant
-pages' standard, `docs/appearance.md` on Boutique's `feat/appearance-standard`), each item read in
-Boutique's bridge and in UDesign Pages where it began, then reproduced here before it changed.
+pages' standard, `docs/appearance.md` on Boutique's `feat/appearance-standard`), two items its builder
+added to that list after the brief (D-57, D-58), and one from Kaleb directly (D-56). Each item was read
+in Boutique's bridge and in UDesign Pages where it began, then reproduced here before it changed.
 None of this round is approved. Each entry waits for Kaleb, and the `DESIGN.md` sentence it adds or
 changes carries `NEEDS-APPROVAL` and the entry's number until he answers. Shipped as release
 candidate v3.3.0. French typography, the report's tenth item, belongs to `udesign-docs` and is not
