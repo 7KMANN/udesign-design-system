@@ -121,6 +121,15 @@
       "files": [{ "path": "registry/new-york/ui/field.tsx", "type": "registry:ui", "target": "components/ui/field.tsx" }]
     },
     {
+      "name": "description-list",
+      "type": "registry:ui",
+      "title": "Description List",
+      "description": "Labels and their values read at a glance, such as a product's specifications: each label semibold beside its muted value.",
+      "docs": "DescriptionList holds DescriptionTerm and DescriptionDetails pairs, optionally each pair in a div, on a grid of the labels' width and the rest, 12px between rows and 16px between the columns, within 72 characters. A long value wraps inside its column. The static twin is ud-description-list. See DESIGN.md \"Listing specifications\".",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/description-list.tsx", "type": "registry:ui", "target": "components/ui/description-list.tsx" }]
+    },
+    {
       "name": "dialog",
       "type": "registry:ui",
       "title": "Dialog",
@@ -257,7 +266,8 @@
       "type": "registry:ui",
       "title": "Skeleton",
       "description": "Loading placeholder sized to the content it stands in for, so arrival does not shift the layout.",
-      "docs": "Size the skeleton to mirror the dimensions of the content it stands in for. A fallback of a different height causes a jump on arrival, which reads worse than the blank pause it replaced. See DESIGN.md.",
+      "docs": "Size the skeleton to mirror the dimensions of the content it stands in for. A fallback of a different height causes a jump on arrival, which reads worse than the blank pause it replaced. Where only phrasing content may go, inside a button, a link or a line of text, draw it on a span: <Skeleton asChild><span className=\"inline-block h-4 w-16\" /></Skeleton>. See DESIGN.md.",
+      "dependencies": ["@radix-ui/react-slot"],
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/skeleton.tsx", "type": "registry:ui", "target": "components/ui/skeleton.tsx" }]
     },
@@ -321,6 +331,7 @@
         { "path": "registry/new-york/ui/switch.tsx", "type": "registry:ui", "target": "components/ui/switch.tsx" },
         { "path": "registry/new-york/ui/slider.tsx", "type": "registry:ui", "target": "components/ui/slider.tsx" },
         { "path": "registry/new-york/ui/field.tsx", "type": "registry:ui", "target": "components/ui/field.tsx" },
+        { "path": "registry/new-york/ui/description-list.tsx", "type": "registry:ui", "target": "components/ui/description-list.tsx" },
         { "path": "registry/new-york/ui/dialog.tsx", "type": "registry:ui", "target": "components/ui/dialog.tsx" },
         { "path": "registry/new-york/ui/sheet.tsx", "type": "registry:ui", "target": "components/ui/sheet.tsx" },
         { "path": "registry/new-york/ui/tooltip.tsx", "type": "registry:ui", "target": "components/ui/tooltip.tsx" },

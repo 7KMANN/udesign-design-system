@@ -178,3 +178,44 @@ test("React gallery: another colour is a new set that opens on its first photo, 
   await expect.poll(() => shown(a)).toBe("Devant")
   expect(await place()).toEqual(before)
 })
+
+// D-57: specifications, React and static: each label beside its value, a grouped pair on the same
+// grid, the value muted, a long value wrapping inside the list at 375px.
+for (const [name, open] of [
+  ["React", async (page: Page) => page.goto("/fixtures.html?fixture=specs")],
+  [
+    "static",
+    async (page: Page) => {
+      await page.goto("/examples.html")
+      await page.setContent(`<!doctype html><html data-design="presentation"><head><link rel="stylesheet" href="/dist/tokens.css"></head>
+        <body class="ud-page-canvas"><main style="padding: 16px"><dl class="ud-description-list" data-testid="specs"><dt>Tissu</dt><dd>Coton épais, 6,5 oz</dd>
+        <div><dt>Coupe</dt><dd>Ample</dd></div><dt>Entretien</dt><dd>Lavage-à-froid-avec-des-couleurs-semblables-et-séchage-par-culbutage-à-basse-température</dd></dl></main></body></html>`, { waitUntil: "load" })
+    },
+  ],
+] as const) {
+  test(`${name} description list: labels beside their values, inside the list on a phone`, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await open(page)
+    const list = page.getByTestId("specs")
+    const box = async (text: string) => (await list.getByText(text, { exact: true }).boundingBox())!
+    for (const [label, value] of [["Tissu", "Coton épais, 6,5 oz"], ["Coupe", "Ample"]]) {
+      const [l, v] = [await box(label), await box(value)]
+      expect(Math.abs(l.y - v.y), `${label} and its value share a row`).toBeLessThan(1)
+      expect(v.x - (l.x + l.width), "16px between the columns").toBeGreaterThanOrEqual(15.5)
+    }
+    expect((await box("Ample")).x, "a grouped pair stays on the grid").toBeCloseTo((await box("Coton épais, 6,5 oz")).x, 0)
+    const outer = (await list.boundingBox())!
+    const long = (await list.locator("dd").last().boundingBox())!
+    expect(long.x + long.width, "a long value wraps inside the list").toBeLessThanOrEqual(outer.x + outer.width + 0.5)
+    const [value, muted] = await list.locator("dd").first().evaluate((el) => {
+      const probe = document.createElement("span")
+      probe.style.color = "var(--muted-foreground)"
+      document.body.append(probe)
+      const colours = [getComputedStyle(el).color, getComputedStyle(probe).color]
+      probe.remove()
+      return colours
+    })
+    expect(value).toBe(muted)
+    expect(await list.locator("dt").first().evaluate((el) => getComputedStyle(el).fontWeight)).toBe("600")
+  })
+}

@@ -413,7 +413,7 @@ A badge holds one line, so a status in a table column or a toolbar stays whole a
 Three primitives carry the feedback floor. They are part of `core`: an application cannot meet the feedback model in [`udesign-contract.md` "Feedback"](https://github.com/7KMANN/udesign-docs/blob/v0.9.0/standards/design/udesign-contract.md) (owned by `udesign-docs`, version-independent) without them, so they are not optional extras.
 
 - **Spinner** (`spinner`) - a busy indicator for an action in flight. Under reduced motion it stops turning and stays visible, because the state has to survive the animation being removed.
-- **Skeleton** (`skeleton`) - a loading placeholder, sized to the content it replaces. A fallback of a different height causes a jump on arrival, which reads worse than the pause it replaced.
+- **Skeleton** (`skeleton`) - a loading placeholder, sized to the content it replaces. A fallback of a different height causes a jump on arrival, which reads worse than the pause it replaced. Where only phrasing content may go, inside a button, a link or a line of text, it is drawn on a span: `<Skeleton asChild><span className="inline-block ..." /></Skeleton>`. `NEEDS-APPROVAL D-58`
 - **Pressable** (`pressable`) - a clickable card, row, or list item. Renders a real button, so Enter, Space, focus, and the accessible name come from the platform instead of from a div with an `onClick`. Uses the subtle press scale; the control scale reads as a layout bug across a full-width surface.
 
 Nothing empty takes room. An idle live region, a `role="status"` or `role="alert"` waiting for its words, stays in the page so a screen reader hears them when they arrive, but it is never a child of a container with a gap, where even empty it takes one. Render it after the stack, or space the blocks that render with their own margins, and put the margin on its words, not on the region. The same holds for any element that can be empty, such as a count with nothing to count: render nothing. `NEEDS-APPROVAL D-51`
@@ -460,9 +460,13 @@ One gallery shows a product's photos everywhere: the registry `Gallery` (`galler
 - The photo moves on `--motion-duration-standard`, at once under reduced motion. The dots report the position; a swipe, the arrows on a mouse, the thumbnails and the arrow keys move it.
 - The arrow keys move only the gallery that has the focus, else the one under the pointer, never every gallery on screen, and Page Up and Page Down scroll the page. A widget that handles the arrows itself, such as `ChoiceGroup`, stops them before a gallery sees them. `NEEDS-APPROVAL D-55`
 
+### Listing specifications
+
+Labels and their values read at a glance, such as a product's specifications, are a `DescriptionList` (`description-list`, static `ud-description-list`): each label semibold beside its muted value, on a grid as wide as the longest label and the rest, `--space-3` between rows and `--space-4` between the columns, within 72 characters. A long value wraps inside its column. A line without a label is a list, not a description. `NEEDS-APPROVAL D-57`
+
 ## Registry components
 
-The source registry includes these base components: button, badge, alert, card, input, textarea, select, native-select, choice-group, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
+The source registry includes these base components: button, badge, alert, card, input, textarea, select, native-select, choice-group, checkbox, switch, slider, field, description-list, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
 
 The application patterns are icon-button, status-badge, metric-card, empty-state, responsive-collection, and gallery. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included.
 

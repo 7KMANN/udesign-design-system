@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "description-list",
+  "type": "registry:ui",
+  "title": "Description List",
+  "description": "Labels and their values read at a glance, such as a product's specifications: each label semibold beside its muted value.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/ui/description-list.tsx",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\n// Labels and their values read at a glance, such as a product's specifications (D-57): each label\n// semibold beside its muted value, the labels' column as wide as the longest, within 72\n// characters, as UDesign Pages sets them. A dt and dd pair may sit in a div, as HTML allows: the div\n// steps aside so the pair stays on the grid. Static twin: ud-description-list.\nconst DescriptionList = React.forwardRef<HTMLDListElement, React.HTMLAttributes<HTMLDListElement>>(({ className, ...props }, ref) => (\n  <dl\n    ref={ref}\n    data-slot=\"description-list\"\n    className={cn(\"m-0 grid max-w-[72ch] grid-cols-[max-content_minmax(0,1fr)] gap-x-4 gap-y-3 [&>div]:contents\", className)}\n    {...props}\n  />\n))\nDescriptionList.displayName = \"DescriptionList\"\n\nconst DescriptionTerm = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ className, ...props }, ref) => (\n  <dt ref={ref} className={cn(\"font-semibold\", className)} {...props} />\n))\nDescriptionTerm.displayName = \"DescriptionTerm\"\n\n// A long value wraps inside its column, never past the list's edge.\nconst DescriptionDetails = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ className, ...props }, ref) => (\n  <dd ref={ref} className={cn(\"m-0 min-w-0 text-[var(--muted-foreground)] [overflow-wrap:anywhere]\", className)} {...props} />\n))\nDescriptionDetails.displayName = \"DescriptionDetails\"\n\nexport { DescriptionDetails, DescriptionList, DescriptionTerm }\n",
+      "type": "registry:ui",
+      "target": "components/ui/description-list.tsx"
+    }
+  ],
+  "docs": "DescriptionList holds DescriptionTerm and DescriptionDetails pairs, optionally each pair in a div, on a grid of the labels' width and the rest, 12px between rows and 16px between the columns, within 72 characters. A long value wraps inside its column. The static twin is ud-description-list. See DESIGN.md \"Listing specifications\"."
+}

@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { DescriptionDetails, DescriptionList, DescriptionTerm } from "@/components/ui/description-list"
 import { IconButton } from "@/components/ui/icon-button"
 import { Input } from "@/components/ui/input"
 import { NativeSelect } from "@/components/ui/native-select"
@@ -25,6 +26,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Moment } from "@/components/ui/moment"
 import { ContactFooter, PageCanvas, PageHeader, PageSection } from "@/components/ui/page-canvas"
+import { Pressable } from "@/components/ui/pressable"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ProgressRing } from "@/components/ui/progress-ring"
 import { ResponsiveCollection } from "@/components/ui/responsive-collection"
 import { RollingConsistencyChip } from "@/components/ui/rolling-consistency-chip"
@@ -409,6 +412,52 @@ describe("UDesign registry accessibility contracts", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Commande envoyée.")
     expect(screen.getByRole("alert")).toHaveTextContent("Le lien est perdu.")
     expect(screen.getByRole("note")).toHaveTextContent("Note de produit.")
+  })
+
+  // D-57: one source for specifications, as UDesign Pages and Boutique each wrote them.
+  it("lists labels beside their values, a pair optionally grouped in a div", async () => {
+    const { container } = render(
+      <main>
+        <DescriptionList>
+          <DescriptionTerm>Tissu</DescriptionTerm>
+          <DescriptionDetails>Coton épais, 6,5 oz</DescriptionDetails>
+          <div>
+            <DescriptionTerm>Coupe</DescriptionTerm>
+            <DescriptionDetails>Ample</DescriptionDetails>
+          </div>
+        </DescriptionList>
+      </main>,
+    )
+    const list = container.querySelector("dl") as HTMLElement
+    expect(list).toHaveClass("grid", "max-w-[72ch]", "grid-cols-[max-content_minmax(0,1fr)]", "gap-x-4", "gap-y-3", "[&>div]:contents")
+    expect(screen.getByText("Tissu").tagName).toBe("DT")
+    expect(screen.getByText("Tissu")).toHaveClass("font-semibold")
+    expect(screen.getByText("Ample").tagName).toBe("DD")
+    expect(screen.getByText("Ample")).toHaveClass("text-[var(--muted-foreground)]", "[overflow-wrap:anywhere]")
+    // Laid out in Chromium by tests/e2e/components.spec.ts: jsdom cannot.
+    expect((await axe.run(container)).violations).toEqual([])
+  })
+
+  // D-58: a placeholder where only phrasing content may go, such as a price inside a Pressable.
+  it("draws a skeleton on a span inside a button, keeping the button's content phrasing", () => {
+    const ref = React.createRef<HTMLDivElement>()
+    render(
+      <Pressable>
+        <span>Heavy Tee</span>
+        <Skeleton asChild ref={ref}>
+          <span data-testid="price" className="inline-block h-4 w-16" />
+        </Skeleton>
+      </Pressable>,
+    )
+    const button = screen.getByRole("button", { name: "Heavy Tee" })
+    expect(button.querySelector("div")).toBeNull()
+    const price = screen.getByTestId("price")
+    expect(price.tagName).toBe("SPAN")
+    expect(ref.current).toBe(price)
+    expect(price).toHaveAttribute("aria-hidden", "true")
+    expect(price).toHaveClass("inline-block", "h-4", "w-16", "bg-[var(--muted)]", "motion-safe:animate-pulse")
+    render(<Skeleton data-testid="block" className="h-6 w-24" />)
+    expect(screen.getByTestId("block").tagName).toBe("DIV")
   })
 
   it("does not fire a click on a pending action", async () => {

@@ -1345,3 +1345,28 @@ other edges keep their padding. Static twins: `ud-page-section-compact-top` and
 (D-21). The presentation reference screen uses it between its order head and the garments band,
 measured at 375px and 1440px. **Rejected:** a smaller padding for every section, which would
 flatten the hierarchy that space draws in `presentation` (D-19).
+
+### D-57 · A description list for specifications · `NEEDS-APPROVAL`
+
+**Question (added to Boutique's list after the brief):** UDesign Pages' `.specs`, a `<dl>` on a
+`max-content minmax(0, 1fr)` grid, rows `--space-3` and columns `--space-4` apart, within 72ch, the
+label semibold and the value muted, is written twice: in the CSS `generate_selection.py` writes, and
+in Boutique's `SpecsList`.
+
+**Proposed:** a registry `description-list`, in `core`: `DescriptionList`, `DescriptionTerm` and
+`DescriptionDetails`, UDesign Pages' values exactly, with its static twin `ud-description-list`.
+Two additions: a `dt` and `dd` pair grouped in a `div`, as HTML allows, stays on the grid; and a long
+value wraps inside its column instead of running past the list (ban 29). Measured in Chromium at
+375px, React and static. **Rejected:** a component that takes the pairs as data, which would decide
+the markup of a value for every consumer.
+
+### D-58 · A skeleton where only phrasing content may go · `NEEDS-APPROVAL`
+
+**Question (added to Boutique's list after the brief):** `Skeleton` renders a `div`. A price's
+placeholder inside a `Pressable`, a `button` whose content must be phrasing, needs a `span`.
+
+**Proposed:** `asChild`, the registry's way (`Button`, `Badge`, `Pressable`): the placeholder is
+drawn on its one child, `<Skeleton asChild><span className="inline-block h-4 w-16" /></Skeleton>`,
+which keeps the ref and `aria-hidden`. The `skeleton` item now depends on `@radix-ui/react-slot`,
+which `core` already installs. **Rejected:** an `inline` prop that always draws an inline-block span,
+which would cover a button but not a table cell or a list item.

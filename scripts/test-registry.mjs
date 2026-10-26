@@ -22,6 +22,7 @@ const requiredItems = [
   "switch",
   "slider",
   "field",
+  "description-list",
   "dialog",
   "sheet",
   "tooltip",
@@ -203,7 +204,7 @@ for (const name of ["badge.tsx", "app-shell.tsx"]) {
 
 const core = registry.items.find((item) => item.name === "core")
 assert.equal(core.type, "registry:item")
-assert.equal(core.files.length, 28, "core must install the complete supported source set")
+assert.equal(core.files.length, 29, "core must install the complete supported source set")
 
 const outputDir = path.join(root, "public", "r")
 assert.ok(fs.existsSync(outputDir), "public/r must contain committed registry output")

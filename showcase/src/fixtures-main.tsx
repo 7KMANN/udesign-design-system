@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import 'swiper/css/bundle';
 import { ChoiceGroup } from '@/components/ui/choice-group';
+import { DescriptionDetails, DescriptionList, DescriptionTerm } from '@/components/ui/description-list';
 import { Gallery, type GalleryPhoto } from '@/components/ui/gallery';
 import './index.css';
 
@@ -51,7 +52,25 @@ function Galleries() {
   );
 }
 
-const fixtures: Record<string, React.ComponentType> = { choices: Choices, galleries: Galleries };
+// Specifications as UDesign Pages sets them, a pair grouped in a div, and a value too long for a phone.
+function Specs() {
+  return (
+    <main className="p-4">
+      <DescriptionList data-testid="specs">
+        <DescriptionTerm>Tissu</DescriptionTerm>
+        <DescriptionDetails>Coton épais, 6,5 oz</DescriptionDetails>
+        <div>
+          <DescriptionTerm>Coupe</DescriptionTerm>
+          <DescriptionDetails>Ample</DescriptionDetails>
+        </div>
+        <DescriptionTerm>Entretien</DescriptionTerm>
+        <DescriptionDetails>Lavage-à-froid-avec-des-couleurs-semblables-et-séchage-par-culbutage-à-basse-température</DescriptionDetails>
+      </DescriptionList>
+    </main>
+  );
+}
+
+const fixtures: Record<string, React.ComponentType> = { choices: Choices, galleries: Galleries, specs: Specs };
 const Fixture = fixtures[new URLSearchParams(location.search).get('fixture') ?? ''] ?? (() => <p>Unknown fixture</p>);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

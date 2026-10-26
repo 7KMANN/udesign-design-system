@@ -24,6 +24,7 @@ const expectedFiles = [
   "checkbox",
   "switch",
   "field",
+  "description-list",
   "dialog",
   "sheet",
   "tooltip",

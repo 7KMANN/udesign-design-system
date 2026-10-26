@@ -153,6 +153,20 @@ textarea.ud-input { height: auto; min-height: 6rem; }
 .ud-input:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: -2px; }
 .ud-input:disabled { cursor: not-allowed; background: var(--interactive-disabled); color: var(--interactive-disabled-foreground); }
 
+/* DescriptionList: labels and their values read at a glance, such as a product's specifications.
+   <dl class="ud-description-list"><dt>Tissu</dt><dd>Coton épais</dd></dl>: each label semibold
+   beside its muted value, within 72 characters. A dt and dd pair may sit in a div. */
+.ud-description-list {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: var(--space-3) var(--space-4);
+  max-width: 72ch;
+  margin: 0;
+}
+.ud-description-list > div { display: contents; }
+.ud-description-list dt { font-weight: var(--fw-semibold); }
+.ud-description-list dd { min-width: 0; margin: 0; color: var(--muted-foreground); overflow-wrap: anywhere; }
+
 /* Empty state: a title (.ud-h3), a line of help (.ud-label), and at most one action. */
 .ud-empty-state {
   display: flex;

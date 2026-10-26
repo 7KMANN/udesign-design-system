@@ -4,16 +4,19 @@
   "type": "registry:ui",
   "title": "Skeleton",
   "description": "Loading placeholder sized to the content it stands in for, so arrival does not shift the layout.",
+  "dependencies": [
+    "@radix-ui/react-slot"
+  ],
   "registryDependencies": [
     "utils"
   ],
   "files": [
     {
       "path": "registry/new-york/ui/skeleton.tsx",
-      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\nexport type SkeletonProps = React.HTMLAttributes<HTMLDivElement>\n\n/**\n * A placeholder that mirrors the dimensions of the content it stands in for.\n * A fallback of a different height causes a jump on arrival, which reads worse\n * than the blank pause it replaced - size this to the real thing.\n */\nconst Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(({ className, ...props }, ref) => (\n  <div\n    ref={ref}\n    aria-hidden=\"true\"\n    className={cn(\"rounded-[var(--radius)] bg-[var(--muted)] motion-safe:animate-pulse [animation-duration:var(--motion-duration-ambient)]\", className)}\n    {...props}\n  />\n))\nSkeleton.displayName = \"Skeleton\"\n\nexport { Skeleton }\n",
+      "content": "import * as React from \"react\"\nimport { Slot } from \"@radix-ui/react-slot\"\n\nimport { cn } from \"@/lib/utils\"\n\nexport interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {\n  /**\n   * Draws the placeholder on its one child instead of a div (D-58), such as a span where only\n   * phrasing content may go, inside a button, a link or a line of text:\n   * <Skeleton asChild><span className=\"inline-block h-4 w-16\" /></Skeleton>.\n   */\n  asChild?: boolean\n}\n\n/**\n * A placeholder that mirrors the dimensions of the content it stands in for.\n * A fallback of a different height causes a jump on arrival, which reads worse\n * than the blank pause it replaced - size this to the real thing.\n */\nconst Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(({ asChild = false, className, ...props }, ref) => {\n  const Comp = asChild ? Slot : \"div\"\n  return (\n    <Comp\n      ref={ref}\n      aria-hidden=\"true\"\n      className={cn(\"rounded-[var(--radius)] bg-[var(--muted)] motion-safe:animate-pulse [animation-duration:var(--motion-duration-ambient)]\", className)}\n      {...props}\n    />\n  )\n})\nSkeleton.displayName = \"Skeleton\"\n\nexport { Skeleton }\n",
       "type": "registry:ui",
       "target": "components/ui/skeleton.tsx"
     }
   ],
-  "docs": "Size the skeleton to mirror the dimensions of the content it stands in for. A fallback of a different height causes a jump on arrival, which reads worse than the blank pause it replaced. See DESIGN.md."
+  "docs": "Size the skeleton to mirror the dimensions of the content it stands in for. A fallback of a different height causes a jump on arrival, which reads worse than the blank pause it replaced. Where only phrasing content may go, inside a button, a link or a line of text, draw it on a span: <Skeleton asChild><span className=\"inline-block h-4 w-16\" /></Skeleton>. See DESIGN.md."
 }

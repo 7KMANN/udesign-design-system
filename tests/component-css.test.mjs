@@ -33,6 +33,7 @@ const MIRROR = {
   "native-select": "no static page has needed a select yet; a class waits for one (FUTURE-WORK.md)",
   "choice-group": "needs script for roving focus, the arrow keys and the column count; its container queries ship in css/registry.css",
   gallery: ["ud-gallery", "ud-gallery-main", "ud-gallery-thumbs", "ud-gallery-thumb"],
+  "description-list": ["ud-description-list"],
   checkbox: "Radix behaviour, and a native checkbox is ban 9",
   switch: "Radix behaviour; no generator wrote one",
   slider: "Radix behaviour, and a native range is ban 9",
