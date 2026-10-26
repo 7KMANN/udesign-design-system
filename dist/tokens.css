@@ -1,6 +1,6 @@
 /*
  * UDesign design tokens (presentation and operations profiles). Compiled from DTCG sources.
- * Do not hand-edit this file: edit the token source or css/components.css and run `npm run build`.
+ * Do not hand-edit this file: edit the token source, css/components.css or css/registry.css, and run `npm run build`.
  */
 :root, :root[data-design="presentation"] {
   /* Primitives: brand */
@@ -821,4 +821,22 @@ textarea.ud-input { height: auto; min-height: 6rem; }
 }
 @media (min-width: 768px) and (pointer: fine) {
   .ud-app-shell-toolbar > * { --control-height: var(--control-height-compact); --touch-target-min: var(--control-height-compact); }
+}
+
+
+/*
+ * What the React registry needs from the stylesheet. Source file: css/registry.css.
+ * `npm run build` appends it to dist/tokens.css and dist/tokens-functional.css.
+ *
+ * An open Select, Dialog or Sheet locks the page scroll through react-remove-scroll-bar,
+ * which sets --removed-body-scroll-bar-size on <body>. An unregistered custom property
+ * inherits, so setting and clearing it restyled every element of the page. Registered as
+ * non-inherited, it changes <body> alone. Nothing in the registry reads it, and the
+ * library's own helper classes carry the gap in pixels, not through the property.
+ * Read it on <body> only: below <body> it is 0px.
+ */
+@property --removed-body-scroll-bar-size {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0px;
 }

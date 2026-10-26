@@ -439,6 +439,8 @@ Registry components must:
 
 Generated registry JSON is not an authoring surface.
 
+`dist/tokens.css` registers `--removed-body-scroll-bar-size`, which the scroll lock of an open `Select`, `Dialog` or `Sheet` sets on `<body>`, as a property that does not inherit. Setting and clearing it then restyles `<body>` alone instead of every element of the page. Read it on `<body>` only: below `<body>` it is `0px`. `NEEDS-APPROVAL D-45`
+
 ## Showcase acceptance
 
 The showcase must demonstrate:

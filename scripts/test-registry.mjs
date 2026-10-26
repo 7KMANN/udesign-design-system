@@ -131,6 +131,10 @@ for (const name of ["input.tsx", "textarea.tsx", "select.tsx", "native-select.ts
   assert.match(files[name], /aria-\[invalid=true\]:border-\[var\(--tone-danger-foreground\)\]/, `${name} must mark an invalid field`)
 }
 
+// D-45: dist/tokens.css registers --removed-body-scroll-bar-size as non-inherited, which is
+// safe only while no component reads it below <body>, where it is now 0px.
+assert.doesNotMatch(Object.values(files).join("\n"), /removed-body-scroll-bar-size/, "a registry component reads --removed-body-scroll-bar-size, which does not inherit below <body>")
+
 const sliderThumb = files["slider.tsx"].match(/<SliderPrimitive\.Thumb[\s\S]*?>/)?.[0] ?? ""
 assert.match(sliderThumb, /size-\[var\(--touch-target-min\)\]/)
 

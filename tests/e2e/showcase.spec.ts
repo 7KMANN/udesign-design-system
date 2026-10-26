@@ -140,6 +140,21 @@ test("a native select leaves <body> alone when it opens; a Radix Select does not
   await page.keyboard.press("Escape")
 })
 
+// D-45, in the browser: the scroll lock's property stays on <body> and no longer inherits,
+// so setting it restyles <body> alone. Below <body> it reads its initial 0px.
+test("tokens.css keeps the scroll lock's property on <body>", async ({ page }) => {
+  await page.goto("/")
+  const read = await page.evaluate(() => {
+    document.body.style.setProperty("--removed-body-scroll-bar-size", "15px")
+    const child = document.body.firstElementChild as Element
+    const value = (el: Element) => getComputedStyle(el).getPropertyValue("--removed-body-scroll-bar-size").trim()
+    const result = { body: value(document.body), child: value(child) }
+    document.body.style.removeProperty("--removed-body-scroll-bar-size")
+    return result
+  })
+  expect(read).toEqual({ body: "15px", child: "0px" })
+})
+
 test("motion tokens collapse to zero under prefers-reduced-motion, moment scale stays inert without it", async ({ page }) => {
   await page.goto("/")
 

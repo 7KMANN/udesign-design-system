@@ -1084,3 +1084,32 @@ field in every state and every surface a field sits on, in all four profile and 
 `--tone-danger-border` fell to 2.3:1 on the pressed surface and `--destructive` to 2.0:1 on the
 dark pressed surface, so neither qualifies. `tests/contrast.test.mjs` holds 3:1. `FieldError` keeps carrying the reason
 (ban 11). The variant is `aria-[invalid=true]:`, which Tailwind 3 and 4 both compile.
+
+### D-45 · `dist/tokens.css` registers the scroll lock's property as non-inherited · `NEEDS-APPROVAL`
+
+**Question:** while a `Select`, `Dialog` or `Sheet` is open, `react-remove-scroll-bar` sets
+`--removed-body-scroll-bar-size` on `body[data-scroll-locked]`. An unregistered custom property
+inherits, so clearing it restyled every element of the page. Boutique proposed
+`@property --removed-body-scroll-bar-size { syntax: "*"; inherits: false; }` and registers it
+itself. It is safe only if nothing reads the property below `<body>`.
+
+**What reads it, checked:**
+- The registry: no component, the static classes and the compiled tokens included.
+  `scripts/test-registry.mjs` and `tests/token-contract.test.mjs` now fail if one starts to.
+- `react-remove-scroll-bar` 2.3.8: only sets it. Its helper classes (`right-scroll-bar-position`,
+  `width-before-scroll-bar`, `with-scroll-bars-hidden`) write the gap in pixels. Nothing else in
+  `node_modules` reads it, `react-remove-scroll` and Radix included.
+- Consumers, read-only: GlobalVision and `udesignpages` do not mention it; Boutique registers it
+  and reads nothing.
+
+**Measured,** Chromium 149, the showcase plus 3,800 elements, five Radix `Select` choices: full-page
+style passes fell from 15 to 10 (three per choice to two) and restyled elements from 63,266 to
+42,244. On a plain page the lock's removal alone restyled all 3,801 elements unregistered and one
+registered. The two passes left come from `pointer-events: none` on `<body>`, which stays: it
+keeps a press meant to close the list from landing on what is under it.
+
+**Proposed:** ship it, from a new source file `css/registry.css` that the build appends to both
+compiled files, with `initial-value: 0px` so that a read on `<body>` outside a lock gives 0px rather
+than nothing. The cost is a changed meaning for any application CSS that reads the property below
+`<body>` (a fixed header padding itself by the gap): it gets 0px. It must read it on `<body>`, or use
+the library's helper classes. Browsers without `@property` ignore the rule and behave as before.

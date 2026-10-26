@@ -447,6 +447,9 @@ function formatTypographyHelpers(t, baseTree, scopes = []) {
 // The static-HTML component layer (plan Phase 3) ships inside the compiled tokens,
 // so a page that links them gets the classes. Hand-written: see css/components.css.
 const componentLayer = () => fs.readFileSync(path.resolve('css/components.css'), 'utf8').replace(/\r\n/g, '\n');
+// What the React registry needs from the stylesheet, such as the scroll-lock property
+// registration (DESIGN.md "Choosing a select"). Hand-written: see css/registry.css.
+const registryLayer = () => fs.readFileSync(path.resolve('css/registry.css'), 'utf8').replace(/\r\n/g, '\n');
 
 StyleDictionary.registerFormat({
   name: 'ud/css-dual',
@@ -463,7 +466,7 @@ StyleDictionary.registerFormat({
     const L = [];
     L.push('/*');
     L.push(' * UDesign design tokens (presentation and operations profiles). Compiled from DTCG sources.');
-    L.push(' * Do not hand-edit this file: edit the token source or css/components.css and run `npm run build`.');
+    L.push(' * Do not hand-edit this file: edit the token source, css/components.css or css/registry.css, and run `npm run build`.');
     L.push(' */');
     
     // D-07: presentation and operations. The brand/functional aliases were removed after v2.1.0 (v3).
@@ -492,6 +495,8 @@ StyleDictionary.registerFormat({
     L.push(formatTypographyHelpers(functionalBaseTree, baseTree, [':root[data-design="operations"]', '.design-operations']));
     L.push('');
     L.push(componentLayer());
+    L.push('');
+    L.push(registryLayer());
 
     return L.join('\n');
   },
@@ -519,6 +524,8 @@ StyleDictionary.registerFormat({
     L.push(formatTypographyHelpers(mergedTree, baseTree));
     L.push('');
     L.push(componentLayer());
+    L.push('');
+    L.push(registryLayer());
     return L.join('\n');
   },
 });
