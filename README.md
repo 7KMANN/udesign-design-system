@@ -91,6 +91,10 @@ copy matches, the pattern `udesignpages` already uses for canon (`tools/sync-can
 edit the copy: a hand-paraphrase is how a rule silently drops. The class list and naming rule are
 at the top of the component block in the file; `npx udesign-check` audits the result.
 
+A page that shows a product's photos also links Swiper 14.3.0's bundle and `dist/ud-gallery.js`,
+the registry gallery's behaviour built for pages without React. Its skin is already in the tokens;
+its markup and API are in the file's opening comment.
+
 ## Install registry components
 
 Initialize shadcn in the consuming application and add the tagged namespace to `components.json`:

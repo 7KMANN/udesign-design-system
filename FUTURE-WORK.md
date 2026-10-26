@@ -3,6 +3,19 @@
 Open design-system work, newest first. Each item says why it waits. Remove an item when it ships;
 the CHANGELOG records what shipped.
 
+## How strict `spacing-role` is with 2px and 6px stacks (D-50)
+
+The checker holds stacks to the spacing roles at every step, so GlobalVision's dense operations
+screens report 126 stacks spaced 2px or 6px (`space-y-0.5`, `grid gap-1.5`) among its 142
+findings. If Kaleb keeps those as legitimate density, holding stacks only from 8px up leaves 16; it
+is one condition in `bin/rules.mjs`. Waits for D-50's answer.
+
+## A static choice group for UDesign Pages (D-49)
+
+UDesign Pages' size buttons have the defects `ChoiceGroup` fixes. A static twin needs the columns
+of each width range written into the page, which its Python generator could do by porting
+`choiceColumns`, and a little script for the arrow keys. Waits for UDesign Pages to take it up.
+
 ## A checker rule for a press scale that snaps (D-38)
 
 `tests/motion-adoption.test.mjs` catches a press scale whose transition misses `scale` or
