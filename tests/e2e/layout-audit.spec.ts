@@ -199,17 +199,43 @@ test("static header and footer: one row a touch target high with or without the 
 // D-60: one rule above the footer. A page that ends with a band keeps the band's bottom border and
 // the footer draws none of its own, where it drew a second (Boutique's move to v3.3.0, gap 2). The
 // band ends main (UDesign Pages' condition), ends main's last block (Boutique's article), or sits
-// right before the footer; a page that ends on its field keeps the footer's rule.
-const pageEnds = [["band", 0], ["nested", 0], ["sibling", 0], ["canvas", 1], ["sibling-canvas", 1]] as const
+// right before the footer; a page that ends on its field keeps the footer's rule, and so does a band
+// that is not the last of main's last block (re-review N7). The last number is a browser without
+// :has(): it draws two rules where the band is in main, and still one after a band right before the
+// footer (re-review N3).
+const pageEnds = [
+  ["band", 0, 1],
+  ["nested", 0, 1],
+  ["sibling", 0, 0],
+  ["canvas", 1, 1],
+  ["sibling-canvas", 1, 1],
+  ["nested-not-last", 1, 1],
+  ["article-not-last", 1, 1],
+] as const
 const borderTop = (el: Element) => parseFloat(getComputedStyle(el).borderTopWidth)
 
+// A browser without :has() drops every rule whose selector holds it, its whole selector list.
+const dropHas = (page: Page) =>
+  page.evaluate(() => {
+    const walk = (holder: CSSStyleSheet | CSSGroupingRule) => {
+      for (let i = holder.cssRules.length - 1; i >= 0; i -= 1) {
+        const rule = holder.cssRules[i]
+        if (rule instanceof CSSStyleRule && rule.selectorText.includes(":has(")) holder.deleteRule(i)
+        else if (rule instanceof CSSGroupingRule) walk(rule)
+      }
+    }
+    for (const sheet of document.styleSheets) walk(sheet)
+  })
+
 test("ContactFooter leaves its rule to a band that ends the page", async ({ page }) => {
-  for (const [end, rule] of pageEnds) {
+  for (const [end, rule, withoutHas] of pageEnds) {
     await page.goto(`/fixtures.html?fixture=footer&end=${end}`)
     const footer = page.getByTestId("footer")
     await footer.waitFor({ timeout: 20_000 })
     expect(await footer.evaluate(borderTop), `${end}: the footer's rule`).toBe(rule)
     if (!rule) expect(await page.locator("section").last().evaluate((el) => parseFloat(getComputedStyle(el).borderBottomWidth)), `${end}: the band's`).toBe(1)
+    await dropHas(page)
+    expect(await footer.evaluate(borderTop), `${end}, without :has(): the footer's rule`).toBe(withoutHas)
   }
 })
 
@@ -221,12 +247,16 @@ test("static sections: ud-contact-footer leaves its rule to a band that ends the
     sibling: `${section(false)}${section(true)}`,
     canvas: `<main>${section(true)}${section(false)}</main>`,
     "sibling-canvas": `${section(true)}${section(false)}`,
+    "nested-not-last": `<main>${section(false)}<article>${section(true)}${section(false)}</article></main>`,
+    "article-not-last": `<main><article>${section(false)}${section(true)}</article>${section(false)}</main>`,
   }
   await page.goto("/examples.html")
-  for (const [end, rule] of pageEnds) {
+  for (const [end, rule, withoutHas] of pageEnds) {
     await page.setContent(`<!doctype html><html data-design="presentation"><head><link rel="stylesheet" href="/dist/tokens.css"></head>
       <body class="ud-page-canvas">${bodies[end]}<footer class="ud-contact-footer"><p class="ud-label">Entreprise exemple</p></footer></body></html>`, { waitUntil: "load" })
     expect(await page.locator(".ud-contact-footer").evaluate(borderTop), `${end}: the footer's rule`).toBe(rule)
+    await dropHas(page)
+    expect(await page.locator(".ud-contact-footer").evaluate(borderTop), `${end}, without :has(): the footer's rule`).toBe(withoutHas)
   }
 })
 

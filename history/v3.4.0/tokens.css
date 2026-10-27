@@ -837,8 +837,9 @@ textarea.ud-input { height: auto; min-height: 6rem; }
 }
 /* One rule above the footer (D-60): after a band that ends the page, the band's border is the rule.
    The band ends main (UDesign Pages' condition), ends main's last block, or sits right before the
-   footer. */
-.ud-page-section-band + .ud-contact-footer,
+   footer. The last has a rule of its own, so a browser without :has(), which drops a whole selector
+   list that holds it, still reads it; that browser draws two rules where the band is in main. */
+.ud-page-section-band + .ud-contact-footer { border-top: 0; }
 main:has(> .ud-page-section-band:last-child) + .ud-contact-footer,
 main:has(> :last-child > .ud-page-section-band:last-child) + .ud-contact-footer { border-top: 0; }
 .ud-contact-footer > * { margin: 0; }

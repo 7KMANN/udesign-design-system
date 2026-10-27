@@ -206,8 +206,8 @@ function Footer() {
         <>{band}{canvas}</>
       ) : (
         <main>
-          {end === 'canvas' ? band : canvas}
-          {end === 'band' ? band : end === 'nested' ? <article>{canvas}{band}</article> : canvas}
+          {end === 'canvas' ? band : end === 'article-not-last' ? <article>{canvas}{band}</article> : canvas}
+          {end === 'band' ? band : end === 'nested' ? <article>{canvas}{band}</article> : end === 'nested-not-last' ? <article>{band}{canvas}</article> : canvas}
         </main>
       )}
       {footer}
