@@ -1236,7 +1236,7 @@ Tailwind container variants, whose order Tailwind 3 and 4 do not guarantee; the 
 propagate, which is what moved Boutique's gallery; a `min-width` floor for the group, which would push
 it out of a narrow parent.
 
-### D-50 · Spacing on the roles, ban 33, and the checker's `spacing-role` · `NEEDS-APPROVAL`
+### D-50 · Spacing on the roles, ban 33, and the checker's `spacing-role` · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** `examples/presentation-order.tsx` spaced with `mt-5`, `gap-5` and `md:gap-12` (20px,
 20px, 48px), so consumers copied values between the roles and the checker, with no rule for them,
@@ -1265,6 +1265,14 @@ the full breakdown is in `docs/checker-rules.md`. A first cut that read every sp
 leaves GlobalVision 16 findings; it is one condition in `bin/rules.mjs`. **Rejected:** checking
 padding, which would cry wolf on every field with an icon; checking the primitive folders, which
 hold each component's geometry and which this repository tests itself.
+
+**Kaleb, 2026-10-26: approved, "from 8px up".** A stack under 8px (2, 4 or 6px) is not a finding;
+from 8px up, stacks stay on the roles, and gaps, `space-*` and margins otherwise stay as proposed.
+Ban 33 and the "Layout" rule say so, and the rule reads a JS string only when every word of it
+reads as a class, so copy and URLs no longer count (review of PR 3). Measured again, read-only:
+Boutique `main` 10 (was 17), its `feat/appearance-standard` 2 (was 7), GlobalVision 16 (was 142),
+`udesignpages` 0, which means not read: its spacing is CSS, which no part of the rule reads
+(`docs/checker-rules.md` has the breakdown).
 
 ### D-51 · Nothing empty takes room · `NEEDS-APPROVAL`
 

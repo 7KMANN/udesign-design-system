@@ -33,7 +33,7 @@ was chosen by running the candidates over real consumer source first (S3 ledger,
 | `toolbar-wrap` | ban 30 | `<AppShellToolbar>` whose classes hold `flex-wrap` unprefixed or from a breakpoint up. Measured: 4 hits on GlobalVision's toolbars before its sweep, 0 after. | `max-md:flex-wrap` or `max-sm:flex-wrap`. |
 | `press-missing` | ban 16 | Seed spec R7: a file in a primitive folder (`components/ui/`, `registry/*/ui/`) that renders `<button>`, `role="button"`, a Checkbox, Switch or Toggle root, or a Radix Trigger, Item, Close or Thumb, and holds no `active:` (`group-active:` counts) and no `:active`. | Application code, which gets its press from the primitives; an overlay's Trigger (Tooltip, Popover, Dialog, menus), which wraps a Button through `asChild`; a primitive that imports a sibling's `*Variants` helper (`toggleVariants` from `./toggle`), which carries the press; a primitive that wears a static class of `dist/tokens.css` with an `:active` rule of its own (`ud-btn`, `ud-pressable`, `ud-gallery-thumb`: `PRESSED_CLASSES` in `bin/rules.mjs`, kept in step with `css/components.css` by a test), whose press that stylesheet carries and this repository tests. Any other `ud-` class, such as `ud-label`, lends none. |
 | `shell` | ban 27 | HTML: an `operations` root with no `ud-app-shell`; a `presentation` root with one. React: an `operations` `<html>` with no `<AppShell>` anywhere in the scanned tree; a `presentation` one with any. | A document with no `data-design`. |
-| `spacing-role` | ban 33 | In a class string (a JS/TS string literal, an HTML `class`): a gap, `space-*` or margin utility whose value is off the spacing roles (4, 8, 12, 16, 24, 32px), at any variant: `gap-5`, `md:gap-12`, `mt-[18px]`. A stack is held to the roles at every step: `space-y-*`, `gap-y-*`, the gap of a class string holding `grid` or `flex-col`, and a vertical margin, so `space-y-1.5` and `grid gap-0.5` count. The message gives the px and the roles (D-50). | 0, `px`, `auto`, the roles, any `var()`; a negative margin, which aligns an edge; a half step under 8px in a row (an icon beside its label: `flex items-center gap-1.5`, `mr-1.5`) or as a margin on an icon (`mt-0.5 size-4`); padding, which also carries geometry (`pl-9` for an icon in a field, a list's `pl-5`); a primitive folder (`components/ui/`, `registry/*/ui/`), where a component's own geometry lives and this repository's tests hold its headers to the roles; copy and comments. |
+| `spacing-role` | ban 33 | In a class string, from 8px up: a gap, `space-*` or margin utility whose value is off the spacing roles (4, 8, 12, 16, 24, 32px), at any variant: `gap-5`, `space-y-2.5`, `md:gap-12`, `mt-[18px]`. A class string is an HTML `class`, or a JS/TS string whose every word reads as a class (a string chosen inside a template's `${}` included), and the utility is a whole word of it. Under 8px only `m-0.5` or `m-1.5`, a margin on every side, counts. The message gives the px and the roles (D-50). | 0, `px`, `auto`, the roles, any `var()`; anything under 8px but a margin on every side: a stack's 2 or 6px (`space-y-1.5`, `grid gap-0.5`, `mt-0.5` under a line of text; Kaleb, 2026-10-26), a row's half step beside an icon (`flex items-center gap-1.5`, `mr-1.5`), an icon's nudge (`mt-0.5 size-4`); a negative margin, which aligns an edge; padding, which also carries geometry (`pl-9` for an icon in a field, a list's `pl-5`); a primitive folder (`components/ui/`, `registry/*/ui/`), where a component's own geometry lives and this repository's tests hold its headers to the roles; copy, URLs, arbitrary values and comments. Never read: CSS, whether a stylesheet, `<style>`, `@apply`, a `style` attribute or a style object. |
 
 **Scope.** `.html`, `.css`, `.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`. Skips `node_modules`, `.git`,
 `.next`, `dist`, `build`, `out`, `coverage`, `__tests__`, `*.test.*`, `*.spec.*`, `*.min.*` and
@@ -45,19 +45,27 @@ already defines. The reason is for the reviewer; the checker only looks for the 
 **`spacing-role`, as calibrated (D-50, 2026-10-26).** Run read-only over real source before it
 shipped. A first cut that read every spacing utility found 57 in Boutique and 498 in GlobalVision,
 most of them geometry: padding (`pl-9` for a field's icon, `pl-5` for a list), an icon's 2px nudge
-onto a line of text, an icon's 6px gap beside its label, negative margins. Leaving those out leaves
-spacing between blocks:
-- Boutique (`src`): 7, all on its operations screens: four text stacks at 2px, one at 6px, two
-  section stacks at 20px (`gap-5`). Its participant screens, which its own appearance standard
-  measures in the browser, have none.
-- GlobalVision (`app`, `components`, `lib`, `hooks`): 142, its only findings: 2px and 6px stacks
-  (`gap-1.5` 34 in a grid or column, `space-y-1.5` 27, `space-y-0.5` 22, `mt-0.5` on text 20,
-  `gap-0.5` 11, and 12 more: `mt-1.5`, `mb-0.5`, `mb-1.5`, `gap-y-0.5`), and 10px to 80px
-  (`space-y-5` 8, `gap-2.5` 3, `mt-5` 2, `space-y-10`, `mt-20`, `mb-10`). Holding stacks only from
-  8px up would leave 16.
-- `udesignpages`: 0. Its pages carry no spacing utilities.
+onto a line of text, an icon's 6px gap beside its label, negative margins. Leaving those out left
+spacing between blocks, 2px and 6px stacks among it. Kaleb answered the open item on 2026-10-26,
+"from 8px up": a stack under 8px no longer counts. Measured again with that rule, and with copy and
+URLs no longer read as classes (review of PR 3); the counts before are the v3.3.0 release
+candidate's rule:
+- Boutique `main` (`src`, `7cf5954`; local `2a2c201` gives the same): 10, was 17. Eight on its
+  participant screens (`mt-5` 4, in `Frame.tsx`, `KitForm.tsx` and `ShopHome.tsx`; `gap-5` in
+  `JoinForm.tsx` and `KitProduct.tsx`; `gap-y-5` in `KitProduct.tsx`; `lg:gap-12` in
+  `ItemView.tsx`) and two on its operations screens (`gap-5` in `Blocks.tsx` and `Organizers.tsx`).
+- Boutique's `feat/appearance-standard` (`src`, `18ec230`), where its appearance work is committed:
+  2, was 7: the two operations `gap-5`. The five stacks it loses were 2px and 6px.
+- GlobalVision (`app`, `components`, `lib`, `hooks`, `8327d555`): 16, was 142, its only findings:
+  `space-y-5` 8, `gap-2.5` 3, `mt-5` 2, `space-y-10`, `mt-20` and `mb-10`. The 126 it loses were 2px
+  and 6px stacks (`gap-1.5` 34 in a grid or column, `space-y-1.5` 27, `space-y-0.5` 22, `mt-0.5` on
+  text 20, `gap-0.5` 11, and 12 more).
+- `udesignpages` (`1fbf7ae8`): 0, because nothing it holds is read. Its spacing lives in CSS: in
+  `public`, 350 values off the roles, such as `gap: 11px` 83 times, `gap: 40px` 66 and
+  `margin-top: 2px` 17. The rule reads no CSS, so its 0 is "not read", not "on the roles".
 - `examples/presentation-order.tsx` before this release: 3 (`mt-5`, `gap-5`, `md:gap-12`), which
   consumers copied. Fixed with the rule.
+No finding from 8px up was lost to the class-string reading in any of the four.
 
 **Exit code.** 1 when anything is found, 0 otherwise.
 

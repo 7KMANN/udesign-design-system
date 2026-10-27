@@ -99,18 +99,42 @@ function balanced(code, start) {
   return code.slice(start);
 }
 
-// Ban 33: spacing off the roles (--space-1 to --space-8: 4, 8, 12, 16, 24 and 32px), read in
-// class strings only, so copy never counts. A stack (space-y, gap-y, a grid's or a column's gap,
-// a vertical margin) is held to the roles at every step. Calibrated on Boutique and GlobalVision
-// (docs/checker-rules.md): a row keeps a half step under 8px, an icon beside its label, and so
-// does a margin on an icon, a nudge onto the first line of text. Never read: padding, which
-// also carries geometry (room for an icon in a field, a list's indent); a negative margin, which
-// aligns an edge; a value through var(); a primitive folder, where a component's own geometry lives.
+// Ban 33: spacing off the roles (--space-1 to --space-8: 4, 8, 12, 16, 24 and 32px), from 8px up
+// (Kaleb, 2026-10-26), read in class strings only: an HTML class attribute, or a JS string that
+// reads as classes, so copy and URLs never count. Under 8px a stack's 2 or 6px passes, as a row's
+// half step beside an icon and an icon's nudge onto a line of text do; only a margin on every side
+// that holds no icon still counts there. Calibrated on Boutique, GlobalVision and udesignpages
+// (docs/checker-rules.md). Never read: CSS (a stylesheet, <style>, @apply, a style attribute or
+// object); padding, which also carries geometry (room for an icon in a field, a list's indent); a
+// negative margin, which aligns an edge; a value through var(); a primitive folder, where a
+// component's own geometry lives.
 const SPACING = /(?<![\w[-])((?:[\w-]+:|\[[^\]\s]*\]:)*)(-?)(gap-x|gap-y|gap|space-x|space-y|mx|my|mt|mr|mb|ml|ms|me|m)-(\[[^\]\s]+\]|\d+(?:\.\d+)?|px|auto)(?![\w.\]-])/g;
 const SPACING_ROLES_PX = [0, 4, 8, 12, 16, 24, 32];
-const ACROSS = new Set(['gap-x', 'space-x', 'mx', 'mr', 'ml', 'ms', 'me']);
-const STACK = /(?<![\w-])(?:flex-col|grid|inline-grid)(?![\w-])/;
 const ICON = /(?<![\w-])size-(?:\d|\[)|(?<![\w-])h-\d[\s\S]*(?<![\w-])w-\d|(?<![\w-])w-\d[\s\S]*(?<![\w-])h-\d/;
+// A token of a class string: variants, then a utility or a class name, lower case outside the
+// brackets that hold arbitrary values (set aside before this test). Copy and URLs fail it.
+const CLASS_TOKEN = /^!?(?:[a-z0-9@*_&>~+.%/-]+:)*!?-?[a-z0-9_][a-z0-9_./%-]*!?$/;
+
+// A JS string that reads as classes: every token passes CLASS_TOKEN, none is a URL. An
+// interpolation is a gap between tokens.
+function classLike(text) {
+  const tokens = text.replace(/\[[^\]\s]*\]/g, 'x').split(/\s+/).filter(Boolean);
+  return tokens.length > 0 && tokens.every((token) => CLASS_TOKEN.test(token) && !token.includes('//'));
+}
+
+// The class strings of JS source, each with its offset: a string literal that reads as classes,
+// and the strings inside a template's interpolations, where a class string is often chosen.
+function* classStrings(code, offset = 0) {
+  for (const m of code.matchAll(/"([^"\n]*)"|'([^'\n]*)'|`([^`]*)`/g)) {
+    const at = offset + m.index + 1;
+    let text = m[1] ?? m[2] ?? m[3];
+    if (m[3] !== undefined) {
+      for (const e of text.matchAll(/\$\{([^}]*)\}/g)) yield* classStrings(e[1], at + e.index + 2);
+      text = text.replace(/\$\{[^}]*\}/g, (e) => ' '.repeat(e.length));
+    }
+    if (classLike(text)) yield [text, at];
+  }
+}
 
 // The px a spacing value sets, or null for a role, auto, a hairline or a var().
 function spacingPx(value) {
@@ -126,15 +150,19 @@ function spacingPx(value) {
 }
 
 function* spacingOffRole(classes) {
-  const stack = STACK.test(classes);
   const icon = ICON.test(classes);
   for (const m of classes.matchAll(SPACING)) {
     const [whole, , negative, property, value] = m;
     if (negative) continue;
+    // A whole token (Tailwind's ! allowed), not a piece of an arbitrary value or a path.
+    const start = classes.slice(0, m.index).search(/\S*$/);
+    const end = classes.slice(m.index).search(/\s|$/) + m.index;
+    if (classes.slice(start, end).replace(/^!|!$/g, '') !== whole) continue;
     const px = spacingPx(value);
     if (px === null) continue;
-    // Under 8px: an icon beside its label (a row, or a margin across) or an icon's nudge.
-    if (px < 8 && (ACROSS.has(property) || (property === 'gap' && !stack) || (property.startsWith('m') && icon))) continue;
+    // Under 8px (Kaleb, 2026-10-26: from 8px up): a stack's 2 or 6px, a row's half step, an icon's
+    // nudge. Only a margin on every side still counts there, unless it sits on an icon.
+    if (px < 8 && (property !== 'm' || icon)) continue;
     yield [m.index, `\`${whole}\` is ${px}px, off the spacing roles; space with 4, 8, 12, 16, 24 or 32px (\`-1\`, \`-2\`, \`-3\`, \`-4\`, \`-6\`, \`-8\`, or \`var(--space-*)\`)`];
   }
 }
@@ -239,8 +267,8 @@ function checkJs(text, add, tree, spacing) {
   for (const m of code.matchAll(FILL_TW)) add('fill-as-text', m.index, fillMessage(m));
 
   if (spacing) {
-    for (const m of code.matchAll(/"([^"\n]*)"|'([^'\n]*)'|`([^`]*)`/g)) {
-      for (const [index, message] of spacingOffRole(m[1] ?? m[2] ?? m[3])) add('spacing-role', m.index + 1 + index, message);
+    for (const [classes, at] of classStrings(code)) {
+      for (const [index, message] of spacingOffRole(classes)) add('spacing-role', at + index, message);
     }
   }
 

@@ -3,12 +3,13 @@
 Open design-system work, newest first. Each item says why it waits. Remove an item when it ships;
 the CHANGELOG records what shipped.
 
-## How strict `spacing-role` is with 2px and 6px stacks (D-50)
+## `spacing-role` for stylesheets (D-50)
 
-The checker holds stacks to the spacing roles at every step, so GlobalVision's dense operations
-screens report 126 stacks spaced 2px or 6px (`space-y-0.5`, `grid gap-1.5`) among its 142
-findings. If Kaleb keeps those as legitimate density, holding stacks only from 8px up leaves 16; it
-is one condition in `bin/rules.mjs`. Waits for D-50's answer.
+The rule reads class strings only, so a page spaced in CSS reports 0: UDesign Pages holds 350
+spacing values off the roles in `public` (`gap: 11px` 83 times, `gap: 40px` 66, `margin-top: 2px`
+17) and passes. Reading `gap` and `margin` declarations in stylesheets, `<style>` and `style`
+attributes is a second lexical pass with the same roles and the same "from 8px up". Waits for a
+consumer that wants its CSS held to the roles; UDesign Pages' generators would be the first.
 
 ## A static choice group for UDesign Pages (D-49)
 

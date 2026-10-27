@@ -168,20 +168,24 @@ test('press-missing lends a press only through the classes the stylesheet presse
 });
 
 // Ban 33 (D-50): spacing off the roles, read in class strings. Calibrated on Boutique and
-// GlobalVision (docs/checker-rules.md): a row keeps an icon's half step, an icon keeps its nudge.
-test('spacing-role flags a gap, a stack or a margin off the spacing roles', () => {
+// GlobalVision (docs/checker-rules.md). Kaleb, 2026-10-26: from 8px up, so a stack under 8px
+// (2 or 6px) passes, as a row's half step and an icon's nudge did.
+test('spacing-role flags a gap, a stack or a margin off the spacing roles, from 8px up', () => {
   const tsx = [
     '<p className="mt-5 max-w-[52ch]">Texte</p>',
     '<div className="grid gap-8 md:grid-cols-[1fr_2fr] md:gap-12">',
     '<ol className="grid gap-5">',
-    '<div className="space-y-1.5">',
-    '<div className="grid gap-1.5"><label /><input /></div>',
-    '<div className="flex flex-col gap-0.5">',
+    '<div className="space-y-2.5">',
+    '<div className="grid gap-2.5"><label /><input /></div>',
+    '<div className="flex flex-col gap-5">',
     '<div className="gap-[18px] grid">',
-    '<p className="text-xs text-muted-foreground mt-0.5">Meta</p>',
+    '<p className="text-xs text-muted-foreground mt-2.5">Meta</p>',
     '<section className="mb-10">',
+    '<span className="m-1.5">x</span>',
   ].join('\n');
-  assert.deepEqual(hits('app/page.tsx', tsx), ['spacing-role:1', 'spacing-role:2', 'spacing-role:3', 'spacing-role:4', 'spacing-role:5', 'spacing-role:6', 'spacing-role:7', 'spacing-role:8', 'spacing-role:9']);
+  assert.deepEqual(hits('app/page.tsx', tsx), ['spacing-role:1', 'spacing-role:2', 'spacing-role:3', 'spacing-role:4', 'spacing-role:5', 'spacing-role:6', 'spacing-role:7', 'spacing-role:8', 'spacing-role:9', 'spacing-role:10']);
+  // A class string chosen inside a template's interpolation is read too.
+  assert.deepEqual(hits('app/page.tsx', 'const c = `grid ${open ? "gap-5" : "gap-2"}`'), ['spacing-role:1']);
   const [finding] = check([{ file: 'app/page.tsx', text: '<div className="grid gap-8 md:gap-12" />' }]);
   assert.equal(finding.cite, 'ban 33');
   assert.match(finding.message, /`md:gap-12` is 48px/);
@@ -202,6 +206,24 @@ test('spacing-role leaves the roles, alignment, geometry and the primitive folde
     '// mt-5 in a comment',
   ].join('\n');
   assert.deepEqual(hits('app/page.tsx', tsx), []);
+  // Stacks under 8px: 2px and 6px, in a grid, a column, space-y and on text (Kaleb, 2026-10-26).
+  const stacks = [
+    '<div className="space-y-1.5">',
+    '<div className="grid gap-1.5"><label /><input /></div>',
+    '<div className="flex flex-col gap-0.5">',
+    '<div className="space-y-0.5 gap-y-0.5">',
+    '<p className="text-xs text-muted-foreground mt-0.5 mb-1.5">Meta</p>',
+    '<div className="rounded-lg bg-[var(--muted)] p-2 mt-0.5"><Icon /></div>',
+  ].join('\n');
+  assert.deepEqual(hits('app/page.tsx', stacks), []);
+  // Review M4: copy, a URL and an arbitrary value are not class strings, whatever they hold.
+  const copy = [
+    'const msg = "Commande m-5 prête"',
+    'const src = "https://cdn.example.com/m-5/a.png"',
+    '<div className="bg-[url(/img/m-5/a.png)] grid" />',
+    "const label = 'Step mt-5 of 6'",
+  ].join('\n');
+  assert.deepEqual(hits('app/page.tsx', copy), []);
   assert.deepEqual(hits('components/ui/dialog.tsx', '<div className="grid gap-5 mt-12" />'), []);
   assert.deepEqual(hits('registry/new-york/ui/x.tsx', '<div className="grid gap-5" />'), []);
   assert.deepEqual(hits('app/page.tsx', '<div className="grid gap-5" /> {/* design-ok: matches the print sheet */}'), []);

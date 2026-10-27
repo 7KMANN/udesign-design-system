@@ -284,7 +284,7 @@ Controls and body text must remain readable without horizontal zoom at 375px.
 
 ## Layout and responsive behavior
 
-Space blocks with the spacing roles, `--space-1` to `--space-8`: 4, 8, 12, 16, 24 and 32px, Tailwind's `1`, `2`, `3`, `4`, `6` and `8`. A label and its control, and a title and its description, sit `--space-2` apart; a heading and what it heads, and the blocks of a section, `--space-4`; `PageSection` spaces the sections. A value between the roles, such as 20px or 48px, is ban 33 at every width (`md:gap-12` too), and so is a stack spaced 2px or 6px. A negative margin aligns an edge, and a 2px margin that sets an icon on the first line of text aligns it: neither is spacing. `NEEDS-APPROVAL D-50`
+Space blocks with the spacing roles, `--space-1` to `--space-8`: 4, 8, 12, 16, 24 and 32px, Tailwind's `1`, `2`, `3`, `4`, `6` and `8`. A label and its control, and a title and its description, sit `--space-2` apart; a heading and what it heads, and the blocks of a section, `--space-4`; `PageSection` spaces the sections. From 8px up, a value between the roles, such as 10px, 20px or 48px, is ban 33 at every width (`md:gap-12` too). Under 8px a dense stack may keep a half step, 2px or 6px, such as a line of meta under its title in `operations`, as a row does beside an icon. A negative margin aligns an edge, and a 2px margin that sets an icon on the first line of text aligns it: neither is spacing. `APPROVED 2026-10-26 D-50`
 
 `PageSection` pads each edge by `clamp(--space-8, 8vw, 2 × --space-8)`, so two full sections meet at up to 128px on a desktop. A short section that leads into the next, such as a page's head (its title, a greeting, one line) before its first band, meets it at `--space-8` on each side, 64px in all at every width: `compact="bottom"` on the head and `compact="top"` on the section after it, or `ud-page-section-compact-bottom` and `ud-page-section-compact-top`. A section that holds a full block of content keeps the full padding on both edges. `NEEDS-APPROVAL D-56`
 
@@ -557,9 +557,9 @@ From GlobalVision's UI polish sweep, where 149 of 168 defects were valid compone
 31. A card stretched to a taller neighbour's height, leaving a band under its content (see "Card grids").
 32. A scroll region sized by `flex-1` with no definite height above it. It never scrolls and spills over what follows. Every flex ancestor up to a fixed or `svh` height takes `min-h-0`.
 
-### Added in v3.3.0 `NEEDS-APPROVAL D-50`
+### Added in v3.3.0 `APPROVED 2026-10-26 D-50`
 
-33. Spacing off the roles (see "Layout and responsive behavior"): a gap, a stack's `space-*` or a margin of a value between the spacing roles, such as `gap-5` (20px), `md:gap-12` (48px), or a stack spaced 2px or 6px (`space-y-0.5`, `gap-1.5` in a grid). Geometry is not spacing: a control's padding, an icon's gap beside its label, a negative margin, a margin that aligns an icon.
+33. Spacing off the roles (see "Layout and responsive behavior"), from 8px up: a gap, a stack's `space-*` or a margin of a value between the spacing roles, such as `gap-2.5` (10px), `gap-5` (20px) or `md:gap-12` (48px). Under 8px a stack's half step, 2px or 6px (`space-y-0.5`, `gap-1.5` in a grid), is not a finding. Geometry is not spacing: a control's padding, an icon's gap beside its label, a negative margin, a margin that aligns an icon.
 
 ## Known limits
 
