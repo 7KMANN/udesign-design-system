@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-The UDesign logo, as one component for every screen. Proposed in `docs/v2/DECISIONS.md` round 21 (D-62), which Kaleb has not approved: the rule it adds to `DESIGN.md` carries `NEEDS-APPROVAL`.
+The UDesign logo, as one component for every screen. Decided in `docs/v2/DECISIONS.md` round 21 (D-62). Kaleb approved it on 2026-10-27, with the name in ink and not the logo's tan: the rule it adds to `DESIGN.md` carries `APPROVED 2026-10-27`.
 
 ### Visible on upgrade
 
@@ -10,7 +10,7 @@ The UDesign logo, as one component for every screen. Proposed in `docs/v2/DECISI
 
 ### Additive
 
-- **`Lockup`** (registry `lockup`, in `core`; proposed, D-62): the official logo as one SVG, the tile in the brand colour with black bars, the name outlined and filled with `currentColor`. It sizes by height (`h-8` by default), is an image named "UDesign" (`title=""` hides it), and `variant="mark"` is the tile alone.
+- **`Lockup`** (registry `lockup`, in `core`; D-62): the official logo as one SVG, the tile in the brand colour with black bars, the name outlined and filled with `currentColor`. It sizes by height (`h-8` by default), is an image named "UDesign" (`title=""` hides it), and `variant="mark"` is the tile alone.
 - **`ud-lockup`** in `dist/tokens.css` and `dist/tokens-functional.css`: the static twin, 2rem high; the markup is in `examples/static-catalog.html`.
 - **Tests.** In jsdom: the lockup's role and name, `title=""`, the mark's lack of the name, the height from `className`, axe. In Chromium: the reference screen finds the logo by its role and name.
 

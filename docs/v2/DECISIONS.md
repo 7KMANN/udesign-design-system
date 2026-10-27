@@ -1543,7 +1543,7 @@ UDesign Pages' header drew a square "U" tile beside the typed name (`.ud-lock`);
 the logo as an image. Kaleb supplied the master, `UDesignText.svg`
 (`_UDESIGNS_ELEMENTS\ASSETS\LOGOS\WithText`). Status: open.
 
-### D-62 · The lockup is the logo · `NEEDS-APPROVAL` Kaleb · amends D-30 and D-52
+### D-62 · The lockup is the logo · `APPROVED` Kaleb, 2026-10-27 · amends D-30 and D-52
 
 **Question:** D-30 kept the header lockup with each consumer because no component could hold a static
 class in lockstep, and D-52 kept its markup the consumer's. Every consumer then typed its own: a
@@ -1560,10 +1560,10 @@ static markup is the same SVG, documented in `css/components.css` and shown in
 `examples/static-catalog.html`. **Rejected:** a typed name in Montserrat (what each consumer drew
 by hand), and an `<img>` of the PNG, which cannot take the text colour and is 150 KB to draw 32 px.
 
-**For Kaleb to rule on:** the official file draws the name in the tan of the tile (`#c79f6b`). On a
+**Ruled (Kaleb, 2026-10-27: "Yes perfect", on seeing the name in ink and in tan side by side):** the official file draws the name in the tan of the tile (`#c79f6b`). On a
 light page that is 2.4:1 against white, under the 3:1 a large graphic needs and well under the 4.5:1 of
 text, and the name is what tells a visitor whose page it is. The proposal fills the name with
 `currentColor`: the ink on light pages, the light text on dark ones, and the tile stays the logo's own
-colour. If the tan name is to stay, say so, and `Lockup` takes a `tone` that draws it only on a dark
-surface, where it is 7:1.
+colour. The ink name stands. A `tone` that draws the tan name only on a dark surface, where it is 7:1, was
+the alternative and is not built.
 
