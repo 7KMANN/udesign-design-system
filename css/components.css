@@ -348,8 +348,89 @@ main:has(> :last-child > .ud-page-section-band:last-child) + .ud-contact-footer 
   padding: var(--space-4) var(--space-4) var(--space-6);
 }
 .ud-gallery-main .swiper-slide img { width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+/* A photo with a background of its own fills the square, edge to edge, and so does its thumbnail: in the
+   card's margin it would sit as a box. Its object-position, inline, says what it keeps when cropped. */
+.ud-gallery-main .swiper-slide[data-fit="cover"] { padding: 0; }
+.ud-gallery-main .swiper-slide[data-fit="cover"] img { object-fit: cover; }
 /* The dots only report the position: swiping, the arrows, the keys and the thumbnails move it. */
 .ud-gallery-main .swiper-pagination { pointer-events: none; }
+/* Over a covered photo the dots take the colour that reads on what lies under them, whatever the theme:
+   watchTone in gallery-core.ts writes data-tone, "dark" for white dots, "light" for ink ones. */
+.ud-gallery-main[data-tone="dark"] { --swiper-pagination-color: var(--on-dark-photo); --swiper-pagination-bullet-inactive-color: var(--on-dark-photo); }
+.ud-gallery-main[data-tone="light"] { --swiper-pagination-color: var(--on-light-photo); --swiper-pagination-bullet-inactive-color: var(--on-light-photo); }
+/* A covered photo can be seen whole (showWhole in gallery-core.ts): a quiet button in the square's top corner,
+   a small disc of the card over the photo in a touch target, and its photo as it is, in a modal dialog with
+   nothing around it but the backdrop and a button to close. */
+.ud-gallery-main .ud-gallery-whole {
+  position: absolute;
+  z-index: 10;
+  top: var(--space-1);
+  right: var(--space-1);
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: var(--motion-duration-instant) var(--motion-easing-standard);
+  transition-property: transform;
+}
+.ud-gallery-main .ud-gallery-whole[hidden] { display: none; }
+.ud-gallery-main .ud-gallery-whole::before {
+  content: "";
+  position: absolute;
+  inset: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--card);
+  opacity: 0.8;
+  transition: opacity var(--motion-duration-fast) var(--motion-easing-standard);
+}
+.ud-gallery-main .ud-gallery-whole:hover::before { opacity: 1; }
+.ud-gallery-main .ud-gallery-whole:active { transform: scale(var(--motion-press-scale)); }
+.ud-gallery-main .ud-gallery-whole:active::before { opacity: 1; background: var(--interactive-pressed); }
+.ud-gallery-main .ud-gallery-whole:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: -2px; border-radius: var(--radius-pill); }
+.ud-gallery-main .ud-gallery-whole svg { position: relative; width: 0.875rem; height: 0.875rem; }
+.ud-gallery-view {
+  box-sizing: border-box;
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  overflow: hidden;
+}
+.ud-gallery-view::backdrop { background: var(--backdrop); opacity: 0.9; }
+.ud-gallery-view img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+.ud-gallery-view .ud-gallery-view-close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--card);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: var(--motion-duration-instant) var(--motion-easing-standard);
+  transition-property: transform, background-color, border-color;
+}
+.ud-gallery-view .ud-gallery-view-close:hover { border-color: var(--border-strong); background: var(--interactive-hover); }
+.ud-gallery-view .ud-gallery-view-close:active { transform: scale(var(--motion-press-scale)); background: var(--interactive-pressed); }
+.ud-gallery-view .ud-gallery-view-close:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: 2px; }
+.ud-gallery-view .ud-gallery-view-close svg { width: 1rem; height: 1rem; }
 .ud-gallery .swiper-button-prev,
 .ud-gallery .swiper-button-next {
   box-sizing: border-box;
@@ -407,6 +488,7 @@ main:has(> :last-child > .ud-page-section-band:last-child) + .ud-contact-footer 
   transition-property: transform, border-color, background-color;
 }
 .ud-gallery-thumbs > .ud-gallery-thumb img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.ud-gallery-thumbs > .ud-gallery-thumb[data-fit="cover"] img { object-fit: cover; }
 .ud-gallery-thumbs > .ud-gallery-thumb:hover { border-color: var(--border-strong); }
 .ud-gallery-thumbs > .ud-gallery-thumb:active { transform: scale(var(--motion-press-scale)); background: var(--interactive-pressed); }
 .ud-gallery-thumbs > .ud-gallery-thumb:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: 2px; }
