@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import { execFileSync } from "node:child_process"
 import { readFileSync } from "node:fs"
 import test from "node:test"
 
@@ -95,8 +96,25 @@ test("verifies the current tag contains the current package version", () => {
 test("README install pins match the package version", () => {
   const pkg = JSON.parse(readFileSync("package.json", "utf8"))
   const pins = readmePins(readFileSync("README.md", "utf8"))
-  assert.ok(pins.length >= 5, `expected the five install pins, found ${pins.length}`)
+  assert.ok(pins.length >= 4, `expected the four install pins, found ${pins.length}`)
   assert.deepEqual([...new Set(pins)], [pkg.version], "README.md installs a version other than the one in package.json")
+})
+
+// A version with no tag yet is a release being prepared: the tag waits for the merge, and a fix that
+// lands before it must leave the snapshot equal to the build the tag will carry.
+test("an untagged version's history snapshot is this build's tokens", (t) => {
+  const { version } = JSON.parse(readFileSync("package.json", "utf8"))
+  if (execFileSync("git", ["tag", "--list", `v${version}`], { encoding: "utf8" }).trim()) {
+    t.skip(`v${version} is tagged: its snapshot is history`)
+    return
+  }
+  for (const file of ["tokens.css", "tokens-functional.css"]) {
+    assert.equal(
+      readFileSync(`history/v${version}/${file}`, "utf8"),
+      readFileSync(`dist/${file}`, "utf8"),
+      `history/v${version}/${file} is not dist/${file}; copy the build over it`,
+    )
+  }
 })
 
 test("pinReadme rewrites every pin and nothing else", () => {

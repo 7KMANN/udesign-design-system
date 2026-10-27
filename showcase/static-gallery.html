@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!-- The plain-JS gallery as a page without a build uses it, for tests/e2e/components.spec.ts: the tokens
+     linked before Swiper's stylesheet, as UDesign Pages links them, then Swiper's bundle and dist/ud-gallery.js.
+     One gallery is in the page at load; the other is built at runtime with udGallery.markup. -->
+<html lang="fr-CA" data-design="presentation" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galerie statique</title>
+  <link rel="stylesheet" href="/dist/tokens.css">
+  <link rel="stylesheet" href="/vendor/swiper/swiper-bundle.min.css">
+  <script src="/vendor/swiper/swiper-bundle.min.js" defer></script>
+  <script src="/dist/ud-gallery.js" defer></script>
+</head>
+<body class="ud-page-canvas">
+  <main>
+    <section class="ud-page-section">
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6);">
+        <div id="first"><div class="ud-gallery" data-ud-gallery data-ud-gallery-start="1"><div class="swiper ud-gallery-main"><div class="swiper-wrapper"><div class="swiper-slide"><img src="/gallery/photo-1.svg?w=640" srcset="/gallery/photo-1.svg?w=160 160w, /gallery/photo-1.svg?w=640 640w, /gallery/photo-1.svg?w=1200 1200w" sizes="50vw" alt="Devant, T-shirt exemple, Blanc" draggable="false" loading="lazy"></div><div class="swiper-slide"><img src="/gallery/photo-2.svg?w=640" srcset="/gallery/photo-2.svg?w=160 160w, /gallery/photo-2.svg?w=640 640w, /gallery/photo-2.svg?w=1200 1200w" sizes="50vw" alt="Dos, T-shirt exemple, Blanc" draggable="false"></div><div class="swiper-slide"><img src="/gallery/photo-3.svg?w=640" srcset="/gallery/photo-3.svg?w=160 160w, /gallery/photo-3.svg?w=640 640w, /gallery/photo-3.svg?w=1200 1200w" sizes="50vw" alt="Photo 1, T-shirt exemple, Blanc" draggable="false" loading="lazy"></div></div><div class="swiper-pagination"></div><button type="button" class="swiper-button-prev"></button><button type="button" class="swiper-button-next"></button></div><div class="ud-gallery-thumbs"><button type="button" class="ud-gallery-thumb" aria-label="Devant" aria-pressed="false"><img src="/gallery/photo-1.svg?w=160" alt="" loading="lazy"></button><button type="button" class="ud-gallery-thumb" aria-label="Dos" aria-pressed="true"><img src="/gallery/photo-2.svg?w=160" alt="" loading="lazy"></button><button type="button" class="ud-gallery-thumb" aria-label="Photo 1" aria-pressed="false"><img src="/gallery/photo-3.svg?w=160" alt="" loading="lazy"></button></div></div></div>
+        <div id="second"></div>
+      </div>
+      <!-- A modal over the galleries, as a cart opens over a product page. -->
+      <button type="button" id="open-cart">Ouvrir le panier</button>
+      <dialog id="cart" aria-labelledby="cart-title">
+        <h2 id="cart-title">Panier</h2>
+        <form method="dialog"><button>Fermer</button></form>
+      </dialog>
+    </section>
+    <div style="height: 2400px;"></div>
+  </main>
+  <script>
+    // Built at runtime, as a modal would: markup, then mount.
+    addEventListener('DOMContentLoaded', () => {
+      const holder = document.getElementById('second');
+      holder.innerHTML = udGallery.markup(['/gallery/photo-4.svg', '/gallery/photo-1.svg', '/gallery/photo-3.svg'], 'Casquette exemple', 0, ['Devant', 'Côté', 'Dos']);
+      udGallery(holder.firstElementChild);
+      document.getElementById('open-cart').addEventListener('click', () => document.getElementById('cart').showModal());
+    });
+  </script>
+</body>
+</html>

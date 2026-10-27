@@ -96,6 +96,13 @@ components:
     textColor: "{colors.muted}"
     borderTop: "1px solid {colors.hairline}"
     padding: "28px 24px"
+  page-header:
+    minHeight: 44px
+    padding: "16px 16px"
+  contact-footer:
+    textColor: "{colors.muted}"
+    borderTop: "1px solid {colors.hairline}"
+    padding: "16px 16px"
   card:
     backgroundColor: "{colors.surface-card}"
     rounded: "{rounded.lg}"
@@ -244,7 +251,7 @@ Hover and pressed each differ from the page floor, from `--secondary`, and from 
 
 Disabled controls use the disabled surface and foreground roles, preserve readable labels, and expose native `disabled` or `aria-disabled` semantics. Opacity alone is not a complete disabled treatment.
 
-A select control (`SelectTrigger`, `NativeSelect`) answers hover with `--interactive-hover`, as an outline button does. A field marked `aria-invalid="true"` (`Input`, `Textarea`, `SelectTrigger`, `NativeSelect`) draws its border in `--tone-danger-foreground`, 3:1 or better against the field in every state and against every surface a field sits on; `tests/contrast.test.mjs` holds it. `FieldError` says what is wrong, so the colour is never the only signal (ban 11). `NEEDS-APPROVAL D-44`
+A select control (`SelectTrigger`, `NativeSelect`) answers hover with `--interactive-hover`, as an outline button does. A field marked `aria-invalid="true"` (`Input`, `Textarea`, `SelectTrigger`, `NativeSelect`) draws its border in `--tone-danger-foreground`, 3:1 or better against the field in every state and against every surface a field sits on; `tests/contrast.test.mjs` holds it. `FieldError` says what is wrong, so the colour is never the only signal (ban 11). `APPROVED 2026-10-26 D-44`
 
 ## Contrast and accessibility
 
@@ -271,11 +278,17 @@ Each screen has one `h1`, and heading levels never skip. A card's title is `h3` 
 
 Labels use sentence case with normal tracking. Do not turn metadata, navigation, or field labels into wide-tracked uppercase mono text. Body copy uses the semantic foreground. Muted foreground is for secondary information only after its contrast has been verified on the selected surface.
 
-Display type may scale fluidly. Controls and body text must remain readable without horizontal zoom at 375px.
+A page's title is `ud-display`, and its main heading, such as a product's name, is `ud-h1`. Both follow the screen: they read `--text-display-fluid` and `--text-h1-fluid`, which in `presentation` step down one role on a narrow screen, `clamp(var(--text-h1), 7vw, var(--text-display))` and `clamp(var(--text-h2), 5vw, var(--text-h1))`, full size from 800px. `operations`' flat scale already fits a phone, so its fluid roles are its fixed ones. A component that sizes its own title reads a fluid role, never a clamp of its own. The helper classes sit outside any cascade layer, so a size utility does not win over them; to hold one title at its fixed size, set the role on the element: `[--text-h1-fluid:var(--text-h1)]`. `APPROVED 2026-10-26 D-46`
+
+Controls and body text must remain readable without horizontal zoom at 375px.
 
 ## Layout and responsive behavior
 
-Use the shared spacing roles for component rhythm. The space scale and control height are the same in both profiles; the shells and one padding role make the difference. `PageSection` separates presentation blocks generously. In operations, `AppShell` panes butt against each other and `--surface-padding` sets 12px inside `Card`, `Dialog` and `Sheet` and above and below each table cell, while every control and table row keeps the 44px touch floor on touch. `APPROVED 2026-09-25 D-22`, `APPROVED 2026-09-26 D-27, D-28`, `APPROVED 2026-09-29 D-33` for "on touch"
+Space blocks with the spacing roles, `--space-1` to `--space-8`: 4, 8, 12, 16, 24 and 32px, Tailwind's `1`, `2`, `3`, `4`, `6` and `8`. A label and its control, and a title and its description, sit `--space-2` apart; a heading and what it heads, and the blocks of a section, `--space-4`; `PageSection` spaces the sections. From 8px up, a value between the roles, such as 10px, 20px or 48px, is ban 33 at every width (`md:gap-12` too). Under 8px a dense stack may keep a half step, 2px or 6px, such as a line of meta under its title in `operations`, as a row does beside an icon. A negative margin aligns an edge, and a 2px margin that sets an icon on the first line of text aligns it: neither is spacing. `APPROVED 2026-10-26 D-50`
+
+`PageSection` pads each edge by `clamp(--space-8, 8vw, 2 × --space-8)`, so two full sections meet at up to 128px on a desktop. A short section that leads into the next, such as a page's head (its title, a greeting, one line) before its first band, meets it at `--space-8` on each side, 64px in all at every width: `compact="bottom"` on the head and `compact="top"` on the section after it, or `ud-page-section-compact-bottom` and `ud-page-section-compact-top`. A section that holds a full block of content keeps the full padding on both edges. `APPROVED 2026-10-26 D-56`
+
+The space scale and control height are the same in both profiles; the shells and one padding role make the difference. `PageSection` separates presentation blocks generously. In operations, `AppShell` panes butt against each other and `--surface-padding` sets 12px inside `Card`, `Dialog` and `Sheet` and above and below each table cell, while every control and table row keeps the 44px touch floor on touch. `APPROVED 2026-09-25 D-22`, `APPROVED 2026-09-26 D-27, D-28`, `APPROVED 2026-09-29 D-33` for "on touch"
 
 The responsive contract includes:
 
@@ -302,7 +315,7 @@ Full-height mobile layouts use small viewport units. Validate at 375px, not only
 
 In `operations` below `md`, `AppShellSidebar` hides and the same navigation opens in a `Sheet` (`side="left"`) from a menu button first in the toolbar: one nav component rendered in both places, so they never drift. Static HTML does the same with the native `popover` attribute. Owned by `udesign-docs` [`standards/design/mobile-accessibility.md`](https://github.com/7KMANN/udesign-docs/blob/v0.9.0/standards/design/mobile-accessibility.md). `APPROVED 2026-09-29 D-36`
 
-`AppShell` and `ud-app-shell` keep the same rows at every width: the toolbar takes its own height and the panes take the rest. Below `md` the page scrolls, and a page shorter than the screen gives its spare height to the panes, never to the toolbar, with no override at the call site. `NEEDS-APPROVAL D-42`
+`AppShell` and `ud-app-shell` keep the same rows at every width: the toolbar takes its own height and the panes take the rest. Below `md` the page scrolls, and a page shorter than the screen gives its spare height to the panes, never to the toolbar, with no override at the call site. `APPROVED 2026-10-26 D-42`
 
 ### Containment
 
@@ -339,7 +352,7 @@ Easing: `standard` (ease-out, the default), `enter` (decelerate, for arrivals), 
 
 Also published: `--motion-delay-indicator` (hold before revealing a pending indicator, so a quick operation never flashes a spinner), `--motion-loop-spin` (one rotation of a busy indicator), and `--motion-press-scale` / `--motion-press-scale-subtle` (the pressed-control transform, at bare `:root` - press feedback is a floor for every application, not a gamification opt-in).
 
-A press scale eases only when the control transitions the property the scale sets. Tailwind 3 compiles `scale-*` to `transform`, Tailwind 4 to the separate `scale` property, so a transition list beside a press scale names both (`transition-[transform,scale,...]`); `transition-transform` covers both versions. A list with `transform` alone presses with a jump under Tailwind 4. `NEEDS-APPROVAL D-38`
+A press scale eases only when the control transitions the property the scale sets. Tailwind 3 compiles `scale-*` to `transform`, Tailwind 4 to the separate `scale` property, so a transition list beside a press scale names both (`transition-[transform,scale,...]`); `transition-transform` covers both versions. A list with `transform` alone presses with a jump under Tailwind 4. `APPROVED 2026-10-26 D-38`
 
 **The duration vocabulary is open; the reaction magnitude is capped.** These are two axes. A component that needs an intent the system does not publish is how a system ends up with 22 of 24 components hardcoding their own values, so a genuinely needed intent is added here. Magnitude is a separate question and does not move: **0 the minimum in-control reaction, 1 routine feedback, 2 a closed loop. Intensity 3 does not exist and is not reachable through any combination of published tokens** - no screen-level celebration, no overlay, no particle burst. `--moment-intensity-1-scale` and `--moment-intensity-2-scale` compile only inside `[data-game="on"]` (see `data-game` below); nothing larger is published. Level 0 is the *smallest* reaction, never the absence of one - a control that changes nothing on press is a defect at every level.
 
@@ -385,7 +398,13 @@ The registry `Button` has three more variants. `ghost`: **use when** several con
 
 **`status-badge`** uses one complete tone family and includes a readable label. A dot or icon may reinforce meaning, but the label carries the state.
 
+A badge holds one line, so a status in a table column or a toolbar stays whole and the table scrolls instead. Where a label can be wider than its container, such as a card on a phone, `Badge wrap` wraps it inside the container instead of running past its edge (ban 29). `APPROVED 2026-10-26 D-47`
+
+**`page-header`** (registry `PageHeader`, static `ud-page-header`) opens a `presentation` page: the lockup at left and at most one action at right, such as the way back or "Not you?", in one row at least `--touch-target-min` high, on the sections' column and gutters. The row keeps its height whoever is on the page, with or without its action, and the action never wraps. Navigation beyond one action belongs in the page, not the header. `APPROVED 2026-10-26 D-52`
+
 **`confidential-footer`** uses `{colors.canvas}`, `{colors.muted}`, and a `{colors.hairline}` top boundary. Its label remains sentence case and should only use the destructive role when the content represents a real warning.
+
+**`contact-footer`** (registry `ContactFooter`, static `ud-contact-footer`) ends a `presentation` page with the business's public contact, on the sections' column over a `{colors.hairline}` top boundary in `{colors.muted}`: its name and address, then its phone and email as links a thumb can reach. The page supplies all three; the design system holds no business data. `APPROVED 2026-10-26 D-53`
 
 **`card`** uses `{colors.surface-card}`, a `{colors.hairline}` boundary, `{rounded.lg}`, and `--surface-padding` inside (24px unset, 12px in `operations`). Runtime components use raised or card semantic roles so dark themes and the operations profile can adapt it.
 
@@ -394,22 +413,26 @@ The registry `Button` has three more variants. `ghost`: **use when** several con
 Three primitives carry the feedback floor. They are part of `core`: an application cannot meet the feedback model in [`udesign-contract.md` "Feedback"](https://github.com/7KMANN/udesign-docs/blob/v0.9.0/standards/design/udesign-contract.md) (owned by `udesign-docs`, version-independent) without them, so they are not optional extras.
 
 - **Spinner** (`spinner`) - a busy indicator for an action in flight. Under reduced motion it stops turning and stays visible, because the state has to survive the animation being removed.
-- **Skeleton** (`skeleton`) - a loading placeholder, sized to the content it replaces. A fallback of a different height causes a jump on arrival, which reads worse than the pause it replaced.
+- **Skeleton** (`skeleton`) - a loading placeholder, sized to the content it replaces. A fallback of a different height causes a jump on arrival, which reads worse than the pause it replaced. Where only phrasing content may go, inside a button, a link or a line of text, it is drawn on a span: `<Skeleton asChild><span className="inline-block ..." /></Skeleton>`. `APPROVED 2026-10-26 D-58`
 - **Pressable** (`pressable`) - a clickable card, row, or list item. Renders a real button, so Enter, Space, focus, and the accessible name come from the platform instead of from a div with an `onClick`. Uses the subtle press scale; the control scale reads as a layout bug across a full-width surface.
+
+Nothing empty takes room. An idle live region, a `role="status"` or `role="alert"` waiting for its words, stays in the page so a screen reader hears them when they arrive, but it is never a child of a container with a gap, where even empty it takes one. Render it after the stack, or space the blocks that render with their own margins, and put the margin on its words, not on the region. The same holds for any element that can be empty, such as a count with nothing to count: render nothing. `APPROVED 2026-10-26 D-51`
 
 `Button` carries the same floor directly: `pending` disables it, reports `aria-busy`, and swaps in a spinner while preserving its width. Every interactive primitive here has a pressed state - a control that changes nothing on press is the single most common failure in machine-written UI.
 
-A pending `Button` keeps its accessible name: its label turns transparent, never `visibility: hidden`, which would remove it from the accessibility tree. A screen reader hears the action and that it is busy, and a pending button needs no `aria-label` of its own. `NEEDS-APPROVAL D-39`
+A pending `Button` keeps its accessible name: its label turns transparent, never `visibility: hidden`, which would remove it from the accessibility tree. A screen reader hears the action and that it is busy, and a pending button needs no `aria-label` of its own. `APPROVED 2026-10-26 D-39`
+
+An `Alert` is part of the page: a notice shown with the page, such as a closed shop or a product's note, is met in reading order and announces nothing. Only an alert whose appearance is the news is a live region: `live` (`role="status"`) for a result, such as an order sent, and `live="assertive"` (`role="alert"`) for an error that stops the work. `APPROVED 2026-10-26 D-48`
 
 ### Dialogs and sheets
 
-`DialogContent` and `SheetContent` put a close button in the top-right corner. While the dialog's action runs, `closeDisabled` disables it. `hideClose` removes it, for a dialog whose footer already offers the way out, such as a Cancel button. Neither prop touches Escape or a press outside: both still call `onOpenChange(false)`, and the caller decides there, ignoring the close while its action runs. `NEEDS-APPROVAL D-40`
+`DialogContent` and `SheetContent` put a close button in the top-right corner. While the dialog's action runs, `closeDisabled` disables it. `hideClose` removes it, for a dialog whose footer already offers the way out, such as a Cancel button. Neither prop touches Escape or a press outside: both still call `onOpenChange(false)`, and the caller decides there, ignoring the close while its action runs. `APPROVED 2026-10-26 D-40`
 
-Only the title row keeps clear of the close button. `DialogTitle` and `SheetTitle` reserve its width, and its height where the padding is tight (operations), so the description and anything placed in it run the full width, out to the footer's edge. Without a close button (`hideClose`) the title reserves nothing. `NEEDS-APPROVAL D-41`
+Only the title row keeps clear of the close button. `DialogTitle` and `SheetTitle` reserve its width, and its height where the padding is tight (operations), so the description and anything placed in it run the full width, out to the footer's edge. Without a close button (`hideClose`) the title reserves nothing. `APPROVED 2026-10-26 D-41`
 
 ### Choosing a select
 
-`Select` (`select`) is the Radix listbox, drawn in the page. `NativeSelect` (`native-select`) is the platform's own `<select>`, dressed as `SelectTrigger`: the same tokens, height, radius, focus ring, hover, press, disabled and invalid states, and the same chevron. Ban 9 allows it because it lives in `components/ui`; application code uses it, never a bare `<select>`. `NEEDS-APPROVAL D-43`
+`Select` (`select`) is the Radix listbox, drawn in the page. `NativeSelect` (`native-select`) is the platform's own `<select>`, dressed as `SelectTrigger`: the same tokens, height, radius, focus ring, hover, press, disabled and invalid states, and the same chevron. Ban 9 allows it because it lives in `components/ui`; application code uses it, never a bare `<select>`. `APPROVED 2026-10-26 D-43`
 
 Choose `NativeSelect` for:
 
@@ -417,15 +440,39 @@ Choose `NativeSelect` for:
 - A dense grid of many selects, such as one per table row. An open Radix list sets `pointer-events: none` and a scroll lock on `<body>`, so every choice makes the browser restyle every element of the page, and the cost grows with the page. A native select changes nothing on `<body>`.
 - Phones, where the system picker serves better than a list drawn in the page.
 
-Choose `Select` when an option needs more than a line of text, such as an icon or a second line, or when the list must look the same on every platform. Below `md`, `NativeSelect` text is 16px, as `Input`'s is: iOS zooms the page into a smaller field on focus. `NEEDS-APPROVAL D-43`
+Choose `Select` when an option needs more than a line of text, such as an icon or a second line, or when the list must look the same on every platform. Below `md`, `NativeSelect` text is 16px, as `Input`'s is: iOS zooms the page into a smaller field on focus. `APPROVED 2026-10-26 D-43`
+
+### Choosing one of a few
+
+`ChoiceGroup` (`choice-group`) shows one choice as buttons, for a few short options read at a glance: a garment's sizes, a product's options, its colours as swatches (`variant="swatch"`). A long list, past a dozen or so, is a select. `APPROVED 2026-10-26 D-49`
+
+- It is a radio group with one Tab stop: the chosen choice, or the first that can be chosen. The arrow keys move and choose, Home and End jump, and the group stops the keys it handles, so a listener on the page, such as a gallery's, never sees them.
+- Each button holds its label alone, centred, `--control-height` high. What the buttons do not carry, such as a surcharge or the sizes a colour cannot be made in, is the note under the group, which the group points at with `aria-describedby`.
+- A choice that cannot be had is disabled, dashed and struck through, and says so in words: `unavailableLabel` follows its label for a screen reader.
+- A disabled group, such as one whose choice is saving, keeps its choice and its chosen look; the other choices take the disabled surface. With `name` it posts as a native radio group: the chosen value, or nothing while nothing is chosen or the group is disabled.
+- Its columns are explicit: one row when every choice gets 4rem; otherwise rows of one count, the last at most one shorter, never one choice alone on a row, in the fewest rows, unless rows of one count would take two rows more than filling the rows: then the rows fill, the last never alone. A cell never goes under the touch target. Container queries in `dist/tokens.css` lay them out, so the group needs the stylesheet of its own release.
+- It takes the width of its parent, never of its choices, and wraps there by the column rule, on a phone too: in a grid, a list item, a `fieldset` or a dialog it is never wider than its parent. Where the parent's width comes from its content (a table cell, an inline-block, `width: fit-content`, a flex or grid item sized by its content, an absolutely positioned box), the group asks for three touch targets, 9.25rem, or one row of its choices where that is narrower, and lays out its rows in that width.
+
+### Showing photos
+
+One gallery shows a product's photos everywhere: the registry `Gallery` (`gallery`) in React, and `dist/ud-gallery.js` with the same markup on a page without a build. Both run Swiper 14.3.0 with one behaviour (`gallery-core.ts`) and wear one skin, `ud-gallery` in `dist/tokens.css`; Swiper's own stylesheet loads beside the tokens, before or after them. Build no other carousel or thumbnail swapper. `APPROVED 2026-10-26 D-54`
+
+- Every photo comes in copies with their widths (`srcSet`, such as 160, 640 and 1200px) for the slide's width (`sizes`), with its own alt text ("Front, Heavy Tee, White"), and its thumbnail is named by its view ("Front", "Back"). The opening photo can be fetched first (`priority`).
+- Nothing moves while it opens: the square slide and the thumbnail row hold their room before Swiper starts, and another set of photos, such as another colour's, opens in the same box on its first photo.
+- The photo moves on `--motion-duration-standard`, at once under reduced motion. The dots report the position; a swipe, the arrows on a mouse, the thumbnails and the arrow keys move it.
+- The arrow keys move only the gallery that has the focus, else the one under the pointer, never every gallery on screen, and Page Up and Page Down scroll the page. A widget that handles the arrows itself, such as `ChoiceGroup`, stops them before a gallery sees them. `APPROVED 2026-10-26 D-55`
+
+### Listing specifications
+
+Labels and their values read at a glance, such as a product's specifications, are a `DescriptionList` (`description-list`, static `ud-description-list`): each label semibold beside its muted value, on a grid as wide as the longest label and the rest, `--space-3` between rows and `--space-4` between the columns, within 72 characters. A long value wraps inside its column. A line without a label is a list, not a description. `APPROVED 2026-10-26 D-57`
 
 ## Registry components
 
-The source registry includes these base components: button, badge, alert, card, input, textarea, select, native-select, checkbox, switch, slider, field, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
+The source registry includes these base components: button, badge, alert, card, input, textarea, select, native-select, choice-group, checkbox, switch, slider, field, description-list, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
 
-The application patterns are icon-button, status-badge, metric-card, empty-state, and responsive-collection. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included.
+The application patterns are icon-button, status-badge, metric-card, empty-state, responsive-collection, and gallery. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included.
 
-The motion primitives - progress-ring, rolling-consistency-chip, and moment - are deliberately excluded from `core`. See "Motion primitives" above; `moment` in particular is gamification-exclusive and should only land in a repository that has declared `data-game="on"`.
+The motion primitives - progress-ring, rolling-consistency-chip, and moment - are deliberately excluded from `core`, and so is gallery, which adds swiper to an application's dependencies. See "Motion primitives" above; `moment` in particular is gamification-exclusive and should only land in a repository that has declared `data-game="on"`. `APPROVED 2026-10-26 D-54` for the gallery
 
 Registry components must:
 
@@ -439,7 +486,7 @@ Registry components must:
 
 Generated registry JSON is not an authoring surface.
 
-`dist/tokens.css` registers `--removed-body-scroll-bar-size`, which the scroll lock of an open `Select`, `Dialog` or `Sheet` sets on `<body>`, as a property that does not inherit. Setting and clearing it then restyles `<body>` alone instead of every element of the page. Read it on `<body>` only: below `<body>` it is `0px`. `NEEDS-APPROVAL D-45`
+`dist/tokens.css` registers `--removed-body-scroll-bar-size`, which the scroll lock of an open `Select`, `Dialog` or `Sheet` sets on `<body>`, as a property that does not inherit. Setting and clearing it then restyles `<body>` alone instead of every element of the page. Read it on `<body>` only: below `<body>` it is `0px`. `APPROVED 2026-10-26 D-45`
 
 ## Showcase acceptance
 
@@ -509,6 +556,10 @@ From GlobalVision's UI polish sweep, where 149 of 168 defects were valid compone
 30. A toolbar that wraps from `md` up: `flex-wrap` on `AppShellToolbar` without a `max-md:` prefix. It holds one row; what does not fit moves into a menu.
 31. A card stretched to a taller neighbour's height, leaving a band under its content (see "Card grids").
 32. A scroll region sized by `flex-1` with no definite height above it. It never scrolls and spills over what follows. Every flex ancestor up to a fixed or `svh` height takes `min-h-0`.
+
+### Added in v3.3.0 `APPROVED 2026-10-26 D-50`
+
+33. Spacing off the roles (see "Layout and responsive behavior"), from 8px up: a gap, a stack's `space-*` or a margin of a value between the spacing roles, such as `gap-2.5` (10px), `gap-5` (20px) or `md:gap-12` (48px). Under 8px a stack's half step, 2px or 6px (`space-y-0.5`, `gap-1.5` in a grid), is not a finding. Geometry is not spacing: a control's padding, an icon's gap beside its label, a negative margin, a margin that aligns an icon.
 
 ## Known limits
 

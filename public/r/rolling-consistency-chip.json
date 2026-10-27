@@ -6,7 +6,7 @@
   "description": "Trailing-window consistency count (e.g. '4 of the last 7'). Replaces the streak concept entirely - tone never varies with the count.",
   "registryDependencies": [
     "utils",
-    "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.1/public/r/badge.json"
+    "@udesign/badge"
   ],
   "files": [
     {

@@ -64,6 +64,12 @@
     "data":    { "$value": { "fontFamily": "{font.family.data}", "fontWeight": "{font.weight.regular}", "fontSize": { "value": 0.8125, "unit": "rem" }, "lineHeight": 1.4, "letterSpacing": { "value": 0, "unit": "em" } } }
   },
 
+  "fluid": {
+    "$description": "The flat scale (D-27) already fits a phone: operations' titles keep their fixed sizes (D-46).",
+    "display": { "$type": "string", "$value": "var(--text-display)" },
+    "h1":      { "$type": "string", "$value": "var(--text-h1)" }
+  },
+
   "radius": {
     "$type": "dimension",
     "$description": "Square corners: operations draws hierarchy from structure, not shape (D-19). Pill stays round.",

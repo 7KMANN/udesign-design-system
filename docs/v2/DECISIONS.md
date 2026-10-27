@@ -974,11 +974,12 @@ marker keep their shades. **Rejected:** ink text with the accent moved to tiles,
 
 **Evidence:** issue #1, "Registry findings from building Boutique v1 (v3.1.2)". Each finding was
 reproduced here before it was fixed: in the registry source, in Chromium on the showcase and the
-reference screens, and for the Select cost in a performance trace. None of this round is approved.
-Each entry waits for Kaleb, and the `DESIGN.md` sentence it adds or changes carries
-`NEEDS-APPROVAL` and the entry's number until he answers. Shipped as release candidate v3.2.0.
+reference screens, and for the Select cost in a performance trace. Shipped as release candidate
+v3.2.0 with every entry open. Kaleb approved all eight on 2026-10-26, with round 19 ("Approve,
+alerts quiet"), and the `DESIGN.md` sentence each adds or changes carries `APPROVED 2026-10-26`
+and the entry's number.
 
-### D-38 · A press scale transitions `transform` and `scale` · `NEEDS-APPROVAL`
+### D-38 · A press scale transitions `transform` and `scale` · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** the nine registry controls that press with `active:scale-[var(--motion-press-scale)]`
 transitioned `transform` only. Tailwind 4 compiles `scale-*` to the separate `scale` property, so
@@ -992,7 +993,7 @@ fails on a registry or example class string whose press scale has no transition 
 `tests/component-css.test.mjs` holds the static classes to the same rule. **Not proposed:** a
 checker rule for consumer code. A finding must cite a written ban, and this one has none yet.
 
-### D-39 · A pending `Button` keeps its accessible name · `NEEDS-APPROVAL`
+### D-39 · A pending `Button` keeps its accessible name · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** with `pending`, the label sat in a `visibility: hidden` span to hold the button's
 width. Visibility removes it from the accessibility tree, so a waiting button had no name at all,
@@ -1004,7 +1005,7 @@ and that a pending button needs no `aria-label`. The component test compiles the
 button uses with Tailwind and applies them in jsdom, because jsdom alone applies no Tailwind and
 the old markup would have passed; the showcase test asserts the name in Chromium.
 
-### D-40 · A dialog or sheet can hold or drop its close button · `NEEDS-APPROVAL`
+### D-40 · A dialog or sheet can hold or drop its close button · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** while a dialog's action runs (an order being sent, a launch), its close button must
 not close it. `onOpenChange` could ignore the close, but the button still looked and focused as
@@ -1018,7 +1019,7 @@ calls `onOpenChange(false)`, and the caller decides there. That keeps one owner 
 now", which a prop that also swallowed Escape would split in two. `DESIGN.md` "Dialogs and sheets"
 documents both, and the showcase's held dialog shows the pattern.
 
-### D-41 · The close button's room is the title row's, not the header's · `NEEDS-APPROVAL` · amends Δ-25
+### D-41 · The close button's room is the title row's, not the header's · `APPROVED` Kaleb, 2026-10-26 · amends Δ-25
 
 **Question:** Δ-25 gave the whole header `pr-10` so a long title never runs under the close
 button. The padding also narrowed the description, so a warning block placed in it stopped 40px
@@ -1034,7 +1035,7 @@ tells it through a React context, not a class. Measured in Chromium after the ch
 and the footer share a right edge, and the description clears the icon by 4px or more, in both
 profiles at both widths (`tests/e2e/showcase.spec.ts`).
 
-### D-42 · The shell's rows are explicit at every width · `NEEDS-APPROVAL`
+### D-42 · The shell's rows are explicit at every width · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** below `md`, `AppShell` set no rows, so its two children (toolbar and panes) sat in
 implicit `auto` rows that split a short page's spare height. Measured at 375x812 on the operations
@@ -1048,7 +1049,7 @@ definite height the `1fr` row sizes to its content. Two panes stacked on a phone
 height between them; a single pane takes all of it. The Playwright layout audit measures both
 shells on a short phone page.
 
-### D-43 · `native-select` joins the registry, with a rule for choosing it · `NEEDS-APPROVAL`
+### D-43 · `native-select` joins the registry, with a rule for choosing it · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** an open Radix `Select` sets `pointer-events: none` on `<body>` (so a press meant to
 close the list cannot reach what is under it) and `react-remove-scroll-bar` locks the page scroll
@@ -1071,7 +1072,7 @@ selects, and phones; `Select` when an option needs more than a line of text or t
 the same everywhere. **Not proposed:** a static `ud-` class, since no static page has needed a
 select yet (`FUTURE-WORK.md`, classes on evidence only).
 
-### D-44 · Select controls hover, and every field shows when it is invalid · `NEEDS-APPROVAL`
+### D-44 · Select controls hover, and every field shows when it is invalid · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** `NativeSelect` was to share `SelectTrigger`'s hover and invalid states, and
 `SelectTrigger` had neither. No field had an invalid state either: the showcase's invalid name
@@ -1085,7 +1086,7 @@ field in every state and every surface a field sits on, in all four profile and 
 dark pressed surface, so neither qualifies. `tests/contrast.test.mjs` holds 3:1. `FieldError` keeps carrying the reason
 (ban 11). The variant is `aria-[invalid=true]:`, which Tailwind 3 and 4 both compile.
 
-### D-45 · `dist/tokens.css` registers the scroll lock's property as non-inherited · `NEEDS-APPROVAL`
+### D-45 · `dist/tokens.css` registers the scroll lock's property as non-inherited · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** while a `Select`, `Dialog` or `Sheet` is open, `react-remove-scroll-bar` sets
 `--removed-body-scroll-bar-size` on `body[data-scroll-locked]`. An unregistered custom property
@@ -1113,3 +1114,317 @@ compiled files, with `initial-value: 0px` so that a read on `<body>` outside a l
 than nothing. The cost is a changed meaning for any application CSS that reads the property below
 `<body>` (a fixed header padding itself by the gap): it gets 0px. It must read it on `<body>`, or use
 the library's helper classes. Browsers without `@property` ignore the rule and behave as before.
+
+---
+
+## Round 19 - 2026-10-26 (Boutique's appearance findings)
+
+**Evidence:** the "Design-system changes" list in Boutique's appearance report (its participant
+pages' standard, `docs/appearance.md` on Boutique's `feat/appearance-standard`), two items its builder
+added to that list after the brief (D-57, D-58), and one from Kaleb directly (D-56). Each item was read
+in Boutique's bridge and in UDesign Pages where it began, then reproduced here before it changed.
+Kaleb approved all thirteen on 2026-10-26, "Approve, alerts quiet", answering D-48's default and
+D-50's open item in the same words; the `DESIGN.md` sentence each adds or changes carries
+`APPROVED 2026-10-26` and the entry's number. Shipped as release candidate v3.3.0. French typography, the report's tenth item, belongs to `udesign-docs` and is not
+here.
+
+### D-46 · A title follows the screen: fluid title roles · `APPROVED` Kaleb, 2026-10-26
+
+**Question:** `.ud-display` and `.ud-h1` set literal sizes (56px and 40px in `presentation`) in
+`dist/tokens.css`, outside any cascade layer, so a Tailwind 4 size utility on the same element never
+won. UDesign Pages sizes its page titles and product names with a clamp in each page's own CSS (44
+pages: `clamp(var(--text-h1), 7vw, var(--text-display))` and
+`clamp(var(--text-h2), 5vw, var(--text-h1))`), and Boutique copied both inline (`DISPLAY_SIZE`,
+`NAME_SIZE`). At 375px a 56px title takes three lines for a short French name.
+
+**Proposed:** two roles, `--text-display-fluid` and `--text-h1-fluid`, declared in every block that
+declares the scale. In `presentation` they are UDesign Pages' clamps: 40px and 28px on a phone,
+56px and 40px from 800px. `operations`' flat scale (D-27) already fits a phone, so its fluid roles
+are its fixed ones and GlobalVision sees no change. The `.ud-display` and `.ud-h1` helpers read
+them, so a title needs no size of its own, and a consumer who wants one fixed title sets the role on
+the element (`[--text-h1-fluid:var(--text-h1)]`), which beats inheritance whatever the layer. The
+fixed roles keep their values and meaning. **Visible:** every `presentation` page that uses
+`ud-display` or `ud-h1` without its own size gets the smaller title below 800px: in UDesign Pages
+about 1,500 product pages whose `ud-h1` has no clamp, once they sync. **Rejected:** tokens only,
+which leaves the inline size in place since the helper still wins; making `--text-display` itself
+fluid, which would change a role's meaning and break the type-shape contract test.
+
+### D-47 · A badge wraps inside its container when asked · `APPROVED` Kaleb, 2026-10-26
+
+**Question:** `Badge` is `whitespace-nowrap`, so a long label in a narrow card ran past the card's
+edge (ban 29), as on Boutique's product tiles at 375px. Boutique wraps it with its own classes
+(`BADGE_WRAPS`). Wrap by default, or on request?
+
+**Proposed:** on request, `wrap`: the label wraps inside its container (`max-w-full
+whitespace-normal`, a long word breaks rather than overflows) and its lines get room
+(`leading-tight`). One line stays the default because the consumers built on it: GlobalVision puts
+about 140 badges directly in table cells, where a one-line status keeps its column wide and the
+table scrolls; wrapping by default would let an automatic table layout squeeze those columns and
+break statuses in two the day GlobalVision re-adds the component. A guard in
+`scripts/test-registry.mjs` keeps one line the default. **Rejected:** wrapping by default, for that
+reason; a static `ud-badge` twin, since no static page has a badge in a narrow card yet.
+
+### D-48 · An `Alert` is a live region only when asked · `APPROVED` Kaleb, 2026-10-26
+
+**Question:** `Alert` defaulted to `role="status"`, a live region, so every banner shown with the
+page was also announced as news. Should an alert be live by default, or only when asked? Kaleb
+decides the default when he answers this entry.
+
+**The two consumers pull opposite ways, measured** (corrected after the review of PR 3: the first
+record said GlobalVision passes a role on every alert that must announce, which was false):
+- **Boutique wants quiet banners.** It passes `role="presentation"` on 22 of its 23 alerts, and relies
+  on the live default once (`JoinForm.tsx`, the notice of a closed shop or an unreachable server).
+- **GlobalVision relies on the announcement.** Its `components/ui/alert.tsx` is a local fork that
+  defaults to `role="alert"`, and 33 of its 58 alerts (in `app`, `components`, `lib` and `hooks`) pass
+  no role and so rely on that default, 15 of them danger alerts shown on a failure, such as "Failed
+  to load jobs" in `app/[lang]/maintenance/beszel-update/page.tsx`. Its `components.json` has the
+  `@udesign` registry and `core` installs `alert.tsx`, so re-adding either replaces the fork: with no
+  live default those 33 stop being announced, and nothing fails.
+- The showcase's one dependency was a test that found the dialog's alert by its role.
+
+**Proposed:** no role by default. `live` (or `live="polite"`) gives `role="status"`, and
+`live="assertive"` gives `role="alert"`, for an error that stops the work. A role passed explicitly
+still wins. The alert carries `data-slot="alert"`, the shadcn hook GlobalVision's fork already has.
+Cost: Boutique drops 22 workarounds and adds `live` once; GlobalVision adds `live="assertive"` to 33
+alerts before it re-adds `alert` or `core`.
+
+**The other choice:** a live default (`role="status"` as before, or `role="alert"` as GlobalVision's
+fork), with `live={false}` for a banner shown with the page. Cost: Boutique keeps an opt-out on 22
+alerts, written `live={false}` instead of `role="presentation"`; GlobalVision changes nothing if the
+default is `role="alert"`. Either way the prop stays `live`, so only the default moves.
+
+**Kaleb, 2026-10-26: "Approve, alerts quiet."** The default is no role, as proposed: an alert is a
+live region only when it passes `live`. So Boutique drops its 22 `role="presentation"` and adds
+`live` once, and GlobalVision passes `live="assertive"` on its 33 alerts that pass no role before it
+re-adds `alert` or `core`.
+
+### D-49 · `ChoiceGroup` joins the registry · `APPROVED` Kaleb, 2026-10-26
+
+**Question:** the registry had no radio group, so Boutique built its own sizes, options and colours
+from `choiceClass`, `radioKeys`, `sizes.ts` and `choices.css`, and UDesign Pages' size buttons have
+the same defects Boutique fixed: uneven rows, a size alone on the last row, a surcharge inside a
+button, an unavailable size marked by look only. Boutique also had to stop the arrow keys in the
+group, because the gallery listened for them on the document.
+
+**Proposed:** a registry `choice-group`, in `core`: a radio group of buttons with one Tab stop,
+whose arrow keys (and Home and End) move and choose, skip what cannot be had, and stop at the group.
+Each button holds its label alone; a choice that cannot be had is disabled, dashed, struck through,
+and says so in words (`unavailableLabel`, English by default as `closeLabel` is). A note under the
+group carries what the buttons do not, tied by `aria-describedby`. Colours are `variant="swatch"`:
+the colour in a 44px circle, its name for a screen reader, a ring when chosen.
+
+**Columns, measured in Chromium:** one row when every choice gets 4rem; otherwise rows of one count,
+the last at most one shorter, never one alone, in the fewest rows; never a cell under the 2.75rem
+touch target. Boutique's own rule took one more column than fits from 3 cells up; this generalizes
+it to every width up to 12 columns, adds the range from 9.25rem where three cells keep the touch
+target, and prefers fewer rows (ten sizes are 5 + 5, not five rows of two). The group writes the
+columns of each of 13 ranges as custom properties and `css/registry.css` reads them in container
+queries, so the layout needs no script and no Tailwind container plugin, and holds at first paint.
+At 375px Boutique's cases come out as its standard says: 5 as 3 + 2, 6 as 3 + 3, 7 as 4 + 3. Below
+9.25rem three choices leave one alone: nothing narrower keeps the touch target.
+
+**Corrected after the review of PR 3:**
+- A disabled group cleared its choice: the chosen size vanished while Boutique's kit rows were held,
+  and the hidden input posted an empty value. The group's `disabled` now holds the choice and its
+  chosen look (the other choices take the disabled surface; only a choice that cannot be had is
+  dashed), and `name` posts as a native radio group: the chosen value, or nothing while nothing is
+  chosen or the group is disabled.
+- Rows of one count made long lists tall and erratic (22 choices at 343px stood in 11 rows of 2). They
+  now give way when they would take two rows more than filling the rows: 22 are 5 + 5 + 5 + 5 + 2, and
+  10 at 13rem are 4 + 4 + 2 rather than five rows of two. Up to 7 choices nothing changes.
+- A size container is 0px wide wherever its parent's width comes from its content (a table cell, an
+  inline-block, fit-content, a content-sized flex or grid item, an absolutely positioned box). The
+  group writes three touch targets, 9.25rem, as `contain-intrinsic-inline-size` (one row of its
+  choices where that is narrower), so it asks for that width there and lays out its rows in it.
+  Fix round 2 (re-review N1): the first fix asked for a full row, but that width is also the group's
+  least, so on a phone a plain div in a grid, a list item, a `fieldset` and the registry's dialog
+  overflowed (eight sizes: 568px in 343px; five in the dialog: 352px in 322px, which scrolled
+  sideways). Three touch targets fit them all: the group takes its parent's width there and wraps by
+  the column rule, five sizes 3 + 2 in the dialog. Chromium tests at 375px hold both halves.
+
+**Rejected:** a static `ud-` class, since the columns and the keys need script; columns from
+Tailwind container variants, whose order Tailwind 3 and 4 do not guarantee; the arrow keys left to
+propagate, which is what moved Boutique's gallery; a `min-width` floor for the group, which would push
+it out of a narrow parent.
+
+### D-50 · Spacing on the roles, ban 33, and the checker's `spacing-role` · `APPROVED` Kaleb, 2026-10-26
+
+**Question:** `examples/presentation-order.tsx` spaced with `mt-5`, `gap-5` and `md:gap-12` (20px,
+20px, 48px), so consumers copied values between the roles and the checker, with no rule for them,
+passed them. `DialogHeader` and `SheetHeader` set 6px between a title and its description, which
+Boutique's browser check of every gap found and had to exempt. `DESIGN.md` said only "use the shared
+spacing roles".
+
+**Proposed:**
+- `DESIGN.md` "Layout" names the roles and the common pairs (a label and its control, a title and
+  its description, `--space-2`; a heading and what it heads, the blocks of a section, `--space-4`),
+  and ban 33 bans a value between them, a 2px or 6px stack included. A negative margin and a margin
+  that sets an icon on a line of text align; they are not spacing.
+- The example uses `mt-4`, `gap-4` and `gap-8`. `DialogHeader`, `SheetHeader` and `CardHeader`
+  (the same 6px) use `gap-2`; the title row's minimum height loses the 2px, so the description
+  still starts 4px under the close button's icon (D-41).
+- `udesign-check` gains `spacing-role`, read in class strings only, never in copy or comments. It
+  holds stacks (`space-y`, `gap-y`, a grid's or column's gap, vertical margins) to the roles at every
+  step and leaves geometry alone: padding, an icon beside its label, an icon's nudge, a negative
+  margin, `var()`, and the primitive folders.
+
+**Calibration, measured read-only:** Boutique 7 (all on operations screens), GlobalVision 142 (126
+of them 2px and 6px stacks, the rest 10px to 80px), `udesignpages` 0, the example 3 before its fix;
+the full breakdown is in `docs/checker-rules.md`. A first cut that read every spacing utility found
+57 and 498, mostly geometry, which is why padding, rows and icons are out. **Open for Kaleb:** if
+2px and 6px text stacks in dense `operations` screens should stay, holding stacks only from 8px up
+leaves GlobalVision 16 findings; it is one condition in `bin/rules.mjs`. **Rejected:** checking
+padding, which would cry wolf on every field with an icon; checking the primitive folders, which
+hold each component's geometry and which this repository tests itself.
+
+**Kaleb, 2026-10-26: approved, "from 8px up".** The check watches the spacing between groups and
+sections, so nothing under 8px is a finding, whatever the utility: a stack's 2 or 6px, a row's half
+step, a margin on every side. From 8px up, a value between the roles is a finding in a gap, a stack
+or a margin. (The first fix round still flagged `m-0.5` and `m-1.5`; the second dropped that, and no
+count moved.) Ban 33 and the "Layout" rule say so, and the rule reads a JS string only when every word of it
+reads as a class, so copy and URLs no longer count (review of PR 3). Measured again, read-only:
+Boutique `main` 10 (was 17), its `feat/appearance-standard` 2 (was 7), GlobalVision 16 (was 142),
+`udesignpages` 0, which means not read: its spacing is CSS, which no part of the rule reads
+(`docs/checker-rules.md` has the breakdown).
+
+### D-51 · Nothing empty takes room · `APPROVED` Kaleb, 2026-10-26
+
+**Question:** Boutique found idle live regions (an empty `role="status"` waiting for a result) as
+children of containers with a gap: empty, they still take the gap, so a form or a cart footer
+carried an empty row. "Feedback primitives" said nothing about where a live region goes.
+
+**Proposed:** the rule in "Feedback primitives": an idle live region stays in the page (a screen
+reader only hears a region that was there before its words), outside any gap container, with the
+margin on its words. The reference screen shows it: the proof's approval speaks in a status after
+the action row. Boutique's browser check comes here as a layout audit on both reference screens at
+both widths, with a case proving it sees the mistake. Run for the first time, it found one here: the
+operations screen's navigation rendered an empty count beside four sections, inside the link's gap;
+it renders no count now. **Rejected:** hiding an empty region with `display: none`, which takes it
+out of the accessibility tree, so a polite one is not reliably read when its words arrive.
+
+### D-52 · A presentation page's header · `APPROVED` Kaleb, 2026-10-26 · amends D-30
+
+**Question:** each presentation consumer draws its own header. Boutique's standard sets one: the
+lockup at left, at most one action at right ("Ce n’est pas vous ?"), one row at least a touch target
+high, the same height whoever is on the page, so the title under it never moves when a person
+arrives. UDesign Pages' 1,500 pages hand-copy a lockup header. D-30 kept the lockup with the consumer
+because no React component could hold a static class in lockstep.
+
+**Proposed:** `PageHeader`, in `page-canvas` (the presentation shell, so `core` has it), with its
+static twin `ud-page-header`: the lockup as its children, one optional `action`, one row whose
+height does not depend on the action, the action never wrapping, on `PageSection`'s column and
+gutters. The lockup's own markup stays the consumer's, as D-30 said. The reference screens use it:
+the React one with one action, "Mes commandes", where it showed three navigation links before, and
+the static one with none, its catalogue line moved into the first section. **Rejected:** a slot for
+navigation, which the rule leaves to the page.
+
+### D-53 · A public-contact footer · `APPROVED` Kaleb, 2026-10-26
+
+**Question:** UDesign Pages ends every page with UDesign's public contact (about 1,500 pages, by
+hand), and Boutique copied it with its own `contact.ts`. `DESIGN.md` had only `confidential-footer`.
+
+**Proposed:** `ContactFooter`, in `page-canvas`, and the static `ud-contact-footer`: a hairline, the
+name and address in the label role, then the phone and the email as links a touch target high, with
+a press and a ring, on the sections' column. Every value is a prop the page supplies, from its own
+source of truth (for UDesign, `udesign-docs`' ground truth); the design system and its examples hold
+placeholder data only. **Rejected:** shipping UDesign's contact in the component, which would put
+business data in the design system and a second home for it.
+
+### D-54 · One gallery, in the design system · `APPROVED` Kaleb, 2026-10-26
+
+**Question:** UDesign Pages vendors Swiper 14.3.0 with its own `ud-gallery.js` and `ud-gallery.css`
+(about 1,580 pages link them), and Boutique copied the skin verbatim and ported the script to React
+(`Gallery.tsx`), with a test that compares the copy with UDesign Pages. Two copies drift; where
+should the one source live, and can a page without React use it?
+
+**Proposed:**
+- The skin moves into `css/components.css`, so `dist/tokens.css` carries it as `ud-gallery`. Its
+  rules outrank Swiper's whichever stylesheet loads last: UDesign Pages links the tokens before
+  Swiper's stylesheet, a React app imports them after. The arrows are placed by a rule one class
+  above Swiper's and above the arrow rule of UDesign Pages' own `ud-gallery.css`, so they stay
+  centred whichever of those a page still links, in any order (fix round 1: placed through Swiper's
+  `--swiper-navigation-top-offset`, they sat 14px high while the old file was linked). The
+  thumbnails outrank Tailwind 3's preflight, which reset their surface.
+- `gallery-core.ts` holds the behaviour: Swiper's options, the screen-reader words (French, or
+  English for `<html lang="en">`, as UDesign Pages), the motion duration, the thumbnail that follows
+  the photo, and the key routing (D-55). No React and no Swiper code, so both builds run it.
+- A registry `gallery` (React, `swiper@14.3.0`, not in `core`) and `dist/ud-gallery.js`, a readable
+  build from `js/ud-gallery.ts` that keeps `ud-gallery.js`'s markup and API (`udGallery(el)`,
+  `markup`, `show`, `setPhotos`, `destroy`, auto-mount). Its `markup()` writes the same bytes as
+  UDesign Pages' for every case its Python tests name, checked with `UDESIGNPAGES_DIR` set.
+- Kept from UDesign Pages: three copies per photo through `srcSet` and `sizes`, an alt per slide,
+  thumbnails named by their view, a square slide that holds its room (no layout shift on load, the
+  same box on a colour change), dots that report only, arrows only on a mouse, and the standard
+  duration, 0ms under reduced motion.
+
+**Consequence:** the React Gallery is the first registry component to wear a static class.
+`udesign-check`'s `press-missing` now reads a primitive that wears one as having that class's
+press, as it already did for a borrowed variants helper. **Rejected:** a separate
+`dist/gallery.css`, one more link for every page (D-31 rejected the same for the component layer);
+the skin rewritten in Tailwind utilities, a second source for the same rules; bundling Swiper into
+`dist/ud-gallery.js`, when UDesign Pages already vendors the exact release.
+
+### D-55 · The gallery's keys: the gallery in focus or under the pointer · `APPROVED` Kaleb, 2026-10-26
+
+**Question:** two behaviours of `ud-gallery.js` that Boutique found. Swiper's keyboard module
+listens on the document, so with two galleries on screen one arrow key moved both; Boutique turned
+the keyboard off on its kit's cards. And its default `pageUpDown` made Page Up and Page Down move the
+photo and stop the page from scrolling; Boutique turned that off.
+
+**Proposed:** Swiper's keyboard is off in both builds, and one listener per document routes the
+arrow keys: to the gallery that has the focus, else to the one under the pointer, else to none.
+Page Up and Page Down are never the gallery's. A key in a field, with a modifier, or already handled
+(a choice group stops its own and prevents it) is left alone. Measured in Chromium on both builds:
+two galleries side by side, the pointer's gallery alone moves, the focus wins over the pointer,
+Page Down scrolls with the focus in a gallery, and an arrow on a choice group moves the choice and
+no photo. **Rejected:** keeping Swiper's listener and toggling it per gallery on focus and hover,
+which leaves two listeners live whenever the focus and the pointer are in different galleries.
+
+**Fix round 1, behind a modal:** a gallery under the pointer never takes the keys once a modal
+covers it. The browser can send the pointer's leave a frame after the modal opens, so an arrow
+pressed at once moved the gallery behind it, in Chromium on both builds. The router now skips a
+gallery in an `inert` or `aria-hidden` subtree, and one outside the dialog that holds the focus: a
+`<dialog>`, an `aria-modal` element, or a role of `dialog` or `alertdialog`. The role is needed:
+Radix marks its modal by role alone, and its `aria-hidden` never reaches a gallery, because it
+leaves in view every subtree that holds a live region and Swiper's A11y puts one in each gallery.
+
+### D-56 · A short head meets its first band at `--space-8` · `APPROVED` Kaleb, 2026-10-26
+
+**Question (Kaleb, directly):** on a presentation page, a short head section (a title, a greeting,
+one line) followed by a band gets `PageSection`'s full padding twice: 64px under the head, the
+band's border, 64px above the band's content, 129px on a desktop. Kaleb found it too big; on a phone
+the same break is 65px.
+
+**Proposed:** `PageSection` takes `compact="top" | "bottom" | "both"`, the edge that meets its
+neighbour at `--space-8` instead of the fluid padding. A head takes `compact="bottom"` and the band
+after it `compact="top"`, so the two meet at 64px (65px with the band's border) at every width; the
+other edges keep their padding. Static twins: `ud-page-section-compact-top` and
+`ud-page-section-compact-bottom`. Each edge is still one class, so a consumer's `py-0` wins whole
+(D-21). The presentation reference screen uses it between its order head and the garments band,
+measured at 375px and 1440px. **Rejected:** a smaller padding for every section, which would
+flatten the hierarchy that space draws in `presentation` (D-19).
+
+### D-57 · A description list for specifications · `APPROVED` Kaleb, 2026-10-26
+
+**Question (added to Boutique's list after the brief):** UDesign Pages' `.specs`, a `<dl>` on a
+`max-content minmax(0, 1fr)` grid, rows `--space-3` and columns `--space-4` apart, within 72ch, the
+label semibold and the value muted, is written twice: in the CSS `generate_selection.py` writes, and
+in Boutique's `SpecsList`.
+
+**Proposed:** a registry `description-list`, in `core`: `DescriptionList`, `DescriptionTerm` and
+`DescriptionDetails`, UDesign Pages' values exactly, with its static twin `ud-description-list`.
+Two additions: a `dt` and `dd` pair grouped in a `div`, as HTML allows, stays on the grid; and a long
+value wraps inside its column instead of running past the list (ban 29). Measured in Chromium at
+375px, React and static. **Rejected:** a component that takes the pairs as data, which would decide
+the markup of a value for every consumer.
+
+### D-58 · A skeleton where only phrasing content may go · `APPROVED` Kaleb, 2026-10-26
+
+**Question (added to Boutique's list after the brief):** `Skeleton` renders a `div`. A price's
+placeholder inside a `Pressable`, a `button` whose content must be phrasing, needs a `span`.
+
+**Proposed:** `asChild`, the registry's way (`Button`, `Badge`, `Pressable`): the placeholder is
+drawn on its one child, `<Skeleton asChild><span className="inline-block h-4 w-16" /></Skeleton>`,
+which keeps the ref and `aria-hidden`. The `skeleton` item now depends on `@radix-ui/react-slot`,
+which `core` already installs. **Rejected:** an `inline` prop that always draws an inline-block span,
+which would cover a button but not a table cell or a list item.

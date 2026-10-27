@@ -16,6 +16,7 @@ const CITE = {
   'fill-as-text': 'ban 28',
   'toolbar-wrap': 'ban 30',
   'press-missing': 'ban 16',
+  'spacing-role': 'ban 33',
 };
 
 // Fill roles (DESIGN.md "Core roles"): each pairs with its own -foreground, never used as text.
@@ -27,6 +28,11 @@ const FILL_TEXT = { primary: '--primary-text', destructive: '--tone-danger-foreg
 const fillMessage = (m) => `\`${m[0].replace(/["'`]/g, '').trim()}\` uses a fill role as text; write \`var(${FILL_TEXT[m[1] ?? m[2]]})\``;
 // A shared primitive folder (seed spec R7): application code gets press feedback by using these.
 const PRIMITIVES = /(?:^|[\\/])(?:components[\\/]ui|registry[\\/][\w-]+[\\/]ui)[\\/]/;
+// The static classes of dist/tokens.css that carry their own :active rule. Only these lend a
+// primitive its press, not any ud- class (tests/checker.test.mjs keeps the list in step with
+// css/components.css).
+export const PRESSED_CLASSES = ['ud-btn', 'ud-pressable', 'ud-gallery-thumb'];
+const WEARS_PRESS = new RegExp(`className=\\{?(?:cn\\()?\\s*["'\`][^"'\`]*(?<![\\w-])(?:${PRESSED_CLASSES.join('|')})(?![\\w-])`);
 
 const OPERATIONS = /^operations$/;
 const PRESENTATION = /^presentation$/;
@@ -93,6 +99,72 @@ function balanced(code, start) {
   return code.slice(start);
 }
 
+// Ban 33: spacing off the roles (--space-1 to --space-8: 4, 8, 12, 16, 24 and 32px), from 8px up
+// (Kaleb, 2026-10-26), read in class strings only: an HTML class attribute, or a JS string that
+// reads as classes, so copy and URLs never count. Nothing under 8px is a finding, whatever the
+// utility: the check watches the spacing between groups and sections, not a stack's 2 or 6px, a
+// row's half step beside an icon or an icon's nudge. Calibrated on Boutique, GlobalVision and udesignpages
+// (docs/checker-rules.md). Never read: CSS (a stylesheet, <style>, @apply, a style attribute or
+// object); padding, which also carries geometry (room for an icon in a field, a list's indent); a
+// negative margin, which aligns an edge; a value through var(); a primitive folder, where a
+// component's own geometry lives.
+const SPACING = /(?<![\w[-])((?:[\w-]+:|\[[^\]\s]*\]:)*)(-?)(gap-x|gap-y|gap|space-x|space-y|mx|my|mt|mr|mb|ml|ms|me|m)-(\[[^\]\s]+\]|\d+(?:\.\d+)?|px|auto)(?![\w.\]-])/g;
+const SPACING_ROLES_PX = [0, 4, 8, 12, 16, 24, 32];
+// A token of a class string: variants, then a utility or a class name, lower case outside the
+// brackets that hold arbitrary values (set aside before this test). Copy and URLs fail it.
+const CLASS_TOKEN = /^!?(?:[a-z0-9@*_&>~+.%/-]+:)*!?-?[a-z0-9_][a-z0-9_./%-]*!?$/;
+
+// A JS string that reads as classes: every token passes CLASS_TOKEN, none is a URL. An
+// interpolation is a gap between tokens.
+function classLike(text) {
+  const tokens = text.replace(/\[[^\]\s]*\]/g, 'x').split(/\s+/).filter(Boolean);
+  return tokens.length > 0 && tokens.every((token) => CLASS_TOKEN.test(token) && !token.includes('//'));
+}
+
+// The class strings of JS source, each with its offset: a string literal that reads as classes,
+// and the strings inside a template's interpolations, where a class string is often chosen.
+function* classStrings(code, offset = 0) {
+  for (const m of code.matchAll(/"([^"\n]*)"|'([^'\n]*)'|`([^`]*)`/g)) {
+    const at = offset + m.index + 1;
+    let text = m[1] ?? m[2] ?? m[3];
+    if (m[3] !== undefined) {
+      for (const e of text.matchAll(/\$\{([^}]*)\}/g)) yield* classStrings(e[1], at + e.index + 2);
+      text = text.replace(/\$\{[^}]*\}/g, (e) => ' '.repeat(e.length));
+    }
+    if (classLike(text)) yield [text, at];
+  }
+}
+
+// The px a spacing value sets, or null for a role, auto, a hairline or a var().
+function spacingPx(value) {
+  if (value === 'auto' || value === 'px') return null;
+  if (value.startsWith('[')) {
+    const literal = value.slice(1, -1).match(/^(\d*\.?\d+)(px|rem)$/);
+    if (!literal) return null;
+    const px = Number(literal[1]) * (literal[2] === 'rem' ? 16 : 1);
+    return SPACING_ROLES_PX.includes(px) ? null : px;
+  }
+  const px = Number(value) * 4;
+  return SPACING_ROLES_PX.includes(px) ? null : px;
+}
+
+function* spacingOffRole(classes) {
+  for (const m of classes.matchAll(SPACING)) {
+    const [whole, , negative, property, value] = m;
+    if (negative) continue;
+    // A whole token (Tailwind's ! allowed), not a piece of an arbitrary value or a path.
+    const start = classes.slice(0, m.index).search(/\S*$/);
+    const end = classes.slice(m.index).search(/\s|$/) + m.index;
+    if (classes.slice(start, end).replace(/^!|!$/g, '') !== whole) continue;
+    const px = spacingPx(value);
+    if (px === null) continue;
+    // Under 8px nothing counts, whatever the utility (Kaleb, 2026-10-26: the check watches the
+    // spacing between groups and sections): a stack's 2 or 6px, a row's half step, an icon's nudge.
+    if (px < 8) continue;
+    yield [m.index, `\`${whole}\` is ${px}px, off the spacing roles; space with 4, 8, 12, 16, 24 or 32px (\`-1\`, \`-2\`, \`-3\`, \`-4\`, \`-6\`, \`-8\`, or \`var(--space-*)\`)`];
+  }
+}
+
 const isAccentButton = (tag) => !/\bvariant\s*=/.test(tag) || /\bvariant\s*=\s*(\{\s*)?["']default["']/.test(tag);
 
 function* rawMotion(code) {
@@ -118,7 +190,7 @@ function* rawMotion(code) {
   }
 }
 
-function checkHtml(text, add) {
+function checkHtml(text, add, spacing) {
   const code = blankAll(blankAll(text, /<!--[\s\S]*?-->/g), /\/\*[\s\S]*?\*\//g);
   const markup = blankAll(code, /<(style|script)\b[\s\S]*?<\/\1\s*>/gi);
 
@@ -155,10 +227,16 @@ function checkHtml(text, add) {
   if (root && PRESENTATION.test(root.profile) && shellAt >= 0) add('shell', shellAt, `a \`${root.profile}\` document composed in ud-app-shell`);
 
   for (const m of markup.matchAll(/\u2014|&mdash;|&#8212;/g)) add('em-dash', m.index, 'em-dash in interface copy; use a hyphen or a colon');
+  if (spacing) {
+    for (const m of markup.matchAll(/\bclass\s*=\s*(["'])([^"']*)\1/gi)) {
+      const start = m.index + m[0].length - m[2].length - 1;
+      for (const [index, message] of spacingOffRole(m[2])) add('spacing-role', start + index, message);
+    }
+  }
   return code;
 }
 
-function checkJs(text, add, tree) {
+function checkJs(text, add, tree, spacing) {
   const code = blankJs(text);
 
   for (const m of code.matchAll(/\.map\(/g)) {
@@ -185,6 +263,12 @@ function checkJs(text, add, tree) {
   }
 
   for (const m of code.matchAll(FILL_TW)) add('fill-as-text', m.index, fillMessage(m));
+
+  if (spacing) {
+    for (const [classes, at] of classStrings(code)) {
+      for (const [index, message] of spacingOffRole(classes)) add('spacing-role', at + index, message);
+    }
+  }
 
   for (const m of code.matchAll(/(?<!\[)data-design\s*=/g)) {
     const tag = code.slice(0, m.index).match(/<([A-Za-z][\w.]*)[^<]*$/)?.[1];
@@ -223,17 +307,22 @@ export function check(files) {
     };
 
     const ext = file.slice(file.lastIndexOf('.') + 1).toLowerCase();
+    // A component's own geometry lives in its primitive folder; application code spaces on the roles.
+    const spacing = !PRIMITIVES.test(file);
     let code;
-    if (ext === 'html' || ext === 'htm') code = checkHtml(text, add);
+    if (ext === 'html' || ext === 'htm') code = checkHtml(text, add, spacing);
     else if (ext === 'css') code = blankAll(text, /\/\*[\s\S]*?\*\//g);
-    else code = checkJs(text, add, tree);
+    else code = checkJs(text, add, tree, spacing);
 
     for (const [index, message] of rawMotion(code)) add('raw-motion', index, message);
     for (const m of code.matchAll(FILL_CSS)) add('fill-as-text', m.index, fillMessage(m));
     // group-active: counts. An overlay's Trigger is left out: it wraps a Button through asChild.
     // A primitive that renders through a sibling's variants helper (toggleVariants from ./toggle)
     // gets its press from that file, which the checker reads on its own.
-    const borrowsPress = /import\s*\{[^}]*\b\w+Variants\b[^}]*\}\s*from\s*["'](?:\.\/|@\/components\/ui\/)/.test(code);
+    // So does one that wears a static class of dist/tokens.css that carries its own press (the
+    // gallery's ud-gallery-thumb): that stylesheet holds the press, and the design system tests it.
+    const borrowsPress = /import\s*\{[^}]*\b\w+Variants\b[^}]*\}\s*from\s*["'](?:\.\/|@\/components\/ui\/)/.test(code)
+      || WEARS_PRESS.test(code);
     if (PRIMITIVES.test(file) && ext !== 'css' && !borrowsPress && !/\bactive:|:active\b/.test(code)) {
       const el = code.search(/<(?:button|\w*(?:Checkbox|Switch|Toggle)\w*\.Root|(?!(?:Tooltip|Popover|HoverCard|Dialog|AlertDialog|Sheet|Drawer|DropdownMenu|ContextMenu|Menubar)\w*\.Trigger)[A-Z]\w*\.(?:Trigger|Item|Close|Thumb))(?![\w.])|role\s*=\s*["']button["']/);
       if (el >= 0) add('press-missing', el, 'an interactive primitive with no `active:` treatment; give it --interactive-pressed or --motion-press-scale');

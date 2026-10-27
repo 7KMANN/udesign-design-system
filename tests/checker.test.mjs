@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { check } from '../bin/rules.mjs';
+import { PRESSED_CLASSES, check } from '../bin/rules.mjs';
 
 // Each rule has a snippet that must be flagged and one that must pass (docs/checker-rules.md).
 const hits = (file, text) => check([{ file, text }]).map((f) => `${f.rule}:${f.line}`);
@@ -141,6 +141,95 @@ test('press-missing flags a primitive with no active: treatment, only in a primi
   assert.deepEqual(hits('components/ui/tooltip.tsx', '<TooltipPrimitive.Trigger {...props} />'), []);
   const borrowed = 'import { toggleVariants } from "@/components/ui/toggle"\n<ToggleGroupPrimitive.Item className={toggleVariants()} />';
   assert.deepEqual(hits('components/ui/toggle-group.tsx', borrowed), []);
+  // The gallery's buttons wear the static skin, whose press dist/tokens.css carries.
+  const skinned = '<div className={cn("ud-gallery", className)}>\n<button type="button" className="ud-gallery-thumb" />';
+  assert.deepEqual(hits('components/ui/gallery.tsx', skinned), []);
+  // Review M3: a static class with no press of its own lends none.
+  assert.deepEqual(hits('components/ui/x.tsx', '<p className="ud-label">Taille</p>\n<button className="px-2" />'), ['press-missing:2']);
+  assert.deepEqual(hits('components/ui/x.tsx', '<a className="ud-btn ud-btn-ghost" />\n<button className="px-2" />'), []);
+});
+
+// The classes that lend a press are the ones css/components.css gives an :active rule of their own
+// (a variant such as ud-btn-primary rides on ud-btn): no more, no fewer.
+test('press-missing lends a press only through the classes the stylesheet presses', () => {
+  const css = fs.readFileSync(new URL('../css/components.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const pressed = new Set();
+  for (const [, selectors] of css.matchAll(/([^{}]+)\{[^}]*\}/g)) {
+    for (const selector of selectors.split(',')) {
+      const subject = selector.trim().split(/\s+|>|\+|~/).filter(Boolean).at(-1) ?? '';
+      if (!subject.includes(':active')) continue;
+      const own = /^\.(ud-[\w-]+)/.exec(subject)?.[1];
+      if (own) pressed.add(own);
+    }
+  }
+  const covered = (cls) => PRESSED_CLASSES.some((listed) => cls === listed || cls.startsWith(`${listed}-`));
+  assert.deepEqual([...pressed].filter((cls) => !covered(cls)), [], 'a class the stylesheet presses is missing from PRESSED_CLASSES');
+  assert.deepEqual(PRESSED_CLASSES.filter((cls) => !pressed.has(cls)), [], 'PRESSED_CLASSES names a class the stylesheet does not press');
+});
+
+// Ban 33 (D-50): spacing off the roles, read in class strings. Calibrated on Boutique and
+// GlobalVision (docs/checker-rules.md). Kaleb, 2026-10-26: from 8px up, so a stack under 8px
+// (2 or 6px) passes, as a row's half step and an icon's nudge did.
+test('spacing-role flags a gap, a stack or a margin off the spacing roles, from 8px up', () => {
+  const tsx = [
+    '<p className="mt-5 max-w-[52ch]">Texte</p>',
+    '<div className="grid gap-8 md:grid-cols-[1fr_2fr] md:gap-12">',
+    '<ol className="grid gap-5">',
+    '<div className="space-y-2.5">',
+    '<div className="grid gap-2.5"><label /><input /></div>',
+    '<div className="flex flex-col gap-5">',
+    '<div className="gap-[18px] grid">',
+    '<p className="text-xs text-muted-foreground mt-2.5">Meta</p>',
+    '<section className="mb-10">',
+    '<span className="m-2.5">x</span>',
+  ].join('\n');
+  assert.deepEqual(hits('app/page.tsx', tsx), ['spacing-role:1', 'spacing-role:2', 'spacing-role:3', 'spacing-role:4', 'spacing-role:5', 'spacing-role:6', 'spacing-role:7', 'spacing-role:8', 'spacing-role:9', 'spacing-role:10']);
+  // A class string chosen inside a template's interpolation is read too.
+  assert.deepEqual(hits('app/page.tsx', 'const c = `grid ${open ? "gap-5" : "gap-2"}`'), ['spacing-role:1']);
+  const [finding] = check([{ file: 'app/page.tsx', text: '<div className="grid gap-8 md:gap-12" />' }]);
+  assert.equal(finding.cite, 'ban 33');
+  assert.match(finding.message, /`md:gap-12` is 48px/);
+  const html = ['<div class="grid gap-5">', '<p>gap-5 in copy is not a class</p>', '</div>'].join('\n');
+  assert.deepEqual(hits('a.html', html), ['spacing-role:1']);
+});
+
+test('spacing-role leaves the roles, alignment, geometry and the primitive folders alone', () => {
+  const tsx = [
+    '<div className="grid gap-1 gap-2 gap-3 gap-4 gap-6 gap-8 gap-0 space-y-4 mt-6 mb-8 m-0 mx-auto mt-auto gap-px">',
+    '<span className="flex items-center gap-1.5"><Icon /> Label</span>',
+    '<Info className="mt-0.5 size-4 shrink-0" />',
+    '<Button className="-ml-2 -mt-2.5 gap-1.5">',
+    '<Input className="pl-9 pr-14 py-2.5" />',
+    '<ul className="list-disc pl-5">',
+    '<div className="grid gap-[var(--space-4)] mt-[var(--surface-padding)] gap-x-1.5">',
+    '<div className="flex flex-wrap gap-1.5">',
+    '// mt-5 in a comment',
+  ].join('\n');
+  assert.deepEqual(hits('app/page.tsx', tsx), []);
+  // Stacks under 8px: 2px and 6px, in a grid, a column, space-y and on text (Kaleb, 2026-10-26).
+  const stacks = [
+    '<div className="space-y-1.5">',
+    '<div className="grid gap-1.5"><label /><input /></div>',
+    '<div className="flex flex-col gap-0.5">',
+    '<div className="space-y-0.5 gap-y-0.5">',
+    '<p className="text-xs text-muted-foreground mt-0.5 mb-1.5">Meta</p>',
+    '<div className="rounded-lg bg-[var(--muted)] p-2 mt-0.5"><Icon /></div>',
+    // Nothing under 8px is a finding, whatever the utility (re-review N2): a margin on every side too.
+    '<span className="m-1.5">x</span>',
+    '<span className="m-0.5 rounded-full">x</span>',
+  ].join('\n');
+  assert.deepEqual(hits('app/page.tsx', stacks), []);
+  // Review M4: copy, a URL and an arbitrary value are not class strings, whatever they hold.
+  const copy = [
+    'const msg = "Commande m-5 prête"',
+    'const src = "https://cdn.example.com/m-5/a.png"',
+    '<div className="bg-[url(/img/m-5/a.png)] grid" />',
+    "const label = 'Step mt-5 of 6'",
+  ].join('\n');
+  assert.deepEqual(hits('app/page.tsx', copy), []);
+  assert.deepEqual(hits('components/ui/dialog.tsx', '<div className="grid gap-5 mt-12" />'), []);
+  assert.deepEqual(hits('registry/new-york/ui/x.tsx', '<div className="grid gap-5" />'), []);
+  assert.deepEqual(hits('app/page.tsx', '<div className="grid gap-5" /> {/* design-ok: matches the print sheet */}'), []);
 });
 
 test('ud-primitive flags var(--ud-*) in consumer source but not in a synced copy of the tokens', () => {

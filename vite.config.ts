@@ -22,7 +22,16 @@ export default defineConfig({
           if (urlPath.startsWith('/dist/')) {
             const filePath = path.resolve(__dirname, 'dist', urlPath.slice(6));
             if (fs.existsSync(filePath)) {
-              res.setHeader('Content-Type', 'text/css');
+              res.setHeader('Content-Type', filePath.endsWith('.js') ? 'text/javascript' : 'text/css');
+              res.end(fs.readFileSync(filePath));
+              return;
+            }
+          }
+          // Swiper's bundle, as a page without a build vendors it (showcase/static-gallery.html).
+          if (urlPath.startsWith('/vendor/swiper/')) {
+            const filePath = path.resolve(__dirname, 'node_modules/swiper', path.basename(urlPath));
+            if (fs.existsSync(filePath)) {
+              res.setHeader('Content-Type', filePath.endsWith('.js') ? 'text/javascript' : 'text/css');
               res.end(fs.readFileSync(filePath));
               return;
             }
@@ -41,6 +50,9 @@ export default defineConfig({
     }
   ],
   root: path.resolve(__dirname, 'showcase'),
+  // Swiper is only reached from pages Vite does not scan at start (fixtures.html): bundle it up
+  // front, so its first request does not re-optimize and reload the page under a test.
+  optimizeDeps: { include: ['swiper', 'swiper/modules'] },
   build: {
     outDir: path.resolve(__dirname, 'dist-showcase'),
     emptyOutDir: true,

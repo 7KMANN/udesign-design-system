@@ -73,7 +73,8 @@ test("every transition in the registry names its duration token", () => {
 
 const PRESS = /active:(?:scale-\[var\(--motion-press-scale|bg-\[var\(--interactive-pressed)/
 // Anything that renders a native button or select, or a Radix part a user can press.
-const RENDERS_PRESSABLE = /<button\b|<select\b|role="button"|["']button["']|Primitive\.(?:Root|Trigger|Item|Thumb|Close)\b/
+// A link with an href is focusable too (ContactFooter's phone and email).
+const RENDERS_PRESSABLE = /<button\b|<select\b|<a\b[^>]*\bhref=|role="button"|["']button["']|Primitive\.(?:Root|Trigger|Item|Thumb|Close)\b/
 
 // Per component, not per file: a file-level check let SelectItem ship unpressed
 // because SelectTrigger in the same file had a press state.
@@ -87,7 +88,9 @@ const components = Object.entries(sources).flatMap(([file, source]) =>
 
 // Fail-closed, same shape as EXEMPT: a pressable component with no press state
 // needs a reason a reviewer can read, keyed file#n.
-const PRESS_EXEMPT = {}
+const PRESS_EXEMPT = {
+  "gallery.tsx#2": "its thumbnails and arrows wear the static skin, whose press is .ud-gallery-thumbs > .ud-gallery-thumb:active and .ud-gallery .swiper-button-*:active in css/components.css, held by tests/component-css.test.mjs: one press for the React and the plain-JS gallery",
+}
 
 test("every interactive primitive acknowledges a press", () => {
   // Derived, not listed. The hand-kept list this replaced never named slider or

@@ -26,5 +26,5 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["showcase/src", "registry/new-york/ui", "registry/test-support", "vite.config.ts"]
+  "include": ["showcase/src", "registry/new-york/ui", "registry/test-support", "js", "vite.config.ts"]
 }

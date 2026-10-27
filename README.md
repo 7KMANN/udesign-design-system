@@ -6,13 +6,14 @@ Do not source brand values from Icitte. It is a separate product line with its o
 
 **License:** proprietary, UDesign Productions only. See [LICENSE.md](LICENSE.md). Public visibility does not grant permission to use the work.
 
-## What ships in 3.2.0
+## What ships in 3.3.0
 
 - A semantic token foundation for light and dark themes.
 - Two profiles, `presentation` and `operations`, pinned once per document. They differ in structure: type scale shape, source of hierarchy, page shell, and figures. Controls keep the 44px touch floor on touch in both; on a desktop mouse a compact control and the operations toolbar go to 36px.
 - Tone roles for neutral, info, success, warning, danger, progress, and brand states.
 - Metric, chart, entity, interaction, surface, and responsive roles.
-- A shadcn source registry with 20 base components, five application patterns, two page shells (`page-canvas`, `app-shell`), three motion primitives, and a `core` bundle.
+- A shadcn source registry with 22 base components, six application patterns, two page shells (`page-canvas`, `app-shell`), three motion primitives, and a `core` bundle.
+- A plain-JS gallery, `dist/ud-gallery.js`, for pages without a build: the registry gallery's behaviour and skin.
 - A responsive showcase that exercises the full theme and profile matrix.
 
 This is not a bundled React runtime library. Registry components are copied into the consuming repository so the application can inspect, adapt, and test its own source while the shared semantic contract remains stable.
@@ -47,7 +48,7 @@ Pin the Git dependency to a release tag. Do not install from a moving branch.
 ```json
 {
   "dependencies": {
-    "udesign-design-system": "github:7KMANN/udesign-design-system#v3.2.0"
+    "udesign-design-system": "github:7KMANN/udesign-design-system#v3.3.0"
   }
 }
 ```
@@ -90,6 +91,10 @@ copy matches, the pattern `udesignpages` already uses for canon (`tools/sync-can
 edit the copy: a hand-paraphrase is how a rule silently drops. The class list and naming rule are
 at the top of the component block in the file; `npx udesign-check` audits the result.
 
+A page that shows a product's photos also links Swiper 14.3.0's bundle and `dist/ud-gallery.js`,
+the registry gallery's behaviour built for pages without React. Its skin is already in the tokens;
+its markup and API are in the file's opening comment.
+
 ## Install registry components
 
 Initialize shadcn in the consuming application and add the tagged namespace to `components.json`:
@@ -97,7 +102,7 @@ Initialize shadcn in the consuming application and add the tagged namespace to `
 ```json
 {
   "registries": {
-    "@udesign": "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.2.0/public/r/{name}.json"
+    "@udesign": "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.3.0/public/r/{name}.json"
   }
 }
 ```
@@ -108,25 +113,29 @@ Install the complete supported source set through the public `@udesign/core` ite
 npx shadcn@latest add @udesign/core
 ```
 
-The direct tagged URL remains available when a consumer does not configure a namespace:
-
-```bash
-npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.2.0/public/r/core.json
-```
-
 Install a single item by replacing `core` with its registry name:
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.2.0/public/r/button.json
+npx shadcn@latest add @udesign/button
 ```
+
+An item that uses another one names it as `@udesign/<name>`: `button` uses `spinner`; `alert`, `status-badge` and `rolling-consistency-chip` use `badge`; `icon-button` uses `button`; `metric-card` uses `card`. shadcn takes that item from the release your namespace points at, the same release as the item you add, so the tag in `components.json` is the one place to change when you upgrade.
+
+The direct tagged URL works without the namespace only for an item that uses no other one, `core` among them:
+
+```bash
+npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.3.0/public/r/core.json
+```
+
+Without the namespace, adding an item that uses another makes shadcn look `@udesign` up in its public directory of registries. Where the directory lists none, the install stops before it writes a file, with `Unknown registry "@udesign". Make sure it is defined in components.json` and the `registries` block to add: add the namespace above and run the command again. Where the directory lists one, shadcn writes that registry into `components.json` and takes the item's dependencies from it, whoever publishes it. So set the namespace yourself before you add an item: the tag you choose is then the release you get. The install test holds both cases against a stand-in for the directory.
 
 Available base items:
 
-`button`, `badge`, `alert`, `card`, `input`, `textarea`, `select`, `native-select`, `checkbox`, `switch`, `slider`, `field`, `dialog`, `sheet`, `tooltip`, `tabs`, `table`, `spinner`, `skeleton`, and `pressable`.
+`button`, `badge`, `alert`, `card`, `input`, `textarea`, `select`, `native-select`, `choice-group`, `checkbox`, `switch`, `slider`, `field`, `description-list`, `dialog`, `sheet`, `tooltip`, `tabs`, `table`, `spinner`, `skeleton`, and `pressable`.
 
 Available patterns:
 
-`icon-button`, `status-badge`, `metric-card`, `empty-state`, and `responsive-collection`.
+`icon-button`, `status-badge`, `metric-card`, `empty-state`, `responsive-collection`, and `gallery` (installed on its own: it adds swiper).
 
 Page shells, one per profile:
 
@@ -237,7 +246,7 @@ Do not expose primitives through Tailwind theme aliases.
 
 Interactive registry components include their required client boundary. The token package itself is plain CSS and is safe to import from server-rendered applications.
 
-The release pipeline compiles the source against React 18 and Tailwind 3, performs a shadcn 3.5 namespaced clean install, and runs browser checks in Chromium. React 19, Tailwind 4, and framework-specific applications remain supported source targets and should run their own production build after installation.
+The release pipeline compiles the source against React 18 and Tailwind 3, performs a shadcn 3.5 namespaced clean install, adds `alert`, `icon-button` and `metric-card` over it and checks that every file is still this release's, and runs browser checks in Chromium. React 19, Tailwind 4, and framework-specific applications remain supported source targets and should run their own production build after installation.
 
 ## Source of truth and generated files
 

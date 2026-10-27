@@ -6,7 +6,7 @@
   "description": "Icon-only action requiring an accessible label and minimum touch target.",
   "registryDependencies": [
     "utils",
-    "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/button.json"
+    "@udesign/button"
   ],
   "files": [
     {

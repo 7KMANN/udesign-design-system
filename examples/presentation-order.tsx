@@ -2,11 +2,13 @@
 // Copy the parts you need; the restraint travels with each part.
 // Pin the profile once on the document root: <html data-design="presentation">.
 // Placeholder data: no real client, order, or date.
+"use client"
+
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { PageCanvas, PageSection } from "@/components/ui/page-canvas"
+import { ContactFooter, PageCanvas, PageHeader, PageSection } from "@/components/ui/page-canvas"
 
 // Internal navigation goes through your framework's link primitive (ban 17):
 // replace this one line with next/link or react-router's Link.
@@ -29,35 +31,36 @@ const steps = [
 ]
 
 export function PresentationOrder() {
+  const [approved, setApproved] = React.useState(false)
   return (
     // PageCanvas: the page scrolls and each PageSection centres a column (ban 27).
     <PageCanvas>
-      <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-[var(--content-gutter-mobile)] py-6 sm:px-[var(--space-8)]">
-        {/* The lockup is the one Montserrat signature, so the navigation beside it stays quiet. */}
+      {/* The lockup at left, at most one action at right, one row whoever is on the page (D-52). The
+          lockup is the one Montserrat signature, so the action beside it stays quiet: ghost. */}
+      <PageHeader action={<Button asChild variant="ghost"><Link href="/commandes">Mes commandes</Link></Button>}>
         <span className="[font-family:var(--font-display)] text-xl font-black">UDesign</span>
-        <nav aria-label="Compte" className="flex flex-wrap gap-2">
-          <Button asChild variant="ghost"><Link href="/commandes" aria-current="page">Mes commandes</Link></Button>
-          <Button asChild variant="ghost"><Link href="/epreuves">Épreuves</Link></Button>
-          <Button asChild variant="ghost"><Link href="/factures">Factures</Link></Button>
-        </nav>
-      </header>
+      </PageHeader>
 
-      <PageSection aria-labelledby="commande">
+      {/* A short head meets the first band at --space-8 on each side, 64px at every width (D-56). */}
+      <PageSection aria-labelledby="commande" compact="bottom">
         <p className="ud-label">Commande <span className={num}>UD-1042</span></p>
         <h1 id="commande" className="ud-display mt-3 max-w-[14ch]">Club exemple, saison 2026</h1>
-        <p className="mt-5 max-w-[52ch] text-[var(--muted-foreground)]">
+        <p className="mt-4 max-w-[52ch] text-[var(--muted-foreground)]">
           <span className={num}>108</span> pièces, trois articles. L’épreuve de broderie est prête.
           Livraison prévue le <span className={num}>9 octobre 2026</span>.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           {/* The one accent-filled control on this screen: the action the page exists for. */}
-          <Button>Approuver l’épreuve</Button>
+          <Button onClick={() => setApproved(true)}>Approuver l’épreuve</Button>
           {/* Its negative half is secondary, never a second accent. */}
           <Button variant="secondary">Demander une modification</Button>
         </div>
+        {/* Says the result once there is one. Idle, a live region takes no room: it sits after the
+            row, never in its gap, and the margin is on its words (DESIGN.md "Feedback primitives"). */}
+        <div role="status">{approved ? <p className="mt-4">Épreuve approuvée. La production commence.</p> : null}</div>
       </PageSection>
 
-      <PageSection variant="band" aria-labelledby="vetements">
+      <PageSection variant="band" compact="top" aria-labelledby="vetements">
         <h2 id="vetements" className="ud-h2 mb-8">Les vêtements choisis</h2>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {garments.map((g) => (
@@ -82,9 +85,9 @@ export function PresentationOrder() {
       </PageSection>
 
       <PageSection aria-labelledby="suivi">
-        <div className="grid gap-8 md:grid-cols-[1fr_2fr] md:gap-12">
+        <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
           <h2 id="suivi" className="ud-h2">Où en est votre commande</h2>
-          <ol className="grid gap-5">
+          <ol className="grid gap-4">
             {steps.map(([step, date]) => (
               <li key={step} className="flex items-baseline justify-between gap-4 border-b border-[var(--border)] pb-4">
                 <span className="ud-h3">{step}</span>
@@ -94,6 +97,13 @@ export function PresentationOrder() {
           </ol>
         </div>
       </PageSection>
+
+      {/* The business's public contact ends the page. The page supplies it: placeholder data here. */}
+      <ContactFooter
+        address="Entreprise exemple, 1 rue Exemple, Ville QC A1A 1A1"
+        phone={{ label: "819 555-0100", href: "tel:+18195550100" }}
+        email={{ label: "contact@example.com", href: "mailto:contact@example.com" }}
+      />
     </PageCanvas>
   )
 }

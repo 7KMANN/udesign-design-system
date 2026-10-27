@@ -80,6 +80,173 @@ for (const screen of ["operations", "presentation"]) {
   }
 }
 
+// D-51, ported from Boutique's appearance check: an element that shows nothing never takes a
+// gap, nor room of its own. An idle live region sits after a stack, never in its gap.
+const empties = (page: Page) =>
+  page.evaluate(() => {
+    const CONTENT = "img, svg, input, button, select, textarea, video, canvas, picture, iframe"
+    const painted = (el: Element) => {
+      const s = getComputedStyle(el)
+      const border = ["top", "right", "bottom", "left"].some((side) => parseFloat(s.getPropertyValue(`border-${side}-width`)) > 0 && s.getPropertyValue(`border-${side}-style`) !== "none")
+      return border || !["rgba(0, 0, 0, 0)", "transparent"].includes(s.backgroundColor) || s.backgroundImage !== "none" || s.boxShadow !== "none"
+    }
+    const empty = (el: Element) => (el.textContent ?? "").trim() === "" && !el.matches(CONTENT) && !el.querySelector(CONTENT) && !painted(el) && ![...el.querySelectorAll("*")].some(painted)
+    const inFlow = (el: Element) => {
+      const s = getComputedStyle(el)
+      return s.display !== "none" && s.display !== "contents" && s.position !== "absolute" && s.position !== "fixed"
+    }
+    const gapOf = (el: Element | null) => {
+      if (!el) return null
+      const s = getComputedStyle(el)
+      if (!/flex|grid/.test(s.display)) return null
+      const px = (v: string) => (v === "normal" ? 0 : parseFloat(v) || 0)
+      return { row: px(s.rowGap), column: px(s.columnGap), across: /flex/.test(s.display) && !s.flexDirection.startsWith("column") }
+    }
+    const found: string[] = []
+    for (const el of document.querySelectorAll("#root *")) {
+      if (!inFlow(el) || el.closest("svg") || !empty(el)) continue
+      const r = el.getBoundingClientRect()
+      const gap = gapOf(el.parentElement)
+      const name = `${el.tagName.toLowerCase()}${el.getAttribute("role") ? `[${el.getAttribute("role")}]` : ""}`
+      if (gap && (gap.across ? gap.column > 0 && r.width === 0 : gap.row > 0 && r.height === 0)) found.push(`in a gap: ${name}`)
+      else if (r.height > 0.5 && r.width > 0.5) found.push(`room: ${name} ${Math.round(r.height)}px`)
+    }
+    return found
+  })
+
+for (const screen of ["presentation", "operations"]) {
+  for (const viewport of viewports) {
+    test(`${screen} reference screen, ${viewport.name}: nothing empty takes room`, async ({ page }) => {
+      await page.setViewportSize(viewport)
+      await page.goto(`/examples.html?screen=${screen}`)
+      await page.locator("#root > *").first().waitFor()
+      expect(await empties(page)).toEqual([])
+    })
+  }
+}
+
+test("the empty-room audit sees an idle live region placed in a gap", async ({ page }) => {
+  await page.goto("/examples.html?screen=presentation")
+  const status = page.locator('#root [role="status"]')
+  await status.waitFor({ state: "attached" })
+  // The mistake the rule names: the idle region moved into the action row, whose gap it takes.
+  await status.evaluate((el) => el.previousElementSibling!.append(el))
+  expect(await empties(page)).toEqual(["in a gap: div[status]"])
+})
+
+test("presentation reference screen: the idle status speaks after the row, its words carrying the margin", async ({ page }) => {
+  await page.goto("/examples.html?screen=presentation")
+  const status = page.locator('#root [role="status"]')
+  await status.waitFor({ state: "attached" })
+  expect((await status.boundingBox())?.height ?? 0, "idle, it takes no room").toBe(0)
+  await page.getByRole("button", { name: "Approuver l’épreuve" }).click()
+  await expect(status).toHaveText("Épreuve approuvée. La production commence.")
+  const row = (await page.getByRole("button", { name: "Approuver l’épreuve" }).boundingBox())!
+  const words = (await status.locator("p").boundingBox())!
+  expect(words.y - (row.y + row.height), "--space-4 under the row").toBeCloseTo(16, 0)
+})
+
+// D-52, D-53: the presentation page's header and footer sit on the sections' column. The header
+// is one row a touch target high, the same height with or without its action; the footer's
+// links are touch targets.
+for (const viewport of viewports) {
+  test(`presentation reference screen, ${viewport.name}: one header row whoever is on the page, and a footer on the column`, async ({ page }) => {
+    await page.setViewportSize(viewport)
+    await page.goto("/examples.html?screen=presentation")
+    const header = page.locator("header").first()
+    await header.waitFor()
+    // The sections' content edge: the column's box less its gutter.
+    const column = { x: await page.locator("#root section > div").first().evaluate((el) => el.getBoundingClientRect().left + parseFloat(getComputedStyle(el).paddingLeft)) }
+    const lockup = (await header.getByText("UDesign", { exact: true }).boundingBox())!
+    const action = (await header.getByRole("link", { name: "Mes commandes" }).boundingBox())!
+    const row = (await header.locator(":scope > div").boundingBox())!
+    expect(row.height, "a touch target high").toBeGreaterThanOrEqual(44)
+    expect(Math.abs(lockup.x - column.x), "the lockup on the column's left edge").toBeLessThanOrEqual(1)
+    expect(Math.abs(lockup.y + lockup.height / 2 - (action.y + action.height / 2)), "one row").toBeLessThanOrEqual(1)
+    const withAction = (await header.boundingBox())!.height
+    await header.getByRole("link", { name: "Mes commandes" }).evaluate((el) => el.closest("header > div > div:last-child")!.remove())
+    expect((await header.boundingBox())!.height, "the same height without the action").toBeCloseTo(withAction, 1)
+
+    const footer = page.locator("footer")
+    const address = (await footer.getByText("Entreprise exemple", { exact: false }).boundingBox())!
+    expect(Math.abs(address.x - column.x), "the footer on the column's left edge").toBeLessThanOrEqual(1)
+    for (const name of ["819 555-0100", "contact@example.com"]) {
+      expect((await footer.getByRole("link", { name }).boundingBox())!.height, `${name} is a touch target`).toBeGreaterThanOrEqual(44)
+    }
+  })
+}
+
+test("static header and footer: one row a touch target high with or without the action, links a touch target high", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.goto("/examples.html")
+  await page.setContent(`<!doctype html><html data-design="presentation"><head><link rel="stylesheet" href="/dist/tokens.css">
+    <style>*, ::before, ::after { box-sizing: border-box; }</style></head>
+    <body class="ud-page-canvas">
+    <header class="ud-page-header" id="with"><p class="ud-h3">UDesign</p><a class="ud-btn ud-btn-ghost" href="#">Ce n’est pas vous ?</a></header>
+    <header class="ud-page-header" id="without"><p class="ud-h3">UDesign</p></header>
+    <section class="ud-page-section"><p id="column">Column</p></section>
+    <footer class="ud-contact-footer"><p class="ud-label">Entreprise exemple</p><p class="ud-label"><a href="tel:+18195550100">819 555-0100</a> · <a href="mailto:contact@example.com">contact@example.com</a></p></footer>
+    </body></html>`, { waitUntil: "load" })
+  const height = async (selector: string) => (await page.locator(selector).boundingBox())!.height
+  expect(await height("#with")).toBeCloseTo(await height("#without"), 1)
+  expect(await height("#without")).toBeGreaterThanOrEqual(44 + 32)
+  const column = (await page.locator("#column").boundingBox())!.x
+  expect((await page.locator("#with .ud-h3").boundingBox())!.x).toBeCloseTo(column, 0)
+  expect((await page.locator(".ud-contact-footer .ud-label").first().boundingBox())!.x).toBeCloseTo(column, 0)
+  expect(await height('a[href^="tel:"]')).toBeGreaterThanOrEqual(44)
+})
+
+// D-56: a short head and its first band meet at --space-8 on each side, about 64px at every
+// width, where two full paddings made 129px on a desktop. A full padding is clamp(32px, 8vw, 64px):
+// 32px on a phone as well, so the 600px run (48px) is the one that shows a phone-sized edge.
+const edges = [viewports[0], { name: "600px", width: 600, height: 900 }, viewports[1]]
+for (const viewport of edges) {
+  test(`presentation reference screen, ${viewport.name}: the head meets its first band at 64px`, async ({ page }) => {
+    await page.setViewportSize(viewport)
+    await page.goto("/examples.html?screen=presentation")
+    // The head's last block: the action row, which wraps on a phone.
+    const row = page.getByRole("button", { name: "Approuver l’épreuve" }).locator("..")
+    await row.waitFor()
+    const headEnd = (await row.boundingBox())!
+    const bandStart = (await page.getByRole("heading", { name: "Les vêtements choisis" }).boundingBox())!
+    // --space-8 under the head, the band's 1px border, --space-8 above its heading.
+    expect(bandStart.y - (headEnd.y + headEnd.height)).toBeCloseTo(65, 0)
+  })
+}
+
+test("static sections: a compact edge is --space-8 at every width", async ({ page }) => {
+  for (const width of [375, 600, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto("/examples.html")
+    await page.setContent(`<!doctype html><html data-design="presentation"><head><link rel="stylesheet" href="/dist/tokens.css"></head>
+      <body class="ud-page-canvas"><section class="ud-page-section ud-page-section-compact-bottom" id="head"><h1 class="ud-display">Titre</h1></section>
+      <section class="ud-page-section ud-page-section-band ud-page-section-compact-top" id="band"><h2 class="ud-h2">Articles</h2></section></body></html>`, { waitUntil: "load" })
+    const padding = (id: string, side: string) => page.locator(`#${id}`).evaluate((el, s) => parseFloat(getComputedStyle(el).getPropertyValue(`padding-${s}`)), side)
+    expect([await padding("head", "bottom"), await padding("band", "top")], `${width}px`).toEqual([32, 32])
+    expect(await padding("head", "top"), "the other edge keeps the full padding").toBeCloseTo(Math.min(Math.max(32, width * 0.08), 64), 0)
+  }
+})
+
+// D-46: a page's title steps down one role on a phone, with no size of its own on the element.
+// Presentation: --text-h1 (40px) at 375, --text-display (56px) from 800. Operations does not move.
+for (const [screen, selector, phone, desktop] of [
+  ["presentation", "h1.ud-display", 40, 56],
+  ["operations", "h1.ud-h1", 20, 20],
+] as const) {
+  test(`${screen} reference screen: the page title is ${phone}px on a phone and ${desktop}px on a desktop`, async ({ page }) => {
+    const size = async (width: number) => {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto(`/examples.html?screen=${screen}`)
+      const title = page.locator(selector).first()
+      await title.waitFor()
+      expect(await title.getAttribute("style"), "no inline size").toBeNull()
+      return title.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))
+    }
+    expect(await size(375)).toBeCloseTo(phone, 1)
+    expect(await size(1440)).toBeCloseTo(desktop, 1)
+  })
+}
+
 test("operations on a phone: the sidebar hides and the same nav opens in a sheet", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await page.goto("/examples.html?screen=operations")

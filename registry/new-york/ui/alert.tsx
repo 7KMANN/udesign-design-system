@@ -5,7 +5,16 @@ import type { UDesignTone } from "@/components/ui/badge"
 
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   tone?: UDesignTone
+  /**
+   * Reads the alert to a screen reader when it appears or changes. true or "polite"
+   * (role="status") waits for the reader to finish; "assertive" (role="alert")
+   * interrupts, for an error that stops the work. Omit it for a notice shown with the
+   * page, which a screen reader meets in reading order. A role passed explicitly wins.
+   */
+  live?: boolean | "polite" | "assertive"
 }
+
+const liveRoles = { polite: "status", assertive: "alert" } as const
 
 const alertTones: Record<UDesignTone, string> = {
   neutral: "border-[var(--tone-neutral-border)] bg-[var(--tone-neutral-surface)] text-[var(--tone-neutral-foreground)]",
@@ -17,11 +26,13 @@ const alertTones: Record<UDesignTone, string> = {
   brand: "border-[var(--tone-brand-border)] bg-[var(--tone-brand-surface)] text-[var(--tone-brand-foreground)]",
 }
 
+// Not a live region by default: most alerts are shown with the page, not news.
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
-  ({ className, role = "status", tone = "neutral", ...props }, ref) => (
+  ({ className, live = false, role, tone = "neutral", ...props }, ref) => (
     <div
       ref={ref}
-      role={role}
+      data-slot="alert"
+      role={role ?? (live ? liveRoles[live === true ? "polite" : live] : undefined)}
       className={cn("relative w-full rounded-[var(--radius-lg)] border p-4 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg~*]:pl-7", alertTones[tone], className)}
       {...props}
     />

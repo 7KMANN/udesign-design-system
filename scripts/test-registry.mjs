@@ -17,10 +17,12 @@ const requiredItems = [
   "textarea",
   "select",
   "native-select",
+  "choice-group",
   "checkbox",
   "switch",
   "slider",
   "field",
+  "description-list",
   "dialog",
   "sheet",
   "tooltip",
@@ -31,6 +33,7 @@ const requiredItems = [
   "metric-card",
   "empty-state",
   "responsive-collection",
+  "gallery",
   "progress-ring",
   "rolling-consistency-chip",
   "moment",
@@ -77,6 +80,27 @@ for (const item of registry.items) {
   }
 }
 
+// Review I3: an item that uses another names it as @udesign/<name>, so shadcn takes it from the
+// release the consumer's namespace points at. A URL here pins one release for good: six did, to
+// v1.3.0 through v1.5.0, and adding alert over a current badge put the v1.3.0 badge back.
+const itemNames = new Set(registry.items.map((item) => item.name))
+for (const item of registry.items) {
+  const own = new Set(item.files.map((file) => path.basename(file.path).replace(/\.tsx?$/, "")))
+  const named = new Set()
+  for (const dependency of item.registryDependencies ?? []) {
+    if (dependency === "utils") continue
+    const name = /^@udesign\/([a-z-]+)$/.exec(dependency)?.[1]
+    assert.ok(name && itemNames.has(name), `${item.name} depends on ${dependency}; name another item as @udesign/<name>`)
+    named.add(name)
+  }
+  for (const file of item.files) {
+    const source = fs.readFileSync(path.join(root, file.path), "utf8")
+    for (const [, used] of source.matchAll(/from "@\/components\/ui\/([a-z-]+)"/g)) {
+      assert.ok(own.has(used) || named.has(used), `${item.name} imports ${used} without naming @udesign/${used}`)
+    }
+  }
+}
+
 const files = Object.fromEntries(
   registry.items.flatMap((item) =>
     item.files.map((file) => [path.basename(file.path), fs.readFileSync(path.join(root, file.path), "utf8")]),
@@ -101,8 +125,17 @@ assert.match(files["tabs.tsx"], /TabsPrimitive\.Trigger[\s\S]*?min-h-\[var\(--to
 assert.match(files["select.tsx"], /SelectPrimitive\.ScrollUpButton[\s\S]*?min-h-\[var\(--touch-target-min\)\]/)
 assert.match(files["select.tsx"], /SelectPrimitive\.ScrollDownButton[\s\S]*?min-h-\[var\(--touch-target-min\)\]/)
 
-for (const clientFile of ["select.tsx", "checkbox.tsx", "switch.tsx", "slider.tsx", "dialog.tsx", "sheet.tsx", "tooltip.tsx", "tabs.tsx"]) {
+for (const clientFile of ["select.tsx", "choice-group.tsx", "gallery.tsx", "checkbox.tsx", "switch.tsx", "slider.tsx", "dialog.tsx", "sheet.tsx", "tooltip.tsx", "tabs.tsx"]) {
   assert.match(files[clientFile], /^"use client"\r?\n/, `${clientFile} must preserve its App Router client boundary`)
+}
+
+// Review M7: a reference screen is copied into App Router apps as is, so one that holds state or a
+// handler declares the client boundary as its first statement, after its header comments.
+for (const example of fs.readdirSync(path.join(root, "examples")).filter((f) => f.endsWith(".tsx"))) {
+  const source = fs.readFileSync(path.join(root, "examples", example), "utf8")
+  if (!/\buse(?:State|Effect|LayoutEffect|Reducer|Ref)\(|\son[A-Z]\w*=\{/.test(source)) continue
+  const first = source.replace(/^(?:\s*\/\/[^\n]*\n|\s*\/\*[\s\S]*?\*\/)*/, "").trimStart()
+  assert.ok(first.startsWith('"use client"'), `examples/${example} holds state or a handler, so its first statement must be "use client"`)
 }
 
 const checkboxRoot = files["checkbox.tsx"].match(/<CheckboxPrimitive\.Root[\s\S]*?>/)?.[0] ?? ""
@@ -135,6 +168,32 @@ for (const name of ["input.tsx", "textarea.tsx", "select.tsx", "native-select.ts
 // safe only while no component reads it below <body>, where it is now 0px.
 assert.doesNotMatch(Object.values(files).join("\n"), /removed-body-scroll-bar-size/, "a registry component reads --removed-body-scroll-bar-size, which does not inherit below <body>")
 
+// D-49: one choice shown as buttons. A radio group with one Tab stop whose arrow keys stop at
+// the group, and explicit columns that the stylesheet's container queries lay out.
+assert.match(files["choice-group.tsx"], /role="radiogroup"/)
+assert.match(files["choice-group.tsx"], /role="radio"/)
+assert.match(files["choice-group.tsx"], /event\.stopPropagation\(\)/, "the group must stop the arrow keys it handles")
+assert.match(files["choice-group.tsx"], /tabIndex=\{choice\.value === stop \? 0 : -1\}/, "one Tab stop per group")
+assert.match(files["choice-group.tsx"], /aria-describedby=/, "the note is tied to the group")
+assert.match(files["choice-group.tsx"], /--choice-columns-/, "the group writes its columns for the stylesheet's container queries")
+
+// D-50: a header's title and description sit --space-2 apart, a spacing role (they were 6px).
+for (const [file, part] of [["dialog.tsx", "DialogHeader"], ["sheet.tsx", "SheetHeader"], ["card.tsx", "CardHeader"]]) {
+  const header = files[file].match(new RegExp(`const ${part} = [\\s\\S]*?cn\\("([^"]*)"`))?.[1] ?? ""
+  assert.match(header, /(?<![\w.-])gap-2(?![\w.-])/, `${part} must space its title and description on --space-2`)
+  assert.doesNotMatch(header, /gap-1\.5/, `${part} spaces off the roles`)
+}
+
+// D-54, D-55: one gallery for React and static pages. The React Gallery wears the static skin and
+// shares its behaviour with dist/ud-gallery.js through gallery-core.ts; Swiper's keyboard stays off.
+const gallery = registry.items.find((item) => item.name === "gallery")
+assert.deepEqual(gallery.dependencies, ["swiper@14.3.0"], "the gallery pins the Swiper release UDesign Pages vendors")
+assert.ok(!registry.items.find((item) => item.name === "core").files.some((f) => f.path.includes("gallery")), "core stays free of swiper")
+assert.ok(files["gallery.tsx"].includes('from "@/components/ui/gallery-core"'), "the React Gallery runs the shared core")
+assert.ok(files["gallery.tsx"].includes('className={cn("ud-gallery", className)}'), "the React Gallery wears the static skin")
+assert.ok(files["gallery-core.ts"].includes("keyboard: { enabled: false }"), "Swiper's own keyboard moves every gallery on screen")
+assert.doesNotMatch(files["gallery-core.ts"], /from "react"|import (?!type )[^\n]*from "swiper/, "the core is shared with the plain-JS build: no React, no Swiper code")
+
 const sliderThumb = files["slider.tsx"].match(/<SliderPrimitive\.Thumb[\s\S]*?>/)?.[0] ?? ""
 assert.match(sliderThumb, /size-\[var\(--touch-target-min\)\]/)
 
@@ -160,7 +219,10 @@ assert.doesNotMatch(files["card.tsx"], /\bp-6\b/, "a fixed p-6 ignores the opera
 const tableCell = files["table.tsx"].match(/const TableCell[\s\S]*?\n\)/)?.[0] ?? ""
 assert.match(tableCell, /py-\[var\(--surface-padding,1rem\)\]/, "TableCell must read its vertical padding from --surface-padding")
 assert.match(files["card.tsx"], /\[box-shadow:var\(--shadow-2\)\]/, "presentation cards float on --shadow-2 (D-27)")
-assert.match(files["badge.tsx"], /whitespace-nowrap/, "a badge label wrapping inside its pill reads as broken")
+assert.match(files["badge.tsx"], /: "whitespace-nowrap leading-none"/, "a badge holds one line by default: a status breaking in two in a table column reads as broken")
+// D-47: asked, a long label wraps inside its container instead of running past its edge (ban 29).
+assert.match(files["badge.tsx"], /wrap\?: boolean/)
+assert.match(files["badge.tsx"], /wrap \? "max-w-full whitespace-normal[^"]*\[overflow-wrap:anywhere\]"/, "a wrapping badge must stay inside its container")
 const NUMERIC = /\[font-family:var\(--font-numeric\)\] \[font-variant-numeric:var\(--font-numeric-variant\)\]/
 for (const name of ["metric-card.tsx", "progress-ring.tsx", "table.tsx"]) {
   assert.match(files[name], NUMERIC, `${name} must render figures through --font-numeric`)
@@ -172,7 +234,7 @@ for (const name of ["badge.tsx", "app-shell.tsx"]) {
 
 const core = registry.items.find((item) => item.name === "core")
 assert.equal(core.type, "registry:item")
-assert.equal(core.files.length, 27, "core must install the complete supported source set")
+assert.equal(core.files.length, 29, "core must install the complete supported source set")
 
 const outputDir = path.join(root, "public", "r")
 assert.ok(fs.existsSync(outputDir), "public/r must contain committed registry output")

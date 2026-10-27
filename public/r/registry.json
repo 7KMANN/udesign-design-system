@@ -10,7 +10,7 @@
       "description": "UDesign action control with semantic variants, press and pending feedback, and accessible touch targets.",
       "docs": "The pending prop disables the control, reports aria-busy, and swaps in a spinner while preserving the button's width so the layout does not jump when the work starts. The label turns transparent, never hidden, so it stays the accessible name: a pending button needs no aria-label. Press treatment is per-variant: a neutral surface darkens to the pressed role while a solid surface has no deeper solid role to move to, and every variant keeps a non-motion colour signal since --motion-press-scale collapses to 1 under reduced motion. See DESIGN.md.",
       "dependencies": ["@radix-ui/react-slot"],
-      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.5.0/public/r/spinner.json"],
+      "registryDependencies": ["utils", "@udesign/spinner"],
       "files": [{ "path": "registry/new-york/ui/button.tsx", "type": "registry:ui", "target": "components/ui/button.tsx" }]
     },
     {
@@ -18,6 +18,7 @@
       "type": "registry:ui",
       "title": "Badge",
       "description": "Semantic UDesign badge with independent tone and visual treatment.",
+      "docs": "A badge holds one line, so a status in a table column or a toolbar stays whole. Where a label can be wider than its container, such as a card on a phone, pass wrap: the label wraps inside the container instead of running past its edge (ban 29). See DESIGN.md.",
       "dependencies": ["@radix-ui/react-slot"],
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/badge.tsx", "type": "registry:ui", "target": "components/ui/badge.tsx" }]
@@ -27,7 +28,8 @@
       "type": "registry:ui",
       "title": "Alert",
       "description": "Accessible message container covering every UDesign semantic tone.",
-      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/badge.json"],
+      "docs": "An Alert is part of the page and is not a live region: a notice shown with the page is met in reading order. Pass live (role=\"status\") when its appearance is the news, such as a result, or live=\"assertive\" (role=\"alert\") for an error that stops the work. An explicit role wins. See DESIGN.md \"Feedback primitives\".",
+      "registryDependencies": ["utils", "@udesign/badge"],
       "files": [{ "path": "registry/new-york/ui/alert.tsx", "type": "registry:ui", "target": "components/ui/alert.tsx" }]
     },
     {
@@ -75,6 +77,15 @@
       "files": [{ "path": "registry/new-york/ui/native-select.tsx", "type": "registry:ui", "target": "components/ui/native-select.tsx" }]
     },
     {
+      "name": "choice-group",
+      "type": "registry:ui",
+      "title": "Choice Group",
+      "description": "One choice shown as buttons: sizes and options in explicit columns, or colour swatches, with a note under the group.",
+      "docs": "A radio group of buttons with one Tab stop. The arrow keys move and choose, and the group stops them, so a listener on the page, such as a gallery's, never sees them. Each button holds its label alone; a choice that cannot be had is disabled, dashed and struck through, and says so in words (unavailableLabel, English by default). Say what the buttons do not carry, a surcharge or what cannot be had, in note, which the group points at with aria-describedby. Disabled, the group keeps its choice and its chosen look; with name it posts as a native radio group, the chosen value or nothing. Columns come from container queries in dist/tokens.css of the same release: one row when every choice gets 4rem, otherwise rows of one count, the last at most one shorter, never one alone, unless that takes two rows more than filling them; never a cell under the touch target. The group takes its parent's width; where that width comes from its content, it asks for three touch targets, 9.25rem, or one row of its choices where that is narrower. See DESIGN.md \"Choosing one of a few\".",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/choice-group.tsx", "type": "registry:ui", "target": "components/ui/choice-group.tsx" }]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
@@ -108,6 +119,15 @@
       "description": "Form field composition with label, help text, and accessible error text.",
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/field.tsx", "type": "registry:ui", "target": "components/ui/field.tsx" }]
+    },
+    {
+      "name": "description-list",
+      "type": "registry:ui",
+      "title": "Description List",
+      "description": "Labels and their values read at a glance, such as a product's specifications: each label semibold beside its muted value.",
+      "docs": "DescriptionList holds DescriptionTerm and DescriptionDetails pairs, optionally each pair in a div, on a grid of the labels' width and the rest, 12px between rows and 16px between the columns, within 72 characters. A long value wraps inside its column. The static twin is ud-description-list. See DESIGN.md \"Listing specifications\".",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/description-list.tsx", "type": "registry:ui", "target": "components/ui/description-list.tsx" }]
     },
     {
       "name": "dialog",
@@ -159,8 +179,21 @@
       "type": "registry:component",
       "title": "Icon Button",
       "description": "Icon-only action requiring an accessible label and minimum touch target.",
-      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/button.json"],
+      "registryDependencies": ["utils", "@udesign/button"],
       "files": [{ "path": "registry/new-york/ui/icon-button.tsx", "type": "registry:component", "target": "components/ui/icon-button.tsx" }]
+    },
+    {
+      "name": "gallery",
+      "type": "registry:component",
+      "title": "Gallery",
+      "description": "A product's photos to swipe, with thumbnails named by their view, on Swiper 14.3.0: the same gallery as the plain-JS dist/ud-gallery.js.",
+      "docs": "Import Swiper's own stylesheet once beside the tokens (@import \"swiper/css/bundle\"); the skin is ud-gallery in dist/tokens.css of the same release, shared with dist/ud-gallery.js. Give each photo its copies (srcSet, such as 160, 640 and 1200px), the slide's width (sizes), its own alt and its view's name (label); priority fetches the opening photo first. A new set of photos, such as another colour's, is a new gallery that opens on start. The arrow keys move only the gallery that has the focus or the pointer, never every gallery on screen; Page Up and Page Down scroll the page. Motion follows --motion-duration-standard, 0ms under reduced motion. Screen-reader words follow <html lang> (French, or English for en), or messages. Not in core: it adds swiper. See DESIGN.md \"Showing photos\".",
+      "dependencies": ["swiper@14.3.0"],
+      "registryDependencies": ["utils"],
+      "files": [
+        { "path": "registry/new-york/ui/gallery.tsx", "type": "registry:component", "target": "components/ui/gallery.tsx" },
+        { "path": "registry/new-york/ui/gallery-core.ts", "type": "registry:component", "target": "components/ui/gallery-core.ts" }
+      ]
     },
     {
       "name": "progress-ring",
@@ -175,7 +208,7 @@
       "type": "registry:component",
       "title": "Rolling Consistency Chip",
       "description": "Trailing-window consistency count (e.g. '4 of the last 7'). Replaces the streak concept entirely - tone never varies with the count.",
-      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.1/public/r/badge.json"],
+      "registryDependencies": ["utils", "@udesign/badge"],
       "files": [{ "path": "registry/new-york/ui/rolling-consistency-chip.tsx", "type": "registry:component", "target": "components/ui/rolling-consistency-chip.tsx" }]
     },
     {
@@ -192,7 +225,7 @@
       "type": "registry:component",
       "title": "Status Badge",
       "description": "Domain-neutral status marker with tone, icon, and busy-state support.",
-      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/badge.json"],
+      "registryDependencies": ["utils", "@udesign/badge"],
       "files": [{ "path": "registry/new-york/ui/status-badge.tsx", "type": "registry:component", "target": "components/ui/status-badge.tsx" }]
     },
     {
@@ -200,7 +233,7 @@
       "type": "registry:component",
       "title": "Metric Card",
       "description": "Data readout separating positive, negative, and neutral movement from status semantics.",
-      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/card.json"],
+      "registryDependencies": ["utils", "@udesign/card"],
       "files": [{ "path": "registry/new-york/ui/metric-card.tsx", "type": "registry:component", "target": "components/ui/metric-card.tsx" }]
     },
     {
@@ -233,7 +266,8 @@
       "type": "registry:ui",
       "title": "Skeleton",
       "description": "Loading placeholder sized to the content it stands in for, so arrival does not shift the layout.",
-      "docs": "Size the skeleton to mirror the dimensions of the content it stands in for. A fallback of a different height causes a jump on arrival, which reads worse than the blank pause it replaced. See DESIGN.md.",
+      "docs": "Size the skeleton to mirror the dimensions of the content it stands in for. A fallback of a different height causes a jump on arrival, which reads worse than the blank pause it replaced. Where only phrasing content may go, inside a button, a link or a line of text, draw it on a span: <Skeleton asChild><span className=\"inline-block h-4 w-16\" /></Skeleton>. See DESIGN.md.",
+      "dependencies": ["@radix-ui/react-slot"],
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/skeleton.tsx", "type": "registry:ui", "target": "components/ui/skeleton.tsx" }]
     },
@@ -251,8 +285,8 @@
       "name": "page-canvas",
       "type": "registry:component",
       "title": "Page Canvas",
-      "description": "The presentation page shell: the page scrolls, content sits in a centered column, and a section can run edge to edge.",
-      "docs": "Use for a screen presented to someone, under data-design=\"presentation\". PageCanvas wraps the document; PageSection gives each block a centered column and generous vertical space, and variant=\"band\" runs a raised surface edge to edge. Hierarchy comes from space and elevation. An operations screen uses AppShell instead. See DESIGN.md \"Profiles\".",
+      "description": "The presentation page shell: the page scrolls, content sits in a centered column, a section can run edge to edge, and a header and a contact footer frame the page.",
+      "docs": "Use for a screen presented to someone, under data-design=\"presentation\". PageCanvas wraps the document; PageSection gives each block a centered column and generous vertical space, and variant=\"band\" runs a raised surface edge to edge. A short head and the section after it meet at --space-8 each, 64px at every width: compact=\"bottom\" on the head, compact=\"top\" after it. PageHeader opens the page: the lockup as its children, at most one action at right, one row a touch target high whoever is on the page. ContactFooter ends it with the public contact the page supplies (address, phone, email); the design system holds no business data. Hierarchy comes from space and elevation. An operations screen uses AppShell instead. See DESIGN.md \"Profiles\" and \"Components\".",
       "registryDependencies": ["utils"],
       "files": [{ "path": "registry/new-york/ui/page-canvas.tsx", "type": "registry:component", "target": "components/ui/page-canvas.tsx" }]
     },
@@ -292,10 +326,12 @@
         { "path": "registry/new-york/ui/textarea.tsx", "type": "registry:ui", "target": "components/ui/textarea.tsx" },
         { "path": "registry/new-york/ui/select.tsx", "type": "registry:ui", "target": "components/ui/select.tsx" },
         { "path": "registry/new-york/ui/native-select.tsx", "type": "registry:ui", "target": "components/ui/native-select.tsx" },
+        { "path": "registry/new-york/ui/choice-group.tsx", "type": "registry:ui", "target": "components/ui/choice-group.tsx" },
         { "path": "registry/new-york/ui/checkbox.tsx", "type": "registry:ui", "target": "components/ui/checkbox.tsx" },
         { "path": "registry/new-york/ui/switch.tsx", "type": "registry:ui", "target": "components/ui/switch.tsx" },
         { "path": "registry/new-york/ui/slider.tsx", "type": "registry:ui", "target": "components/ui/slider.tsx" },
         { "path": "registry/new-york/ui/field.tsx", "type": "registry:ui", "target": "components/ui/field.tsx" },
+        { "path": "registry/new-york/ui/description-list.tsx", "type": "registry:ui", "target": "components/ui/description-list.tsx" },
         { "path": "registry/new-york/ui/dialog.tsx", "type": "registry:ui", "target": "components/ui/dialog.tsx" },
         { "path": "registry/new-york/ui/sheet.tsx", "type": "registry:ui", "target": "components/ui/sheet.tsx" },
         { "path": "registry/new-york/ui/tooltip.tsx", "type": "registry:ui", "target": "components/ui/tooltip.tsx" },

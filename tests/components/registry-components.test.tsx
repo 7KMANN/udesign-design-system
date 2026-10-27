@@ -4,7 +4,9 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
+import { Alert } from "@/components/ui/alert"
 import { AppShell, AppShellPane, AppShellPanes, AppShellSidebar, AppShellToolbar } from "@/components/ui/app-shell"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -16,13 +18,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { DescriptionDetails, DescriptionList, DescriptionTerm } from "@/components/ui/description-list"
 import { IconButton } from "@/components/ui/icon-button"
 import { Input } from "@/components/ui/input"
 import { NativeSelect } from "@/components/ui/native-select"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Moment } from "@/components/ui/moment"
-import { PageCanvas, PageSection } from "@/components/ui/page-canvas"
+import { ContactFooter, PageCanvas, PageHeader, PageSection } from "@/components/ui/page-canvas"
+import { Pressable } from "@/components/ui/pressable"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ProgressRing } from "@/components/ui/progress-ring"
 import { ResponsiveCollection } from "@/components/ui/responsive-collection"
 import { RollingConsistencyChip } from "@/components/ui/rolling-consistency-chip"
@@ -166,7 +171,7 @@ describe("UDesign registry accessibility contracts", () => {
     // The room is the title row's alone, so a block in the description reaches the
     // footer's edge (measured in Chromium by tests/e2e/showcase.spec.ts).
     it("takes its room from the title row only, and none once hidden", () => {
-      const room = ["pr-10", "min-h-[calc(2.25rem_-_var(--surface-padding,var(--surface-padding-default)))]"]
+      const room = ["pr-10", "min-h-[calc(2.125rem_-_var(--surface-padding,var(--surface-padding-default)))]"]
       const { rerender } = render(
         <Root open>
           <Content closeLabel="Fermer"><Header><Title>Envoi</Title><Description>La commande part.</Description></Header></Content>
@@ -368,6 +373,93 @@ describe("UDesign registry accessibility contracts", () => {
     }
   })
 
+  // D-47: one line by default, so a status in a table column stays whole; asked, a long label
+  // wraps inside its container instead of running past a narrow card's edge (ban 29).
+  it("holds a badge on one line unless asked to wrap inside its container", async () => {
+    const { container } = render(
+      <>
+        <Badge tone="info">En production</Badge>
+        <Badge tone="info" wrap>Brodé au nom de chaque joueur</Badge>
+      </>,
+    )
+    const removeStyles = await applyTailwind(container)
+    try {
+      const line = getComputedStyle(screen.getByText("En production"))
+      expect(line.whiteSpace).toBe("nowrap")
+      const wrapped = getComputedStyle(screen.getByText("Brodé au nom de chaque joueur"))
+      expect(wrapped.whiteSpace).toBe("normal")
+      expect(wrapped.maxWidth).toBe("100%")
+      expect(wrapped.overflowWrap).toBe("anywhere")
+    } finally {
+      removeStyles()
+    }
+  })
+
+  // D-48: an alert shown with the page is part of the page. Only one whose appearance is the
+  // news is a live region, so a banner never needs role="presentation" to stay quiet.
+  it("makes an alert a live region only when asked, and lets an explicit role win", () => {
+    render(
+      <>
+        <Alert tone="neutral">La boutique est fermée.</Alert>
+        <Alert tone="success" live>Commande envoyée.</Alert>
+        <Alert tone="danger" live="assertive">Le lien est perdu.</Alert>
+        <Alert tone="info" live="polite" role="note">Note de produit.</Alert>
+      </>,
+    )
+    expect(screen.getByText("La boutique est fermée.")).not.toHaveAttribute("role")
+    expect(screen.getByText("La boutique est fermée.")).toHaveAttribute("data-slot", "alert")
+    expect(screen.getAllByRole("status")).toHaveLength(1)
+    expect(screen.getByRole("status")).toHaveTextContent("Commande envoyée.")
+    expect(screen.getByRole("alert")).toHaveTextContent("Le lien est perdu.")
+    expect(screen.getByRole("note")).toHaveTextContent("Note de produit.")
+  })
+
+  // D-57: one source for specifications, as UDesign Pages and Boutique each wrote them.
+  it("lists labels beside their values, a pair optionally grouped in a div", async () => {
+    const { container } = render(
+      <main>
+        <DescriptionList>
+          <DescriptionTerm>Tissu</DescriptionTerm>
+          <DescriptionDetails>Coton épais, 6,5 oz</DescriptionDetails>
+          <div>
+            <DescriptionTerm>Coupe</DescriptionTerm>
+            <DescriptionDetails>Ample</DescriptionDetails>
+          </div>
+        </DescriptionList>
+      </main>,
+    )
+    const list = container.querySelector("dl") as HTMLElement
+    expect(list).toHaveClass("grid", "max-w-[72ch]", "grid-cols-[max-content_minmax(0,1fr)]", "gap-x-4", "gap-y-3", "[&>div]:contents")
+    expect(screen.getByText("Tissu").tagName).toBe("DT")
+    expect(screen.getByText("Tissu")).toHaveClass("font-semibold")
+    expect(screen.getByText("Ample").tagName).toBe("DD")
+    expect(screen.getByText("Ample")).toHaveClass("text-[var(--muted-foreground)]", "[overflow-wrap:anywhere]")
+    // Laid out in Chromium by tests/e2e/components.spec.ts: jsdom cannot.
+    expect((await axe.run(container)).violations).toEqual([])
+  })
+
+  // D-58: a placeholder where only phrasing content may go, such as a price inside a Pressable.
+  it("draws a skeleton on a span inside a button, keeping the button's content phrasing", () => {
+    const ref = React.createRef<HTMLDivElement>()
+    render(
+      <Pressable>
+        <span>Heavy Tee</span>
+        <Skeleton asChild ref={ref}>
+          <span data-testid="price" className="inline-block h-4 w-16" />
+        </Skeleton>
+      </Pressable>,
+    )
+    const button = screen.getByRole("button", { name: "Heavy Tee" })
+    expect(button.querySelector("div")).toBeNull()
+    const price = screen.getByTestId("price")
+    expect(price.tagName).toBe("SPAN")
+    expect(ref.current).toBe(price)
+    expect(price).toHaveAttribute("aria-hidden", "true")
+    expect(price).toHaveClass("inline-block", "h-4", "w-16", "bg-[var(--muted)]", "motion-safe:animate-pulse")
+    render(<Skeleton data-testid="block" className="h-6 w-24" />)
+    expect(screen.getByTestId("block").tagName).toBe("DIV")
+  })
+
   it("does not fire a click on a pending action", async () => {
     const onClick = vi.fn()
     render(<Button pending onClick={onClick}>Send</Button>)
@@ -428,6 +520,59 @@ describe("UDesign page shells", () => {
     expect(section.firstElementChild).toHaveClass("mx-auto", "max-w-6xl")
     expect(section).toHaveClass("bg-[var(--card)]")
     expect((await axe.run(container)).violations).toEqual([])
+  })
+
+  // D-56: a short head and the section after it meet at --space-8 each, 64px at every width.
+  it("lets a section meet its neighbour at --space-8 on one edge, or both", () => {
+    const padding = (compact?: "top" | "bottom" | "both") => {
+      const { container, unmount } = render(<PageSection compact={compact}>Section</PageSection>)
+      const classes = [...(container.firstElementChild as HTMLElement).classList].filter((c) => /^p[tby]-/.test(c))
+      unmount()
+      return classes
+    }
+    const full = "clamp(var(--space-8),8vw,calc(var(--space-8)*2))"
+    expect(padding()).toEqual([`py-[${full}]`])
+    expect(padding("bottom")).toEqual([`pt-[${full}]`, "pb-[var(--space-8)]"])
+    expect(padding("top")).toEqual(["pt-[var(--space-8)]", `pb-[${full}]`])
+    expect(padding("both")).toEqual(["py-[var(--space-8)]"])
+  })
+
+  // D-52: the lockup at left, at most one action at right, one row a touch target high on the
+  // sections' column, whoever is on the page (measured in Chromium by the layout audit).
+  it("opens a presentation page with the lockup at left and at most one action at right, in one row", async () => {
+    const page = (action?: React.ReactNode) => (
+      <PageCanvas>
+        <PageHeader action={action}><span>UDesign</span></PageHeader>
+      </PageCanvas>
+    )
+    const { container, rerender } = render(page(<button type="button">Ce n’est pas vous ?</button>))
+    const row = screen.getByRole("banner").firstElementChild as HTMLElement
+    expect(row).toHaveClass("min-h-[var(--touch-target-min)]", "mx-auto", "max-w-6xl", "items-center", "justify-between")
+    expect(row.children).toHaveLength(2)
+    expect(screen.getByRole("button", { name: "Ce n’est pas vous ?" }).parentElement).toHaveClass("shrink-0", "whitespace-nowrap")
+    expect((await axe.run(container)).violations).toEqual([])
+    rerender(page())
+    expect(screen.getByRole("banner").firstElementChild?.children).toHaveLength(1)
+  })
+
+  // D-53: the page supplies the contact; the footer holds none of its own.
+  it("ends a presentation page with the public contact the page supplies, as links a thumb can reach", async () => {
+    const { container, rerender } = render(
+      <ContactFooter
+        address="Entreprise exemple, 1 rue Exemple, Ville QC"
+        phone={{ label: "819 555-0100", href: "tel:+18195550100" }}
+        email={{ label: "contact@example.com", href: "mailto:contact@example.com" }}
+      />,
+    )
+    expect(screen.getByRole("contentinfo")).toHaveTextContent("Entreprise exemple, 1 rue Exemple, Ville QC")
+    const phone = screen.getByRole("link", { name: "819 555-0100" })
+    expect(phone).toHaveAttribute("href", "tel:+18195550100")
+    expect(screen.getByRole("link", { name: "contact@example.com" })).toHaveAttribute("href", "mailto:contact@example.com")
+    expect(phone).toHaveClass("min-h-[var(--touch-target-min)]", "active:bg-[var(--interactive-pressed)]", "focus-visible:outline-[color:var(--interactive-focus)]")
+    expect((await axe.run(container)).violations).toEqual([])
+    rerender(<ContactFooter address="Entreprise exemple" />)
+    expect(screen.queryAllByRole("link")).toEqual([])
+    expect(screen.getByRole("contentinfo").textContent).toBe("Entreprise exemple")
   })
 
   it("marks a numeric table column so each profile can render its figures", () => {
