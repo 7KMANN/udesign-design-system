@@ -292,8 +292,9 @@ describe("ChoiceGroup rows", () => {
     expect(screen.getByRole("radio", { name: /au dos/ }).querySelector('[data-slot="choice-label"]')).toHaveClass("line-through")
   })
 
-  // Review I3: a falsy detail, what `price !== null && price` gives, is no detail at all.
-  it("reads a node detail, and adds nothing for none, false or an empty one", () => {
+  // Review I3: a falsy detail, what `price !== null && price` gives, is no detail at all; nor is a blank
+  // string or an empty list (re-review N4, N6). 0 is one.
+  it("reads a node detail, and adds nothing for none, false, true, null, an empty or blank string or an empty list", () => {
     render(
       <ChoiceGroup
         aria-label="Détails"
@@ -303,13 +304,17 @@ describe("ChoiceGroup rows", () => {
           { value: "none", label: "Sans détail" },
           { value: "false", label: "Détail faux", detail: false },
           { value: "empty", label: "Détail vide", detail: "" },
+          { value: "null", label: "Détail nul", detail: null },
+          { value: "true", label: "Détail vrai", detail: true },
+          { value: "blank", label: "Détail blanc", detail: " " },
+          { value: "list", label: "Liste vide", detail: [] },
           { value: "zero", label: "Gratuit", detail: 0 },
         ]}
       />,
     )
     const radios = screen.getAllByRole("radio")
-    expect(radios).toEqual(["Un nœud, 89 $ 79 $", "Sans détail", "Détail faux", "Détail vide", "Gratuit, 0"].map((name) => screen.getByRole("radio", { name })))
-    expect(radios.map((r) => r.querySelectorAll('[data-slot="choice-detail"]').length), "a detail box only for a detail").toEqual([1, 0, 0, 0, 1])
+    expect(radios).toEqual(["Un nœud, 89 $ 79 $", "Sans détail", "Détail faux", "Détail vide", "Détail nul", "Détail vrai", "Détail blanc", "Liste vide", "Gratuit, 0"].map((name) => screen.getByRole("radio", { name })))
+    expect(radios.map((r) => r.querySelectorAll('[data-slot="choice-detail"]').length), "a detail box only for a detail").toEqual([1, 0, 0, 0, 0, 0, 0, 0, 1])
   })
 
   it("moves and chooses with the arrow keys, skipping what cannot be had, and stops them there", async () => {

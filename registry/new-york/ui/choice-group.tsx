@@ -16,7 +16,8 @@ export interface Choice {
   /**
    * Rows only: a short figure the row shows at its end, such as the option's price, semibold in the
    * numeric pair. Phrasing content: it is also read in the choice's name, after its label. false, true,
-   * null and "" are no detail; 0 is one.
+   * null, a blank string and an empty list are no detail; 0 is one. An element that renders nothing still
+   * counts: pass undefined for none.
    */
   detail?: React.ReactNode
 }
@@ -109,8 +110,14 @@ const rowPress =
 const rowClass =
   "group relative flex min-h-[var(--touch-target-min)] w-full min-w-0 flex-wrap items-center gap-x-3 gap-y-1 rounded-[var(--radius)] border border-[var(--border-strong)] bg-[var(--card)] px-3 py-2 text-start [font-size:inherit] [line-height:inherit] text-[var(--card-foreground)] hover:bg-[var(--interactive-hover)] active:bg-[var(--interactive-pressed)] aria-checked:border-[var(--interactive-selected-border)] aria-checked:bg-[var(--interactive-selected)] aria-checked:text-[var(--interactive-selected-foreground)] aria-checked:ring-1 aria-checked:ring-inset aria-checked:ring-[var(--interactive-selected-border)] disabled:aria-[checked=false]:bg-[var(--interactive-disabled)] disabled:aria-[checked=false]:text-[var(--interactive-disabled-foreground)] data-[unavailable=true]:border-dashed"
 
-// No detail: what a condition gives where there is none (false, ""), and nothing at all.
-const hasDetail = (detail: React.ReactNode) => detail !== undefined && detail !== null && detail !== false && detail !== true && detail !== ""
+// No detail: nothing at all, what a condition gives where there is none (false, true, null, ""), a blank
+// string and an empty list. An element that renders nothing cannot be told apart from one that does.
+const hasDetail = (detail: React.ReactNode) =>
+  detail !== undefined &&
+  detail !== null &&
+  typeof detail !== "boolean" &&
+  !(typeof detail === "string" && detail.trim() === "") &&
+  !(Array.isArray(detail) && detail.length === 0)
 
 const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
   (

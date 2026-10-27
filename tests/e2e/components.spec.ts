@@ -358,9 +358,9 @@ for (const width of [375, 1280]) {
   })
 }
 
-// Review I1 (v3.4.0): rows replace Boutique's option rows, which its appearance review passed, with one
-// visible change, named: they press with the subtle scale a wide surface takes. Body text on its line,
-// a regular label, the detail semibold in the numeric pair, Boutique's ring mark and its row heights.
+// Review I1 (v3.4.0): rows draw as Boutique's option rows did, which its appearance review passed: body
+// text on its line, a regular label, the detail semibold in the numeric pair, Boutique's ring mark and its
+// row heights. D-59 lists the six things that still differ, such as the subtle press of a wide surface.
 test("rows look as Boutique's option rows did: body text, a regular label, a semibold numeric detail, a ring mark", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 900 })
   await page.goto("/fixtures.html?fixture=choice-rows")
@@ -406,23 +406,60 @@ test("at 375px a row's detail: a node is read, none and a falsy one add nothing,
   await page.goto("/fixtures.html?fixture=choice-rows")
   const group = page.getByTestId("rows-edge")
   await expect(group.getByRole("radio").first()).toBeVisible({ timeout: 20_000 })
-  const names = await chromiumNames(page, "radio")
-  expect(names.slice(4)).toEqual(["Un nœud, 89 $ 79 $", "Sans détail", "Détail faux", "Détail vide", "Un long détail, à partir de 1 234,56 $ par pièce, taxes en sus"])
+  // [label, the detail the name reads, or null for none]. None, false, "", null, true and a blank string
+  // give none (re-review N4); the last three details hold the label's 8ch and the row's edge (N5).
+  const cases: Array<[string, string | null]> = [
+    ["Un nœud", "89 $ 79 $"],
+    ["Sans détail", null],
+    ["Détail faux", null],
+    ["Détail vide", null],
+    ["Détail nul", null],
+    ["Détail vrai", null],
+    ["Détail blanc", null],
+    ["Un long détail", "à partir de 1 234,56 $ par pièce, taxes en sus"],
+    ["Un détail moyen", "à partir de 79,00 $ par pièce"],
+    ["Un très long détail", "à partir de 1 234,56 $ par pièce, taxes en sus, livraison comprise au Québec, selon les quantités"],
+    ["Un court détail", "à partir de 79 $"],
+  ]
+  const named = (await chromiumNames(page, "radio")).filter((name) => cases.some(([label]) => name === label || name.startsWith(`${label}, `)))
+  expect(named).toEqual(cases.map(([label, detail]) => (detail ? `${label}, ${detail}` : label)))
   const rows = await group.getByRole("radio").evaluateAll((els) =>
     els.map((el) => {
-      const label = el.querySelector('[data-slot="choice-label"]')!.getBoundingClientRect()
+      const labelEl = el.querySelector('[data-slot="choice-label"]')!
+      const probe = document.createElement("span")
+      probe.style.cssText = "display:inline-block;width:8ch"
+      labelEl.append(probe)
+      const ch8 = probe.getBoundingClientRect().width
+      probe.remove()
+      const label = labelEl.getBoundingClientRect()
       const detail = el.querySelector('[data-slot="choice-detail"]')?.getBoundingClientRect()
-      return { boxes: el.querySelectorAll('[data-slot="choice-detail"]').length, overflow: el.scrollWidth - el.clientWidth, right: el.getBoundingClientRect().right, label, detail }
+      return {
+        boxes: el.querySelectorAll('[data-slot="choice-detail"]').length,
+        overflow: el.scrollWidth - el.clientWidth,
+        right: el.getBoundingClientRect().right,
+        ch8,
+        label: { width: label.width, bottom: label.bottom },
+        detail: detail && { top: detail.top, right: detail.right, height: detail.height },
+      }
     }),
   )
-  expect(rows.map((r) => r.boxes), "a detail box only where there is a detail").toEqual([1, 0, 0, 0, 1])
-  for (const [i, row] of rows.entries()) expect(row.overflow, `row ${i}: nothing runs out of it`).toBeLessThanOrEqual(0)
-  expect(rows[2].label.width, "a falsy detail takes no room").toBeCloseTo(rows[1].label.width, 0)
-  expect(rows[3].label.width, "nor an empty one").toBeCloseTo(rows[1].label.width, 0)
-  const long = rows[4]
-  expect(long.label.width, "the label keeps its room beside a long detail").toBeGreaterThan(200)
-  expect(long.detail!.top, "the long detail moves under the label").toBeGreaterThanOrEqual(long.label.bottom - 1)
-  expect(long.detail!.right, "and stays inside its row").toBeLessThanOrEqual(long.right)
+  expect(rows, "one row per case").toHaveLength(cases.length)
+  expect(rows.map((r) => r.boxes), "a detail box only where there is a detail").toEqual(cases.map(([, detail]) => (detail ? 1 : 0)))
+  rows.forEach((row, i) => {
+    const label = cases[i][0]
+    expect(row.overflow, `${label}: nothing runs out of the row`).toBeLessThanOrEqual(0)
+    if (!row.detail) expect(row.label.width, `${label}: no detail takes no room`).toBeCloseTo(rows[1].label.width, 0)
+    else {
+      expect(row.detail.right, `${label}: the detail stays inside its row`).toBeLessThanOrEqual(row.right)
+      if (row.detail.top < row.label.bottom - 1) expect(row.label.width, `${label}: beside a detail the label keeps 8ch`).toBeGreaterThanOrEqual(row.ch8 - 0.5)
+    }
+  })
+  const at = (label: string) => rows[cases.findIndex(([l]) => l === label)]
+  for (const label of ["Un long détail", "Un détail moyen", "Un très long détail"]) {
+    expect(at(label).detail!.top, `${label}: moves under the label`).toBeGreaterThanOrEqual(at(label).label.bottom - 1)
+  }
+  expect(at("Un très long détail").detail!.height, "wider than the row, it wraps there").toBeGreaterThan(30)
+  expect(at("Un court détail").detail!.top, "a short detail stays beside the label").toBeLessThan(at("Un court détail").label.bottom - 1)
 })
 
 // Review M3 (v3.4.0): rows read no column query, so in a parent sized by its content they size as a
@@ -465,6 +502,40 @@ test("a held choice group keeps its choice's look, and only a choice that cannot
   expect(await look("choices-open", "S")).toEqual(["true", selected, "solid"])
   expect(await look("choices-open", "M")).toEqual(["false", card, "solid"])
   expect(await look("choices-open", /^XL.+unavailable$/)).toEqual(["false", disabled, "dashed"])
+})
+
+// Re-review N8: the rows' chosen, held and unavailable looks, as the buttons': the chosen row keeps its
+// surface, its ring and a solid border while held; the others take the disabled surface; only what
+// cannot be had is dashed, its label struck through.
+test("rows keep the chosen look while held, and only a choice that cannot be had is dashed", async ({ page }) => {
+  await page.goto("/fixtures.html?fixture=choice-rows")
+  await expect(page.getByTestId("rows-held").getByRole("radio").first()).toBeVisible({ timeout: 20_000 })
+  const token = (name: string) =>
+    page.evaluate((n) => {
+      const probe = document.createElement("div")
+      probe.style.background = `var(${n})`
+      probe.style.color = "var(--interactive-selected-border)"
+      document.body.append(probe)
+      const colours = [getComputedStyle(probe).backgroundColor, getComputedStyle(probe).color]
+      probe.remove()
+      return colours
+    }, name)
+  const [[selected, ring], [disabled], [card]] = [await token("--interactive-selected"), await token("--interactive-disabled"), await token("--card")]
+  const look = (group: string, name: RegExp) =>
+    page.getByTestId(group).getByRole("radio", { name }).evaluate((el) => {
+      const s = getComputedStyle(el)
+      const label = getComputedStyle(el.querySelector('[data-slot="choice-label"]')!)
+      return { checked: el.getAttribute("aria-checked"), surface: s.backgroundColor, border: s.borderTopStyle, ring: s.boxShadow, struck: label.textDecorationLine }
+    })
+  for (const group of ["rows-held", "rows"]) {
+    const chosen = await look(group, /devant seulement/)
+    expect([chosen.checked, chosen.surface, chosen.border], `${group}: the chosen row`).toEqual(["true", selected, "solid"])
+    expect(chosen.ring, `${group}: its ring`).toContain(`${ring} 0px 0px 0px 1px inset`)
+    const other = await look(group, /^Broderie devant et dos, 79/)
+    expect([other.checked, other.surface, other.border], `${group}: another row`).toEqual(["false", group === "rows-held" ? disabled : card, "solid"])
+    const unavailable = await look(group, /au dos seulement/)
+    expect([unavailable.surface, unavailable.border, unavailable.struck], `${group}: what cannot be had`).toEqual([disabled, "dashed", "line-through"])
+  }
 })
 
 // Review M6: a long list fills its rows at a phone's width instead of standing in eleven rows of two.

@@ -97,7 +97,15 @@ function ChoiceRows() {
     { value: 'none', label: 'Sans détail' },
     { value: 'false', label: 'Détail faux', detail: false },
     { value: 'empty', label: 'Détail vide', detail: '' },
+    { value: 'null', label: 'Détail nul', detail: null },
+    { value: 'true', label: 'Détail vrai', detail: true },
+    { value: 'blank', label: 'Détail blanc', detail: ' ' },
     { value: 'long', label: 'Un long détail', detail: 'à partir de 1 234,56 $ par pièce, taxes en sus' },
+    // About 200px on a phone: beside the label it would leave it under 8ch (re-review N5).
+    { value: 'mid', label: 'Un détail moyen', detail: 'à partir de 79,00 $ par pièce' },
+    // About 100 characters: wider than the row, so it must wrap there (re-review N5).
+    { value: 'longer', label: 'Un très long détail', detail: 'à partir de 1 234,56 $ par pièce, taxes en sus, livraison comprise au Québec, selon les quantités' },
+    { value: 'short', label: 'Un court détail', detail: 'à partir de 79 $' },
   ];
   return (
     <main className="grid gap-6 p-4">
@@ -107,6 +115,10 @@ function ChoiceRows() {
       {/* Every kind of detail: a node, none, the falsy values a condition gives, and one too long for a phone. */}
       <div data-testid="rows-edge">
         <ChoiceGroup aria-label="Détails" variant="rows" choices={edges} unavailableLabel="Non disponible" />
+      </div>
+      {/* Held while it saves (re-review N8): the chosen row keeps its look, only what cannot be had is dashed. */}
+      <div data-testid="rows-held">
+        <ChoiceGroup aria-label="Option, en attente" variant="rows" choices={options} value="front" disabled unavailableLabel="Non disponible" />
       </div>
     </main>
   );
