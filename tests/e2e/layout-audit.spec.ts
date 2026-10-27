@@ -197,10 +197,10 @@ test("static header and footer: one row a touch target high with or without the 
 })
 
 // D-60: one rule above the footer. A page that ends with a band keeps the band's bottom border and
-// the footer draws none of its own, where it drew a second (Boutique's move to v3.3.0, gap 1). The
+// the footer draws none of its own, where it drew a second (Boutique's move to v3.3.0, gap 2). The
 // band ends main (UDesign Pages' condition), ends main's last block (Boutique's article), or sits
 // right before the footer; a page that ends on its field keeps the footer's rule.
-const pageEnds = [["band", 0], ["nested", 0], ["sibling", 0], ["canvas", 1]] as const
+const pageEnds = [["band", 0], ["nested", 0], ["sibling", 0], ["canvas", 1], ["sibling-canvas", 1]] as const
 const borderTop = (el: Element) => parseFloat(getComputedStyle(el).borderTopWidth)
 
 test("ContactFooter leaves its rule to a band that ends the page", async ({ page }) => {
@@ -220,6 +220,7 @@ test("static sections: ud-contact-footer leaves its rule to a band that ends the
     nested: `<main>${section(false)}<article>${section(false)}${section(true)}</article></main>`,
     sibling: `${section(false)}${section(true)}`,
     canvas: `<main>${section(true)}${section(false)}</main>`,
+    "sibling-canvas": `${section(true)}${section(false)}`,
   }
   await page.goto("/examples.html")
   for (const [end, rule] of pageEnds) {

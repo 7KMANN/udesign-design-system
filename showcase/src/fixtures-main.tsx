@@ -175,7 +175,8 @@ function Specs() {
 }
 
 // A page's last section and its contact footer, as ?fixture=footer&end= sets them: a band ending main,
-// a band ending main's last block (an article), a band right before the footer, or the page field.
+// a band ending main's last block (an article), a band right before the footer, or the page field after
+// a band, in main or without it (review M2: a selector that forgets :last-child or + must fail there).
 function Footer() {
   const end = new URLSearchParams(location.search).get('end') ?? 'canvas';
   const band = <PageSection variant="band"><h2 className="ud-h2">Articles</h2></PageSection>;
@@ -185,9 +186,11 @@ function Footer() {
     <PageCanvas>
       {end === 'sibling' ? (
         <>{canvas}{band}</>
+      ) : end === 'sibling-canvas' ? (
+        <>{band}{canvas}</>
       ) : (
         <main>
-          {canvas}
+          {end === 'canvas' ? band : canvas}
           {end === 'band' ? band : end === 'nested' ? <article>{canvas}{band}</article> : canvas}
         </main>
       )}
