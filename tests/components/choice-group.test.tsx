@@ -70,6 +70,8 @@ describe("choiceColumns", () => {
     expect(queries.map((m) => [Number(m[1]), Number(m[2])])).toEqual(CHOICE_RANGES.slice(1).map((r, i) => [r.from, i + 2]))
     expect(css).toMatch(/\[data-slot="choice-group-items"\]\[data-variant="button"\] \{ grid-template-columns: repeat\(var\(--choice-columns-1, 1\)/)
     expect(css).toMatch(/\[data-slot="choice-group"\] \{ container-type: inline-size; contain-intrinsic-inline-size: var\(--choice-intrinsic, 9\.25rem\); \}/)
+    // D-59: rows read no column query, so the group is no size container there (review M3).
+    expect(css).toMatch(/\[data-slot="choice-group"\]\[data-variant="rows"\] \{ container-type: normal; \}/)
   })
 })
 
@@ -284,9 +286,30 @@ describe("ChoiceGroup rows", () => {
     expect(label).toHaveAttribute("data-slot", "choice-label")
     expect(label).toHaveClass("flex-1", "[overflow-wrap:anywhere]")
     expect(detail).toHaveAttribute("data-slot", "choice-detail")
-    expect(detail).toHaveClass("shrink-0", "text-end", "whitespace-nowrap")
+    // A figure: the numeric pair, semibold, at the row's end (review I1, M11).
+    expect(detail).toHaveClass("ms-auto", "text-end", "font-semibold", "[font-family:var(--font-numeric)]", "[font-variant-numeric:var(--font-numeric-variant)]")
     expect(detail).toHaveTextContent("79 $")
     expect(screen.getByRole("radio", { name: /au dos/ }).querySelector('[data-slot="choice-label"]')).toHaveClass("line-through")
+  })
+
+  // Review I3: a falsy detail, what `price !== null && price` gives, is no detail at all.
+  it("reads a node detail, and adds nothing for none, false or an empty one", () => {
+    render(
+      <ChoiceGroup
+        aria-label="Détails"
+        variant="rows"
+        choices={[
+          { value: "node", label: "Un nœud", detail: <span><s>89 $</s> 79 $</span> },
+          { value: "none", label: "Sans détail" },
+          { value: "false", label: "Détail faux", detail: false },
+          { value: "empty", label: "Détail vide", detail: "" },
+          { value: "zero", label: "Gratuit", detail: 0 },
+        ]}
+      />,
+    )
+    const radios = screen.getAllByRole("radio")
+    expect(radios).toEqual(["Un nœud, 89 $ 79 $", "Sans détail", "Détail faux", "Détail vide", "Gratuit, 0"].map((name) => screen.getByRole("radio", { name })))
+    expect(radios.map((r) => r.querySelectorAll('[data-slot="choice-detail"]').length), "a detail box only for a detail").toEqual([1, 0, 0, 0, 1])
   })
 
   it("moves and chooses with the arrow keys, skipping what cannot be had, and stops them there", async () => {

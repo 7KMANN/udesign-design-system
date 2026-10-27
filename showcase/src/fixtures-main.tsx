@@ -71,6 +71,11 @@ function ChoicesPhone() {
           {wrap(<ChoiceGroup aria-label={`8 tailles, ${name}`} choices={sizes(8)} />)}
         </div>
       ))}
+      {shrinking.slice(0, 2).map(([name, wrap]) => (
+        <div key={`rows-${name}`} data-testid={`rows-in-${name}`}>
+          {wrap(<ChoiceGroup aria-label={`Options, ${name}`} variant="rows" choices={[{ value: 'both', label: 'Broderie devant et dos', detail: '79 $' }, { value: 'team', label: 'Broderie devant et dos, avec le nom de l’équipe sur la manche gauche', detail: '89 $' }]} />)}
+        </div>
+      ))}
       <div data-testid="choices-place-swatches">
         <div style={{ display: 'grid' }}><div><ChoiceGroup variant="swatch" aria-label="8 couleurs" choices={colours} /></div></div>
       </div>
@@ -87,10 +92,21 @@ function ChoiceRows() {
     { value: 'back', label: 'Broderie au dos seulement', detail: '59 $', disabled: true },
     { value: 'team', label: 'Broderie devant et dos, avec le nom de l’équipe sur la manche gauche', detail: '89 $' },
   ];
+  const edges = [
+    { value: 'node', label: 'Un nœud', detail: <span><s>89 $</s> 79 $</span> },
+    { value: 'none', label: 'Sans détail' },
+    { value: 'false', label: 'Détail faux', detail: false },
+    { value: 'empty', label: 'Détail vide', detail: '' },
+    { value: 'long', label: 'Un long détail', detail: 'à partir de 1 234,56 $ par pièce, taxes en sus' },
+  ];
   return (
     <main className="grid gap-6 p-4">
       <div data-testid="rows">
         <ChoiceGroup aria-label="Option" variant="rows" choices={options} value={value} onValueChange={setValue} unavailableLabel="Non disponible" />
+      </div>
+      {/* Every kind of detail: a node, none, the falsy values a condition gives, and one too long for a phone. */}
+      <div data-testid="rows-edge">
+        <ChoiceGroup aria-label="Détails" variant="rows" choices={edges} unavailableLabel="Non disponible" />
       </div>
     </main>
   );

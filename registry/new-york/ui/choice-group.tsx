@@ -13,7 +13,11 @@ export interface Choice {
   disabled?: boolean
   /** A swatch's colour, as any CSS background: the product's own colour, or a pattern for a plaid. Product data, which ban 3 allows. */
   swatch?: string
-  /** Rows only: what the row shows at its end, such as the option's price. Phrasing content: it is also read in the choice's name, after its label. */
+  /**
+   * Rows only: a short figure the row shows at its end, such as the option's price, semibold in the
+   * numeric pair. Phrasing content: it is also read in the choice's name, after its label. false, true,
+   * null and "" are no detail; 0 is one.
+   */
   detail?: React.ReactNode
 }
 
@@ -96,13 +100,17 @@ const buttonClass =
 const swatchClass =
   "inline-flex size-[var(--touch-target-min)] shrink-0 items-center justify-center rounded-full border border-[var(--border-strong)] bg-[var(--card)] hover:bg-[var(--interactive-hover)] active:bg-[var(--interactive-pressed)] aria-checked:border-[var(--interactive-selected-border)] aria-checked:ring-2 aria-checked:ring-[var(--interactive-selected-border)] disabled:aria-[checked=false]:bg-[var(--interactive-disabled)] data-[unavailable=true]:border-dashed"
 
-// A row (D-59): the whole width, a radio mark, the label at the start, wrapping inside the row,
-// and the detail at the end. Chosen and unavailable read as a button's do; a row presses with the
-// subtle scale, as a wide surface does.
+// A row (D-59), as Boutique's option rows looked: the text of where it sits (the body's, on a page),
+// a ring mark, the label at the start, wrapping inside the row, and the detail at the end. Chosen and unavailable read as a
+// button's do. A row presses with the subtle scale, as a wide surface does (--motion-press-scale-subtle).
+// The row wraps: a detail that does not fit beside the label's least room (8ch) moves under it.
 const rowPress =
   "transition-[transform,scale,background-color,border-color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale-subtle)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--interactive-focus)] disabled:cursor-not-allowed disabled:active:scale-100"
 const rowClass =
-  "group relative flex min-h-[var(--touch-target-min)] w-full min-w-0 items-center gap-3 rounded-[var(--radius)] border border-[var(--border-strong)] bg-[var(--card)] px-3 py-2 text-start text-sm leading-snug text-[var(--card-foreground)] hover:bg-[var(--interactive-hover)] active:bg-[var(--interactive-pressed)] aria-checked:border-[var(--interactive-selected-border)] aria-checked:bg-[var(--interactive-selected)] aria-checked:text-[var(--interactive-selected-foreground)] aria-checked:ring-1 aria-checked:ring-inset aria-checked:ring-[var(--interactive-selected-border)] disabled:aria-[checked=false]:bg-[var(--interactive-disabled)] disabled:aria-[checked=false]:text-[var(--interactive-disabled-foreground)] data-[unavailable=true]:border-dashed"
+  "group relative flex min-h-[var(--touch-target-min)] w-full min-w-0 flex-wrap items-center gap-x-3 gap-y-1 rounded-[var(--radius)] border border-[var(--border-strong)] bg-[var(--card)] px-3 py-2 text-start [font-size:inherit] [line-height:inherit] text-[var(--card-foreground)] hover:bg-[var(--interactive-hover)] active:bg-[var(--interactive-pressed)] aria-checked:border-[var(--interactive-selected-border)] aria-checked:bg-[var(--interactive-selected)] aria-checked:text-[var(--interactive-selected-foreground)] aria-checked:ring-1 aria-checked:ring-inset aria-checked:ring-[var(--interactive-selected-border)] disabled:aria-[checked=false]:bg-[var(--interactive-disabled)] disabled:aria-[checked=false]:text-[var(--interactive-disabled-foreground)] data-[unavailable=true]:border-dashed"
+
+// No detail: what a condition gives where there is none (false, ""), and nothing at all.
+const hasDetail = (detail: React.ReactNode) => detail !== undefined && detail !== null && detail !== false && detail !== true && detail !== ""
 
 const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
   (
@@ -191,6 +199,7 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
         >
           {choices.map((choice) => {
             const unavailable = Boolean(choice.disabled)
+            const detailed = variant === "rows" && hasDetail(choice.detail)
             return (
               <button
                 key={choice.value}
@@ -217,21 +226,19 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
               >
                 {variant === "rows" ? (
                   <>
-                    <span aria-hidden="true" className="grid size-4 shrink-0 place-items-center rounded-full border border-[var(--border-strong)] bg-[var(--card)] group-aria-checked:border-[var(--interactive-selected-border)]">
-                      <span className="size-2 rounded-full group-aria-checked:bg-[var(--interactive-selected-border)]" />
-                    </span>
-                    <span aria-hidden="true" data-slot="choice-label" className={cn("min-w-0 flex-1 font-semibold [overflow-wrap:anywhere]", unavailable && "line-through")}>
+                    <span aria-hidden="true" className="size-4 shrink-0 rounded-full border-2 border-[var(--border-strong)] group-aria-checked:border-[5px] group-aria-checked:border-[var(--interactive-selected-border)]" />
+                    <span aria-hidden="true" data-slot="choice-label" className={cn("min-w-[min(8ch,100%)] flex-1 [overflow-wrap:anywhere]", unavailable && "line-through")}>
                       {choice.label}
                     </span>
-                    {choice.detail != null ? (
-                      <span aria-hidden="true" data-slot="choice-detail" className="shrink-0 whitespace-nowrap text-end">
+                    {detailed ? (
+                      <span aria-hidden="true" data-slot="choice-detail" className="ms-auto min-w-0 text-end font-semibold [font-family:var(--font-numeric)] [font-variant-numeric:var(--font-numeric-variant)] [overflow-wrap:anywhere]">
                         {choice.detail}
                       </span>
                     ) : null}
                     {/* Its whole name in one box, label, detail and the words: as several boxes, Chromium puts a space before each comma. */}
                     <span className="sr-only">
                       {choice.label}
-                      {choice.detail != null ? <>, {choice.detail}</> : null}
+                      {detailed ? <>, {choice.detail}</> : null}
                       {unavailable ? `, ${unavailableLabel}` : null}
                     </span>
                   </>
