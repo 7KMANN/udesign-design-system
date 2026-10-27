@@ -1435,11 +1435,11 @@ which would cover a button but not a table cell or a list item.
 
 **Evidence:** "Design-system gaps" in Boutique's report of its move to v3.3.0 (`ds33-move-report.md`:
 1 the options' prices, 2 the footer after a band, 3 the unavailable name, 4 the gallery's opening
-photo), each reproduced here before it changed. The review of PR 4 sent the first fix round. None of this round is approved: D-59 to D-61
-wait for Kaleb, and the `DESIGN.md` sentence each adds or changes carries `NEEDS-APPROVAL` and the
-entry's number until he answers. Δ-29 is derived. Shipped as release candidate v3.4.0.
+photo), each reproduced here before it changed. The review of PR 4 sent the first fix round. Kaleb approved D-59 to D-61 on 2026-10-27 ("I approve
+D-59, D-60 and D-61"): the `DESIGN.md` sentence each adds or changes carries `APPROVED 2026-10-27` and
+the entry's number. Δ-29 is derived. Shipped as release candidate v3.4.0.
 
-### D-59 · `ChoiceGroup variant="rows"`: options chosen by their detail · `NEEDS-APPROVAL` · amends D-49
+### D-59 · `ChoiceGroup variant="rows"`: options chosen by their detail · `APPROVED` Kaleb, 2026-10-27 · amends D-49
 
 **Question:** Boutique's hoodie options carry long labels ("Broderie devant et dos", "Broderie devant
 seulement") and a price each (79 $ and 53 $), and a participant chooses between them by price. As
@@ -1490,7 +1490,7 @@ an empty list are no detail: no box, no comma; `0` is one. An element that rende
 so pass `undefined` for none. Tested in Chromium against these numbers, and at 375px with a node, none, a falsy and a long
 detail; the rows' CSS rule is pinned and its effect measured in a table cell and an inline-block.
 
-### D-60 · One rule above the footer · `NEEDS-APPROVAL` · amends D-53
+### D-60 · One rule above the footer · `APPROVED` Kaleb, 2026-10-27 · amends D-53
 
 **Question:** `ContactFooter` and `ud-contact-footer` always draw their top rule, so a page that ends
 with a band draws two rules, the band's bottom border and the footer's top one. Boutique's appearance
@@ -1509,7 +1509,7 @@ by the registry footer and by the static one, whose rule for it stands apart (fi
 **Rejected:** a `rule` prop on the footer, which every page would have to set by hand where the
 page's own structure already says it.
 
-### D-61 · A gallery's opening photo waits unless it is the page's main image · `NEEDS-APPROVAL` · amends D-54
+### D-61 · A gallery's opening photo waits unless it is the page's main image · `APPROVED` Kaleb, 2026-10-27 · amends D-54
 
 **Question:** the registry `Gallery` always loaded its opening photo at once, so a page of cards, each
 with its gallery, fetched every card's photo with the page. Boutique's own gallery loaded it lazily

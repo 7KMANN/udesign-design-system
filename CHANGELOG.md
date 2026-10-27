@@ -4,7 +4,7 @@
 
 Boutique's move to v3.3.0: ChoiceGroup rows with a detail such as a price, one rule above the footer after a band, a card's gallery that loads its opening photo when near, and an unavailable choice named in one piece.
 
-Decisions and measurements: `docs/v2/DECISIONS.md` round 20 (D-59 to D-61 and Δ-29), from the gaps Boutique found moving to v3.3.0. D-59 to D-61 wait for Kaleb: the rules they add to `DESIGN.md` carry `NEEDS-APPROVAL` until he answers.
+Decisions and measurements: `docs/v2/DECISIONS.md` round 20 (D-59 to D-61 and Δ-29), from the gaps Boutique found moving to v3.3.0. Kaleb approved D-59 to D-61 on 2026-10-27: the rules they add to `DESIGN.md` carry `APPROVED 2026-10-27` instead of `NEEDS-APPROVAL`.
 
 ### Visible on upgrade
 
