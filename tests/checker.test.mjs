@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { check } from '../bin/rules.mjs';
+import { PRESSED_CLASSES, check } from '../bin/rules.mjs';
 
 // Each rule has a snippet that must be flagged and one that must pass (docs/checker-rules.md).
 const hits = (file, text) => check([{ file, text }]).map((f) => `${f.rule}:${f.line}`);
@@ -144,6 +144,27 @@ test('press-missing flags a primitive with no active: treatment, only in a primi
   // The gallery's buttons wear the static skin, whose press dist/tokens.css carries.
   const skinned = '<div className={cn("ud-gallery", className)}>\n<button type="button" className="ud-gallery-thumb" />';
   assert.deepEqual(hits('components/ui/gallery.tsx', skinned), []);
+  // Review M3: a static class with no press of its own lends none.
+  assert.deepEqual(hits('components/ui/x.tsx', '<p className="ud-label">Taille</p>\n<button className="px-2" />'), ['press-missing:2']);
+  assert.deepEqual(hits('components/ui/x.tsx', '<a className="ud-btn ud-btn-ghost" />\n<button className="px-2" />'), []);
+});
+
+// The classes that lend a press are the ones css/components.css gives an :active rule of their own
+// (a variant such as ud-btn-primary rides on ud-btn): no more, no fewer.
+test('press-missing lends a press only through the classes the stylesheet presses', () => {
+  const css = fs.readFileSync(new URL('../css/components.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const pressed = new Set();
+  for (const [, selectors] of css.matchAll(/([^{}]+)\{[^}]*\}/g)) {
+    for (const selector of selectors.split(',')) {
+      const subject = selector.trim().split(/\s+|>|\+|~/).filter(Boolean).at(-1) ?? '';
+      if (!subject.includes(':active')) continue;
+      const own = /^\.(ud-[\w-]+)/.exec(subject)?.[1];
+      if (own) pressed.add(own);
+    }
+  }
+  const covered = (cls) => PRESSED_CLASSES.some((listed) => cls === listed || cls.startsWith(`${listed}-`));
+  assert.deepEqual([...pressed].filter((cls) => !covered(cls)), [], 'a class the stylesheet presses is missing from PRESSED_CLASSES');
+  assert.deepEqual(PRESSED_CLASSES.filter((cls) => !pressed.has(cls)), [], 'PRESSED_CLASSES names a class the stylesheet does not press');
 });
 
 // Ban 33 (D-50): spacing off the roles, read in class strings. Calibrated on Boutique and
