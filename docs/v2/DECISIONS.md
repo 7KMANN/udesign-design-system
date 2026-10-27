@@ -1449,7 +1449,8 @@ start, the price at the end.
 
 **Proposed:** a third variant, `rows`, and a per-choice `detail` (a node, such as a price) shown at
 the end of its row. One row per choice at every width; the label at the start, wrapping inside its
-row; the detail aligned at the end, never wrapped. The same radio group as the buttons: one Tab
+row; the detail at the end, beside the label while the label keeps its least room (8ch), else under
+it, wrapping there only when it is longer than the row. The same radio group as the buttons: one Tab
 stop, the arrow keys, Home and End, and a choice that cannot be had is dashed, struck through and
 said in words. A row presses with the subtle scale, as a wide surface does. Its name is one piece,
 "Broderie devant et dos, 79 $", or "Broderie au dos seulement, 59 $, Non disponible", so the price
@@ -1465,22 +1466,28 @@ its appearance review in `presentation`, so the rows now take their look: the te
 mark 2px thick that thickens to 5px when chosen, and Boutique's row heights (90px for the long
 label at 375px). Measured against a copy of Boutique's picker in Chromium, at 375px and 1280px, light
 and dark, `presentation` and `operations`: the text, the mark, the detail and every row's height and
-position match. What remains different, each held by an existing rule:
+position match. Six things remain different. Four are held by existing rules, the motion rule and
+D-49; two, the comma in the name and a long detail moving under the label, are D-59's own:
 - A row presses to 0.995 where Boutique's pressed to 0.97: `--motion-press-scale-subtle`, "a pressed
   large surface", and `DESIGN.md`'s Pressable rule (the control scale reads as a layout bug across a
   full-width surface).
 - A held group keeps the chosen row's look, the others take the disabled surface, and only a choice
-  that cannot be had is dashed (D-49, v3.3.0); Boutique dashed and greyed every row while it held.
-- A choice that cannot be had is struck through and says so in words; Boutique's options had no such
-  state.
-- With nothing chosen, the first row is the Tab stop, and Home and End jump; Boutique's rows had no Tab
-  stop then.
+  that cannot be had is dashed (D-49, v3.3.0). Boutique dashed every row while it held and greyed
+  all but the chosen one, which kept its chosen colours: the dashed borders are a visible difference
+  while a group is held.
+- A choice that cannot be had is struck through and says so in words (D-49); Boutique's options had
+  no such state.
+- With nothing chosen, the first row is the Tab stop, and Home and End jump (D-49); Boutique's rows had
+  no Tab stop then.
 - A screen reader hears "Broderie devant et dos, 79 $", a comma between the label and the price, where
-  Boutique's name read "Broderie devant et dos 79 $".
+  Boutique's name read "Broderie devant et dos 79 $". D-59's own, as D-49 names an unavailable choice
+  "label, words".
 - A detail too long to sit beside the label's least room (8ch) moves under the label, where Boutique's
-  never wrapped and squeezed the label to a letter a line. With Boutique's prices nothing moves.
-A falsy detail (`false`, `null`, `""`, what `price !== null && price` gives) is no detail: no box, no
-comma. Tested in Chromium against these numbers, and at 375px with a node, none, a falsy and a long
+  never wrapped and squeezed the label to a letter a line. D-59's own; with Boutique's prices nothing
+  moves.
+A falsy detail (`false`, `true`, `null`, `""`, what `price !== null && price` gives), a blank string and
+an empty list are no detail: no box, no comma; `0` is one. An element that renders nothing still counts,
+so pass `undefined` for none. Tested in Chromium against these numbers, and at 375px with a node, none, a falsy and a long
 detail; the rows' CSS rule is pinned and its effect measured in a table cell and an inline-block.
 
 ### D-60 · One rule above the footer · `NEEDS-APPROVAL` · amends D-53
@@ -1497,8 +1504,10 @@ view, whose band is the last section of its article), or sits right before the f
 itself `data-band`, which the registry footer reads, as Boutique's bands already do; the static
 footer reads `ud-page-section-band`. Measured in Chromium, registry and static, for each way a page
 can end; a page that ends on the field keeps the footer's rule. A browser without `:has()` draws
-two rules, as before. **Rejected:** a `rule` prop on the footer, which every page would have to set
-by hand where the page's own structure already says it.
+two rules where the band is in `main`, as before; a band right before the footer is read without it,
+by the registry footer and by the static one, whose rule for it stands apart (fix round 2).
+**Rejected:** a `rule` prop on the footer, which every page would have to set by hand where the
+page's own structure already says it.
 
 ### D-61 · A gallery's opening photo waits unless it is the page's main image · `NEEDS-APPROVAL` · amends D-54
 
