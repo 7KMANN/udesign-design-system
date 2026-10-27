@@ -1,5 +1,17 @@
 # Changelog
 
+### Additive
+
+- **`GalleryPhoto.fit` and `focus`** (D-63): `fit: "cover"` fills the square edge to edge, its thumbnail too, cropped to the square and keeping `focus`, a CSS object-position. `contain`, the default, changes nothing. `udGallery.markup` takes `{ src, fit, focus }` and writes `data-fit="cover"` and the object-position; a photo without them keeps UDesign Pages' markup, byte for byte. Re-add `gallery`.
+- **Dots that read the photo under them** (D-63): over a covered photo, white on a dark one, ink on a light one (`data-tone` on `.ud-gallery-main`), in both builds; on the card, the theme's. A photo from another origin without CORS keeps the theme's dots.
+- **The whole photo** (D-63): on a covered photo, a quiet button in the square's corner (`ud-gallery-whole`) opens it as it is in a modal `<dialog class="ud-gallery-view">`, fitted to the screen over the backdrop, with a button to close. Made at mount in both builds, so the markup does not change. Its words are `GalleryMessages.whole` and `close`, optional, defaulting to the document language's ("Voir la photo entière", "Fermer").
+- **`--on-dark-photo` and `--on-light-photo`**: theme-stable marks over a photo, as `--backdrop` is the theme-stable scrim.
+- **Tests.** In jsdom: the cover mark and the focus on a slide and its thumbnail, none for the default, the plain-JS markup, and the whole-photo button shown on a covered photo only, in the page's words. In Chromium, both builds: a covered photo's box is the slide's and its thumbnail covers; white dots on a dark photo, ink on a light one kept by its top, the theme's on a cut-out; the whole view uncropped at the photo's own ratio with no surface around it, no gallery moved behind it, closed by Escape and its button, the focus given back.
+
+### For Boutique
+
+Re-add `gallery` and sync the tokens, then pass each photo's `fit` and `focus` from its definition (Boutique's framing of each image).
+
 ## 3.5.0 (2026-10-27)
 
 The UDesign logo, as one component for every screen. Decided in `docs/v2/DECISIONS.md` round 21 (D-62). Kaleb approved it on 2026-10-27, with the name in ink and not the logo's tan: the rule it adds to `DESIGN.md` carries `APPROVED 2026-10-27`.
