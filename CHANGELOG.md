@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.6.0 (2026-10-27)
+
+A photo with a background of its own fills the gallery's square, the dots read the photo under them, and a quiet button shows a covered photo whole. Decided in `docs/v2/DECISIONS.md` round 22 (D-63), from Kaleb's screenshots of Boutique's item view. Kaleb approved it on 2026-10-27, wording included: the rules it adds to `DESIGN.md` carry `APPROVED 2026-10-27`.
+
 ### Additive
 
 - **`GalleryPhoto.fit` and `focus`** (D-63): `fit: "cover"` fills the square edge to edge, its thumbnail too, cropped to the square and keeping `focus`, a CSS object-position. `contain`, the default, changes nothing. `udGallery.markup` takes `{ src, fit, focus }` and writes `data-fit="cover"` and the object-position; a photo without them keeps UDesign Pages' markup, byte for byte. Re-add `gallery`.
