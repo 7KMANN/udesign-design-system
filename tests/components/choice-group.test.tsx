@@ -70,6 +70,8 @@ describe("choiceColumns", () => {
     expect(queries.map((m) => [Number(m[1]), Number(m[2])])).toEqual(CHOICE_RANGES.slice(1).map((r, i) => [r.from, i + 2]))
     expect(css).toMatch(/\[data-slot="choice-group-items"\]\[data-variant="button"\] \{ grid-template-columns: repeat\(var\(--choice-columns-1, 1\)/)
     expect(css).toMatch(/\[data-slot="choice-group"\] \{ container-type: inline-size; contain-intrinsic-inline-size: var\(--choice-intrinsic, 9\.25rem\); \}/)
+    // D-59: rows read no column query, so the group is no size container there (review M3).
+    expect(css).toMatch(/\[data-slot="choice-group"\]\[data-variant="rows"\] \{ container-type: normal; \}/)
   })
 })
 
@@ -97,7 +99,8 @@ describe("ChoiceGroup", () => {
     render(<Sizes value="L" />)
     const group = screen.getByRole("radiogroup", { name: "Taille" })
     const radios = screen.getAllByRole("radio")
-    expect(radios.map((r) => r.textContent)).toEqual(["S", "M", "L", "XL, non disponible", "2XL"])
+    // Named in order by their labels; an unavailable one's name is one box, its label and the words.
+    expect(radios).toEqual(["S", "M", "L", "XL, non disponible", "2XL"].map((name) => screen.getByRole("radio", { name })))
     expect(radios.map((r) => r.tabIndex)).toEqual([-1, -1, 0, -1, -1])
     expect(screen.getByRole("radio", { name: "L" })).toHaveAttribute("aria-checked", "true")
     expect(group).not.toHaveAttribute("aria-describedby")
@@ -241,6 +244,99 @@ describe("ChoiceGroup", () => {
       </main>,
     )
     expect(screen.getByRole("radiogroup", { name: "Taille" })).toBeInTheDocument()
+    expect((await axe.run(container)).violations).toEqual([])
+  })
+})
+
+// D-59: options a participant chooses by their detail, such as each option's price, are rows: a
+// radio mark, the label at the start, the detail at the end, one row per choice at every width
+// (Boutique's move to v3.3.0: its hoodie's options lost their prices as side-by-side buttons).
+describe("ChoiceGroup rows", () => {
+  const options = [
+    { value: "both", label: "Broderie devant et dos", detail: "79 $" },
+    { value: "front", label: "Broderie devant seulement", detail: "53 $" },
+    { value: "back", label: "Broderie au dos seulement", detail: "59 $", disabled: true },
+  ]
+  function Options(props: Partial<React.ComponentProps<typeof ChoiceGroup>>) {
+    const [value, setValue] = React.useState<string | null>(props.value ?? null)
+    return <ChoiceGroup aria-label="Option" variant="rows" choices={options} unavailableLabel="non disponible" {...props} value={value} onValueChange={setValue} />
+  }
+
+  it("names each row by its label and its detail, and an unavailable one in words", () => {
+    render(<Options value="front" />)
+    const radios = screen.getAllByRole("radio")
+    expect(radios).toEqual(["Broderie devant et dos, 79 $", "Broderie devant seulement, 53 $", "Broderie au dos seulement, 59 $, non disponible"].map((name) => screen.getByRole("radio", { name })))
+    expect(radios.map((r) => r.tabIndex), "one Tab stop, the chosen row").toEqual([-1, 0, -1])
+    expect(screen.getByRole("radio", { name: /devant seulement/ })).toHaveAttribute("aria-checked", "true")
+    expect(screen.getByRole("radio", { name: /au dos/ })).toBeDisabled()
+  })
+
+  it("lays one row per choice, the label at the start and the detail at the end", () => {
+    render(<Options />)
+    const items = screen.getByRole("radiogroup")
+    expect(items).toHaveAttribute("data-variant", "rows")
+    expect(items.parentElement).toHaveAttribute("data-variant", "rows")
+    expect(items).toHaveClass("grid")
+    expect(items.style.getPropertyValue("--choice-columns-1"), "no columns: a row each").toBe("")
+    const row = screen.getByRole("radio", { name: /devant et dos/ })
+    expect(row).toHaveClass("w-full", "text-start", "active:scale-[var(--motion-press-scale-subtle)]")
+    expect(row, "a row presses with the subtle scale, as a wide surface does").not.toHaveClass("active:scale-[var(--motion-press-scale)]")
+    const [mark, label, detail] = [...row.children]
+    expect(mark).toHaveAttribute("aria-hidden", "true")
+    expect(label).toHaveAttribute("data-slot", "choice-label")
+    expect(label).toHaveClass("flex-1", "[overflow-wrap:anywhere]")
+    expect(detail).toHaveAttribute("data-slot", "choice-detail")
+    // A figure: the numeric pair, semibold, at the row's end (review I1, M11).
+    expect(detail).toHaveClass("ms-auto", "text-end", "font-semibold", "[font-family:var(--font-numeric)]", "[font-variant-numeric:var(--font-numeric-variant)]")
+    expect(detail).toHaveTextContent("79 $")
+    expect(screen.getByRole("radio", { name: /au dos/ }).querySelector('[data-slot="choice-label"]')).toHaveClass("line-through")
+  })
+
+  // Review I3: a falsy detail, what `price !== null && price` gives, is no detail at all; nor is a blank
+  // string or an empty list (re-review N4, N6). 0 is one.
+  it("reads a node detail, and adds nothing for none, false, true, null, an empty or blank string or an empty list", () => {
+    render(
+      <ChoiceGroup
+        aria-label="Détails"
+        variant="rows"
+        choices={[
+          { value: "node", label: "Un nœud", detail: <span><s>89 $</s> 79 $</span> },
+          { value: "none", label: "Sans détail" },
+          { value: "false", label: "Détail faux", detail: false },
+          { value: "empty", label: "Détail vide", detail: "" },
+          { value: "null", label: "Détail nul", detail: null },
+          { value: "true", label: "Détail vrai", detail: true },
+          { value: "blank", label: "Détail blanc", detail: " " },
+          { value: "list", label: "Liste vide", detail: [] },
+          { value: "zero", label: "Gratuit", detail: 0 },
+        ]}
+      />,
+    )
+    const radios = screen.getAllByRole("radio")
+    expect(radios).toEqual(["Un nœud, 89 $ 79 $", "Sans détail", "Détail faux", "Détail vide", "Détail nul", "Détail vrai", "Détail blanc", "Liste vide", "Gratuit, 0"].map((name) => screen.getByRole("radio", { name })))
+    expect(radios.map((r) => r.querySelectorAll('[data-slot="choice-detail"]').length), "a detail box only for a detail").toEqual([1, 0, 0, 0, 0, 0, 0, 0, 1])
+  })
+
+  it("moves and chooses with the arrow keys, skipping what cannot be had, and stops them there", async () => {
+    const user = userEvent.setup()
+    const onKeyDown = vi.fn()
+    render(
+      <div onKeyDown={onKeyDown}>
+        <Options />
+      </div>,
+    )
+    await user.tab()
+    expect(screen.getByRole("radio", { name: /devant et dos/ })).toHaveFocus()
+    await user.keyboard("{ArrowDown}")
+    expect(screen.getByRole("radio", { name: /devant seulement/ })).toHaveFocus()
+    expect(screen.getByRole("radio", { name: /devant seulement/ })).toHaveAttribute("aria-checked", "true")
+    await user.keyboard("{ArrowDown}")
+    expect(screen.getByRole("radio", { name: /devant et dos/ }), "the unavailable row is skipped").toHaveFocus()
+    expect(onKeyDown, "the group stops the keys it handles").not.toHaveBeenCalled()
+  })
+
+  it("renders without axe violations", async () => {
+    const { container } = render(<Options value="both" note="Le prix comprend la broderie." />)
     expect((await axe.run(container)).violations).toEqual([])
   })
 })

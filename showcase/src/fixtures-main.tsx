@@ -5,6 +5,7 @@ import { ChoiceGroup } from '@/components/ui/choice-group';
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from '@/components/ui/description-list';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Gallery, type GalleryPhoto } from '@/components/ui/gallery';
+import { ContactFooter, PageCanvas, PageSection } from '@/components/ui/page-canvas';
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import './index.css';
 
@@ -70,8 +71,54 @@ function ChoicesPhone() {
           {wrap(<ChoiceGroup aria-label={`8 tailles, ${name}`} choices={sizes(8)} />)}
         </div>
       ))}
+      {shrinking.slice(0, 2).map(([name, wrap]) => (
+        <div key={`rows-${name}`} data-testid={`rows-in-${name}`}>
+          {wrap(<ChoiceGroup aria-label={`Options, ${name}`} variant="rows" choices={[{ value: 'both', label: 'Broderie devant et dos', detail: '79 $' }, { value: 'team', label: 'Broderie devant et dos, avec le nom de l’équipe sur la manche gauche', detail: '89 $' }]} />)}
+        </div>
+      ))}
       <div data-testid="choices-place-swatches">
         <div style={{ display: 'grid' }}><div><ChoiceGroup variant="swatch" aria-label="8 couleurs" choices={colours} /></div></div>
+      </div>
+    </main>
+  );
+}
+
+// Options chosen by their price, as rows (D-59), one label long enough to wrap on a phone.
+function ChoiceRows() {
+  const [value, setValue] = useState<string | null>('front');
+  const options = [
+    { value: 'both', label: 'Broderie devant et dos', detail: '79 $' },
+    { value: 'front', label: 'Broderie devant seulement', detail: '53 $' },
+    { value: 'back', label: 'Broderie au dos seulement', detail: '59 $', disabled: true },
+    { value: 'team', label: 'Broderie devant et dos, avec le nom de l’équipe sur la manche gauche', detail: '89 $' },
+  ];
+  const edges = [
+    { value: 'node', label: 'Un nœud', detail: <span><s>89 $</s> 79 $</span> },
+    { value: 'none', label: 'Sans détail' },
+    { value: 'false', label: 'Détail faux', detail: false },
+    { value: 'empty', label: 'Détail vide', detail: '' },
+    { value: 'null', label: 'Détail nul', detail: null },
+    { value: 'true', label: 'Détail vrai', detail: true },
+    { value: 'blank', label: 'Détail blanc', detail: ' ' },
+    { value: 'long', label: 'Un long détail', detail: 'à partir de 1 234,56 $ par pièce, taxes en sus' },
+    // About 200px on a phone: beside the label it would leave it under 8ch (re-review N5).
+    { value: 'mid', label: 'Un détail moyen', detail: 'à partir de 79,00 $ par pièce' },
+    // About 100 characters: wider than the row, so it must wrap there (re-review N5).
+    { value: 'longer', label: 'Un très long détail', detail: 'à partir de 1 234,56 $ par pièce, taxes en sus, livraison comprise au Québec, selon les quantités' },
+    { value: 'short', label: 'Un court détail', detail: 'à partir de 79 $' },
+  ];
+  return (
+    <main className="grid gap-6 p-4">
+      <div data-testid="rows">
+        <ChoiceGroup aria-label="Option" variant="rows" choices={options} value={value} onValueChange={setValue} unavailableLabel="Non disponible" />
+      </div>
+      {/* Every kind of detail: a node, none, the falsy values a condition gives, and one too long for a phone. */}
+      <div data-testid="rows-edge">
+        <ChoiceGroup aria-label="Détails" variant="rows" choices={edges} unavailableLabel="Non disponible" />
+      </div>
+      {/* Held while it saves (re-review N8): the chosen row keeps its look, only what cannot be had is dashed. */}
+      <div data-testid="rows-held">
+        <ChoiceGroup aria-label="Option, en attente" variant="rows" choices={options} value="front" disabled unavailableLabel="Non disponible" />
       </div>
     </main>
   );
@@ -95,11 +142,12 @@ function ChoiceDialog() {
 }
 
 // Three copies of each photo, as UDesign's sets have: 160px for the thumbnail, 640 and 1200 for the slide.
-const photos = (product: string, ids: number[], views: string[]): GalleryPhoto[] =>
+// A tag sets one gallery's requests apart from the others'.
+const photos = (product: string, ids: number[], views: string[], tag = ''): GalleryPhoto[] =>
   ids.map((id, i) => ({
-    src: `/gallery/photo-${id}.svg?w=640`,
-    srcSet: [160, 640, 1200].map((w) => `/gallery/photo-${id}.svg?w=${w} ${w}w`).join(', '),
-    thumb: `/gallery/photo-${id}.svg?w=160`,
+    src: `/gallery/photo-${id}.svg?w=640${tag}`,
+    srcSet: [160, 640, 1200].map((w) => `/gallery/photo-${id}.svg?w=${w}${tag} ${w}w`).join(', '),
+    thumb: `/gallery/photo-${id}.svg?w=160${tag}`,
     alt: `${views[i]}, ${product}`,
     label: views[i],
   }));
@@ -127,6 +175,11 @@ function Galleries() {
         </SheetContent>
       </Sheet>
       <div style={{ height: '150rem' }} />
+      {/* A card's gallery far below the screen, past Chromium's lazy-loading margin, without priority: its photos wait until it is near. */}
+      <div style={{ height: '300rem' }} />
+      <div className="max-w-xs">
+        <Gallery data-testid="gallery-c" photos={photos('Tuque exemple', [2, 4], ['Devant', 'Dos'], '&set=c')} sizes="20rem" />
+      </div>
     </main>
   );
 }
@@ -149,7 +202,32 @@ function Specs() {
   );
 }
 
-const fixtures: Record<string, React.ComponentType> = { choices: Choices, 'choices-phone': ChoicesPhone, 'choice-dialog': ChoiceDialog, galleries: Galleries, specs: Specs };
+// A page's last section and its contact footer, as ?fixture=footer&end= sets them: a band ending main,
+// a band ending main's last block (an article), a band right before the footer, or the page field after
+// a band, in main or without it (review M2: a selector that forgets :last-child or + must fail there).
+function Footer() {
+  const end = new URLSearchParams(location.search).get('end') ?? 'canvas';
+  const band = <PageSection variant="band"><h2 className="ud-h2">Articles</h2></PageSection>;
+  const canvas = <PageSection><h2 className="ud-h2">Suivi</h2></PageSection>;
+  const footer = <ContactFooter data-testid="footer" address="Entreprise exemple" phone={{ label: '819 555-0100', href: 'tel:+18195550100' }} />;
+  return (
+    <PageCanvas>
+      {end === 'sibling' ? (
+        <>{canvas}{band}</>
+      ) : end === 'sibling-canvas' ? (
+        <>{band}{canvas}</>
+      ) : (
+        <main>
+          {end === 'canvas' ? band : end === 'article-not-last' ? <article>{canvas}{band}</article> : canvas}
+          {end === 'band' ? band : end === 'nested' ? <article>{canvas}{band}</article> : end === 'nested-not-last' ? <article>{band}{canvas}</article> : canvas}
+        </main>
+      )}
+      {footer}
+    </PageCanvas>
+  );
+}
+
+const fixtures: Record<string, React.ComponentType> = { choices: Choices, 'choice-rows': ChoiceRows, footer: Footer, 'choices-phone': ChoicesPhone, 'choice-dialog': ChoiceDialog, galleries: Galleries, specs: Specs };
 const Fixture = fixtures[new URLSearchParams(location.search).get('fixture') ?? ''] ?? (() => <p>Unknown fixture</p>);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

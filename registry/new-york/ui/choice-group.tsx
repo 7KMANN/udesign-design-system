@@ -13,6 +13,13 @@ export interface Choice {
   disabled?: boolean
   /** A swatch's colour, as any CSS background: the product's own colour, or a pattern for a plaid. Product data, which ban 3 allows. */
   swatch?: string
+  /**
+   * Rows only: a short figure the row shows at its end, such as the option's price, semibold in the
+   * numeric pair. Phrasing content: it is also read in the choice's name, after its label. false, true,
+   * null, a blank string and an empty list are no detail; 0 is one. An element that renders nothing still
+   * counts: pass undefined for none.
+   */
+  detail?: React.ReactNode
 }
 
 export interface ChoiceGroupProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue"> {
@@ -21,8 +28,12 @@ export interface ChoiceGroupProps extends Omit<React.HTMLAttributes<HTMLDivEleme
   value?: string | null
   defaultValue?: string | null
   onValueChange?: (value: string) => void
-  /** button (default): labelled buttons in explicit columns, for sizes and options. swatch: round colour swatches in a row that wraps. */
-  variant?: "button" | "swatch"
+  /**
+   * button (default): labelled buttons in explicit columns, for sizes and options. swatch: round colour
+   * swatches in a row that wraps. rows: one full-width row per choice, a radio mark, the label at the
+   * start and its detail at the end, for options chosen by their detail, such as each one's price.
+   */
+  variant?: "button" | "swatch" | "rows"
   /** The line under the group, tied to it by aria-describedby: what the buttons do not carry, such as a surcharge or what cannot be had. */
   note?: React.ReactNode
   /** Words a choice that cannot be had adds to its name. English by default: pass the interface's language (fr-CA first). */
@@ -89,6 +100,24 @@ const buttonClass =
 // A swatch: the colour in a touch target, its name for a screen reader. Chosen draws a ring.
 const swatchClass =
   "inline-flex size-[var(--touch-target-min)] shrink-0 items-center justify-center rounded-full border border-[var(--border-strong)] bg-[var(--card)] hover:bg-[var(--interactive-hover)] active:bg-[var(--interactive-pressed)] aria-checked:border-[var(--interactive-selected-border)] aria-checked:ring-2 aria-checked:ring-[var(--interactive-selected-border)] disabled:aria-[checked=false]:bg-[var(--interactive-disabled)] data-[unavailable=true]:border-dashed"
+
+// A row (D-59), as Boutique's option rows looked: the text of where it sits (the body's, on a page),
+// a ring mark, the label at the start, wrapping inside the row, and the detail at the end. Chosen and unavailable read as a
+// button's do. A row presses with the subtle scale, as a wide surface does (--motion-press-scale-subtle).
+// The row wraps: a detail that does not fit beside the label's least room (8ch) moves under it.
+const rowPress =
+  "transition-[transform,scale,background-color,border-color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale-subtle)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--interactive-focus)] disabled:cursor-not-allowed disabled:active:scale-100"
+const rowClass =
+  "group relative flex min-h-[var(--touch-target-min)] w-full min-w-0 flex-wrap items-center gap-x-3 gap-y-1 rounded-[var(--radius)] border border-[var(--border-strong)] bg-[var(--card)] px-3 py-2 text-start [font-size:inherit] [line-height:inherit] text-[var(--card-foreground)] hover:bg-[var(--interactive-hover)] active:bg-[var(--interactive-pressed)] aria-checked:border-[var(--interactive-selected-border)] aria-checked:bg-[var(--interactive-selected)] aria-checked:text-[var(--interactive-selected-foreground)] aria-checked:ring-1 aria-checked:ring-inset aria-checked:ring-[var(--interactive-selected-border)] disabled:aria-[checked=false]:bg-[var(--interactive-disabled)] disabled:aria-[checked=false]:text-[var(--interactive-disabled-foreground)] data-[unavailable=true]:border-dashed"
+
+// No detail: nothing at all, what a condition gives where there is none (false, true, null, ""), a blank
+// string and an empty list. An element that renders nothing cannot be told apart from one that does.
+const hasDetail = (detail: React.ReactNode) =>
+  detail !== undefined &&
+  detail !== null &&
+  typeof detail !== "boolean" &&
+  !(typeof detail === "string" && detail.trim() === "") &&
+  !(Array.isArray(detail) && detail.length === 0)
 
 const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
   (
@@ -158,6 +187,7 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
       <div
         ref={ref}
         data-slot="choice-group"
+        data-variant={variant}
         className={cn("grid w-full min-w-0 gap-2", className)}
         style={{ "--choice-intrinsic": `${intrinsic}rem`, ...style } as React.CSSProperties}
         {...props}
@@ -176,6 +206,7 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
         >
           {choices.map((choice) => {
             const unavailable = Boolean(choice.disabled)
+            const detailed = variant === "rows" && hasDetail(choice.detail)
             return (
               <button
                 key={choice.value}
@@ -191,12 +222,34 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
                 tabIndex={choice.value === stop ? 0 : -1}
                 onClick={() => choose(choice.value)}
                 // Every choice: a press that eases under Tailwind 3 and 4, and a ring for the keyboard.
-                className={cn(
-                  "relative transition-[transform,scale,background-color,border-color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--interactive-focus)] disabled:cursor-not-allowed disabled:active:scale-100",
-                  variant === "swatch" ? swatchClass : buttonClass,
-                )}
+                className={
+                  variant === "rows"
+                    ? cn(rowPress, rowClass)
+                    : cn(
+                        "relative transition-[transform,scale,background-color,border-color] duration-[var(--motion-duration-instant)] ease-[var(--motion-easing-standard)] active:scale-[var(--motion-press-scale)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--interactive-focus)] disabled:cursor-not-allowed disabled:active:scale-100",
+                        variant === "swatch" ? swatchClass : buttonClass,
+                      )
+                }
               >
-                {variant === "swatch" ? (
+                {variant === "rows" ? (
+                  <>
+                    <span aria-hidden="true" className="size-4 shrink-0 rounded-full border-2 border-[var(--border-strong)] group-aria-checked:border-[5px] group-aria-checked:border-[var(--interactive-selected-border)]" />
+                    <span aria-hidden="true" data-slot="choice-label" className={cn("min-w-[min(8ch,100%)] flex-1 [overflow-wrap:anywhere]", unavailable && "line-through")}>
+                      {choice.label}
+                    </span>
+                    {detailed ? (
+                      <span aria-hidden="true" data-slot="choice-detail" className="ms-auto min-w-0 text-end font-semibold [font-family:var(--font-numeric)] [font-variant-numeric:var(--font-numeric-variant)] [overflow-wrap:anywhere]">
+                        {choice.detail}
+                      </span>
+                    ) : null}
+                    {/* Its whole name in one box, label, detail and the words: as several boxes, Chromium puts a space before each comma. */}
+                    <span className="sr-only">
+                      {choice.label}
+                      {detailed ? <>, {choice.detail}</> : null}
+                      {unavailable ? `, ${unavailableLabel}` : null}
+                    </span>
+                  </>
+                ) : variant === "swatch" ? (
                   <>
                     {/* design-ok: the product colour's own swatch, from the consumer's data. */}
                     <span aria-hidden="true" className="size-7 rounded-full border border-[var(--border-strong)] [background:var(--choice-swatch)]" style={{ "--choice-swatch": choice.swatch } as React.CSSProperties} />
@@ -205,8 +258,11 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
                   </>
                 ) : (
                   <>
-                    <span className={cn("min-w-0 [overflow-wrap:anywhere]", unavailable && "line-through")}>{choice.label}</span>
-                    {unavailable ? <span className="sr-only">, {unavailableLabel}</span> : null}
+                    <span aria-hidden={unavailable || undefined} className={cn("min-w-0 [overflow-wrap:anywhere]", unavailable && "line-through")}>
+                      {choice.label}
+                    </span>
+                    {/* Its whole name in one box: as two boxes of the button, Chromium read "S , unavailable". */}
+                    {unavailable ? <span className="sr-only">{`${choice.label}, ${unavailableLabel}`}</span> : null}
                   </>
                 )}
               </button>

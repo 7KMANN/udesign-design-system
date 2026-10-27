@@ -215,6 +215,24 @@ for (const build of builds) {
   })
 }
 
+// Boutique's move to v3.3.0, gap 4: every card's opening photo was fetched with the page. A gallery
+// without priority now waits until it is near; the page's main image is fetched at once, first.
+test("React gallery: a card's opening photo waits until it is near, the page's main image does not", async ({ page }) => {
+  const asked: string[] = []
+  page.on("request", (request) => asked.push(request.url()))
+  await page.setViewportSize({ width: 1280, height: 800 })
+  const { a } = await open(page, builds[0].url, builds[0].first, builds[0].second)
+  await page.waitForLoadState("load")
+  await page.waitForTimeout(300)
+  expect(asked.filter((url) => url.includes("set=c")), "nothing of the gallery far below the screen").toEqual([])
+  const main = a.locator(".swiper-slide-active img")
+  expect(await main.evaluate((img: HTMLImageElement) => [img.getAttribute("loading"), img.fetchPriority]), "not lazy, fetched first").toEqual([null, "high"])
+  // Loaded with the page; a busy machine may still be decoding it, so wait for it rather than read it once.
+  await expect.poll(() => main.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), { message: "loaded" }).toBe(true)
+  await page.getByTestId("gallery-c").scrollIntoViewIfNeeded()
+  await expect.poll(() => asked.some((url) => url.includes("photo-2.svg") && url.includes("set=c")), { message: "near the screen, it loads" }).toBe(true)
+})
+
 test("React gallery: an arrow a choice group handles moves the choice, never a photo", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 })
   const { a } = await open(page, builds[0].url, builds[0].first, builds[0].second)
@@ -285,6 +303,182 @@ for (const [name, open] of [
   })
 }
 
+// Chromium's own accessibility tree, not a library's reading of it. It named an unavailable choice
+// "XL , unavailable": the label and the words were two boxes of the button, and it put a space
+// between them (Boutique's move to v3.3.0, gap 3).
+async function chromiumNames(page: Page, role: string) {
+  const cdp = await page.context().newCDPSession(page)
+  const { nodes } = (await cdp.send("Accessibility.getFullAXTree")) as { nodes: Array<{ role?: { value?: string }; name?: { value?: string }; ignored?: boolean }> }
+  return nodes.filter((n) => !n.ignored && n.role?.value === role).map((n) => n.name?.value ?? "")
+}
+
+test("in Chromium an unavailable choice is named by its label, a comma and the words", async ({ page }) => {
+  await page.goto("/fixtures.html?fixture=choices")
+  await expect(page.getByTestId("choices-open").getByRole("radio").first()).toBeVisible({ timeout: 20_000 })
+  const names = await chromiumNames(page, "radio")
+  expect(names.filter((name) => name.includes("unavailable"))).toEqual(["XL, unavailable", "XL, unavailable"])
+  expect(names, "an available choice keeps its label alone").toContain("S")
+})
+
+// D-59: options chosen by their detail are rows: one per choice at every width, the detail at the
+// row's end, a long label wrapping inside its row, each named in one piece by Chromium.
+for (const width of [375, 1280]) {
+  test(`at ${width}px a choice group of rows gives each choice its own row, its detail at the end`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto("/fixtures.html?fixture=choice-rows")
+    const group = page.getByTestId("rows").locator('[data-slot="choice-group"]')
+    await expect(group.getByRole("radio").first()).toBeVisible({ timeout: 20_000 })
+    const rows = await group.getByRole("radio").evaluateAll((els) =>
+      els.map((el) => {
+        const box = el.getBoundingClientRect()
+        const style = getComputedStyle(el)
+        const label = el.querySelector('[data-slot="choice-label"]')!.getBoundingClientRect()
+        const detail = el.querySelector('[data-slot="choice-detail"]')!.getBoundingClientRect()
+        const end = box.right - parseFloat(style.paddingRight) - parseFloat(style.borderRightWidth)
+        return { top: box.top, bottom: box.bottom, left: box.left, right: box.right, end, label, detail }
+      }),
+    )
+    const groupBox = (await group.boundingBox())!
+    rows.forEach((row, i) => {
+      expect(row.left, `row ${i}: from the group's start`).toBeCloseTo(groupBox.x, 0)
+      expect(row.right, `row ${i}: to the group's end`).toBeCloseTo(groupBox.x + groupBox.width, 0)
+      expect(row.detail.right, `row ${i}: its detail at the end`).toBeCloseTo(row.end, 0)
+      expect(row.label.right, `row ${i}: its label before the detail`).toBeLessThanOrEqual(row.detail.left)
+      expect(row.label.bottom, `row ${i}: its label inside the row`).toBeLessThanOrEqual(row.bottom)
+      if (i) expect(row.top, `row ${i}: below the one before`).toBeGreaterThanOrEqual(rows[i - 1].bottom)
+    })
+    const lines = rows[3].label.height / rows[0].label.height
+    if (width === 375) expect(lines, "the long label wraps inside its row on a phone").toBeGreaterThan(1.5)
+    else expect(lines, "and holds one line on a desktop").toBeCloseTo(1, 1)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), "the page does not scroll sideways").toBeLessThanOrEqual(width)
+    expect((await chromiumNames(page, "radio")).slice(0, 4)).toEqual([
+      "Broderie devant et dos, 79 $",
+      "Broderie devant seulement, 53 $",
+      "Broderie au dos seulement, 59 $, Non disponible",
+      "Broderie devant et dos, avec le nom de l’équipe sur la manche gauche, 89 $",
+    ])
+  })
+}
+
+// Review I1 (v3.4.0): rows draw as Boutique's option rows did, which its appearance review passed: body
+// text on its line, a regular label, the detail semibold in the numeric pair, Boutique's ring mark and its
+// row heights. D-59 lists the six things that still differ, such as the subtle press of a wide surface.
+test("rows look as Boutique's option rows did: body text, a regular label, a semibold numeric detail, a ring mark", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 900 })
+  await page.goto("/fixtures.html?fixture=choice-rows")
+  const group = page.getByTestId("rows")
+  await expect(group.getByRole("radio").first()).toBeVisible({ timeout: 20_000 })
+  const look = (name: RegExp) =>
+    group.getByRole("radio", { name }).evaluate((row) => {
+      const style = (el: Element) => getComputedStyle(el)
+      const mark = row.firstElementChild!
+      const label = row.querySelector('[data-slot="choice-label"]')!
+      const detail = row.querySelector('[data-slot="choice-detail"]')!
+      const probe = Object.assign(document.createElement("span"), { textContent: "0" })
+      probe.style.fontFamily = "var(--font-numeric)"
+      probe.style.fontVariantNumeric = "var(--font-numeric-variant)"
+      row.append(probe)
+      const numeric = [style(probe).fontFamily, style(probe).fontVariantNumeric]
+      probe.remove()
+      return {
+        text: [style(row).fontSize, style(row).lineHeight],
+        label: style(label).fontWeight,
+        detail: [style(detail).fontWeight, style(detail).fontFamily === numeric[0], style(detail).fontVariantNumeric === numeric[1]],
+        mark: [mark.getBoundingClientRect().width, style(mark).borderTopWidth, style(mark).borderTopColor === style(row).borderTopColor],
+        height: row.getBoundingClientRect().height,
+      }
+    })
+  const free = await look(/^Broderie devant et dos, 79/)
+  expect(free.text, "body text on its line").toEqual(["16px", "24px"])
+  expect(free.label, "a regular label").toBe("400")
+  expect(free.detail, "the detail semibold in the numeric pair").toEqual(["600", true, true])
+  expect(free.mark.slice(0, 2), "a 16px mark, a 2px ring").toEqual([16, "2px"])
+  const chosen = await look(/devant seulement/)
+  expect(chosen.mark.slice(1), "chosen, a 5px ring in the chosen border's colour").toEqual(["5px", true])
+  expect((await look(/manche gauche/)).height, "the long label's row, as Boutique's at 375px").toBeCloseTo(90, 0)
+  await page.evaluate(() => (document.documentElement.dataset.design = "operations"))
+  const detail = group.getByRole("radio").first().locator('[data-slot="choice-detail"]')
+  expect(await detail.evaluate((el) => getComputedStyle(el).fontVariantNumeric), "tabular figures in operations").toBe("tabular-nums")
+})
+
+// Review I3 (v3.4.0): a node is read in the name; none and a falsy one add no box and no comma; a long
+// one never squeezes the label or runs out of its row, it moves under the label.
+test("at 375px a row's detail: a node is read, none and a falsy one add nothing, a long one moves under the label", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 900 })
+  await page.goto("/fixtures.html?fixture=choice-rows")
+  const group = page.getByTestId("rows-edge")
+  await expect(group.getByRole("radio").first()).toBeVisible({ timeout: 20_000 })
+  // [label, the detail the name reads, or null for none]. None, false, "", null, true and a blank string
+  // give none (re-review N4); the last three details hold the label's 8ch and the row's edge (N5).
+  const cases: Array<[string, string | null]> = [
+    ["Un nœud", "89 $ 79 $"],
+    ["Sans détail", null],
+    ["Détail faux", null],
+    ["Détail vide", null],
+    ["Détail nul", null],
+    ["Détail vrai", null],
+    ["Détail blanc", null],
+    ["Un long détail", "à partir de 1 234,56 $ par pièce, taxes en sus"],
+    ["Un détail moyen", "à partir de 79,00 $ par pièce"],
+    ["Un très long détail", "à partir de 1 234,56 $ par pièce, taxes en sus, livraison comprise au Québec, selon les quantités"],
+    ["Un court détail", "à partir de 79 $"],
+  ]
+  const named = (await chromiumNames(page, "radio")).filter((name) => cases.some(([label]) => name === label || name.startsWith(`${label}, `)))
+  expect(named).toEqual(cases.map(([label, detail]) => (detail ? `${label}, ${detail}` : label)))
+  const rows = await group.getByRole("radio").evaluateAll((els) =>
+    els.map((el) => {
+      const labelEl = el.querySelector('[data-slot="choice-label"]')!
+      const probe = document.createElement("span")
+      probe.style.cssText = "display:inline-block;width:8ch"
+      labelEl.append(probe)
+      const ch8 = probe.getBoundingClientRect().width
+      probe.remove()
+      const label = labelEl.getBoundingClientRect()
+      const detail = el.querySelector('[data-slot="choice-detail"]')?.getBoundingClientRect()
+      return {
+        boxes: el.querySelectorAll('[data-slot="choice-detail"]').length,
+        overflow: el.scrollWidth - el.clientWidth,
+        right: el.getBoundingClientRect().right,
+        ch8,
+        label: { width: label.width, bottom: label.bottom },
+        detail: detail && { top: detail.top, right: detail.right, height: detail.height },
+      }
+    }),
+  )
+  expect(rows, "one row per case").toHaveLength(cases.length)
+  expect(rows.map((r) => r.boxes), "a detail box only where there is a detail").toEqual(cases.map(([, detail]) => (detail ? 1 : 0)))
+  rows.forEach((row, i) => {
+    const label = cases[i][0]
+    expect(row.overflow, `${label}: nothing runs out of the row`).toBeLessThanOrEqual(0)
+    if (!row.detail) expect(row.label.width, `${label}: no detail takes no room`).toBeCloseTo(rows[1].label.width, 0)
+    else {
+      expect(row.detail.right, `${label}: the detail stays inside its row`).toBeLessThanOrEqual(row.right)
+      if (row.detail.top < row.label.bottom - 1) expect(row.label.width, `${label}: beside a detail the label keeps 8ch`).toBeGreaterThanOrEqual(row.ch8 - 0.5)
+    }
+  })
+  const at = (label: string) => rows[cases.findIndex(([l]) => l === label)]
+  for (const label of ["Un long détail", "Un détail moyen", "Un très long détail"]) {
+    expect(at(label).detail!.top, `${label}: moves under the label`).toBeGreaterThanOrEqual(at(label).label.bottom - 1)
+  }
+  expect(at("Un très long détail").detail!.height, "wider than the row, it wraps there").toBeGreaterThan(30)
+  expect(at("Un court détail").detail!.top, "a short detail stays beside the label").toBeLessThan(at("Un court détail").label.bottom - 1)
+})
+
+// Review M3 (v3.4.0): rows read no column query, so in a parent sized by its content they size as a
+// block, from their longest row up to what the page gives, never as the buttons' 148px size container.
+test("at 375px rows in a parent sized by its content take their rows' width, never the size container's", async ({ page }) => {
+  await page.setViewportSize(phone)
+  await page.goto("/fixtures.html?fixture=choices-phone")
+  for (const parent of ["table-cell", "inline-block"]) {
+    const group = page.getByTestId(`rows-in-${parent}`).locator('[data-slot="choice-group"]')
+    await expect(group).toBeVisible({ timeout: 20_000 })
+    const width = (await group.boundingBox())!.width
+    expect(width, `${parent}: its rows' width, up to the page`).toBeGreaterThan(300)
+    expect(width, `${parent}: never past the page`).toBeLessThanOrEqual(phone.width - 32)
+  }
+  expect(await pageScroll(page), "the page does not scroll sideways").toBeLessThanOrEqual(phone.width)
+})
+
 // Review I1: held while it saves, a group keeps its choice's look; only a choice that cannot be had
 // is dashed, and the other choices take the disabled surface.
 test("a held choice group keeps its choice's look, and only a choice that cannot be had is dashed", async ({ page }) => {
@@ -310,6 +504,40 @@ test("a held choice group keeps its choice's look, and only a choice that cannot
   expect(await look("choices-open", "S")).toEqual(["true", selected, "solid"])
   expect(await look("choices-open", "M")).toEqual(["false", card, "solid"])
   expect(await look("choices-open", /^XL.+unavailable$/)).toEqual(["false", disabled, "dashed"])
+})
+
+// Re-review N8: the rows' chosen, held and unavailable looks, as the buttons': the chosen row keeps its
+// surface, its ring and a solid border while held; the others take the disabled surface; only what
+// cannot be had is dashed, its label struck through.
+test("rows keep the chosen look while held, and only a choice that cannot be had is dashed", async ({ page }) => {
+  await page.goto("/fixtures.html?fixture=choice-rows")
+  await expect(page.getByTestId("rows-held").getByRole("radio").first()).toBeVisible({ timeout: 20_000 })
+  const token = (name: string) =>
+    page.evaluate((n) => {
+      const probe = document.createElement("div")
+      probe.style.background = `var(${n})`
+      probe.style.color = "var(--interactive-selected-border)"
+      document.body.append(probe)
+      const colours = [getComputedStyle(probe).backgroundColor, getComputedStyle(probe).color]
+      probe.remove()
+      return colours
+    }, name)
+  const [[selected, ring], [disabled], [card]] = [await token("--interactive-selected"), await token("--interactive-disabled"), await token("--card")]
+  const look = (group: string, name: RegExp) =>
+    page.getByTestId(group).getByRole("radio", { name }).evaluate((el) => {
+      const s = getComputedStyle(el)
+      const label = getComputedStyle(el.querySelector('[data-slot="choice-label"]')!)
+      return { checked: el.getAttribute("aria-checked"), surface: s.backgroundColor, border: s.borderTopStyle, ring: s.boxShadow, struck: label.textDecorationLine }
+    })
+  for (const group of ["rows-held", "rows"]) {
+    const chosen = await look(group, /devant seulement/)
+    expect([chosen.checked, chosen.surface, chosen.border], `${group}: the chosen row`).toEqual(["true", selected, "solid"])
+    expect(chosen.ring, `${group}: its ring`).toContain(`${ring} 0px 0px 0px 1px inset`)
+    const other = await look(group, /^Broderie devant et dos, 79/)
+    expect([other.checked, other.surface, other.border], `${group}: another row`).toEqual(["false", group === "rows-held" ? disabled : card, "solid"])
+    const unavailable = await look(group, /au dos seulement/)
+    expect([unavailable.surface, unavailable.border, unavailable.struck], `${group}: what cannot be had`).toEqual([disabled, "dashed", "line-through"])
+  }
 })
 
 // Review M6: a long list fills its rows at a phone's width instead of standing in eleven rows of two.

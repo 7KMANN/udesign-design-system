@@ -100,6 +100,7 @@ const COLOURS = [
 function ChoicesDemo() {
   const [size, setSize] = useState<string | null>('M');
   const [colour, setColour] = useState<string | null>('bone');
+  const [option, setOption] = useState<string | null>('front');
   return (
     <div className="grid gap-6">
       <div className="grid gap-2">
@@ -115,6 +116,20 @@ function ChoicesDemo() {
       <div className="grid gap-2">
         <p id="demo-colour" className="text-sm font-medium">Colour</p>
         <ChoiceGroup aria-labelledby="demo-colour" variant="swatch" value={colour} onValueChange={setColour} choices={COLOURS} />
+      </div>
+      <div className="grid gap-2">
+        <p id="demo-option" className="text-sm font-medium">Embroidery</p>
+        <ChoiceGroup
+          aria-labelledby="demo-option"
+          variant="rows"
+          value={option}
+          onValueChange={setOption}
+          choices={[
+            { value: 'both', label: 'Front and back', detail: '$79' },
+            { value: 'front', label: 'Front only', detail: '$53' },
+            { value: 'back', label: 'Back only', detail: '$59', disabled: true },
+          ]}
+        />
       </div>
     </div>
   );
@@ -307,7 +322,7 @@ export function KitchenSink() {
           <RegistryCard>
             <CardHeader>
               <CardTitle>Choices</CardTitle>
-              <CardDescription>ChoiceGroup: one choice shown as buttons, in explicit columns, with a note under the group. A size that cannot be had says so in words.</CardDescription>
+              <CardDescription>ChoiceGroup: one choice shown as buttons, in explicit columns, with a note under the group; as swatches; and as rows, each with its price at the end. A choice that cannot be had says so in words.</CardDescription>
             </CardHeader>
             <CardContent>
               <ChoicesDemo />

@@ -1428,3 +1428,107 @@ drawn on its one child, `<Skeleton asChild><span className="inline-block h-4 w-1
 which keeps the ref and `aria-hidden`. The `skeleton` item now depends on `@radix-ui/react-slot`,
 which `core` already installs. **Rejected:** an `inline` prop that always draws an inline-block span,
 which would cover a button but not a table cell or a list item.
+
+---
+
+## Round 20 - 2026-10-27 (Boutique's move to v3.3.0)
+
+**Evidence:** "Design-system gaps" in Boutique's report of its move to v3.3.0 (`ds33-move-report.md`:
+1 the options' prices, 2 the footer after a band, 3 the unavailable name, 4 the gallery's opening
+photo), each reproduced here before it changed. The review of PR 4 sent the first fix round. Kaleb approved D-59 to D-61 on 2026-10-27 ("I approve
+D-59, D-60 and D-61"): the `DESIGN.md` sentence each adds or changes carries `APPROVED 2026-10-27` and
+the entry's number. Δ-29 is derived. Shipped as release candidate v3.4.0.
+
+### D-59 · `ChoiceGroup variant="rows"`: options chosen by their detail · `APPROVED` Kaleb, 2026-10-27 · amends D-49
+
+**Question:** Boutique's hoodie options carry long labels ("Broderie devant et dos", "Broderie devant
+seulement") and a price each (79 $ and 53 $), and a participant chooses between them by price. As
+D-49's side-by-side buttons, each holding its label alone, the price disappears and the labels
+squeeze. Before its move to v3.3.0, Boutique showed full-width rows: a radio mark, the label at the
+start, the price at the end.
+
+**Proposed:** a third variant, `rows`, and a per-choice `detail` (a node, such as a price) shown at
+the end of its row. One row per choice at every width; the label at the start, wrapping inside its
+row; the detail at the end, beside the label while the label keeps its least room (8ch), else under
+it, wrapping there only when it is longer than the row. The same radio group as the buttons: one Tab
+stop, the arrow keys, Home and End, and a choice that cannot be had is dashed, struck through and
+said in words. A row presses with the subtle scale, as a wide surface does. Its name is one piece,
+"Broderie devant et dos, 79 $", or "Broderie au dos seulement, 59 $, Non disponible", so the price
+is heard where it is seen. In rows the group is no size container: it reads no column query and
+sizes as any block. D-49's "each button holds its label alone" stays for the buttons, and sizes
+keep the button grid. Measured in Chromium at 375px and 1280px, and in its accessibility tree.
+**Rejected:** each price in the note under the buttons, which needs a new string in Boutique and
+sets each price apart from its option; a `detail` on the buttons, which would squeeze sizes further.
+
+**Fix round 1 (review of PR 4): the rows draw as Boutique's did.** Boutique's option rows went through
+its appearance review in `presentation`, so the rows now take their look: the text of where they sit
+(16px on a 24px line on a page), a regular label, the detail semibold in the numeric pair, a ring
+mark 2px thick that thickens to 5px when chosen, and Boutique's row heights (90px for the long
+label at 375px). Measured against a copy of Boutique's picker in Chromium, at 375px and 1280px, light
+and dark, `presentation` and `operations`: the text, the mark, the detail and every row's height and
+position match. Six things remain different. Four are held by existing rules, the motion rule and
+D-49; two, the comma in the name and a long detail moving under the label, are D-59's own:
+- A row presses to 0.995 where Boutique's pressed to 0.97: `--motion-press-scale-subtle`, "a pressed
+  large surface", and `DESIGN.md`'s Pressable rule (the control scale reads as a layout bug across a
+  full-width surface).
+- A held group keeps the chosen row's look, the others take the disabled surface, and only a choice
+  that cannot be had is dashed (D-49, v3.3.0). Boutique dashed every row while it held and greyed
+  all but the chosen one, which kept its chosen colours: the dashed borders are a visible difference
+  while a group is held.
+- A choice that cannot be had is struck through and says so in words (D-49); Boutique's options had
+  no such state.
+- With nothing chosen, the first row is the Tab stop, and Home and End jump (D-49); Boutique's rows had
+  no Tab stop then.
+- A screen reader hears "Broderie devant et dos, 79 $", a comma between the label and the price, where
+  Boutique's name read "Broderie devant et dos 79 $". D-59's own, as D-49 names an unavailable choice
+  "label, words".
+- A detail too long to sit beside the label's least room (8ch) moves under the label, where Boutique's
+  never wrapped and squeezed the label to a letter a line. D-59's own; with Boutique's prices nothing
+  moves.
+A falsy detail (`false`, `true`, `null`, `""`, what `price !== null && price` gives), a blank string and
+an empty list are no detail: no box, no comma; `0` is one. An element that renders nothing still counts,
+so pass `undefined` for none. Tested in Chromium against these numbers, and at 375px with a node, none, a falsy and a long
+detail; the rows' CSS rule is pinned and its effect measured in a table cell and an inline-block.
+
+### D-60 · One rule above the footer · `APPROVED` Kaleb, 2026-10-27 · amends D-53
+
+**Question:** `ContactFooter` and `ud-contact-footer` always draw their top rule, so a page that ends
+with a band draws two rules, the band's bottom border and the footer's top one. Boutique's appearance
+review found it, and Boutique keeps one rule through a bridge on the footer's class (`ONE_RULE`).
+UDesign Pages draws its footer's rule only where `main` does not end with a band.
+
+**Proposed:** after a band that ends the page, the band's border is the rule and the footer draws
+none. The band ends `main` (UDesign Pages' condition), ends `main`'s last block (Boutique's item
+view, whose band is the last section of its article), or sits right before the footer (a
+`PageCanvas` without `main`, as the reference screen is built). `PageSection variant="band"` marks
+itself `data-band`, which the registry footer reads, as Boutique's bands already do; the static
+footer reads `ud-page-section-band`. Measured in Chromium, registry and static, for each way a page
+can end; a page that ends on the field keeps the footer's rule. A browser without `:has()` draws
+two rules where the band is in `main`, as before; a band right before the footer is read without it,
+by the registry footer and by the static one, whose rule for it stands apart (fix round 2).
+**Rejected:** a `rule` prop on the footer, which every page would have to set by hand where the
+page's own structure already says it.
+
+### D-61 · A gallery's opening photo waits unless it is the page's main image · `APPROVED` Kaleb, 2026-10-27 · amends D-54
+
+**Question:** the registry `Gallery` always loaded its opening photo at once, so a page of cards, each
+with its gallery, fetched every card's photo with the page. Boutique's own gallery loaded it lazily
+unless told otherwise.
+
+**Proposed:** every photo waits until it is near, the opening one too (`loading="lazy"`), and
+`priority` keeps the page's main image loading at once and fetched first (`fetchpriority="high"`).
+The square slide holds its room either way, so nothing moves when a photo arrives. Measured in
+Chromium: a card's gallery far below the screen fetches nothing until it nears; the main image is
+not lazy, fetched first and loaded with the page. The plain-JS build keeps UDesign Pages' markup,
+byte for byte as its generator writes it: its opening photo loads at once and the others wait, since
+a product page's gallery sits at the top (fix round 1: `DESIGN.md` now says which build does what).
+**Rejected:** a `loading` prop, which would let a page lazy-load its main image, the one photo that
+must not wait.
+
+### Derived in round 20, not asked
+
+- **Δ-29 · An unavailable choice's name was two boxes.** Chromium named an unavailable choice
+  "S , unavailable": the label and the words were two boxes of the button, and its accessible-name
+  computation puts a space between boxes. The label is now hidden from the accessibility tree and
+  the name is one box, "S, unavailable", as the swatch's already was; the label still shows, struck
+  through. Measured in Chromium's own accessibility tree. The next derived ID is Δ-30.

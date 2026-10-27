@@ -613,6 +613,13 @@ textarea.ud-input { height: auto; min-height: 6rem; }
   padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--content-gutter-mobile));
   border-top: 1px solid var(--border);
 }
+/* One rule above the footer (D-60): after a band that ends the page, the band's border is the rule.
+   The band ends main (UDesign Pages' condition), ends main's last block, or sits right before the
+   footer. The last has a rule of its own, so a browser without :has(), which drops a whole selector
+   list that holds it, still reads it; that browser draws two rules where the band is in main. */
+.ud-page-section-band + .ud-contact-footer { border-top: 0; }
+main:has(> .ud-page-section-band:last-child) + .ud-contact-footer,
+main:has(> :last-child > .ud-page-section-band:last-child) + .ud-contact-footer { border-top: 0; }
 .ud-contact-footer > * { margin: 0; }
 .ud-contact-footer a {
   display: inline-flex;
@@ -802,6 +809,10 @@ textarea.ud-input { height: auto; min-height: 6rem; }
  * never a full row, which a grid's plain div, a fieldset or a dialog on a phone could not hold.
  */
 [data-slot="choice-group"] { container-type: inline-size; contain-intrinsic-inline-size: var(--choice-intrinsic, 9.25rem); }
+/* Rows (D-59) lay one choice a row and read no container query, so the group is no size container:
+   it sizes as any block does. In a parent sized by its content it takes its longest row, up to what
+   the parent can give, and a row then wraps its label and moves a long detail under it. */
+[data-slot="choice-group"][data-variant="rows"] { container-type: normal; }
 [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-1, 1), minmax(0, 1fr)); }
 @container (min-width: 8.5rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-2, 1), minmax(0, 1fr)); } }
 @container (min-width: 9.25rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-3, 1), minmax(0, 1fr)); } }
