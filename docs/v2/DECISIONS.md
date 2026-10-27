@@ -1428,3 +1428,69 @@ drawn on its one child, `<Skeleton asChild><span className="inline-block h-4 w-1
 which keeps the ref and `aria-hidden`. The `skeleton` item now depends on `@radix-ui/react-slot`,
 which `core` already installs. **Rejected:** an `inline` prop that always draws an inline-block span,
 which would cover a button but not a table cell or a list item.
+
+---
+
+## Round 20 - 2026-10-27 (Boutique's move to v3.3.0)
+
+**Evidence:** "New design-system gaps" in Boutique's report of its move to v3.3.0 (`ds33-move-report.md`,
+gaps 1 to 4), each reproduced here before it changed. None of this round is approved: D-59 to D-61
+wait for Kaleb, and the `DESIGN.md` sentence each adds or changes carries `NEEDS-APPROVAL` and the
+entry's number until he answers. Δ-29 is derived. Shipped as release candidate v3.4.0.
+
+### D-59 · `ChoiceGroup variant="rows"`: options chosen by their detail · `NEEDS-APPROVAL` · amends D-49
+
+**Question:** Boutique's hoodie options carry long labels ("Broderie devant et dos", "Broderie devant
+seulement") and a price each (79 $ and 53 $), and a participant chooses between them by price. As
+D-49's side-by-side buttons, each holding its label alone, the price disappears and the labels
+squeeze. Before its move to v3.3.0, Boutique showed full-width rows: a radio mark, the label at the
+start, the price at the end.
+
+**Proposed:** a third variant, `rows`, and a per-choice `detail` (a node, such as a price) shown at
+the end of its row. One row per choice at every width; the label at the start, wrapping inside its
+row; the detail aligned at the end, never wrapped. The same radio group as the buttons: one Tab
+stop, the arrow keys, Home and End, and a choice that cannot be had is dashed, struck through and
+said in words. A row presses with the subtle scale, as a wide surface does. Its name is one piece,
+"Broderie devant et dos, 79 $", or "Broderie au dos seulement, 59 $, Non disponible", so the price
+is heard where it is seen. In rows the group is no size container: it reads no column query and
+sizes as any block. D-49's "each button holds its label alone" stays for the buttons, and sizes
+keep the button grid. Measured in Chromium at 375px and 1280px, and in its accessibility tree.
+**Rejected:** each price in the note under the buttons, which needs a new string in Boutique and
+sets each price apart from its option; a `detail` on the buttons, which would squeeze sizes further.
+
+### D-60 · One rule above the footer · `NEEDS-APPROVAL` · amends D-53
+
+**Question:** `ContactFooter` and `ud-contact-footer` always draw their top rule, so a page that ends
+with a band draws two rules, the band's bottom border and the footer's top one. Boutique's appearance
+review found it, and Boutique keeps one rule through a bridge on the footer's class (`ONE_RULE`).
+UDesign Pages draws its footer's rule only where `main` does not end with a band.
+
+**Proposed:** after a band that ends the page, the band's border is the rule and the footer draws
+none. The band ends `main` (UDesign Pages' condition), ends `main`'s last block (Boutique's item
+view, whose band is the last section of its article), or sits right before the footer (a
+`PageCanvas` without `main`, as the reference screen is built). `PageSection variant="band"` marks
+itself `data-band`, which the registry footer reads, as Boutique's bands already do; the static
+footer reads `ud-page-section-band`. Measured in Chromium, registry and static, for each way a page
+can end; a page that ends on the field keeps the footer's rule. A browser without `:has()` draws
+two rules, as before. **Rejected:** a `rule` prop on the footer, which every page would have to set
+by hand where the page's own structure already says it.
+
+### D-61 · A gallery's opening photo waits unless it is the page's main image · `NEEDS-APPROVAL` · amends D-54
+
+**Question:** the registry `Gallery` always loaded its opening photo at once, so a page of cards, each
+with its gallery, fetched every card's photo with the page. Boutique's own gallery loaded it lazily
+unless told otherwise.
+
+**Proposed:** every photo waits until it is near, the opening one too (`loading="lazy"`), and
+`priority` keeps the page's main image loading at once and fetched first (`fetchpriority="high"`).
+The square slide holds its room either way, so nothing moves when a photo arrives. Measured in
+Chromium: a card's gallery far below the screen fetches nothing until it nears; the main image is
+not lazy, fetched first and loaded with the page. The plain-JS build keeps UDesign Pages' markup,
+byte for byte: its generators choose. **Rejected:** a `loading` prop, which would let a page lazy-load
+its main image, the one photo that must not wait.
+
+- **Δ-29 · An unavailable choice's name was two boxes.** Chromium named an unavailable choice
+  "S , unavailable": the label and the words were two boxes of the button, and its accessible-name
+  computation puts a space between boxes. The label is now hidden from the accessibility tree and
+  the name is one box, "S, unavailable", as the swatch's already was; the label still shows, struck
+  through. Measured in Chromium's own accessibility tree. The next derived ID is Δ-30.
