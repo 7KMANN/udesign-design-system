@@ -21,6 +21,7 @@ import {
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from "@/components/ui/description-list"
 import { IconButton } from "@/components/ui/icon-button"
 import { Input } from "@/components/ui/input"
+import { Lockup } from "@/components/ui/lockup"
 import { NativeSelect } from "@/components/ui/native-select"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
@@ -537,12 +538,39 @@ describe("UDesign page shells", () => {
     expect(padding("both")).toEqual(["py-[var(--space-8)]"])
   })
 
+  // D-62: the lockup is the official logo, one SVG that sizes by height.
+  it("draws the logo as an image named UDesign, with the name in the text colour", async () => {
+    const { container } = render(<Lockup />)
+    const logo = screen.getByRole("img", { name: "UDesign" })
+    expect(logo).toHaveClass("h-8", "w-auto", "shrink-0")
+    expect(logo).toHaveAttribute("viewBox", "0 0 850.39 218.49")
+    expect(logo.querySelectorAll("rect")).toHaveLength(4)
+    expect(logo.querySelector("rect")).toHaveAttribute("fill", "#c79f6b")
+    const name = logo.querySelector("g[fill='currentColor']")!
+    expect(name.querySelectorAll("path")).toHaveLength(7)
+    expect((await axe.run(container)).violations).toEqual([])
+  })
+
+  it("hides the logo when the page already says UDesign, takes its height from className, and draws the tile alone as a mark", async () => {
+    const { container, rerender } = render(<Lockup title="" />)
+    expect(screen.queryByRole("img")).toBeNull()
+    expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true")
+    rerender(<Lockup variant="mark" className="h-6" />)
+    const mark = screen.getByRole("img", { name: "UDesign" })
+    // The height is the caller's: className reaches the svg, and cn (tailwind-merge in a consumer) keeps the later h-*.
+    expect(mark).toHaveClass("h-6")
+    expect(mark).toHaveAttribute("viewBox", "0 0 218.49 218.49")
+    expect(mark.querySelectorAll("path")).toHaveLength(0)
+    expect(mark.querySelectorAll("rect")).toHaveLength(4)
+    expect((await axe.run(container)).violations).toEqual([])
+  })
+
   // D-52: the lockup at left, at most one action at right, one row a touch target high on the
   // sections' column, whoever is on the page (measured in Chromium by the layout audit).
   it("opens a presentation page with the lockup at left and at most one action at right, in one row", async () => {
     const page = (action?: React.ReactNode) => (
       <PageCanvas>
-        <PageHeader action={action}><span>UDesign</span></PageHeader>
+        <PageHeader action={action}><Lockup /></PageHeader>
       </PageCanvas>
     )
     const { container, rerender } = render(page(<button type="button">Ce n’est pas vous ?</button>))

@@ -8,6 +8,7 @@ import * as React from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Lockup } from "@/components/ui/lockup"
 import { ContactFooter, PageCanvas, PageHeader, PageSection } from "@/components/ui/page-canvas"
 
 // Internal navigation goes through your framework's link primitive (ban 17):
@@ -36,9 +37,9 @@ export function PresentationOrder() {
     // PageCanvas: the page scrolls and each PageSection centres a column (ban 27).
     <PageCanvas>
       {/* The lockup at left, at most one action at right, one row whoever is on the page (D-52). The
-          lockup is the one Montserrat signature, so the action beside it stays quiet: ghost. */}
+          lockup is the logo (D-62), the one signature, so the action beside it stays quiet: ghost. */}
       <PageHeader action={<Button asChild variant="ghost"><Link href="/commandes">Mes commandes</Link></Button>}>
-        <span className="[font-family:var(--font-display)] text-xl font-black">UDesign</span>
+        <Lockup />
       </PageHeader>
 
       {/* A short head meets the first band at --space-8 on each side, 64px at every width (D-56). */}

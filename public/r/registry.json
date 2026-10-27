@@ -282,6 +282,15 @@
       "files": [{ "path": "registry/new-york/ui/pressable.tsx", "type": "registry:ui", "target": "components/ui/pressable.tsx" }]
     },
     {
+      "name": "lockup",
+      "type": "registry:component",
+      "title": "Lockup",
+      "description": "The UDesign logo: the brand tile and the outlined name, drawn as one SVG that sizes by height. The name follows the text colour; variant=\"mark\" is the tile alone.",
+      "docs": "The official logo (UDesignText.svg): the tile is the brand colour with black bars in every theme, and the name is outlined paths filled with currentColor, so the surface sets its colour. It sizes by height (h-8 by default, 32px), never by width. It is role img named UDesign; pass title=\"\" where the page already says UDesign beside it and it hides itself. Use it as PageHeader's children and in an AppShell sidebar; variant=\"mark\" for a corner too tight to read the name. Static pages use ud-lockup with the same SVG. See DESIGN.md header-lockup.",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/lockup.tsx", "type": "registry:component", "target": "components/ui/lockup.tsx" }]
+    },
+    {
       "name": "page-canvas",
       "type": "registry:component",
       "title": "Page Canvas",
@@ -342,6 +351,7 @@
         { "path": "registry/new-york/ui/metric-card.tsx", "type": "registry:component", "target": "components/ui/metric-card.tsx" },
         { "path": "registry/new-york/ui/empty-state.tsx", "type": "registry:component", "target": "components/ui/empty-state.tsx" },
         { "path": "registry/new-york/ui/responsive-collection.tsx", "type": "registry:component", "target": "components/ui/responsive-collection.tsx" },
+        { "path": "registry/new-york/ui/lockup.tsx", "type": "registry:component", "target": "components/ui/lockup.tsx" },
         { "path": "registry/new-york/ui/page-canvas.tsx", "type": "registry:component", "target": "components/ui/page-canvas.tsx" },
         { "path": "registry/new-york/ui/app-shell.tsx", "type": "registry:component", "target": "components/ui/app-shell.tsx" },
         { "path": "registry/new-york/ui/spinner.tsx", "type": "registry:ui", "target": "components/ui/spinner.tsx" },
