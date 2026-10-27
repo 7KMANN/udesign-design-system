@@ -41,6 +41,7 @@ const requiredItems = [
   "skeleton",
   "pressable",
   "page-canvas",
+  "lockup",
   "app-shell",
   "core",
 ]
@@ -53,6 +54,7 @@ assert.deepEqual(
   "registry must expose exactly the approved public items",
 )
 
+const logoTile = "#c79f6b"
 const rawColorPattern = /(?:\b(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:[1-9]00|50)\b)|(?:#[0-9a-f]{3,8}\b)/i
 const primitivePattern = /--ud-/
 const rawShadowPattern = /\bshadow-(?:sm|md|lg|xl|2xl)\b/
@@ -69,7 +71,9 @@ for (const item of registry.items) {
     const sourcePath = path.join(root, file.path)
     assert.ok(fs.existsSync(sourcePath), `${item.name} source file is missing: ${file.path}`)
     const source = fs.readFileSync(sourcePath, "utf8")
-    assert.doesNotMatch(source, rawColorPattern, `${file.path} contains a raw color utility or literal`)
+    // D-62: the logo is one image, so its tile colour is the image's own, written once in lockup.tsx. Nothing else may write a hex.
+    const colourSource = file.path.endsWith("/lockup.tsx") ? source.replaceAll(logoTile, "") : source
+    assert.doesNotMatch(colourSource, rawColorPattern, `${file.path} contains a raw color utility or literal`)
     assert.doesNotMatch(source, primitivePattern, `${file.path} consumes a forbidden UDesign primitive`)
     assert.doesNotMatch(source, rawShadowPattern, `${file.path} contains a raw elevation utility`)
     assert.doesNotMatch(source, radiusAliasPattern, `${file.path} uses a Tailwind radius alias; use rounded-[var(--radius*)]`)
@@ -234,7 +238,7 @@ for (const name of ["badge.tsx", "app-shell.tsx"]) {
 
 const core = registry.items.find((item) => item.name === "core")
 assert.equal(core.type, "registry:item")
-assert.equal(core.files.length, 29, "core must install the complete supported source set")
+assert.equal(core.files.length, 30, "core must install the complete supported source set")
 
 const outputDir = path.join(root, "public", "r")
 assert.ok(fs.existsSync(outputDir), "public/r must contain committed registry output")
