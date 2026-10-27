@@ -1433,8 +1433,9 @@ which would cover a button but not a table cell or a list item.
 
 ## Round 20 - 2026-10-27 (Boutique's move to v3.3.0)
 
-**Evidence:** "New design-system gaps" in Boutique's report of its move to v3.3.0 (`ds33-move-report.md`,
-gaps 1 to 4), each reproduced here before it changed. None of this round is approved: D-59 to D-61
+**Evidence:** "Design-system gaps" in Boutique's report of its move to v3.3.0 (`ds33-move-report.md`:
+1 the options' prices, 2 the footer after a band, 3 the unavailable name, 4 the gallery's opening
+photo), each reproduced here before it changed. The review of PR 4 sent the first fix round. None of this round is approved: D-59 to D-61
 wait for Kaleb, and the `DESIGN.md` sentence each adds or changes carries `NEEDS-APPROVAL` and the
 entry's number until he answers. Δ-29 is derived. Shipped as release candidate v3.4.0.
 
@@ -1457,6 +1458,30 @@ sizes as any block. D-49's "each button holds its label alone" stays for the but
 keep the button grid. Measured in Chromium at 375px and 1280px, and in its accessibility tree.
 **Rejected:** each price in the note under the buttons, which needs a new string in Boutique and
 sets each price apart from its option; a `detail` on the buttons, which would squeeze sizes further.
+
+**Fix round 1 (review of PR 4): the rows draw as Boutique's did.** Boutique's option rows went through
+its appearance review in `presentation`, so the rows now take their look: the text of where they sit
+(16px on a 24px line on a page), a regular label, the detail semibold in the numeric pair, a ring
+mark 2px thick that thickens to 5px when chosen, and Boutique's row heights (90px for the long
+label at 375px). Measured against a copy of Boutique's picker in Chromium, at 375px and 1280px, light
+and dark, `presentation` and `operations`: the text, the mark, the detail and every row's height and
+position match. What remains different, each held by an existing rule:
+- A row presses to 0.995 where Boutique's pressed to 0.97: `--motion-press-scale-subtle`, "a pressed
+  large surface", and `DESIGN.md`'s Pressable rule (the control scale reads as a layout bug across a
+  full-width surface).
+- A held group keeps the chosen row's look, the others take the disabled surface, and only a choice
+  that cannot be had is dashed (D-49, v3.3.0); Boutique dashed and greyed every row while it held.
+- A choice that cannot be had is struck through and says so in words; Boutique's options had no such
+  state.
+- With nothing chosen, the first row is the Tab stop, and Home and End jump; Boutique's rows had no Tab
+  stop then.
+- A screen reader hears "Broderie devant et dos, 79 $", a comma between the label and the price, where
+  Boutique's name read "Broderie devant et dos 79 $".
+- A detail too long to sit beside the label's least room (8ch) moves under the label, where Boutique's
+  never wrapped and squeezed the label to a letter a line. With Boutique's prices nothing moves.
+A falsy detail (`false`, `null`, `""`, what `price !== null && price` gives) is no detail: no box, no
+comma. Tested in Chromium against these numbers, and at 375px with a node, none, a falsy and a long
+detail; the rows' CSS rule is pinned and its effect measured in a table cell and an inline-block.
 
 ### D-60 · One rule above the footer · `NEEDS-APPROVAL` · amends D-53
 
@@ -1486,8 +1511,12 @@ unless told otherwise.
 The square slide holds its room either way, so nothing moves when a photo arrives. Measured in
 Chromium: a card's gallery far below the screen fetches nothing until it nears; the main image is
 not lazy, fetched first and loaded with the page. The plain-JS build keeps UDesign Pages' markup,
-byte for byte: its generators choose. **Rejected:** a `loading` prop, which would let a page lazy-load
-its main image, the one photo that must not wait.
+byte for byte as its generator writes it: its opening photo loads at once and the others wait, since
+a product page's gallery sits at the top (fix round 1: `DESIGN.md` now says which build does what).
+**Rejected:** a `loading` prop, which would let a page lazy-load its main image, the one photo that
+must not wait.
+
+### Derived in round 20, not asked
 
 - **Δ-29 · An unavailable choice's name was two boxes.** Chromium named an unavailable choice
   "S , unavailable": the label and the words were two boxes of the button, and its accessible-name
