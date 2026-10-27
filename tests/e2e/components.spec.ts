@@ -226,7 +226,9 @@ test("React gallery: a card's opening photo waits until it is near, the page's m
   await page.waitForTimeout(300)
   expect(asked.filter((url) => url.includes("set=c")), "nothing of the gallery far below the screen").toEqual([])
   const main = a.locator(".swiper-slide-active img")
-  expect(await main.evaluate((img: HTMLImageElement) => [img.getAttribute("loading"), img.fetchPriority, img.complete]), "not lazy, fetched first, loaded").toEqual([null, "high", true])
+  expect(await main.evaluate((img: HTMLImageElement) => [img.getAttribute("loading"), img.fetchPriority]), "not lazy, fetched first").toEqual([null, "high"])
+  // Loaded with the page; a busy machine may still be decoding it, so wait for it rather than read it once.
+  await expect.poll(() => main.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), { message: "loaded" }).toBe(true)
   await page.getByTestId("gallery-c").scrollIntoViewIfNeeded()
   await expect.poll(() => asked.some((url) => url.includes("photo-2.svg") && url.includes("set=c")), { message: "near the screen, it loads" }).toBe(true)
 })
