@@ -320,6 +320,46 @@ test("in Chromium an unavailable choice is named by its label, a comma and the w
   expect(names, "an available choice keeps its label alone").toContain("S")
 })
 
+// D-59: options chosen by their detail are rows: one per choice at every width, the detail at the
+// row's end, a long label wrapping inside its row, each named in one piece by Chromium.
+for (const width of [375, 1280]) {
+  test(`at ${width}px a choice group of rows gives each choice its own row, its detail at the end`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto("/fixtures.html?fixture=choice-rows")
+    const group = page.getByTestId("rows").locator('[data-slot="choice-group"]')
+    await expect(group.getByRole("radio").first()).toBeVisible({ timeout: 20_000 })
+    const rows = await group.getByRole("radio").evaluateAll((els) =>
+      els.map((el) => {
+        const box = el.getBoundingClientRect()
+        const style = getComputedStyle(el)
+        const label = el.querySelector('[data-slot="choice-label"]')!.getBoundingClientRect()
+        const detail = el.querySelector('[data-slot="choice-detail"]')!.getBoundingClientRect()
+        const end = box.right - parseFloat(style.paddingRight) - parseFloat(style.borderRightWidth)
+        return { top: box.top, bottom: box.bottom, left: box.left, right: box.right, end, label, detail }
+      }),
+    )
+    const groupBox = (await group.boundingBox())!
+    rows.forEach((row, i) => {
+      expect(row.left, `row ${i}: from the group's start`).toBeCloseTo(groupBox.x, 0)
+      expect(row.right, `row ${i}: to the group's end`).toBeCloseTo(groupBox.x + groupBox.width, 0)
+      expect(row.detail.right, `row ${i}: its detail at the end`).toBeCloseTo(row.end, 0)
+      expect(row.label.right, `row ${i}: its label before the detail`).toBeLessThanOrEqual(row.detail.left)
+      expect(row.label.bottom, `row ${i}: its label inside the row`).toBeLessThanOrEqual(row.bottom)
+      if (i) expect(row.top, `row ${i}: below the one before`).toBeGreaterThanOrEqual(rows[i - 1].bottom)
+    })
+    const lines = rows[3].label.height / rows[0].label.height
+    if (width === 375) expect(lines, "the long label wraps inside its row on a phone").toBeGreaterThan(1.5)
+    else expect(lines, "and holds one line on a desktop").toBeCloseTo(1, 1)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), "the page does not scroll sideways").toBeLessThanOrEqual(width)
+    expect(await chromiumNames(page, "radio")).toEqual([
+      "Broderie devant et dos, 79 $",
+      "Broderie devant seulement, 53 $",
+      "Broderie au dos seulement, 59 $, Non disponible",
+      "Broderie devant et dos, avec le nom de l’équipe sur la manche gauche, 89 $",
+    ])
+  })
+}
+
 test("a held choice group keeps its choice's look, and only a choice that cannot be had is dashed", async ({ page }) => {
   await page.goto("/fixtures.html?fixture=choices")
   const token = (name: string) =>

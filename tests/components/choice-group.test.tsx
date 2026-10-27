@@ -245,3 +245,70 @@ describe("ChoiceGroup", () => {
     expect((await axe.run(container)).violations).toEqual([])
   })
 })
+
+// D-59: options a participant chooses by their detail, such as each option's price, are rows: a
+// radio mark, the label at the start, the detail at the end, one row per choice at every width
+// (Boutique's move to v3.3.0: its hoodie's options lost their prices as side-by-side buttons).
+describe("ChoiceGroup rows", () => {
+  const options = [
+    { value: "both", label: "Broderie devant et dos", detail: "79 $" },
+    { value: "front", label: "Broderie devant seulement", detail: "53 $" },
+    { value: "back", label: "Broderie au dos seulement", detail: "59 $", disabled: true },
+  ]
+  function Options(props: Partial<React.ComponentProps<typeof ChoiceGroup>>) {
+    const [value, setValue] = React.useState<string | null>(props.value ?? null)
+    return <ChoiceGroup aria-label="Option" variant="rows" choices={options} unavailableLabel="non disponible" {...props} value={value} onValueChange={setValue} />
+  }
+
+  it("names each row by its label and its detail, and an unavailable one in words", () => {
+    render(<Options value="front" />)
+    const radios = screen.getAllByRole("radio")
+    expect(radios).toEqual(["Broderie devant et dos, 79 $", "Broderie devant seulement, 53 $", "Broderie au dos seulement, 59 $, non disponible"].map((name) => screen.getByRole("radio", { name })))
+    expect(radios.map((r) => r.tabIndex), "one Tab stop, the chosen row").toEqual([-1, 0, -1])
+    expect(screen.getByRole("radio", { name: /devant seulement/ })).toHaveAttribute("aria-checked", "true")
+    expect(screen.getByRole("radio", { name: /au dos/ })).toBeDisabled()
+  })
+
+  it("lays one row per choice, the label at the start and the detail at the end", () => {
+    render(<Options />)
+    const items = screen.getByRole("radiogroup")
+    expect(items).toHaveAttribute("data-variant", "rows")
+    expect(items.parentElement).toHaveAttribute("data-variant", "rows")
+    expect(items).toHaveClass("grid")
+    expect(items.style.getPropertyValue("--choice-columns-1"), "no columns: a row each").toBe("")
+    const row = screen.getByRole("radio", { name: /devant et dos/ })
+    expect(row).toHaveClass("w-full", "text-start", "active:scale-[var(--motion-press-scale-subtle)]")
+    expect(row, "a row presses with the subtle scale, as a wide surface does").not.toHaveClass("active:scale-[var(--motion-press-scale)]")
+    const [mark, label, detail] = [...row.children]
+    expect(mark).toHaveAttribute("aria-hidden", "true")
+    expect(label).toHaveAttribute("data-slot", "choice-label")
+    expect(label).toHaveClass("flex-1", "[overflow-wrap:anywhere]")
+    expect(detail).toHaveAttribute("data-slot", "choice-detail")
+    expect(detail).toHaveClass("shrink-0", "text-end", "whitespace-nowrap")
+    expect(detail).toHaveTextContent("79 $")
+    expect(screen.getByRole("radio", { name: /au dos/ }).querySelector('[data-slot="choice-label"]')).toHaveClass("line-through")
+  })
+
+  it("moves and chooses with the arrow keys, skipping what cannot be had, and stops them there", async () => {
+    const user = userEvent.setup()
+    const onKeyDown = vi.fn()
+    render(
+      <div onKeyDown={onKeyDown}>
+        <Options />
+      </div>,
+    )
+    await user.tab()
+    expect(screen.getByRole("radio", { name: /devant et dos/ })).toHaveFocus()
+    await user.keyboard("{ArrowDown}")
+    expect(screen.getByRole("radio", { name: /devant seulement/ })).toHaveFocus()
+    expect(screen.getByRole("radio", { name: /devant seulement/ })).toHaveAttribute("aria-checked", "true")
+    await user.keyboard("{ArrowDown}")
+    expect(screen.getByRole("radio", { name: /devant et dos/ }), "the unavailable row is skipped").toHaveFocus()
+    expect(onKeyDown, "the group stops the keys it handles").not.toHaveBeenCalled()
+  })
+
+  it("renders without axe violations", async () => {
+    const { container } = render(<Options value="both" note="Le prix comprend la broderie." />)
+    expect((await axe.run(container)).violations).toEqual([])
+  })
+})

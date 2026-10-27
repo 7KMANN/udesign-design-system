@@ -1030,6 +1030,9 @@ main:has(> :last-child > .ud-page-section-band:last-child) + .ud-contact-footer 
  * never a full row, which a grid's plain div, a fieldset or a dialog on a phone could not hold.
  */
 [data-slot="choice-group"] { container-type: inline-size; contain-intrinsic-inline-size: var(--choice-intrinsic, 9.25rem); }
+/* Rows (D-59) lay one choice a row and read no container query: the group sizes as any block does,
+   its least width a row's longest word and its detail. */
+[data-slot="choice-group"][data-variant="rows"] { container-type: normal; }
 [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-1, 1), minmax(0, 1fr)); }
 @container (min-width: 8.5rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-2, 1), minmax(0, 1fr)); } }
 @container (min-width: 9.25rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-3, 1), minmax(0, 1fr)); } }

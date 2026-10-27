@@ -78,6 +78,24 @@ function ChoicesPhone() {
   );
 }
 
+// Options chosen by their price, as rows (D-59), one label long enough to wrap on a phone.
+function ChoiceRows() {
+  const [value, setValue] = useState<string | null>('front');
+  const options = [
+    { value: 'both', label: 'Broderie devant et dos', detail: '79 $' },
+    { value: 'front', label: 'Broderie devant seulement', detail: '53 $' },
+    { value: 'back', label: 'Broderie au dos seulement', detail: '59 $', disabled: true },
+    { value: 'team', label: 'Broderie devant et dos, avec le nom de l’équipe sur la manche gauche', detail: '89 $' },
+  ];
+  return (
+    <main className="grid gap-6 p-4">
+      <div data-testid="rows">
+        <ChoiceGroup aria-label="Option" variant="rows" choices={options} value={value} onValueChange={setValue} unavailableLabel="Non disponible" />
+      </div>
+    </main>
+  );
+}
+
 // The registry's dialog on a phone, its group in a plain div (review N1).
 function ChoiceDialog() {
   return (
@@ -178,7 +196,7 @@ function Footer() {
   );
 }
 
-const fixtures: Record<string, React.ComponentType> = { choices: Choices, footer: Footer, 'choices-phone': ChoicesPhone, 'choice-dialog': ChoiceDialog, galleries: Galleries, specs: Specs };
+const fixtures: Record<string, React.ComponentType> = { choices: Choices, 'choice-rows': ChoiceRows, footer: Footer, 'choices-phone': ChoicesPhone, 'choice-dialog': ChoiceDialog, galleries: Galleries, specs: Specs };
 const Fixture = fixtures[new URLSearchParams(location.search).get('fixture') ?? ''] ?? (() => <p>Unknown fixture</p>);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
