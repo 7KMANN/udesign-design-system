@@ -1,5 +1,41 @@
 # Changelog
 
+## 3.4.0 (2026-10-27)
+
+Boutique's move to v3.3.0: ChoiceGroup rows with a detail such as a price, one rule above the footer after a band, a card's gallery that loads its opening photo when near, and an unavailable choice named in one piece.
+
+Decisions and measurements: `docs/v2/DECISIONS.md` round 20 (D-59 to D-61 and Δ-29), from the gaps Boutique found moving to v3.3.0. D-59 to D-61 wait for Kaleb: the rules they add to `DESIGN.md` carry `NEEDS-APPROVAL` until he answers.
+
+### Visible on upgrade
+
+- **A card's gallery loads its opening photo when it is near** (proposed, D-61). Without `priority`, every photo of the registry `Gallery` waits until it is near, the opening one too, so a page of cards no longer fetches every card's photo with the page. `priority` keeps the page's main image loading at once and fetched first. The square slide holds its room, so nothing moves when a photo arrives. A page whose main image is a `Gallery` without `priority` now loads it lazily: pass `priority` there. Re-add `gallery`. `dist/ud-gallery.js` and its markup do not change.
+- **One rule above the footer** (proposed, D-60). After a band that ends the page, `ContactFooter` and `ud-contact-footer` draw no top rule of their own: the band's bottom border is the rule. The band ends `main` (UDesign Pages' condition), ends `main`'s last block, or sits right before the footer. `PageSection variant="band"` now writes `data-band`, which the footer reads. A browser without `:has()` draws two rules, as before. Re-add `page-canvas` and sync the tokens.
+- **An unavailable choice is named in one piece** (Δ-29): "S, Non disponible", where Chromium read "S , Non disponible". The struck-through label still shows, but leaves the accessibility tree, so the button's text content now holds the label twice (shown, then in the name); find a choice by its role and name. Re-add `choice-group`.
+- **`dist/tokens.css`** adds the footer's rule after a band and a rows group's sizing (`container-type: normal`): inert until used.
+
+### Additive
+
+- **`ChoiceGroup variant="rows"`** and a per-choice `detail` (proposed, D-59): options a person chooses by what each carries, such as each option's price. One row per choice at every width: a radio mark, the label at the start, wrapping inside its row, and the detail at the end, never wrapped. The same keys and single Tab stop as the buttons, a choice that cannot be had dashed, struck through and said in words, and a name in one piece, "Broderie devant et dos, 79 $". A row presses with the subtle scale. The button grid stays for sizes, and D-49's "each button holds its label alone" stays for the buttons.
+- **`DESIGN.md`**: rows in "Choosing one of a few", one rule above the footer in `contact-footer`, and a card's photos in "Showing photos".
+- **Tests.** In jsdom: rows' names, Tab stop, keys, layout and axe; an unavailable choice's name; the band's mark and the footer's classes; the opening photo's loading with and without `priority`. In Chromium: rows at 375px and 1280px (one row per choice, the detail at the row's end, a long label wrapping inside its row, no sideways scroll); every choice's name read from Chromium's own accessibility tree; the footer's rule for each way a page can end, registry and static; and a card's gallery far below the screen that fetches nothing until it nears, while the main image loads at once, fetched first.
+
+### For Boutique
+
+Move to v3.4.0 (the `@udesign` tag in `components.json`, and the tokens), then re-add `choice-group`, `page-canvas` and `gallery`.
+
+- Options: `OptionPicker` (`pickers.tsx`), Boutique's own rows since the move, becomes `<ChoiceGroup variant="rows">` with each option's price as its `detail`, in the item view, the kit and organizer entry. Sizes stay buttons. The note with each price that its move report put to Kaleb is no longer needed.
+- Footer: drop `ONE_RULE` and the `className` it passes to `ContactFooter` in `Frame.tsx`. Its bands' own `data-band=""` (`ItemView.tsx`, `KitForm.tsx`, `ShopHome.tsx`) can go: `PageSection variant="band"` writes it.
+- Gallery: nothing to change. Its `Gallery` wrapper already passes `priority={eager}`, so the kit's later cards (`eager={first}`) load their photos when near again, and the item view's main gallery stays at once.
+- Names: nothing to change; a test can expect the exact "S, Non disponible".
+
+### For GlobalVision
+
+- It pins v3.1.2, and nothing in this release touches its screens (no `ChoiceGroup`, `Gallery` or `ContactFooter`). When it moves, the 3.3.0 notes apply.
+
+### For `udesignpages`
+
+- Sync `dist/tokens.css` into a new `public/design-system/v3.4.0/`. A page that writes `ud-contact-footer` after a `main` that ends with `ud-page-section-band` now gets one rule from the tokens, by the condition UDesign Pages' own CSS uses for its footer. `dist/ud-gallery.js` and its markup do not change.
+
 ## 3.3.0 (2026-10-26)
 
 Boutique's appearance findings ship: fluid page titles, a badge that wraps, a choice group, spacing on the roles with a checker rule, a header, a contact footer and a compact section edge for presentation pages, one gallery for React and static pages, a description list, a skeleton inside a button, and an Alert that announces only when asked.
