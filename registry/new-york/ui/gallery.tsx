@@ -25,7 +25,7 @@ export interface GalleryProps extends Omit<React.HTMLAttributes<HTMLDivElement>,
   start?: number
   /** The slide's width, for the browser's pick among each photo's srcSet: an img sizes attribute. */
   sizes?: string
-  /** The opening photo is the page's main image: fetch it first. */
+  /** The opening photo is the page's main image: load it at once and fetch it first. Without it, every photo waits until it is near. */
   priority?: boolean
   /** Screen-reader words. By default the document's language: English when <html lang> starts with "en", else French. */
   messages?: GalleryMessages
@@ -119,7 +119,9 @@ const GallerySet = React.forwardRef<HTMLDivElement, GalleryProps>(
                   sizes={photo.srcSet ? sizes : undefined}
                   alt={photo.alt}
                   draggable={false}
-                  loading={i === opening ? undefined : "lazy"}
+                  // Every photo waits until it is near, the opening one too: a page of cards would fetch
+                  // each card's at once. The page's main image (priority) loads at once, fetched first.
+                  loading={i === opening && priority ? undefined : "lazy"}
                   decoding="async"
                   {...(i === opening && priority ? { [fetchPriority]: "high" } : {})}
                 />

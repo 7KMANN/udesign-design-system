@@ -215,6 +215,22 @@ for (const build of builds) {
   })
 }
 
+// Boutique's move to v3.3.0, gap 4: every card's opening photo was fetched with the page. A gallery
+// without priority now waits until it is near; the page's main image is fetched at once, first.
+test("React gallery: a card's opening photo waits until it is near, the page's main image does not", async ({ page }) => {
+  const asked: string[] = []
+  page.on("request", (request) => asked.push(request.url()))
+  await page.setViewportSize({ width: 1280, height: 800 })
+  const { a } = await open(page, builds[0].url, builds[0].first, builds[0].second)
+  await page.waitForLoadState("load")
+  await page.waitForTimeout(300)
+  expect(asked.filter((url) => url.includes("set=c")), "nothing of the gallery far below the screen").toEqual([])
+  const main = a.locator(".swiper-slide-active img")
+  expect(await main.evaluate((img: HTMLImageElement) => [img.getAttribute("loading"), img.fetchPriority, img.complete]), "not lazy, fetched first, loaded").toEqual([null, "high", true])
+  await page.getByTestId("gallery-c").scrollIntoViewIfNeeded()
+  await expect.poll(() => asked.some((url) => url.includes("photo-2.svg") && url.includes("set=c")), { message: "near the screen, it loads" }).toBe(true)
+})
+
 test("React gallery: an arrow a choice group handles moves the choice, never a photo", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 })
   const { a } = await open(page, builds[0].url, builds[0].first, builds[0].second)

@@ -37,6 +37,19 @@ describe("Gallery", () => {
     expect(thumbs[0].querySelector("img")).toHaveAttribute("src", "/p0-160.webp")
   })
 
+  // Boutique's move to v3.3.0, gap 4: a page of cards fetched every card's opening photo at once.
+  it("loads its opening photo lazily too, unless it is the page's main image", () => {
+    const opening = (props: { priority?: boolean }) => {
+      const { container, unmount } = render(<Gallery photos={photos("Tee", ["Front", "Back"])} {...props} />)
+      const img = container.querySelector<HTMLImageElement>(".swiper-slide img")!
+      const found = [img.getAttribute("loading"), img.getAttribute("fetchpriority")]
+      unmount()
+      return found
+    }
+    expect(opening({}), "a card's gallery: lazy, no priority").toEqual(["lazy", null])
+    expect(opening({ priority: true }), "the page's main image: at once, fetched first").toEqual([null, "high"])
+  })
+
   it("wears the one skin the plain-JS build wears, and Swiper's markup", () => {
     const { container } = render(<Gallery data-testid="g" className="mt-4" photos={photos("Cap", ["Front", "Side"])} />)
     const root = screen.getByTestId("g")

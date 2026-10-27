@@ -95,11 +95,12 @@ function ChoiceDialog() {
 }
 
 // Three copies of each photo, as UDesign's sets have: 160px for the thumbnail, 640 and 1200 for the slide.
-const photos = (product: string, ids: number[], views: string[]): GalleryPhoto[] =>
+// A tag sets one gallery's requests apart from the others'.
+const photos = (product: string, ids: number[], views: string[], tag = ''): GalleryPhoto[] =>
   ids.map((id, i) => ({
-    src: `/gallery/photo-${id}.svg?w=640`,
-    srcSet: [160, 640, 1200].map((w) => `/gallery/photo-${id}.svg?w=${w} ${w}w`).join(', '),
-    thumb: `/gallery/photo-${id}.svg?w=160`,
+    src: `/gallery/photo-${id}.svg?w=640${tag}`,
+    srcSet: [160, 640, 1200].map((w) => `/gallery/photo-${id}.svg?w=${w}${tag} ${w}w`).join(', '),
+    thumb: `/gallery/photo-${id}.svg?w=160${tag}`,
     alt: `${views[i]}, ${product}`,
     label: views[i],
   }));
@@ -127,6 +128,11 @@ function Galleries() {
         </SheetContent>
       </Sheet>
       <div style={{ height: '150rem' }} />
+      {/* A card's gallery far below the screen, past Chromium's lazy-loading margin, without priority: its photos wait until it is near. */}
+      <div style={{ height: '300rem' }} />
+      <div className="max-w-xs">
+        <Gallery data-testid="gallery-c" photos={photos('Tuque exemple', [2, 4], ['Devant', 'Dos'], '&set=c')} sizes="20rem" />
+      </div>
     </main>
   );
 }
