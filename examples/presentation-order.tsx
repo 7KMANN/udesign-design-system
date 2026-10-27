@@ -2,6 +2,8 @@
 // Copy the parts you need; the restraint travels with each part.
 // Pin the profile once on the document root: <html data-design="presentation">.
 // Placeholder data: no real client, order, or date.
+"use client"
+
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"

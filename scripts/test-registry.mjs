@@ -129,6 +129,15 @@ for (const clientFile of ["select.tsx", "choice-group.tsx", "gallery.tsx", "chec
   assert.match(files[clientFile], /^"use client"\r?\n/, `${clientFile} must preserve its App Router client boundary`)
 }
 
+// Review M7: a reference screen is copied into App Router apps as is, so one that holds state or a
+// handler declares the client boundary as its first statement, after its header comments.
+for (const example of fs.readdirSync(path.join(root, "examples")).filter((f) => f.endsWith(".tsx"))) {
+  const source = fs.readFileSync(path.join(root, "examples", example), "utf8")
+  if (!/\buse(?:State|Effect|LayoutEffect|Reducer|Ref)\(|\son[A-Z]\w*=\{/.test(source)) continue
+  const first = source.replace(/^(?:\s*\/\/[^\n]*\n|\s*\/\*[\s\S]*?\*\/)*/, "").trimStart()
+  assert.ok(first.startsWith('"use client"'), `examples/${example} holds state or a handler, so its first statement must be "use client"`)
+}
+
 const checkboxRoot = files["checkbox.tsx"].match(/<CheckboxPrimitive\.Root[\s\S]*?>/)?.[0] ?? ""
 const switchRoot = files["switch.tsx"].match(/<SwitchPrimitive\.Root[\s\S]*?>/)?.[0] ?? ""
 assert.match(checkboxRoot, /size-\[var\(--touch-target-min\)\]/)
