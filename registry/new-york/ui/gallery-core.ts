@@ -89,13 +89,32 @@ function typing(el: EventTarget | undefined): boolean {
   return Boolean(node && (node.isContentEditable || /^(input|textarea|select)$/i.test(node.nodeName ?? "")))
 }
 
+// A gallery the page has set aside: in an inert or aria-hidden subtree, as a modal hides its siblings.
+function setAside(root: HTMLElement): boolean {
+  return root.closest('[inert], [aria-hidden="true"]') !== null
+}
+
+// The dialog that holds the focus, if any: an aria-modal element, a role of dialog or alertdialog,
+// or a <dialog>. Radix marks its modals by role alone, and its aria-hidden never reaches a gallery:
+// it leaves every subtree that holds a live region in view, and Swiper's A11y puts one in each.
+function dialogOf(path: EventTarget[]): Element | undefined {
+  return path.find((node): node is Element => {
+    const el = node as Element
+    if (typeof el.getAttribute !== "function") return false
+    return el.nodeName === "DIALOG" || el.getAttribute("aria-modal") === "true" || /^(?:alert)?dialog$/.test(el.getAttribute("role") ?? "")
+  })
+}
+
 function route(event: KeyboardEvent): void {
   if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
   if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return
   // Where the key went, through any shadow root: the document sees only the host as its focus.
   const path = event.composedPath()
   if (typing(path[0])) return
-  const galleries = [...(routes.get(event.currentTarget as Document) ?? [])]
+  // A modal can open before the browser tells a gallery that the pointer left it. Never a gallery
+  // set aside, nor one outside the dialog that holds the focus, whatever its pointer last said.
+  const dialog = dialogOf(path)
+  const galleries = [...(routes.get(event.currentTarget as Document) ?? [])].filter((g) => !setAside(g.root) && (!dialog || dialog.contains(g.root)))
   // The gallery that has the focus, else the one under the pointer; never every gallery on screen.
   const target = galleries.find((g) => path.includes(g.root)) ?? galleries.find((g) => g.pointer)
   if (!target || target.swiper.destroyed) return
@@ -107,9 +126,10 @@ function route(event: KeyboardEvent): void {
 
 /**
  * Lets the arrow keys move this gallery while the focus is in it or the pointer is over it, and
- * no other: one listener per document, whatever the number of galleries. Page Up and Page Down
- * stay the page's. A key another widget handled (a choice group stops its own) never arrives.
- * Returns the function that undoes it.
+ * no other: one listener per document, whatever the number of galleries. Never while it sits behind
+ * a modal: in an inert or aria-hidden subtree, or outside the dialog that holds the focus. Page Up
+ * and Page Down stay the page's. A key another widget handled (a choice group stops its own) never
+ * arrives. Returns the function that undoes it.
  */
 export function routeGalleryKeys(root: HTMLElement, swiper: Swiper): () => void {
   const doc = root.ownerDocument

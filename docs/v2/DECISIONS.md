@@ -1373,6 +1373,14 @@ Page Down scrolls with the focus in a gallery, and an arrow on a choice group mo
 no photo. **Rejected:** keeping Swiper's listener and toggling it per gallery on focus and hover,
 which leaves two listeners live whenever the focus and the pointer are in different galleries.
 
+**Fix round 1, behind a modal:** a gallery under the pointer never takes the keys once a modal
+covers it. The browser can send the pointer's leave a frame after the modal opens, so an arrow
+pressed at once moved the gallery behind it, in Chromium on both builds. The router now skips a
+gallery in an `inert` or `aria-hidden` subtree, and one outside the dialog that holds the focus: a
+`<dialog>`, an `aria-modal` element, or a role of `dialog` or `alertdialog`. The role is needed:
+Radix marks its modal by role alone, and its `aria-hidden` never reaches a gallery, because it
+leaves in view every subtree that holds a live region and Swiper's A11y puts one in each gallery.
+
 ### D-56 · A short head meets its first band at `--space-8` · `APPROVED` Kaleb, 2026-10-26
 
 **Question (Kaleb, directly):** on a presentation page, a short head section (a title, a greeting,

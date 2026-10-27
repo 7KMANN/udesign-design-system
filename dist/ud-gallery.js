@@ -106,13 +106,25 @@ on screen; Page Up and Page Down scroll the page. */
 		const node = el;
 		return Boolean(node && (node.isContentEditable || /^(input|textarea|select)$/i.test((_node$nodeName = node.nodeName) !== null && _node$nodeName !== void 0 ? _node$nodeName : "")));
 	}
+	function setAside(root) {
+		return root.closest("[inert], [aria-hidden=\"true\"]") !== null;
+	}
+	function dialogOf(path) {
+		return path.find((node) => {
+			var _el$getAttribute;
+			const el = node;
+			if (typeof el.getAttribute !== "function") return false;
+			return el.nodeName === "DIALOG" || el.getAttribute("aria-modal") === "true" || /^(?:alert)?dialog$/.test((_el$getAttribute = el.getAttribute("role")) !== null && _el$getAttribute !== void 0 ? _el$getAttribute : "");
+		});
+	}
 	function route(event) {
 		var _routes$get, _galleries$find;
 		if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
 		if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
 		const path = event.composedPath();
 		if (typing(path[0])) return;
-		const galleries = [...(_routes$get = routes.get(event.currentTarget)) !== null && _routes$get !== void 0 ? _routes$get : []];
+		const dialog = dialogOf(path);
+		const galleries = [...(_routes$get = routes.get(event.currentTarget)) !== null && _routes$get !== void 0 ? _routes$get : []].filter((g) => !setAside(g.root) && (!dialog || dialog.contains(g.root)));
 		const target = (_galleries$find = galleries.find((g) => path.includes(g.root))) !== null && _galleries$find !== void 0 ? _galleries$find : galleries.find((g) => g.pointer);
 		if (!target || target.swiper.destroyed) return;
 		event.preventDefault();
@@ -121,9 +133,10 @@ on screen; Page Up and Page Down scroll the page. */
 	}
 	/**
 	* Lets the arrow keys move this gallery while the focus is in it or the pointer is over it, and
-	* no other: one listener per document, whatever the number of galleries. Page Up and Page Down
-	* stay the page's. A key another widget handled (a choice group stops its own) never arrives.
-	* Returns the function that undoes it.
+	* no other: one listener per document, whatever the number of galleries. Never while it sits behind
+	* a modal: in an inert or aria-hidden subtree, or outside the dialog that holds the focus. Page Up
+	* and Page Down stay the page's. A key another widget handled (a choice group stops its own) never
+	* arrives. Returns the function that undoes it.
 	*/
 	function routeGalleryKeys(root, swiper) {
 		const doc = root.ownerDocument;

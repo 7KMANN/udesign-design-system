@@ -92,6 +92,30 @@ for (const build of builds) {
     await expect.poll(() => shown(a), "the modal closed, the pointer's gallery has them again").not.toBe(start)
   })
 
+  // The browser can send the pointer's leave a frame after a modal opens. Here the modal opens and the
+  // arrow is dispatched in one task, so no pointer event comes between: the gallery behind must stay.
+  test(`${build.name} gallery: an arrow pressed the moment a modal opens leaves the gallery behind it`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    const { a } = await open(page, build.url, build.first, build.second)
+    const start = await shown(a)
+    await a.locator(".ud-gallery-main").hover()
+    const seen = await page.evaluate(async () => {
+      const events: string[] = []
+      for (const type of ["pointerover", "pointerenter", "pointerout", "pointerleave", "pointermove"]) addEventListener(type, () => events.push(type), true)
+      const inModal = () => Boolean(document.activeElement?.closest("[role='dialog'], dialog"))
+      ;[...document.querySelectorAll("button")].find((b) => b.textContent === "Ouvrir le panier")!.click()
+      // Microtasks only: React commits a click's update in one, and no pointer event runs between them.
+      for (let i = 0; i < 50 && !inModal(); i += 1) await Promise.resolve()
+      const focused = inModal()
+      document.activeElement!.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true, composed: true }))
+      return { focused, events }
+    })
+    expect(seen.focused, "the modal holds the focus").toBe(true)
+    expect(seen.events, "no pointer event before the arrow").toEqual([])
+    await page.waitForTimeout(150)
+    expect(await shown(a), "the gallery behind the modal stays").toBe(start)
+  })
+
   test(`${build.name} gallery: Page Down and Page Up scroll the page, the focus in a gallery`, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 })
     const { a } = await open(page, build.url, build.first, build.second)

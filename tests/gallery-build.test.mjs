@@ -103,6 +103,38 @@ test("leaves its arrows to a field inside a shadow root, the pointer resting on 
   assert.equal(event.defaultPrevented, false, "the caret moves")
 })
 
+// A modal can open before the browser tells the page that the pointer left the gallery under it.
+// The router never moves a gallery set aside (aria-hidden or inert), nor one outside the dialog that
+// holds the focus: a role of dialog (Radix), aria-modal, or a <dialog>. No pointer event is sent here.
+test("never moves a gallery behind a modal, though the pointer last rested on it", () => {
+  const html = (id) => `<div id="${id}">` + page("").udGallery.markup(["a.jpg", "b.jpg"], "Tee", 0) + "</div>"
+  for (const [open, close] of [['<div role="dialog">', "</div>"], ['<div aria-modal="true">', "</div>"], ["<dialog open>", "</dialog>"]]) {
+    const window = page(html("one") + `${open}${html("two")}<button>Fermer</button>${close}`)
+    const doc = window.document
+    const [one, two] = window.made
+    const outside = doc.getElementById("one")
+    const button = doc.querySelector("button:not(.ud-gallery-thumb):not([class^='swiper'])")
+    const key = (target) => target.dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true, composed: true }))
+    outside.querySelector(".ud-gallery").dispatchEvent(new window.Event("pointerenter"))
+    outside.setAttribute("aria-hidden", "true")
+    key(doc.body)
+    outside.removeAttribute("aria-hidden")
+    outside.setAttribute("inert", "")
+    key(doc.body)
+    outside.removeAttribute("inert")
+    button.focus()
+    key(button)
+    assert.equal(one.moves.join(","), "", `${open}: a gallery set aside, or outside the dialog with the focus, stays`)
+    const thumb = doc.querySelector("#two .ud-gallery-thumb")
+    thumb.focus()
+    key(thumb)
+    assert.equal(two.moves.join(","), "next", `${open}: the dialog's own gallery keeps its keys`)
+    thumb.blur()
+    key(doc.body)
+    assert.equal(one.moves.join(","), "next", `${open}: the focus out of the dialog, the pointer's gallery moves again`)
+  }
+})
+
 // Review M10: a gallery that is gone, the pointer last over it, must not keep the keys from the others.
 test("a destroyed gallery leaves the keys to the others", () => {
   const html = (id) => `<div id="${id}">` + page("").udGallery.markup(["a.jpg", "b.jpg"], "Tee", 0) + "</div>"

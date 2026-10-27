@@ -159,6 +159,28 @@ describe("the gallery's keys", () => {
     expect(moved).toEqual(["b next"])
   })
 
+  // A modal can open before the browser sends the pointer's leave: Radix then hides the page behind
+  // it with aria-hidden, and no pointer event follows here.
+  it("never moves a gallery behind a modal, though the pointer last rested on it", () => {
+    render(
+      <main>
+        <div data-testid="page">
+          <Gallery data-testid="a" photos={photos("Tee", ["Front", "Back"])} />
+        </div>
+      </main>,
+    )
+    let moved = 0
+    const swiper = (screen.getByTestId("a").querySelector(".swiper") as HTMLElement & { swiper: { slideNext: () => void } }).swiper
+    swiper.slideNext = () => (moved += 1)
+    fireEvent.pointerEnter(screen.getByTestId("a"))
+    screen.getByTestId("page").setAttribute("aria-hidden", "true")
+    fireEvent.keyDown(document.body, { key: "ArrowRight" })
+    expect(moved, "set aside behind the modal").toBe(0)
+    screen.getByTestId("page").removeAttribute("aria-hidden")
+    fireEvent.keyDown(document.body, { key: "ArrowRight" })
+    expect(moved, "back in the page").toBe(1)
+  })
+
   // Review M2: undoing a route twice must not drop the listener another gallery now shares.
   it("undoes a route once, however often it is called", () => {
     const [a, b] = [document.createElement("div"), document.createElement("div")]
