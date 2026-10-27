@@ -395,7 +395,7 @@ describe("UDesign registry accessibility contracts", () => {
     }
   })
 
-  // D-55: an alert shown with the page is part of the page. Only one whose appearance is the
+  // D-48: an alert shown with the page is part of the page. Only one whose appearance is the
   // news is a live region, so a banner never needs role="presentation" to stay quiet.
   it("makes an alert a live region only when asked, and lets an explicit role win", () => {
     render(
