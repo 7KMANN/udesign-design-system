@@ -303,6 +303,23 @@ test("a held choice group keeps its choice's look, and only a choice that cannot
     page.getByTestId(group).getByRole("radio", typeof name === "string" ? { name, exact: true } : { name }).evaluate((el) => {
       const s = getComputedStyle(el)
       return [el.getAttribute("aria-checked"), s.backgroundColor, s.borderTopStyle]
+// Chromium's own accessibility tree, not a library's reading of it. It named an unavailable choice
+// "XL , unavailable": the label and the words were two boxes of the button, and it put a space
+// between them (Boutique's move to v3.3.0, gap 3).
+async function chromiumNames(page: Page, role: string) {
+  const cdp = await page.context().newCDPSession(page)
+  const { nodes } = (await cdp.send("Accessibility.getFullAXTree")) as { nodes: Array<{ role?: { value?: string }; name?: { value?: string }; ignored?: boolean }> }
+  return nodes.filter((n) => !n.ignored && n.role?.value === role).map((n) => n.name?.value ?? "")
+}
+
+test("in Chromium an unavailable choice is named by its label, a comma and the words", async ({ page }) => {
+  await page.goto("/fixtures.html?fixture=choices")
+  await expect(page.getByTestId("choices-open").getByRole("radio").first()).toBeVisible({ timeout: 20_000 })
+  const names = await chromiumNames(page, "radio")
+  expect(names.filter((name) => name.includes("unavailable"))).toEqual(["XL, unavailable", "XL, unavailable"])
+  expect(names, "an available choice keeps its label alone").toContain("S")
+})
+
     })
   expect(await look("choices-held", "S"), "the held choice").toEqual(["true", selected, "solid"])
   expect(await look("choices-held", "M"), "the others, held").toEqual(["false", disabled, "solid"])

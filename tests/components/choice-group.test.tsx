@@ -97,7 +97,8 @@ describe("ChoiceGroup", () => {
     render(<Sizes value="L" />)
     const group = screen.getByRole("radiogroup", { name: "Taille" })
     const radios = screen.getAllByRole("radio")
-    expect(radios.map((r) => r.textContent)).toEqual(["S", "M", "L", "XL, non disponible", "2XL"])
+    // Named in order by their labels; an unavailable one's name is one box, its label and the words.
+    expect(radios).toEqual(["S", "M", "L", "XL, non disponible", "2XL"].map((name) => screen.getByRole("radio", { name })))
     expect(radios.map((r) => r.tabIndex)).toEqual([-1, -1, 0, -1, -1])
     expect(screen.getByRole("radio", { name: "L" })).toHaveAttribute("aria-checked", "true")
     expect(group).not.toHaveAttribute("aria-describedby")

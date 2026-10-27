@@ -205,8 +205,11 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
                   </>
                 ) : (
                   <>
-                    <span className={cn("min-w-0 [overflow-wrap:anywhere]", unavailable && "line-through")}>{choice.label}</span>
-                    {unavailable ? <span className="sr-only">, {unavailableLabel}</span> : null}
+                    <span aria-hidden={unavailable || undefined} className={cn("min-w-0 [overflow-wrap:anywhere]", unavailable && "line-through")}>
+                      {choice.label}
+                    </span>
+                    {/* Its whole name in one box: as two boxes of the button, Chromium read "S , unavailable". */}
+                    {unavailable ? <span className="sr-only">{`${choice.label}, ${unavailableLabel}`}</span> : null}
                   </>
                 )}
               </button>
