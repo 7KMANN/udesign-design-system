@@ -287,22 +287,6 @@ for (const [name, open] of [
 
 // Review I1: held while it saves, a group keeps its choice's look; only a choice that cannot be had
 // is dashed, and the other choices take the disabled surface.
-test("a held choice group keeps its choice's look, and only a choice that cannot be had is dashed", async ({ page }) => {
-  await page.goto("/fixtures.html?fixture=choices")
-  const token = (name: string) =>
-    page.evaluate((n) => {
-      const probe = document.createElement("div")
-      probe.style.background = `var(${n})`
-      document.body.append(probe)
-      const colour = getComputedStyle(probe).backgroundColor
-      probe.remove()
-      return colour
-    }, name)
-  const [selected, disabled, card] = [await token("--interactive-selected"), await token("--interactive-disabled"), await token("--card")]
-  const look = (group: string, name: string | RegExp) =>
-    page.getByTestId(group).getByRole("radio", typeof name === "string" ? { name, exact: true } : { name }).evaluate((el) => {
-      const s = getComputedStyle(el)
-      return [el.getAttribute("aria-checked"), s.backgroundColor, s.borderTopStyle]
 // Chromium's own accessibility tree, not a library's reading of it. It named an unavailable choice
 // "XL , unavailable": the label and the words were two boxes of the button, and it put a space
 // between them (Boutique's move to v3.3.0, gap 3).
@@ -320,6 +304,22 @@ test("in Chromium an unavailable choice is named by its label, a comma and the w
   expect(names, "an available choice keeps its label alone").toContain("S")
 })
 
+test("a held choice group keeps its choice's look, and only a choice that cannot be had is dashed", async ({ page }) => {
+  await page.goto("/fixtures.html?fixture=choices")
+  const token = (name: string) =>
+    page.evaluate((n) => {
+      const probe = document.createElement("div")
+      probe.style.background = `var(${n})`
+      document.body.append(probe)
+      const colour = getComputedStyle(probe).backgroundColor
+      probe.remove()
+      return colour
+    }, name)
+  const [selected, disabled, card] = [await token("--interactive-selected"), await token("--interactive-disabled"), await token("--card")]
+  const look = (group: string, name: string | RegExp) =>
+    page.getByTestId(group).getByRole("radio", typeof name === "string" ? { name, exact: true } : { name }).evaluate((el) => {
+      const s = getComputedStyle(el)
+      return [el.getAttribute("aria-checked"), s.backgroundColor, s.borderTopStyle]
     })
   expect(await look("choices-held", "S"), "the held choice").toEqual(["true", selected, "solid"])
   expect(await look("choices-held", "M"), "the others, held").toEqual(["false", disabled, "solid"])
