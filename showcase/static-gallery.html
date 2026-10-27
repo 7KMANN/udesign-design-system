@@ -25,6 +25,9 @@
         <h2 id="cart-title">Panier</h2>
         <form method="dialog"><button>Fermer</button></form>
       </dialog>
+      <!-- Photos with a background of their own fill the square; the dots read the photo under them. Last in the
+           section, so building it at runtime moves nothing above it. -->
+      <div id="covered" style="max-width: 28rem;"></div>
     </section>
     <div style="height: 2400px;"></div>
   </main>
@@ -34,6 +37,13 @@
       const holder = document.getElementById('second');
       holder.innerHTML = udGallery.markup(['/gallery/photo-4.svg', '/gallery/photo-1.svg', '/gallery/photo-3.svg'], 'Casquette exemple', 0, ['Devant', 'Côté', 'Dos']);
       udGallery(holder.firstElementChild);
+      const covered = document.getElementById('covered');
+      covered.innerHTML = udGallery.markup([
+        { src: '/gallery/photo-5.svg', fit: 'cover' },
+        { src: '/gallery/photo-6.svg', fit: 'cover', focus: '50% 0%' },
+        '/gallery/photo-1.svg',
+      ], 'T-shirt exemple', 0, ['Photo 1', 'Photo 2', 'Devant']);
+      udGallery(covered.firstElementChild);
       document.getElementById('open-cart').addEventListener('click', () => document.getElementById('cart').showModal());
     });
   </script>

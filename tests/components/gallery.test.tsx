@@ -60,6 +60,30 @@ describe("Gallery", () => {
     expect(container.querySelectorAll(".ud-gallery > .ud-gallery-thumbs > .ud-gallery-thumb")).toHaveLength(2)
   })
 
+  it("fills the square with a covered photo and its thumbnail, keeping its focus, and writes nothing for a cut-out", () => {
+    const [photo, cutOut] = photos("Tee", ["Photo 1", "Front"])
+    const { container } = render(<Gallery photos={[{ ...photo, fit: "cover", focus: "50% 20%" }, cutOut]} />)
+    const slides = [...container.querySelectorAll<HTMLElement>(".swiper-slide")]
+    const thumbs = [...container.querySelectorAll<HTMLElement>(".ud-gallery-thumb")]
+    expect(slides.map((s) => s.getAttribute("data-fit"))).toEqual(["cover", null])
+    expect(thumbs.map((t) => t.getAttribute("data-fit"))).toEqual(["cover", null])
+    expect([slides[0], thumbs[0]].map((el) => el.querySelector("img")!.style.objectPosition)).toEqual(["50% 20%", "50% 20%"])
+    expect(slides[1].querySelector("img")).not.toHaveAttribute("style")
+    // jsdom draws no photo, so none is read and the dots keep the theme's colour; Chromium reads them (tests/e2e).
+    expect(container.querySelector(".ud-gallery-main")).not.toHaveAttribute("data-tone")
+  })
+
+  it("offers a covered photo whole through a quiet button named in the page's words, and no button for a cut-out", () => {
+    const [photo, cutOut] = photos("Tee", ["Photo 1", "Front"])
+    const covered = render(<Gallery photos={[{ ...photo, fit: "cover" }, cutOut]} messages={{ ...GALLERY_MESSAGES.en, whole: "See it all" }} />)
+    const button = covered.container.querySelector<HTMLButtonElement>(".ud-gallery-main > .ud-gallery-whole")!
+    expect(button).toHaveAttribute("aria-label", "See it all")
+    expect(button.hidden, "the opening photo is covered").toBe(false)
+    covered.unmount()
+    const contained = render(<Gallery photos={[cutOut, { ...photo, fit: "cover" }]} />)
+    expect(contained.container.querySelector<HTMLButtonElement>(".ud-gallery-whole")!.hidden, "the opening photo is whole already").toBe(true)
+  })
+
   it("shows no thumbnails for one photo, and names them Photo N when no view is given", () => {
     const { container, rerender } = render(<Gallery photos={[{ src: "/a.webp", alt: "Cap" }]} />)
     expect(container.querySelector(".ud-gallery-thumbs")).toBeNull()
