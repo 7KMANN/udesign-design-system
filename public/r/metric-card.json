@@ -6,7 +6,7 @@
   "description": "Data readout separating positive, negative, and neutral movement from status semantics.",
   "registryDependencies": [
     "utils",
-    "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/card.json"
+    "@udesign/card"
   ],
   "files": [
     {

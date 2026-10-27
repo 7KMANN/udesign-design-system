@@ -10,7 +10,10 @@ const execFileAsync = promisify(execFile)
 
 const root = process.cwd()
 const fixture = fs.mkdtempSync(path.join(os.tmpdir(), "udesign-registry-"))
+// A second application that never configures the @udesign namespace.
+const bare = fs.mkdtempSync(path.join(os.tmpdir(), "udesign-registry-bare-"))
 let server
+const served = new Set()
 const expectedFiles = [
   "button",
   "badge",
@@ -40,15 +43,21 @@ const expectedFiles = [
   "pressable",
 ]
 
-try {
-  fs.mkdirSync(path.join(fixture, "app"), { recursive: true })
-  fs.writeFileSync(path.join(fixture, "app", "globals.css"), '@import "tailwindcss";\n')
+const shadcn = (args, env = {}) =>
+  execFileAsync(process.execPath, [path.join(root, "node_modules", "shadcn", "dist", "index.js"), ...args], {
+    cwd: root,
+    env: { ...process.env, ...env },
+  })
+
+function application(directory, registries) {
+  fs.mkdirSync(path.join(directory, "app"), { recursive: true })
+  fs.writeFileSync(path.join(directory, "app", "globals.css"), '@import "tailwindcss";\n')
   fs.writeFileSync(
-    path.join(fixture, "package.json"),
+    path.join(directory, "package.json"),
     JSON.stringify({ name: "udesign-registry-fixture", private: true, version: "0.0.0" }, null, 2),
   )
   fs.writeFileSync(
-    path.join(fixture, "tsconfig.json"),
+    path.join(directory, "tsconfig.json"),
     JSON.stringify(
       {
         compilerOptions: {
@@ -62,7 +71,7 @@ try {
     ),
   )
   fs.writeFileSync(
-    path.join(fixture, "components.json"),
+    path.join(directory, "components.json"),
     JSON.stringify(
       {
         $schema: "https://ui.shadcn.com/schema.json",
@@ -77,38 +86,45 @@ try {
           lib: "@/lib",
           hooks: "@/hooks",
         },
-        registries: {},
+        registries,
       },
       null,
       2,
     ),
   )
+}
 
+// Line endings are a checkout setting, not a release difference.
+const text = (file) => fs.readFileSync(file, "utf8").replaceAll("\r\n", "\n")
+
+try {
+  // Every item this release builds, as a consumer's @udesign namespace would serve it.
   server = http.createServer((request, response) => {
-    // core, and the items installed on their own (the gallery, which core leaves out for swiper).
+    // A public directory of registries that lists no @udesign, for the run that asks shadcn to look there.
+    if (request.url === "/registries.json") {
+      response.writeHead(200, { "content-type": "application/json" }).end("{}")
+      return
+    }
     const item = /^\/([a-z-]+)\.json$/.exec(request.url ?? "")?.[1]
-    if (!item || !["core", "gallery"].includes(item)) {
+    const file = item && path.join(root, "public", "r", `${item}.json`)
+    if (!file || !fs.existsSync(file)) {
       response.writeHead(404).end()
       return
     }
 
+    served.add(item)
     response.writeHead(200, { "content-type": "application/json" })
-    fs.createReadStream(path.join(root, "public", "r", `${item}.json`)).pipe(response)
+    fs.createReadStream(file).pipe(response)
   })
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve))
   const address = server.address()
   assert.ok(address && typeof address === "object", "registry test server did not bind")
+  const registry = `http://127.0.0.1:${address.port}`
 
-  const componentsPath = path.join(fixture, "components.json")
-  const componentsConfig = JSON.parse(fs.readFileSync(componentsPath, "utf8"))
-  componentsConfig.registries = { "@udesign": `http://127.0.0.1:${address.port}/{name}.json` }
-  fs.writeFileSync(componentsPath, JSON.stringify(componentsConfig, null, 2))
+  application(fixture, { "@udesign": `${registry}/{name}.json` })
+  application(bare, {})
 
-  const installResult = await execFileAsync(
-    process.execPath,
-    [path.join(root, "node_modules", "shadcn", "dist", "index.js"), "add", "@udesign/core", "--cwd", fixture, "--yes", "--overwrite"],
-    { cwd: root },
-  )
+  const installResult = await shadcn(["add", "@udesign/core", "--cwd", fixture, "--yes", "--overwrite"])
   if (installResult.stdout) process.stdout.write(installResult.stdout)
   if (installResult.stderr) process.stderr.write(installResult.stderr)
 
@@ -135,13 +151,46 @@ try {
     assert.ok(installedPackage.dependencies?.[dependency], `clean install omitted ${dependency}`)
   }
 
+  // Items that use another item, added one by one over the badge, button and card core just wrote.
+  // Each dependency resolves through this application's @udesign namespace, so every file on disk
+  // stays this release's, even when the add overwrites (review I3: they were pinned to v1.3.0).
+  const release = (file) => text(path.join(root, "registry", "new-york", "ui", file))
+  const installed = (file) => text(path.join(fixture, "components", "ui", file))
+  for (const [item, uses] of [
+    ["alert", ["badge"]],
+    ["icon-button", ["button", "spinner"]],
+    ["metric-card", ["card"]],
+  ]) {
+    served.clear()
+    await shadcn(["add", `@udesign/${item}`, "--cwd", fixture, "--yes", "--overwrite"])
+    for (const dependency of uses) {
+      assert.ok(served.has(dependency), `adding @udesign/${item} did not resolve ${dependency} through the namespace; served: ${[...served].join(", ")}`)
+    }
+    for (const file of ["badge.tsx", "button.tsx", "spinner.tsx", "card.tsx", `${item}.tsx`]) {
+      assert.equal(installed(file), release(file), `adding @udesign/${item} left a ${file} from another release`)
+    }
+  }
+
+  // Without the namespace, an item that uses another stops before writing anything. shadcn first
+  // looks @udesign up in its public directory of registries: against a directory that lists none it
+  // names the namespace to add; against today's directory, 3.5.0 stops on its format instead. The
+  // README's install section says both.
+  const output = (error) => `${error.stdout}${error.stderr}`
+  await assert.rejects(
+    shadcn(["add", `${registry}/alert.json`, "--cwd", bare, "--yes"], { REGISTRY_URL: registry }),
+    (error) => /Unknown registry "@udesign"/.test(output(error)),
+    "an unconfigured @udesign must stop the install and name the namespace",
+  )
+  await assert.rejects(
+    shadcn(["add", `${registry}/alert.json`, "--cwd", bare, "--yes"]),
+    (error) => /registr/i.test(output(error)),
+    "an unconfigured @udesign must stop the install against the public directory too",
+  )
+  assert.ok(!fs.existsSync(path.join(bare, "components")), "a stopped install must not write a file")
+
   // The gallery: two files into components/ui, its import of the core rewritten to the alias,
   // and the Swiper release it was built on.
-  const galleryResult = await execFileAsync(
-    process.execPath,
-    [path.join(root, "node_modules", "shadcn", "dist", "index.js"), "add", "@udesign/gallery", "--cwd", fixture, "--yes", "--overwrite"],
-    { cwd: root },
-  )
+  const galleryResult = await shadcn(["add", "@udesign/gallery", "--cwd", fixture, "--yes", "--overwrite"])
   if (galleryResult.stderr) process.stderr.write(galleryResult.stderr)
   for (const file of ["gallery.tsx", "gallery-core.ts"]) {
     assert.ok(fs.existsSync(path.join(fixture, "components", "ui", file)), `the gallery install omitted ${file}`)
@@ -155,10 +204,12 @@ try {
   if (server) {
     await new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())))
   }
-  const resolvedFixture = path.resolve(fixture)
   const resolvedTemp = path.resolve(os.tmpdir())
-  if (!resolvedFixture.startsWith(`${resolvedTemp}${path.sep}`)) {
-    throw new Error(`Refusing to remove non-temporary fixture: ${resolvedFixture}`)
+  for (const directory of [fixture, bare]) {
+    const resolved = path.resolve(directory)
+    if (!resolved.startsWith(`${resolvedTemp}${path.sep}`)) {
+      throw new Error(`Refusing to remove non-temporary fixture: ${resolved}`)
+    }
+    fs.rmSync(resolved, { recursive: true, force: true })
   }
-  fs.rmSync(resolvedFixture, { recursive: true, force: true })
 }

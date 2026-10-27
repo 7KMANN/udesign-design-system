@@ -6,7 +6,7 @@
   "description": "Accessible message container covering every UDesign semantic tone.",
   "registryDependencies": [
     "utils",
-    "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/badge.json"
+    "@udesign/badge"
   ],
   "files": [
     {

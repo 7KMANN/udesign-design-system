@@ -10,7 +10,7 @@
       "description": "UDesign action control with semantic variants, press and pending feedback, and accessible touch targets.",
       "docs": "The pending prop disables the control, reports aria-busy, and swaps in a spinner while preserving the button's width so the layout does not jump when the work starts. The label turns transparent, never hidden, so it stays the accessible name: a pending button needs no aria-label. Press treatment is per-variant: a neutral surface darkens to the pressed role while a solid surface has no deeper solid role to move to, and every variant keeps a non-motion colour signal since --motion-press-scale collapses to 1 under reduced motion. See DESIGN.md.",
       "dependencies": ["@radix-ui/react-slot"],
-      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.5.0/public/r/spinner.json"],
+      "registryDependencies": ["utils", "@udesign/spinner"],
       "files": [{ "path": "registry/new-york/ui/button.tsx", "type": "registry:ui", "target": "components/ui/button.tsx" }]
     },
     {
@@ -29,7 +29,7 @@
       "title": "Alert",
       "description": "Accessible message container covering every UDesign semantic tone.",
       "docs": "An Alert is part of the page and is not a live region: a notice shown with the page is met in reading order. Pass live (role=\"status\") when its appearance is the news, such as a result, or live=\"assertive\" (role=\"alert\") for an error that stops the work. An explicit role wins. See DESIGN.md \"Feedback primitives\".",
-      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/badge.json"],
+      "registryDependencies": ["utils", "@udesign/badge"],
       "files": [{ "path": "registry/new-york/ui/alert.tsx", "type": "registry:ui", "target": "components/ui/alert.tsx" }]
     },
     {
@@ -179,7 +179,7 @@
       "type": "registry:component",
       "title": "Icon Button",
       "description": "Icon-only action requiring an accessible label and minimum touch target.",
-      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/button.json"],
+      "registryDependencies": ["utils", "@udesign/button"],
       "files": [{ "path": "registry/new-york/ui/icon-button.tsx", "type": "registry:component", "target": "components/ui/icon-button.tsx" }]
     },
     {
@@ -208,7 +208,7 @@
       "type": "registry:component",
       "title": "Rolling Consistency Chip",
       "description": "Trailing-window consistency count (e.g. '4 of the last 7'). Replaces the streak concept entirely - tone never varies with the count.",
-      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.1/public/r/badge.json"],
+      "registryDependencies": ["utils", "@udesign/badge"],
       "files": [{ "path": "registry/new-york/ui/rolling-consistency-chip.tsx", "type": "registry:component", "target": "components/ui/rolling-consistency-chip.tsx" }]
     },
     {
@@ -225,7 +225,7 @@
       "type": "registry:component",
       "title": "Status Badge",
       "description": "Domain-neutral status marker with tone, icon, and busy-state support.",
-      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/badge.json"],
+      "registryDependencies": ["utils", "@udesign/badge"],
       "files": [{ "path": "registry/new-york/ui/status-badge.tsx", "type": "registry:component", "target": "components/ui/status-badge.tsx" }]
     },
     {
@@ -233,7 +233,7 @@
       "type": "registry:component",
       "title": "Metric Card",
       "description": "Data readout separating positive, negative, and neutral movement from status semantics.",
-      "registryDependencies": ["utils", "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/card.json"],
+      "registryDependencies": ["utils", "@udesign/card"],
       "files": [{ "path": "registry/new-york/ui/metric-card.tsx", "type": "registry:component", "target": "components/ui/metric-card.tsx" }]
     },
     {

@@ -6,7 +6,7 @@
   "description": "Domain-neutral status marker with tone, icon, and busy-state support.",
   "registryDependencies": [
     "utils",
-    "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v1.3.0/public/r/badge.json"
+    "@udesign/badge"
   ],
   "files": [
     {

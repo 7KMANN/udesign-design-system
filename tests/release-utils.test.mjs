@@ -95,7 +95,7 @@ test("verifies the current tag contains the current package version", () => {
 test("README install pins match the package version", () => {
   const pkg = JSON.parse(readFileSync("package.json", "utf8"))
   const pins = readmePins(readFileSync("README.md", "utf8"))
-  assert.ok(pins.length >= 5, `expected the five install pins, found ${pins.length}`)
+  assert.ok(pins.length >= 4, `expected the four install pins, found ${pins.length}`)
   assert.deepEqual([...new Set(pins)], [pkg.version], "README.md installs a version other than the one in package.json")
 })
 

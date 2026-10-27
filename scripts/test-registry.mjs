@@ -80,6 +80,27 @@ for (const item of registry.items) {
   }
 }
 
+// Review I3: an item that uses another names it as @udesign/<name>, so shadcn takes it from the
+// release the consumer's namespace points at. A URL here pins one release for good: six did, to
+// v1.3.0 through v1.5.0, and adding alert over a current badge put the v1.3.0 badge back.
+const itemNames = new Set(registry.items.map((item) => item.name))
+for (const item of registry.items) {
+  const own = new Set(item.files.map((file) => path.basename(file.path).replace(/\.tsx?$/, "")))
+  const named = new Set()
+  for (const dependency of item.registryDependencies ?? []) {
+    if (dependency === "utils") continue
+    const name = /^@udesign\/([a-z-]+)$/.exec(dependency)?.[1]
+    assert.ok(name && itemNames.has(name), `${item.name} depends on ${dependency}; name another item as @udesign/<name>`)
+    named.add(name)
+  }
+  for (const file of item.files) {
+    const source = fs.readFileSync(path.join(root, file.path), "utf8")
+    for (const [, used] of source.matchAll(/from "@\/components\/ui\/([a-z-]+)"/g)) {
+      assert.ok(own.has(used) || named.has(used), `${item.name} imports ${used} without naming @udesign/${used}`)
+    }
+  }
+}
+
 const files = Object.fromEntries(
   registry.items.flatMap((item) =>
     item.files.map((file) => [path.basename(file.path), fs.readFileSync(path.join(root, file.path), "utf8")]),

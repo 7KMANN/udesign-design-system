@@ -113,17 +113,21 @@ Install the complete supported source set through the public `@udesign/core` ite
 npx shadcn@latest add @udesign/core
 ```
 
-The direct tagged URL remains available when a consumer does not configure a namespace:
+Install a single item by replacing `core` with its registry name:
+
+```bash
+npx shadcn@latest add @udesign/button
+```
+
+An item that uses another one names it as `@udesign/<name>`: `button` uses `spinner`; `alert`, `status-badge` and `rolling-consistency-chip` use `badge`; `icon-button` uses `button`; `metric-card` uses `card`. shadcn takes that item from the release your namespace points at, the same release as the item you add, so the tag in `components.json` is the one place to change when you upgrade.
+
+The direct tagged URL works without the namespace only for an item that uses no other one, `core` among them:
 
 ```bash
 npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.3.0/public/r/core.json
 ```
 
-Install a single item by replacing `core` with its registry name:
-
-```bash
-npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.3.0/public/r/button.json
-```
+Without the namespace, adding an item that uses another stops before it writes a file. shadcn looks `@udesign` up in its public directory of registries, finds none, and ends with `Unknown registry "@udesign". Make sure it is defined in components.json`, followed by the `registries` block to add. shadcn 3.5.0 stops one step earlier today, on `Failed to parse registries index`, because that directory changed format. Either way, add the namespace above and run the command again. Set it yourself rather than leaving it to that directory: shadcn writes into `components.json` whatever registry the directory lists under a missing name, and UDesign's is not listed there.
 
 Available base items:
 
@@ -242,7 +246,7 @@ Do not expose primitives through Tailwind theme aliases.
 
 Interactive registry components include their required client boundary. The token package itself is plain CSS and is safe to import from server-rendered applications.
 
-The release pipeline compiles the source against React 18 and Tailwind 3, performs a shadcn 3.5 namespaced clean install, and runs browser checks in Chromium. React 19, Tailwind 4, and framework-specific applications remain supported source targets and should run their own production build after installation.
+The release pipeline compiles the source against React 18 and Tailwind 3, performs a shadcn 3.5 namespaced clean install, adds `alert`, `icon-button` and `metric-card` over it and checks that every file is still this release's, and runs browser checks in Chromium. React 19, Tailwind 4, and framework-specific applications remain supported source targets and should run their own production build after installation.
 
 ## Source of truth and generated files
 
