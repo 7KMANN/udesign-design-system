@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+The UDesign logo, as one component for every screen. Proposed in `docs/v2/DECISIONS.md` round 21 (D-62), which Kaleb has not approved: the rule it adds to `DESIGN.md` carries `NEEDS-APPROVAL`.
+
+### Visible on upgrade
+
+- **The reference screens draw the logo, not a typed name.** `examples/presentation-order.tsx`, `examples/operations-queue.tsx` and `examples/static-catalog.html` use the lockup where they typed "UDesign". A consumer that typed its own is not changed by this release: it moves when it adopts `Lockup` or `ud-lockup`.
+
+### Additive
+
+- **`Lockup`** (registry `lockup`, in `core`; proposed, D-62): the official logo as one SVG, the tile in the brand colour with black bars, the name outlined and filled with `currentColor`. It sizes by height (`h-8` by default), is an image named "UDesign" (`title=""` hides it), and `variant="mark"` is the tile alone.
+- **`ud-lockup`** in `dist/tokens.css` and `dist/tokens-functional.css`: the static twin, 2rem high; the markup is in `examples/static-catalog.html`.
+- **Tests.** In jsdom: the lockup's role and name, `title=""`, the mark's lack of the name, the height from `className`, axe. In Chromium: the reference screen finds the logo by its role and name.
+
 ## 3.4.0 (2026-10-27)
 
 Boutique's move to v3.3.0: ChoiceGroup rows with a detail such as a price, one rule above the footer after a band, a card's gallery that loads its opening photo when near, and an unavailable choice named in one piece.

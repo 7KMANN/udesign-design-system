@@ -143,11 +143,11 @@ Each profile combines with `data-theme="light"` or `data-theme="dark"`. Presenta
 
 ### Presentation profile
 
-The presentation profile uses Montserrat for strong display moments, a high-contrast type scale, the full radius scale, and cards that float on `--shadow-2`. Its signature is the contrast between a quiet warm field and a compact geometric UDesign lockup.
+The presentation profile uses Montserrat for strong display moments, a high-contrast type scale, the full radius scale, and cards that float on `--shadow-2`. Its signature is the contrast between a quiet warm field and the UDesign logo.
 
 ### Operations profile
 
-The operations profile uses Geist for dense interface typography, a flat type scale, square corners, stronger boundaries, flat surfaces, 12px padding inside cards, dialogs and sheets, and tabular mono figures. Montserrat remains reserved for the UDesign lockup and rare display moments.
+The operations profile uses Geist for dense interface typography, a flat type scale, square corners, stronger boundaries, flat surfaces, 12px padding inside cards, dialogs and sheets, and tabular mono figures. Montserrat remains reserved for rare display moments; the UDesign lockup is the logo, drawn as an image, not set in a face.
 
 ### Theme behavior
 
@@ -270,7 +270,7 @@ Respect `prefers-reduced-motion`. Animation may clarify a transition or progress
 
 ## Typography
 
-Montserrat carries the UDesign lockup and display headings in the presentation profile. Geist carries interface text, buttons included, and dense operations layouts. JetBrains Mono is limited to codes, identifiers, timestamps, and aligned numeric readouts.
+Montserrat carries display headings in the presentation profile. Geist carries interface text, buttons included, and dense operations layouts. JetBrains Mono is limited to codes, identifiers, timestamps, and aligned numeric readouts.
 
 Figures go through one pair of roles, `--font-numeric` and `--font-numeric-variant`: `operations` renders them in JetBrains Mono with tabular figures so columns align, `presentation` keeps them proportional in Geist. In the registry, mark a column of figures with `TableHead numeric` and `TableCell numeric`. `APPROVED 2026-09-02 D-19`
 
@@ -394,7 +394,7 @@ The test: count the accent-filled controls in one viewport. More than the budget
 
 The registry `Button` has three more variants. `ghost`: **use when** several controls sit together, as in dense toolbars and table row actions. `destructive`: **use when** the action deletes something or cannot be undone. `link`: **use when** the action is navigation that reads as text.
 
-**`header-lockup`** keeps the compact UDesign mark and Montserrat weight. It is the main signature element, so surrounding navigation remains visually restrained.
+**`header-lockup`** (registry `Lockup`, static `ud-lockup`) is the UDesign logo: the brand tile with its three black bars, and the name outlined beside it, drawn as one SVG from the official `UDesignText.svg`, never typed in a face. It sizes by height (`h-8`, 2rem, by default; `h-6` in an operations sidebar) and the width follows. The tile is the brand colour with black bars in every theme, as the logo is one image. The name takes the text colour (`currentColor`), because the official tan name is 2.4:1 on a light page: the surface sets the colour it needs, and a lockup is never drawn with the tan name on light. `variant="mark"` is the tile alone, for a corner too tight to read the name. It is named "UDesign" for assistive technology; `title=""` hides it where the page already says UDesign beside it. It is the main signature element, so surrounding navigation remains visually restrained. `NEEDS-APPROVAL D-62`
 
 **`status-badge`** uses one complete tone family and includes a readable label. A dot or icon may reinforce meaning, but the label carries the state.
 
