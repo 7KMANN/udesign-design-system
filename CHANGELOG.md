@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.5.0 (2026-10-27)
+
+The UDesign logo, as one component for every screen. Decided in `docs/v2/DECISIONS.md` round 21 (D-62). Kaleb approved it on 2026-10-27, with the name in ink and not the logo's tan: the rule it adds to `DESIGN.md` carries `APPROVED 2026-10-27`.
+
 ### Visible on upgrade
 
 - **The reference screens draw the logo, not a typed name.** `examples/presentation-order.tsx`, `examples/operations-queue.tsx` and `examples/static-catalog.html` use the lockup where they typed "UDesign". A consumer that typed its own is not changed by this release: it moves when it adopts `Lockup` or `ud-lockup`.
