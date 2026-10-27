@@ -144,8 +144,11 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
     }
 
     // Where the parent's width comes from its content (a table cell, an inline-block), the group,
-    // a size container, would be 0px wide: it asks for one row of its choices instead.
-    const intrinsic = variant === "swatch" ? Math.min(choices.length, 12) * 3.25 - 0.5 : Math.min(choices.length, MAX_COLUMNS) * 4.5 - 0.5
+    // a size container, would be 0px wide: it asks for three touch targets instead (9.25rem), or one
+    // row of its choices where that is narrower. Never a full row: the width it asks for is also its
+    // least, so a grid's plain div, a fieldset or a dialog on a phone could not hold it.
+    const row = variant === "swatch" ? choices.length * 3.25 - 0.5 : choices.length * 4.5 - 0.5
+    const intrinsic = Math.min(Math.max(row, 2.75), 9.25)
     const columns =
       variant === "button"
         ? (Object.fromEntries(CHOICE_RANGES.map((range, i) => [`--choice-columns-${i + 1}`, choiceColumns(choices.length, range)])) as React.CSSProperties)
@@ -156,7 +159,7 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
         ref={ref}
         data-slot="choice-group"
         className={cn("grid w-full min-w-0 gap-2", className)}
-        style={{ "--choice-intrinsic": `${Math.max(intrinsic, 2.75)}rem`, ...style } as React.CSSProperties}
+        style={{ "--choice-intrinsic": `${intrinsic}rem`, ...style } as React.CSSProperties}
         {...props}
       >
         <div

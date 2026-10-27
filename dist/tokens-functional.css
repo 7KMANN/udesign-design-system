@@ -795,9 +795,11 @@ textarea.ud-input { height: auto; min-height: 6rem; }
  * three cells keep the 2.75rem touch target. The group writes, for its number of choices, the
  * columns of each range as --choice-columns-1 to --choice-columns-13; CHOICE_RANGES in
  * choice-group.tsx holds the same widths. The group is a size container, so its width never comes
- * from its choices: where its parent's width comes from its content (a table cell, an inline-block,
- * fit-content, an item sized by its content, an absolutely positioned box), it asks for one row of
- * its choices, which the group writes as --choice-intrinsic, and lays out in the width it gets.
+ * from its choices: it takes its parent's width and wraps by the column rule. Where its parent's
+ * width comes from its content (a table cell, an inline-block, fit-content, an item sized by its
+ * content, an absolutely positioned box), it asks for --choice-intrinsic: three touch targets,
+ * 9.25rem, or one row of its choices where that is narrower. That width is also its least, so it is
+ * never a full row, which a grid's plain div, a fieldset or a dialog on a phone could not hold.
  */
 [data-slot="choice-group"] { container-type: inline-size; contain-intrinsic-inline-size: var(--choice-intrinsic, 9.25rem); }
 [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-1, 1), minmax(0, 1fr)); }

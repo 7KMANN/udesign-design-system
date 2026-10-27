@@ -318,19 +318,55 @@ test("a choice group of 22 at 343px fills five rows", async ({ page }) => {
   expect((await layout(page.getByTestId("choices-long"))).rows).toEqual([5, 5, 5, 5, 2])
 })
 
-// Review M5: where the parent's width comes from its content, the group asks for one row of 4rem
-// cells; without contain-intrinsic-inline-size it would collapse to 0px.
-test("a choice group whose parent sizes to its content asks for one row", async ({ page }) => {
-  await page.goto("/fixtures.html?fixture=choices")
+const phone = { width: 375, height: 812 }
+const pageScroll = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth)
+
+// Review M5: where the parent's width comes from its content, a size container is 0px wide. The
+// group asks for three touch targets instead, 9.25rem, never a full row (review N1): at a phone's
+// width five sizes lie 3 + 2 in 148px, and the page does not scroll sideways.
+test("at 375px a choice group whose parent sizes to its content takes three touch targets, never 0px", async ({ page }) => {
+  await page.setViewportSize(phone)
+  await page.goto("/fixtures.html?fixture=choices-phone")
   for (const parent of ["table-cell", "inline-block", "fit-content", "flex-row", "flex-column", "grid-auto", "absolute"]) {
     const holder = page.getByTestId(`choices-in-${parent}`)
     const width = (await holder.locator('[data-slot="choice-group"]').boundingBox())!.width
-    expect(width, `${parent}: one row of five 4rem cells`).toBeCloseTo(352, 0)
+    expect(width, `${parent}: three touch targets`).toBeCloseTo(148, 0)
     const found = await layout(holder)
-    expect(found.rows, parent).toEqual([5])
+    expect(found.rows, parent).toEqual([3, 2])
     expect(Math.min(...found.widths), parent).toBeGreaterThanOrEqual(44)
   }
+  expect(await pageScroll(page), "the page does not scroll sideways").toBeLessThanOrEqual(phone.width)
   const cell = page.getByTestId("choices-in-table-cell").locator('[data-slot="choice-group"]')
   await cell.evaluate((el) => el.style.setProperty("contain-intrinsic-inline-size", "none"))
   expect((await cell.boundingBox())!.width, "the control: a size container sized by its content is 0px").toBeLessThan(1)
+})
+
+// Review N1: a parent that gives the group a width keeps it, at a phone's width too. Asking for a
+// full row as its least width, eight sizes ran out of a grid's plain div, a list item and a fieldset.
+test("at 375px a choice group takes the width its parent gives, and wraps by the column rule", async ({ page }) => {
+  await page.setViewportSize(phone)
+  await page.goto("/fixtures.html?fixture=choices-phone")
+  for (const [place, rows] of [["grid", [4, 4]], ["grid-1fr", [4, 4]], ["list", [4, 4]], ["fieldset", [4, 4]], ["swatches", [6, 2]]] as const) {
+    const holder = page.getByTestId(`choices-place-${place}`)
+    const [group, parent] = await holder.locator('[data-slot="choice-group"]').evaluate((el) => [el.getBoundingClientRect().width, el.parentElement!.getBoundingClientRect().width])
+    expect(group, `${place}: as wide as its parent`).toBeCloseTo(parent, 0)
+    expect(group, `${place}: inside the page`).toBeLessThanOrEqual(phone.width - 32)
+    expect((await layout(holder)).rows, place).toEqual([...rows])
+  }
+  expect(await pageScroll(page), "the page does not scroll sideways").toBeLessThanOrEqual(phone.width)
+})
+
+// Review N1: in the registry's own dialog, five sizes asked for a 352px row and scrolled the dialog
+// sideways; they lie 3 + 2 in the dialog's width.
+test("at 375px a choice group in the registry's dialog wraps inside it", async ({ page }) => {
+  await page.setViewportSize(phone)
+  await page.goto("/fixtures.html?fixture=choice-dialog")
+  const dialog = page.getByRole("dialog", { name: "Taille" })
+  const group = dialog.locator('[data-slot="choice-group"]')
+  await expect(group).toBeVisible({ timeout: 20_000 })
+  expect((await layout(group)).rows).toEqual([3, 2])
+  const [scrollWidth, clientWidth] = await dialog.evaluate((el) => [el.scrollWidth, el.clientWidth])
+  expect(scrollWidth, "the dialog does not scroll sideways").toBeLessThanOrEqual(clientWidth)
+  const [groupRight, dialogRight] = await group.evaluate((el) => [el.getBoundingClientRect().right, el.closest('[role="dialog"]')!.getBoundingClientRect().right])
+  expect(groupRight, "inside the dialog").toBeLessThanOrEqual(dialogRight)
 })

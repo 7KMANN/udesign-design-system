@@ -160,6 +160,20 @@ describe("ChoiceGroup", () => {
     expect(items.parentElement).toHaveAttribute("data-slot", "choice-group")
   })
 
+  // Review N1: what it asks for where its parent's width comes from its content is also its least
+  // width, so it is three touch targets at most, never a full row of its choices.
+  it("asks for three touch targets at most where its parent's width comes from its content", () => {
+    const asked = (count: number, variant?: "swatch") => {
+      const choices = Array.from({ length: count }, (_, i) => ({ value: `${i}`, label: `${i}`, swatch: variant && "white" }))
+      const { container, unmount } = render(<ChoiceGroup aria-label="Taille" variant={variant} choices={choices} />)
+      const value = (container.firstElementChild as HTMLElement).style.getPropertyValue("--choice-intrinsic")
+      unmount()
+      return value
+    }
+    expect([1, 2, 3, 5, 12].map((n) => asked(n))).toEqual(["4rem", "8.5rem", "9.25rem", "9.25rem", "9.25rem"])
+    expect([1, 2, 3, 8].map((n) => asked(n, "swatch"))).toEqual(["2.75rem", "6rem", "9.25rem", "9.25rem"])
+  })
+
   it("shows swatches by their colour and names them in words", async () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()

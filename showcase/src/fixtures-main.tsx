@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import 'swiper/css/bundle';
 import { ChoiceGroup } from '@/components/ui/choice-group';
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from '@/components/ui/description-list';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Gallery, type GalleryPhoto } from '@/components/ui/gallery';
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import './index.css';
@@ -13,16 +14,6 @@ const sizes = (n: number) => ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5
 function Choices() {
   const [value, setValue] = useState<string | null>(null);
   const cases: Array<[string, number]> = [['16rem', 5], ['16rem', 6], ['16rem', 7], ['30rem', 6], ['9.5rem', 3], ['20rem', 10]];
-  // Parents whose width comes from their content, where a size container would be 0px wide (review M5).
-  const shrinking: Array<[string, (group: React.ReactNode) => React.ReactNode]> = [
-    ['table-cell', (g) => <table><tbody><tr><td>{g}</td></tr></tbody></table>],
-    ['inline-block', (g) => <div style={{ display: 'inline-block' }}>{g}</div>],
-    ['fit-content', (g) => <div style={{ width: 'fit-content' }}>{g}</div>],
-    ['flex-row', (g) => <div style={{ display: 'flex' }}><div>{g}</div></div>],
-    ['flex-column', (g) => <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}><div>{g}</div></div>],
-    ['grid-auto', (g) => <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr' }}><div>{g}</div><span /></div>],
-    ['absolute', (g) => <div style={{ position: 'relative', height: '7rem' }}><div style={{ position: 'absolute' }}>{g}</div></div>],
-  ];
   const long = Array.from({ length: 22 }, (_, i) => ({ value: `${i + 1}`, label: `${i + 1}` }));
   return (
     <main className="grid gap-6 p-4">
@@ -41,12 +32,65 @@ function Choices() {
       <div style={{ width: '21.4375rem' }} data-testid="choices-long">
         <ChoiceGroup aria-label="Numéros" choices={long} />
       </div>
+    </main>
+  );
+}
+
+// The parents a phone puts a group in, on a page with nothing wider than the phone: those whose width
+// comes from their content, where a size container would be 0px wide (review M5), and those that give
+// it a width, which it takes and wraps in (review N1).
+function ChoicesPhone() {
+  // Parents whose width comes from their content, where a size container would be 0px wide (review M5).
+  const shrinking: Array<[string, (group: React.ReactNode) => React.ReactNode]> = [
+    ['table-cell', (g) => <table><tbody><tr><td>{g}</td></tr></tbody></table>],
+    ['inline-block', (g) => <div style={{ display: 'inline-block' }}>{g}</div>],
+    ['fit-content', (g) => <div style={{ width: 'fit-content' }}>{g}</div>],
+    ['flex-row', (g) => <div style={{ display: 'flex' }}><div>{g}</div></div>],
+    ['flex-column', (g) => <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}><div>{g}</div></div>],
+    ['grid-auto', (g) => <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr' }}><div>{g}</div><span /></div>],
+    ['absolute', (g) => <div style={{ position: 'relative', height: '7rem' }}><div style={{ position: 'absolute' }}>{g}</div></div>],
+  ];
+  // Parents that give the group a width, which it takes and wraps in.
+  const places: Array<[string, (group: React.ReactNode) => React.ReactNode]> = [
+    ['grid', (g) => <div style={{ display: 'grid' }}><div>{g}</div></div>],
+    ['grid-1fr', (g) => <div style={{ display: 'grid', gridTemplateColumns: '1fr' }}><div>{g}</div></div>],
+    ['list', (g) => <ul style={{ display: 'grid', listStyle: 'none', margin: 0, padding: 0 }}><li>{g}</li></ul>],
+    ['fieldset', (g) => <fieldset><legend>Taille</legend>{g}</fieldset>],
+  ];
+  const colours = ['Blanc', 'Noir', 'Marine', 'Rouge', 'Forêt', 'Gris', 'Sable', 'Bourgogne'].map((c, i) => ({ value: c, label: c, swatch: `hsl(${i * 45} 40% 50%)` }));
+  return (
+    <main className="grid gap-6 p-4">
       {shrinking.map(([name, wrap]) => (
         <div key={name} data-testid={`choices-in-${name}`}>
           {wrap(<ChoiceGroup aria-label={`5 tailles, ${name}`} choices={sizes(5)} />)}
         </div>
       ))}
+      {places.map(([name, wrap]) => (
+        <div key={name} data-testid={`choices-place-${name}`}>
+          {wrap(<ChoiceGroup aria-label={`8 tailles, ${name}`} choices={sizes(8)} />)}
+        </div>
+      ))}
+      <div data-testid="choices-place-swatches">
+        <div style={{ display: 'grid' }}><div><ChoiceGroup variant="swatch" aria-label="8 couleurs" choices={colours} /></div></div>
+      </div>
     </main>
+  );
+}
+
+// The registry's dialog on a phone, its group in a plain div (review N1).
+function ChoiceDialog() {
+  return (
+    <Dialog defaultOpen>
+      <DialogContent closeLabel="Fermer">
+        <DialogHeader>
+          <DialogTitle>Taille</DialogTitle>
+          <DialogDescription>Une taille par personne.</DialogDescription>
+        </DialogHeader>
+        <div>
+          <ChoiceGroup aria-label="Taille, dans un dialogue" choices={sizes(5)} />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -105,7 +149,7 @@ function Specs() {
   );
 }
 
-const fixtures: Record<string, React.ComponentType> = { choices: Choices, galleries: Galleries, specs: Specs };
+const fixtures: Record<string, React.ComponentType> = { choices: Choices, 'choices-phone': ChoicesPhone, 'choice-dialog': ChoiceDialog, galleries: Galleries, specs: Specs };
 const Fixture = fixtures[new URLSearchParams(location.search).get('fixture') ?? ''] ?? (() => <p>Unknown fixture</p>);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

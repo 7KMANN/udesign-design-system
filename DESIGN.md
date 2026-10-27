@@ -451,7 +451,7 @@ Choose `Select` when an option needs more than a line of text, such as an icon o
 - A choice that cannot be had is disabled, dashed and struck through, and says so in words: `unavailableLabel` follows its label for a screen reader.
 - A disabled group, such as one whose choice is saving, keeps its choice and its chosen look; the other choices take the disabled surface. With `name` it posts as a native radio group: the chosen value, or nothing while nothing is chosen or the group is disabled.
 - Its columns are explicit: one row when every choice gets 4rem; otherwise rows of one count, the last at most one shorter, never one choice alone on a row, in the fewest rows, unless rows of one count would take two rows more than filling the rows: then the rows fill, the last never alone. A cell never goes under the touch target. Container queries in `dist/tokens.css` lay them out, so the group needs the stylesheet of its own release.
-- It takes the width of its parent, never of its choices. Where the parent's width comes from its content (a table cell, an inline-block, `width: fit-content`, a flex or grid item sized by its content, an absolutely positioned box), the group asks for one row of its choices and lays out in the width it gets.
+- It takes the width of its parent, never of its choices, and wraps there by the column rule, on a phone too: in a grid, a list item, a `fieldset` or a dialog it is never wider than its parent. Where the parent's width comes from its content (a table cell, an inline-block, `width: fit-content`, a flex or grid item sized by its content, an absolutely positioned box), the group asks for three touch targets, 9.25rem, or one row of its choices where that is narrower, and lays out its rows in that width.
 
 ### Showing photos
 

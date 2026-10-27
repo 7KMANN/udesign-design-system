@@ -1234,8 +1234,13 @@ At 375px Boutique's cases come out as its standard says: 5 as 3 + 2, 6 as 3 + 3,
   10 at 13rem are 4 + 4 + 2 rather than five rows of two. Up to 7 choices nothing changes.
 - A size container is 0px wide wherever its parent's width comes from its content (a table cell, an
   inline-block, fit-content, a content-sized flex or grid item, an absolutely positioned box). The
-  group writes one row of its choices as `contain-intrinsic-inline-size`, so it asks for that width
-  there, and keeps its parent's width everywhere else (Chromium, Firefox and WebKit).
+  group writes three touch targets, 9.25rem, as `contain-intrinsic-inline-size` (one row of its
+  choices where that is narrower), so it asks for that width there and lays out its rows in it.
+  Fix round 2 (re-review N1): the first fix asked for a full row, but that width is also the group's
+  least, so on a phone a plain div in a grid, a list item, a `fieldset` and the registry's dialog
+  overflowed (eight sizes: 568px in 343px; five in the dialog: 352px in 322px, which scrolled
+  sideways). Three touch targets fit them all: the group takes its parent's width there and wraps by
+  the column rule, five sizes 3 + 2 in the dialog. Chromium tests at 375px hold both halves.
 
 **Rejected:** a static `ud-` class, since the columns and the keys need script; columns from
 Tailwind container variants, whose order Tailwind 3 and 4 do not guarantee; the arrow keys left to
