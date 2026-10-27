@@ -1532,3 +1532,38 @@ must not wait.
   computation puts a space between boxes. The label is now hidden from the accessibility tree and
   the name is one box, "S, unavailable", as the swatch's already was; the label still shows, struck
   through. Measured in Chromium's own accessibility tree. The next derived ID is Δ-30.
+
+---
+
+## Round 21 - 2026-10-27 (the logo in every UDesign screen)
+
+**Evidence:** Kaleb's request to put the actual UDesign logo in the corner of every page and Boutique,
+standard across UDesign software. Boutique's header and sidebar typed "UDesign" in Montserrat, and
+UDesign Pages' header drew a square "U" tile beside the typed name (`.ud-lock`); the website serves
+the logo as an image. Kaleb supplied the master, `UDesignText.svg`
+(`_UDESIGNS_ELEMENTS\ASSETS\LOGOS\WithText`). Status: open.
+
+### D-62 · The lockup is the logo · `APPROVED` Kaleb, 2026-10-27 · amends D-30 and D-52
+
+**Question:** D-30 kept the header lockup with each consumer because no component could hold a static
+class in lockstep, and D-52 kept its markup the consumer's. Every consumer then typed its own: a
+Montserrat word, a CSS "U" tile. None of them is the logo, and none could change with it.
+
+**Proposed:** `Lockup` (registry `lockup`, in `core`) and its static twin `ud-lockup`: the official
+logo as one SVG, the tile in the brand colour with black bars in every theme and the name outlined,
+sized by height (2rem by default) so the width follows. The tile's tan is the image's own colour,
+written in the SVG and not a token, as no theme changes it (`--primary` is a lighter tan in the dark
+themes). The geometry is `UDesignText.svg`'s, number for
+number. `variant="mark"` draws the tile alone. It is an image named "UDesign"; `title=""` hides it
+where the page says UDesign beside it. `PageHeader` and an `AppShell` sidebar take it as children; the
+static markup is the same SVG, documented in `css/components.css` and shown in
+`examples/static-catalog.html`. **Rejected:** a typed name in Montserrat (what each consumer drew
+by hand), and an `<img>` of the PNG, which cannot take the text colour and is 150 KB to draw 32 px.
+
+**Ruled (Kaleb, 2026-10-27: "Yes perfect", on seeing the name in ink and in tan side by side):** the official file draws the name in the tan of the tile (`#c79f6b`). On a
+light page that is 2.4:1 against white, under the 3:1 a large graphic needs and well under the 4.5:1 of
+text, and the name is what tells a visitor whose page it is. The proposal fills the name with
+`currentColor`: the ink on light pages, the light text on dark ones, and the tile stays the logo's own
+colour. The ink name stands. A `tone` that draws the tan name only on a dark surface, where it is 7:1, was
+the alternative and is not built.
+

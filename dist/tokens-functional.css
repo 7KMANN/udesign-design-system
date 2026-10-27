@@ -580,9 +580,22 @@ textarea.ud-input { height: auto; min-height: 6rem; }
   .ud-page-section { padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--space-8)); }
 }
 
+/* Lockup: the UDesign logo, the brand tile and the outlined name, as one inline SVG that sizes by
+   height (D-62). Copy the markup of examples/static-catalog.html: <svg class="ud-lockup" viewBox=
+   "0 0 850.39 218.49" role="img" aria-label="UDesign">, the tile's rect filled with the logo's
+   own tan, the three bars, and the name's paths in a <g fill="currentColor"> so the surface sets
+   its colour. The tan is the image's, not a token: no theme changes it. The
+   tile alone is viewBox="0 0 218.49 218.49" without the name's group. */
+.ud-lockup {
+  display: block;
+  height: 2rem;
+  width: auto;
+  flex-shrink: 0;
+}
+
 /* PageHeader: a presentation page's header, on the sections' column. The lockup first, then at
-   most one action, such as the way back: <header class="ud-page-header"><p class="ud-h3">UDesign</p>
-   <a class="ud-btn ud-btn-ghost" href="...">Mes commandes</a></header>. One row, a touch target
+   most one action, such as the way back: <header class="ud-page-header"><svg class="ud-lockup" ...>
+   </svg><a class="ud-btn ud-btn-ghost" href="...">Mes commandes</a></header>. One row, a touch target
    high with or without the action; the action never wraps. Add ud-page-section-band for a band. */
 .ud-page-header {
   box-sizing: content-box;

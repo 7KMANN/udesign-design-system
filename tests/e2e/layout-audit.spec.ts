@@ -157,7 +157,7 @@ for (const viewport of viewports) {
     await header.waitFor()
     // The sections' content edge: the column's box less its gutter.
     const column = { x: await page.locator("#root section > div").first().evaluate((el) => el.getBoundingClientRect().left + parseFloat(getComputedStyle(el).paddingLeft)) }
-    const lockup = (await header.getByText("UDesign", { exact: true }).boundingBox())!
+    const lockup = (await header.getByRole("img", { name: "UDesign" }).boundingBox())!
     const action = (await header.getByRole("link", { name: "Mes commandes" }).boundingBox())!
     const row = (await header.locator(":scope > div").boundingBox())!
     expect(row.height, "a touch target high").toBeGreaterThanOrEqual(44)

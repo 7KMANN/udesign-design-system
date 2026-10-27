@@ -13,6 +13,7 @@ import { AppShell, AppShellPane, AppShellPanes, AppShellSidebar, AppShellToolbar
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Lockup } from "@/components/ui/lockup"
 import { MetricCard } from "@/components/ui/metric-card"
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { StatusBadge } from "@/components/ui/status-badge"
@@ -88,9 +89,9 @@ export function OperationsQueue() {
     // AppShell: fixed viewport, panes scroll, hierarchy from structure (ban 27).
     <AppShell>
       <AppShellSidebar>
-        {/* The lockup stays Montserrat in both profiles; nothing else in the chrome is decorated. */}
+        {/* The lockup is the logo in both profiles (D-62); nothing else in the chrome is decorated. */}
         <div className="flex min-h-[var(--control-height)] items-center border-b border-[var(--sidebar-border)] px-4">
-          <span className="[font-family:'Montserrat',sans-serif] font-black">UDesign</span>
+          <Lockup className="h-6" />
         </div>
         <Nav />
       </AppShellSidebar>
@@ -103,7 +104,7 @@ export function OperationsQueue() {
             <Button variant="ghost" size="icon" className="md:hidden" aria-label="Menu"><Menu className="size-5" aria-hidden="true" /></Button>
           </SheetTrigger>
           <SheetContent side="left" closeLabel="Fermer" className="w-[min(20rem,85vw)] bg-[var(--sidebar)] text-[var(--sidebar-foreground)]">
-            <SheetHeader><SheetTitle className="[font-family:'Montserrat',sans-serif] font-black">UDesign</SheetTitle></SheetHeader>
+            <SheetHeader><SheetTitle><Lockup className="h-6" /></SheetTitle></SheetHeader>
             <Nav inSheet />
           </SheetContent>
         </Sheet>
