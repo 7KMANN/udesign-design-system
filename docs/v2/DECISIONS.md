@@ -1318,10 +1318,12 @@ should the one source live, and can a page without React use it?
 
 **Proposed:**
 - The skin moves into `css/components.css`, so `dist/tokens.css` carries it as `ud-gallery`. Its
-  rules outrank Swiper's whichever stylesheet loads last, and the arrows are placed through Swiper's
-  own `--swiper-navigation-top-offset`, not a margin Swiper's later rule would override: UDesign
-  Pages links the tokens before Swiper's stylesheet, a React app imports them after. The thumbnails
-  outrank Tailwind 3's preflight, which reset their surface.
+  rules outrank Swiper's whichever stylesheet loads last: UDesign Pages links the tokens before
+  Swiper's stylesheet, a React app imports them after. The arrows are placed by a rule one class
+  above Swiper's and above the arrow rule of UDesign Pages' own `ud-gallery.css`, so they stay
+  centred whichever of those a page still links, in any order (fix round 1: placed through Swiper's
+  `--swiper-navigation-top-offset`, they sat 14px high while the old file was linked). The
+  thumbnails outrank Tailwind 3's preflight, which reset their surface.
 - `gallery-core.ts` holds the behaviour: Swiper's options, the screen-reader words (French, or
   English for `<html lang="en">`, as UDesign Pages), the motion duration, the thumbnail that follows
   the photo, and the key routing (D-55). No React and no Swiper code, so both builds run it.

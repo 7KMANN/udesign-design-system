@@ -132,6 +132,25 @@ for (const build of builds) {
     expect(thumb, "the thumbnail keeps its surface over a preflight reset").toBe(card)
   })
 
+  // Review M9: UDesign Pages' ud-gallery.css before v3.3.0 placed the arrows itself. A page that moves
+  // to these tokens while it still links that file, after them or before, keeps its arrows centred.
+  test(`${build.name} gallery: the arrows stay centred with the old ud-gallery.css linked, before or after the tokens`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    const { a } = await open(page, build.url, build.first, build.second)
+    const old = ".ud-gallery .swiper-button-prev, .ud-gallery .swiper-button-next { box-sizing: border-box; width: var(--touch-target-min); height: var(--touch-target-min); margin-top: calc(var(--touch-target-min) / -2); }"
+    for (const where of ["after", "before"] as const) {
+      await page.evaluate(({ css, where }) => {
+        document.getElementById("old-ud-gallery")?.remove()
+        const style = Object.assign(document.createElement("style"), { id: "old-ud-gallery", textContent: css })
+        if (where === "after") document.head.append(style)
+        else document.head.prepend(style)
+      }, { css: old, where })
+      const main = (await a.locator(".ud-gallery-main").boundingBox())!
+      const next = (await a.locator(".swiper-button-next").boundingBox())!
+      expect(next.y + next.height / 2, `the old file linked ${where} the tokens`).toBeCloseTo(main.y + main.height / 2, 0)
+    }
+  })
+
   test(`${build.name} gallery: the photo eases on the standard duration, and moves at once under reduced motion`, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 })
     for (const [motion, duration] of [["no-preference", "250ms"], ["reduce", "0ms"]] as const) {

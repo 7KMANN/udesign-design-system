@@ -313,8 +313,6 @@ textarea.ud-input { height: auto; min-height: 6rem; }
   --swiper-navigation-size: 1rem;
   --swiper-navigation-color: var(--foreground);
   --swiper-navigation-sides-offset: var(--space-3);
-  /* Swiper centres an arrow by the icon's size: this centres the touch target instead. */
-  --swiper-navigation-top-offset: calc(50% - (var(--touch-target-min) - var(--swiper-navigation-size)) / 2);
   --swiper-pagination-color: var(--foreground);
   --swiper-pagination-bullet-inactive-color: var(--muted-foreground);
   --swiper-pagination-bullet-inactive-opacity: 0.35;
@@ -352,6 +350,11 @@ textarea.ud-input { height: auto; min-height: 6rem; }
 .ud-gallery .swiper-button-next:active { transform: scale(var(--motion-press-scale)); background: var(--interactive-pressed); }
 .ud-gallery .swiper-button-prev:focus-visible,
 .ud-gallery .swiper-button-next:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: 2px; }
+/* Swiper centres an arrow by the icon's size; this centres the touch target. One class above
+   Swiper's rule and the arrow rule of UDesign Pages' ud-gallery.css before v3.3.0, so it holds
+   whichever of them a page links, and in any order. */
+.ud-gallery .ud-gallery-main .swiper-button-prev,
+.ud-gallery .ud-gallery-main .swiper-button-next { top: 50%; margin-top: calc(var(--touch-target-min) / -2); }
 /* Swiper 14 stretches its chevron to the whole button: keep it icon-sized inside the 44px target. */
 .ud-gallery .swiper-navigation-icon { width: auto; height: var(--swiper-navigation-size); }
 /* Touch screens swipe; the arrows are for a mouse. */
