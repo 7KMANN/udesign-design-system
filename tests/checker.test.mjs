@@ -181,7 +181,7 @@ test('spacing-role flags a gap, a stack or a margin off the spacing roles, from 
     '<div className="gap-[18px] grid">',
     '<p className="text-xs text-muted-foreground mt-2.5">Meta</p>',
     '<section className="mb-10">',
-    '<span className="m-1.5">x</span>',
+    '<span className="m-2.5">x</span>',
   ].join('\n');
   assert.deepEqual(hits('app/page.tsx', tsx), ['spacing-role:1', 'spacing-role:2', 'spacing-role:3', 'spacing-role:4', 'spacing-role:5', 'spacing-role:6', 'spacing-role:7', 'spacing-role:8', 'spacing-role:9', 'spacing-role:10']);
   // A class string chosen inside a template's interpolation is read too.
@@ -214,6 +214,9 @@ test('spacing-role leaves the roles, alignment, geometry and the primitive folde
     '<div className="space-y-0.5 gap-y-0.5">',
     '<p className="text-xs text-muted-foreground mt-0.5 mb-1.5">Meta</p>',
     '<div className="rounded-lg bg-[var(--muted)] p-2 mt-0.5"><Icon /></div>',
+    // Nothing under 8px is a finding, whatever the utility (re-review N2): a margin on every side too.
+    '<span className="m-1.5">x</span>',
+    '<span className="m-0.5 rounded-full">x</span>',
   ].join('\n');
   assert.deepEqual(hits('app/page.tsx', stacks), []);
   // Review M4: copy, a URL and an arbitrary value are not class strings, whatever they hold.

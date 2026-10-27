@@ -101,16 +101,15 @@ function balanced(code, start) {
 
 // Ban 33: spacing off the roles (--space-1 to --space-8: 4, 8, 12, 16, 24 and 32px), from 8px up
 // (Kaleb, 2026-10-26), read in class strings only: an HTML class attribute, or a JS string that
-// reads as classes, so copy and URLs never count. Under 8px a stack's 2 or 6px passes, as a row's
-// half step beside an icon and an icon's nudge onto a line of text do; only a margin on every side
-// that holds no icon still counts there. Calibrated on Boutique, GlobalVision and udesignpages
+// reads as classes, so copy and URLs never count. Nothing under 8px is a finding, whatever the
+// utility: the check watches the spacing between groups and sections, not a stack's 2 or 6px, a
+// row's half step beside an icon or an icon's nudge. Calibrated on Boutique, GlobalVision and udesignpages
 // (docs/checker-rules.md). Never read: CSS (a stylesheet, <style>, @apply, a style attribute or
 // object); padding, which also carries geometry (room for an icon in a field, a list's indent); a
 // negative margin, which aligns an edge; a value through var(); a primitive folder, where a
 // component's own geometry lives.
 const SPACING = /(?<![\w[-])((?:[\w-]+:|\[[^\]\s]*\]:)*)(-?)(gap-x|gap-y|gap|space-x|space-y|mx|my|mt|mr|mb|ml|ms|me|m)-(\[[^\]\s]+\]|\d+(?:\.\d+)?|px|auto)(?![\w.\]-])/g;
 const SPACING_ROLES_PX = [0, 4, 8, 12, 16, 24, 32];
-const ICON = /(?<![\w-])size-(?:\d|\[)|(?<![\w-])h-\d[\s\S]*(?<![\w-])w-\d|(?<![\w-])w-\d[\s\S]*(?<![\w-])h-\d/;
 // A token of a class string: variants, then a utility or a class name, lower case outside the
 // brackets that hold arbitrary values (set aside before this test). Copy and URLs fail it.
 const CLASS_TOKEN = /^!?(?:[a-z0-9@*_&>~+.%/-]+:)*!?-?[a-z0-9_][a-z0-9_./%-]*!?$/;
@@ -150,7 +149,6 @@ function spacingPx(value) {
 }
 
 function* spacingOffRole(classes) {
-  const icon = ICON.test(classes);
   for (const m of classes.matchAll(SPACING)) {
     const [whole, , negative, property, value] = m;
     if (negative) continue;
@@ -160,9 +158,9 @@ function* spacingOffRole(classes) {
     if (classes.slice(start, end).replace(/^!|!$/g, '') !== whole) continue;
     const px = spacingPx(value);
     if (px === null) continue;
-    // Under 8px (Kaleb, 2026-10-26: from 8px up): a stack's 2 or 6px, a row's half step, an icon's
-    // nudge. Only a margin on every side still counts there, unless it sits on an icon.
-    if (px < 8 && (property !== 'm' || icon)) continue;
+    // Under 8px nothing counts, whatever the utility (Kaleb, 2026-10-26: the check watches the
+    // spacing between groups and sections): a stack's 2 or 6px, a row's half step, an icon's nudge.
+    if (px < 8) continue;
     yield [m.index, `\`${whole}\` is ${px}px, off the spacing roles; space with 4, 8, 12, 16, 24 or 32px (\`-1\`, \`-2\`, \`-3\`, \`-4\`, \`-6\`, \`-8\`, or \`var(--space-*)\`)`];
   }
 }

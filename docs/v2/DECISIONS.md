@@ -1272,9 +1272,11 @@ leaves GlobalVision 16 findings; it is one condition in `bin/rules.mjs`. **Rejec
 padding, which would cry wolf on every field with an icon; checking the primitive folders, which
 hold each component's geometry and which this repository tests itself.
 
-**Kaleb, 2026-10-26: approved, "from 8px up".** A stack under 8px (2, 4 or 6px) is not a finding;
-from 8px up, stacks stay on the roles, and gaps, `space-*` and margins otherwise stay as proposed.
-Ban 33 and the "Layout" rule say so, and the rule reads a JS string only when every word of it
+**Kaleb, 2026-10-26: approved, "from 8px up".** The check watches the spacing between groups and
+sections, so nothing under 8px is a finding, whatever the utility: a stack's 2 or 6px, a row's half
+step, a margin on every side. From 8px up, a value between the roles is a finding in a gap, a stack
+or a margin. (The first fix round still flagged `m-0.5` and `m-1.5`; the second dropped that, and no
+count moved.) Ban 33 and the "Layout" rule say so, and the rule reads a JS string only when every word of it
 reads as a class, so copy and URLs no longer count (review of PR 3). Measured again, read-only:
 Boutique `main` 10 (was 17), its `feat/appearance-standard` 2 (was 7), GlobalVision 16 (was 142),
 `udesignpages` 0, which means not read: its spacing is CSS, which no part of the rule reads
