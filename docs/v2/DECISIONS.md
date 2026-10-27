@@ -1567,3 +1567,46 @@ text, and the name is what tells a visitor whose page it is. The proposal fills 
 colour. The ink name stands. A `tone` that draws the tan name only on a dark surface, where it is 7:1, was
 the alternative and is not built.
 
+---
+
+## Round 22 - 2026-10-27 (Boutique's photos fill the square)
+
+**Evidence:** Kaleb's screenshots of the Boutique item view, 2026-10-27: a photo with a background of its own
+(a grey studio, a light grey sweep) sat in the card's margin as a box, with white bars beside a portrait one,
+"contours which are ugly". Measured on Vietnam's 284 images: the 138 mockups are transparent, the 146 photos
+opaque, 61 of them taller than square. Kaleb approved D-63 on 2026-10-27 ("I approve D-63, wording included"):
+the `DESIGN.md` sentences it adds carry `APPROVED 2026-10-27` and the entry's number. Shipped as v3.6.0.
+
+### D-63 · A photo with its own background fills the square, and the dots read the photo under them · `APPROVED` Kaleb, 2026-10-27 · amends D-54
+
+**Question:** the gallery showed every photo whole inside the card's margin (`object-fit: contain`). A
+cut-out reads well that way. A photo with a background of its own does not: it sits in the card as a box,
+with bars of card beside it when it is not square. The dots, drawn in `--foreground`, would vanish on a
+dark photo the day it reached them.
+
+**Proposed:** a photo says how it meets the square. `fit: "cover"` fills the square edge to edge, its
+thumbnail too, cropped to the square and keeping its `focus`, a CSS object-position (the centre by
+default). `contain`, the default, is the gallery as it was. The page decides which photo is which, from
+data it can check (Boutique measures each image and has the crops of the taller ones looked at); the
+gallery never guesses, since only someone who sees the photo knows whether the crop keeps the garment. Over
+a covered photo the dots read the photo under them once it has loaded, from a small drawing of it, and
+turn white (`--on-dark-photo`) or ink (`--on-light-photo`) by what most of their box shows, against WCAG's
+crossover luminance (0.179); on the card they keep the theme's. Both builds share the reading
+(`watchTone` in `gallery-core.ts`); `dist/ud-gallery.js` writes the default markup byte for byte as before.
+A covered photo can be seen whole, as Kaleb asked ("a view original picture button just in case, make it
+subtle", and nothing wrapped around the full view): a quiet button in the square's corner, on a covered
+photo only, opens a modal `<dialog>` with the photo as it is, fitted to the screen, over the backdrop, and a
+button to close. Both builds make the button at mount (`showWhole`), so the markup does not change.
+Measured in Chromium, both builds: the covered photo's box is the slide's, its thumbnail covers, the dots
+are white on the dark fixture photo, ink on the light one kept by its top, and the theme's on the cut-out;
+the whole view shows the photo uncropped at its own ratio, with no surface around it, moves no gallery
+behind it, closes on Escape and on its button, and gives the focus back.
+**Rejected:** guessing the fit in the browser from the photo's corners, which crops a narrow packshot to a
+strip and cannot tell where a face is; a frosted pill behind the dots, which changes the look Kaleb asked
+to keep; dots read once per gallery, which goes wrong on the next photo.
+
+### Derived in round 22, not asked
+
+- The two roles are new tokens, theme-stable as `--backdrop` is: the component stylesheet may not name a
+  primitive (ban 1), and a mark over a photo answers the photo, not the theme.
+

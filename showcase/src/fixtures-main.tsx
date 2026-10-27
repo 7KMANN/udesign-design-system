@@ -184,6 +184,17 @@ function Galleries() {
   );
 }
 
+// Photos with a background of their own fill the square, a cut-out keeps its margin: a dark photo, a light one kept by its top,
+// then a contained one. The dots read the photo under them (data-tone), and sit on the card for the cut-out.
+function CoveredGallery() {
+  const [dark, light, cutOut] = photos('T-shirt exemple', [5, 6, 1], ['Photo 1', 'Photo 2', 'Devant']);
+  return (
+    <main className="max-w-md p-4">
+      <Gallery data-testid="gallery-covered" photos={[{ ...dark, fit: 'cover' }, { ...light, fit: 'cover', focus: '50% 0%' }, cutOut]} sizes="28rem" priority />
+    </main>
+  );
+}
+
 // Specifications as UDesign Pages sets them, a pair grouped in a div, and a value too long for a phone.
 function Specs() {
   return (
@@ -227,7 +238,7 @@ function Footer() {
   );
 }
 
-const fixtures: Record<string, React.ComponentType> = { choices: Choices, 'choice-rows': ChoiceRows, footer: Footer, 'choices-phone': ChoicesPhone, 'choice-dialog': ChoiceDialog, galleries: Galleries, specs: Specs };
+const fixtures: Record<string, React.ComponentType> = { choices: Choices, 'choice-rows': ChoiceRows, footer: Footer, 'choices-phone': ChoicesPhone, 'choice-dialog': ChoiceDialog, galleries: Galleries, 'gallery-covered': CoveredGallery, specs: Specs };
 const Fixture = fixtures[new URLSearchParams(location.search).get('fixture') ?? ''] ?? (() => <p>Unknown fixture</p>);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

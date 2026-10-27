@@ -22,10 +22,18 @@
      </div>
    </div>
 
+   A photo with a background of its own fills the square: data-fit="cover" on its slide and on its thumbnail,
+   and what it keeps when cropped, if not its centre, as both images' object-position (style="object-position: 50% 20%").
+   Over such a photo the dots turn white or ink by what lies under them (data-tone on .ud-gallery-main), and a
+   quiet button in the square's corner (.ud-gallery-whole, made at mount) shows it whole, as it is, in a modal
+   <dialog class="ud-gallery-view">.
+
    udGallery(el)                 mount (galleries in the page at load are mounted automatically)
    udGallery.markup(srcs, alt, start, labels, sizes)  the markup above as a string, for galleries built at runtime
-                                 (srcs: paths, or {src, srcset, thumb} for resized copies, sizes then being the slide
-                                 width; alt: one caption or one per photo; labels: thumbnail names, "Photo N" by default)
+                                 (srcs: paths, or {src, srcset, thumb, fit, focus} for resized copies, sizes then being
+                                 the slide width, and for a photo that fills the square: fit "cover" writes data-fit="cover"
+                                 on its slide and its thumbnail, focus the object-position of both images; alt: one caption
+                                 or one per photo; labels: thumbnail names, "Photo N" by default)
    el.udGallery.show(src, srcset, thumb)  go to the slide showing src, or put src (with its srcset and thumbnail,
                                  when it has them) on the first slide (colour swatch)
    el.udGallery.setPhotos(srcs, start, alt, labels)  replace every photo (a colour or view set that changes);
@@ -35,9 +43,9 @@
    The arrow keys move the gallery that has the focus, else the one under the pointer, never every gallery
    on screen; Page Up and Page Down scroll the page. */
 import type Swiper from "swiper"
-import { GALLERY_MESSAGES, galleryLanguage, galleryOptions, gallerySpeed, keepThumbInView, routeGalleryKeys } from "../registry/new-york/ui/gallery-core"
+import { GALLERY_MESSAGES, galleryLanguage, galleryOptions, gallerySpeed, keepThumbInView, routeGalleryKeys, showWhole, watchTone } from "../registry/new-york/ui/gallery-core"
 
-type Photo = string | { src: string; srcset?: string; thumb?: string }
+type Photo = string | { src: string; srcset?: string; thumb?: string; fit?: "contain" | "cover"; focus?: string }
 type Alt = string | string[]
 
 interface Mounted {
@@ -64,14 +72,21 @@ function esc(s: unknown): string {
 function pic(p: Photo) {
   return typeof p === "string" ? { src: p } : p
 }
+// A covered photo's mark and its focus, on its slide and its thumbnail; nothing for the default, so that markup stays UDesign Pages'.
+function fitAttr(p: Photo): string {
+  return typeof p !== "string" && p.fit === "cover" ? ' data-fit="cover"' : ""
+}
+function focusAttr(p: Photo): string {
+  return typeof p !== "string" && p.focus ? ' style="object-position: ' + esc(p.focus) + '"' : ""
+}
 function slidesHtml(srcs: Photo[], alt: Alt, start: number, sizes?: string | null): string {
   return srcs
     .map((p, i) => {
       const photo = pic(p)
       return (
-        '<div class="swiper-slide"><img src="' + esc(photo.src) + '"' +
+        '<div class="swiper-slide"' + fitAttr(p) + '><img src="' + esc(photo.src) + '"' +
         (photo.srcset ? ' srcset="' + esc(photo.srcset) + '" sizes="' + esc(sizes || "100vw") + '"' : "") +
-        ' alt="' + esc(Array.isArray(alt) ? alt[i] : alt) + '" draggable="false"' +
+        ' alt="' + esc(Array.isArray(alt) ? alt[i] : alt) + '" draggable="false"' + focusAttr(p) +
         (i === start ? "" : ' loading="lazy"') + "></div>"
       )
     })
@@ -84,8 +99,8 @@ function thumbsHtml(srcs: Photo[], start: number, labels?: string[]): string {
         .map((p, i) => {
           const photo = pic(p)
           return (
-            '<button type="button" class="ud-gallery-thumb" aria-label="' + esc(labels ? labels[i] : "Photo " + (i + 1)) +
-            '" aria-pressed="' + (i === start) + '"><img src="' + esc(photo.thumb || photo.src) + '" alt="" loading="lazy"></button>'
+            '<button type="button" class="ud-gallery-thumb"' + fitAttr(p) + ' aria-label="' + esc(labels ? labels[i] : "Photo " + (i + 1)) +
+            '" aria-pressed="' + (i === start) + '"><img src="' + esc(photo.thumb || photo.src) + '" alt=""' + focusAttr(p) + ' loading="lazy"></button>'
           )
         })
         .join("")
@@ -126,11 +141,14 @@ function mount(el: GalleryElement): Mounted {
   }
 
   bindThumbs()
+  const words = GALLERY_MESSAGES[galleryLanguage(doc)]
   swiper = new window.Swiper(main, {
-    ...galleryOptions(main, { messages: GALLERY_MESSAGES[galleryLanguage(doc)], speed, start: parseInt(el.getAttribute("data-ud-gallery-start") || "0", 10) }),
+    ...galleryOptions(main, { messages: words, speed, start: parseInt(el.getAttribute("data-ud-gallery-start") || "0", 10) }),
     on: { slideChange: () => sync() },
   })
   const unroute = routeGalleryKeys(el, swiper)
+  const untone = watchTone(main, swiper)
+  const unwhole = showWhole(el, main, swiper, words)
   let gone = false
   sync()
 
@@ -165,6 +183,8 @@ function mount(el: GalleryElement): Mounted {
       if (gone) return
       gone = true
       unroute()
+      untone()
+      unwhole()
       swiper!.destroy(true, true)
       if (el.udGallery === mounted) delete el.udGallery
     },

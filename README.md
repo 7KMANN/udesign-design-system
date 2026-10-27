@@ -6,7 +6,7 @@ Do not source brand values from Icitte. It is a separate product line with its o
 
 **License:** proprietary, UDesign Productions only. See [LICENSE.md](LICENSE.md). Public visibility does not grant permission to use the work.
 
-## What ships in 3.5.0
+## What ships in 3.6.0
 
 - A semantic token foundation for light and dark themes.
 - Two profiles, `presentation` and `operations`, pinned once per document. They differ in structure: type scale shape, source of hierarchy, page shell, and figures. Controls keep the 44px touch floor on touch in both; on a desktop mouse a compact control and the operations toolbar go to 36px.
@@ -48,7 +48,7 @@ Pin the Git dependency to a release tag. Do not install from a moving branch.
 ```json
 {
   "dependencies": {
-    "udesign-design-system": "github:7KMANN/udesign-design-system#v3.5.0"
+    "udesign-design-system": "github:7KMANN/udesign-design-system#v3.6.0"
   }
 }
 ```
@@ -102,7 +102,7 @@ Initialize shadcn in the consuming application and add the tagged namespace to `
 ```json
 {
   "registries": {
-    "@udesign": "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.5.0/public/r/{name}.json"
+    "@udesign": "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.6.0/public/r/{name}.json"
   }
 }
 ```
@@ -124,7 +124,7 @@ An item that uses another one names it as `@udesign/<name>`: `button` uses `spin
 The direct tagged URL works without the namespace only for an item that uses no other one, `core` among them:
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.5.0/public/r/core.json
+npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.6.0/public/r/core.json
 ```
 
 Without the namespace, adding an item that uses another makes shadcn look `@udesign` up in its public directory of registries. Where the directory lists none, the install stops before it writes a file, with `Unknown registry "@udesign". Make sure it is defined in components.json` and the `registries` block to add: add the namespace above and run the command again. Where the directory lists one, shadcn writes that registry into `components.json` and takes the item's dependencies from it, whoever publishes it. So set the namespace yourself before you add an item: the tag you choose is then the release you get. The install test holds both cases against a stand-in for the directory.

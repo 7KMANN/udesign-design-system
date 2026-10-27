@@ -215,6 +215,94 @@ for (const build of builds) {
   })
 }
 
+// D-63: a photo with a background of its own fills the square, and the dots take the tone of what
+// lies under them. Photo 5 is dark at the bottom, photo 6 light and kept by its top, photo 1 a cut-out.
+const covered = [
+  { name: "React", url: "/fixtures.html?fixture=gallery-covered", gallery: '[data-testid="gallery-covered"]' },
+  { name: "plain-JS", url: "/static-gallery.html", gallery: "#covered .ud-gallery" },
+]
+const dot = (gallery: Locator) => gallery.locator(".swiper-pagination-bullet-active").evaluate((el) => getComputedStyle(el).backgroundColor)
+
+for (const build of covered) {
+  test(`${build.name} gallery: a covered photo fills the square, and the dots turn white or ink by the photo under them`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.goto(build.url)
+    const gallery = page.locator(build.gallery)
+    await expect(gallery.locator(".swiper-initialized")).toBeAttached({ timeout: 20_000 })
+    await gallery.scrollIntoViewIfNeeded()
+    const main = gallery.locator(".ud-gallery-main")
+    const fill = (i: number) =>
+      gallery.locator(".swiper-slide").nth(i).evaluate((slide) => {
+        const img = slide.querySelector("img")!
+        const [s, p] = [slide.getBoundingClientRect(), img.getBoundingClientRect()]
+        return { fit: getComputedStyle(img).objectFit, margin: [p.left - s.left, s.right - p.right, p.top - s.top, s.bottom - p.bottom].map(Math.round) }
+      })
+    expect(await fill(0), "edge to edge").toEqual({ fit: "cover", margin: [0, 0, 0, 0] })
+    expect(await gallery.locator(".ud-gallery-thumb img").first().evaluate((img) => getComputedStyle(img).objectFit), "its thumbnail too").toBe("cover")
+    await expect(main, "dark under the dots").toHaveAttribute("data-tone", "dark")
+    await expect.poll(() => dot(gallery), "white dots").toBe("rgb(255, 255, 255)")
+
+    await gallery.locator(".ud-gallery-thumb").nth(1).click()
+    expect(await gallery.locator(".swiper-slide img").nth(1).evaluate((img) => getComputedStyle(img).objectPosition), "kept by its top").toBe("50% 0%")
+    await expect(main, "light under the dots").toHaveAttribute("data-tone", "light")
+    await expect.poll(() => dot(gallery), "ink dots").toBe("rgb(27, 27, 27)")
+
+    await gallery.locator(".ud-gallery-thumb").nth(2).click()
+    await expect(main, "a cut-out: the dots sit on the card").not.toHaveAttribute("data-tone")
+    const cutOut = await fill(2)
+    expect(cutOut.fit).toBe("contain")
+    expect(cutOut.margin.every((m) => m >= 16), "a cut-out keeps the card's margin").toBe(true)
+    await expect.poll(() => dot(gallery), "the theme's dots").toBe(await page.evaluate(() => {
+      const probe = document.createElement("div")
+      probe.style.background = "var(--foreground)"
+      document.body.append(probe)
+      const colour = getComputedStyle(probe).backgroundColor
+      probe.remove()
+      return colour
+    }))
+  })
+}
+
+for (const build of covered) {
+  test(`${build.name} gallery: a quiet button shows a covered photo whole, as it is, and gives the focus back when it closes`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.goto(build.url)
+    const gallery = page.locator(build.gallery)
+    await expect(gallery.locator(".swiper-initialized")).toBeAttached({ timeout: 20_000 })
+    await gallery.scrollIntoViewIfNeeded()
+    const whole = gallery.getByRole("button", { name: "Voir la photo entière" })
+    await expect(whole).toBeVisible()
+    const target = (await whole.boundingBox())!
+    expect([target.width, target.height], "a touch target").toEqual([44, 44])
+    const alt = (await gallery.locator(".swiper-slide-active img").getAttribute("alt"))!
+    await whole.click()
+    const view = page.getByRole("dialog", { name: alt })
+    await expect(view).toBeVisible()
+    // The photo whole: its 4:5 drawn inside the screen, uncropped, and nothing around it but the backdrop.
+    const shown = await view.locator("img").evaluate((img: HTMLImageElement) => {
+      const box = img.getBoundingClientRect()
+      const s = getComputedStyle(img)
+      return { fit: s.objectFit, box: [box.width, box.height], natural: img.naturalWidth / img.naturalHeight, dialog: getComputedStyle(img.parentElement!).backgroundColor }
+    })
+    expect(shown.fit).toBe("contain")
+    expect(shown.box).toEqual([1280, 800])
+    expect(shown.natural).toBeCloseTo(0.8, 2)
+    expect(shown.dialog, "no surface around the photo").toBe("rgba(0, 0, 0, 0)")
+    const before = await shown_(gallery)
+    await page.keyboard.press("ArrowRight")
+    expect(await shown_(gallery), "the arrow keys move no gallery behind it").toBe(before)
+    await page.keyboard.press("Escape")
+    await expect(view).toBeHidden()
+    await expect(whole, "the focus comes back").toBeFocused()
+    await whole.click()
+    await view.getByRole("button", { name: "Fermer" }).click()
+    await expect(view).toBeHidden()
+    await gallery.locator(".ud-gallery-thumb").nth(2).click()
+    await expect(whole, "a cut-out is whole already").toBeHidden()
+  })
+}
+const shown_ = (gallery: Locator) => gallery.locator('.ud-gallery-thumb[aria-pressed="true"]').getAttribute("aria-label")
+
 // Boutique's move to v3.3.0, gap 4: every card's opening photo was fetched with the page. A gallery
 // without priority now waits until it is near; the page's main image is fetched at once, first.
 test("React gallery: a card's opening photo waits until it is near, the page's main image does not", async ({ page }) => {

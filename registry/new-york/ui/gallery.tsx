@@ -11,12 +11,14 @@ import {
   gallerySpeed,
   keepThumbInView,
   routeGalleryKeys,
+  showWhole,
+  watchTone,
   type GalleryMessages,
   type GalleryPhoto,
 } from "@/components/ui/gallery-core"
 import { cn } from "@/lib/utils"
 
-export type { GalleryMessages, GalleryPhoto } from "@/components/ui/gallery-core"
+export type { GalleryMessages, GalleryPhoto, GalleryTone } from "@/components/ui/gallery-core"
 
 export interface GalleryProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
   /** The photos, in order. A new set, such as another colour's, is a new gallery that opens on start. */
@@ -36,6 +38,9 @@ export interface GalleryProps extends Omit<React.HTMLAttributes<HTMLDivElement>,
 // React 18 knows the attribute only in lower case, React 19 only in camel case.
 const fetchPriority = React.version.startsWith("18.") ? "fetchpriority" : "fetchPriority"
 const useLayoutEffectOnClient = typeof window === "undefined" ? React.useEffect : React.useLayoutEffect
+// A covered photo says so on its slide and its thumbnail, which the skin fills; the default writes nothing.
+const fitOf = (photo: GalleryPhoto) => (photo.fit === "cover" ? "cover" : undefined)
+const focusOf = (photo: GalleryPhoto): React.CSSProperties | undefined => (photo.focus ? { objectPosition: photo.focus } : undefined)
 
 /**
  * A product's photos to swipe, with thumbnails named by their view (DESIGN.md "Showing photos").
@@ -67,9 +72,10 @@ const GallerySet = React.forwardRef<HTMLDivElement, GalleryProps>(
       if (!el || !root.current) return
       const speed = gallerySpeed(el.ownerDocument)
       smooth.current = Boolean(speed)
+      const words = GALLERY_MESSAGES[galleryLanguage(el.ownerDocument)]
       const made = new Swiper(el, {
         modules: [Navigation, Pagination, A11y],
-        ...galleryOptions(el, { messages: messages ?? GALLERY_MESSAGES[galleryLanguage(el.ownerDocument)], speed, start: opening }),
+        ...galleryOptions(el, { messages: messages ?? words, speed, start: opening }),
         on: {
           slideChange: (s) => {
             setShown(s.activeIndex)
@@ -80,8 +86,12 @@ const GallerySet = React.forwardRef<HTMLDivElement, GalleryProps>(
       })
       swiper.current = made
       const unroute = routeGalleryKeys(root.current, made)
+      const untone = watchTone(el, made)
+      const unwhole = showWhole(root.current, el, made, { whole: messages?.whole ?? words.whole, close: messages?.close ?? words.close })
       return () => {
         unroute()
+        untone()
+        unwhole()
         made.destroy(true, true)
         swiper.current = null
       }
@@ -112,7 +122,7 @@ const GallerySet = React.forwardRef<HTMLDivElement, GalleryProps>(
         <div ref={main} className="swiper ud-gallery-main">
           <div className="swiper-wrapper">
             {photos.map((photo, i) => (
-              <div key={i} className="swiper-slide">
+              <div key={i} className="swiper-slide" data-fit={fitOf(photo)}>
                 <img
                   src={photo.src}
                   srcSet={photo.srcSet}
@@ -124,6 +134,7 @@ const GallerySet = React.forwardRef<HTMLDivElement, GalleryProps>(
                   loading={i === opening && priority ? undefined : "lazy"}
                   decoding="async"
                   {...(i === opening && priority ? { [fetchPriority]: "high" } : {})}
+                  style={focusOf(photo)}
                 />
               </div>
             ))}
@@ -135,8 +146,8 @@ const GallerySet = React.forwardRef<HTMLDivElement, GalleryProps>(
         {photos.length > 1 ? (
           <div ref={row} className="ud-gallery-thumbs">
             {photos.map((photo, i) => (
-              <button key={i} type="button" className="ud-gallery-thumb" aria-label={photo.label ?? `Photo ${i + 1}`} aria-pressed={i === shown} onClick={() => swiper.current?.slideTo(i)}>
-                <img src={photo.thumb ?? photo.src} alt="" loading="lazy" decoding="async" />
+              <button key={i} type="button" className="ud-gallery-thumb" data-fit={fitOf(photo)} aria-label={photo.label ?? `Photo ${i + 1}`} aria-pressed={i === shown} onClick={() => swiper.current?.slideTo(i)}>
+                <img src={photo.thumb ?? photo.src} alt="" loading="lazy" decoding="async" style={focusOf(photo)} />
               </button>
             ))}
           </div>

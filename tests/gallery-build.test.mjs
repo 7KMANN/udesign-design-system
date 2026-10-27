@@ -30,7 +30,7 @@ function page(body, { lang = "fr-CA", script = built } = {}) {
   window.eval(`window.Swiper = class {
     constructor(el, options) { this.el = el; this.options = options; this.slides = [...el.querySelectorAll('.swiper-slide')]; this.wrapperEl = el.querySelector('.swiper-wrapper'); this.activeIndex = options.initialSlide; this.moves = []; window.made.push(this) }
     slideNext() { this.moves.push('next') } slidePrev() { this.moves.push('prev') } slideTo(i) { this.activeIndex = i; this.options.on.slideChange() }
-    update() {} destroy() { this.destroyed = true }
+    update() {} destroy() { this.destroyed = true } on() {} off() {}
   }`)
   window.eval(script)
   return window
@@ -51,6 +51,26 @@ test("writes UDesign Pages' markup: copies, an alt per photo, thumbnails named b
   assert.ok(two.includes('<img src="a-160.webp" alt="" loading="lazy">'), "the thumbnail is the small copy")
   assert.ok(two.includes('<img src="b.jpg" alt="Tee" draggable="false" loading="lazy">'))
   assert.ok(markupOf(window, ['a"b.jpg'], "<x>").includes('src="a&quot;b.jpg" alt="&lt;x&gt;"'))
+})
+
+test("marks a covered photo and its focus on its slide and its thumbnail, and writes nothing for the default", () => {
+  const window = page("")
+  const html = markupOf(window, [{ src: "a.jpg", fit: "cover", focus: "50% 20%" }, { src: "b.jpg", fit: "contain" }, "c.jpg"], "Tee", 0)
+  assert.ok(html.includes('<div class="swiper-slide" data-fit="cover"><img src="a.jpg" alt="Tee" draggable="false" style="object-position: 50% 20%"></div>'))
+  assert.ok(html.includes('<button type="button" class="ud-gallery-thumb" data-fit="cover" aria-label="Photo 1" aria-pressed="true"><img src="a.jpg" alt="" style="object-position: 50% 20%" loading="lazy"></button>'))
+  assert.ok(html.includes('<div class="swiper-slide"><img src="b.jpg" alt="Tee" draggable="false" loading="lazy"></div>'), "contain, the default, is UDesign Pages' markup")
+  assert.equal(html.match(/data-fit/g).length, 2)
+  assert.ok(markupOf(window, [{ src: "a.jpg", fit: "cover", focus: '0" onload="x' }], "Tee").includes('style="object-position: 0&quot; onload=&quot;x"'))
+})
+
+test("adds the whole-photo button at mount, shown on a covered photo, named in the document's words", () => {
+  const markup = (start) => page("").udGallery.markup([{ src: "a.jpg", fit: "cover" }, "b.jpg"], "Tee", start)
+  const window = page(`<div id="covered">${markup(0)}</div><div id="whole">${markup(1)}</div>`)
+  const button = (id) => window.document.querySelector(`#${id} .ud-gallery-main > .ud-gallery-whole`)
+  assert.equal(button("covered").getAttribute("aria-label"), "Voir la photo entière")
+  assert.equal(button("covered").hidden, false)
+  assert.equal(button("whole").hidden, true, "a contained photo is whole already")
+  assert.ok(!markup(0).includes("ud-gallery-whole"), "the markup stays UDesign Pages': the button is made at mount")
 })
 
 test("mounts every gallery in the page with Swiper's keyboard off and the document's words", () => {
@@ -113,7 +133,7 @@ test("never moves a gallery behind a modal, though the pointer last rested on it
     const doc = window.document
     const [one, two] = window.made
     const outside = doc.getElementById("one")
-    const button = doc.querySelector("button:not(.ud-gallery-thumb):not([class^='swiper'])")
+    const button = doc.querySelector("button:not(.ud-gallery-thumb):not(.ud-gallery-whole):not([class^='swiper'])")
     const key = (target) => target.dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true, composed: true }))
     outside.querySelector(".ud-gallery").dispatchEvent(new window.Event("pointerenter"))
     outside.setAttribute("aria-hidden", "true")

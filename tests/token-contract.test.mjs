@@ -50,7 +50,7 @@ function assertReferencesResolve(tree, label) {
 }
 
 const semanticVariables = [
-  '--popover', '--popover-foreground', '--backdrop', '--accent', '--accent-foreground',
+  '--popover', '--popover-foreground', '--backdrop', '--on-dark-photo', '--on-light-photo', '--accent', '--accent-foreground',
   '--input', '--destructive-foreground', '--sidebar', '--sidebar-foreground',
   '--sidebar-primary', '--sidebar-primary-foreground', '--sidebar-accent',
   '--sidebar-accent-foreground', '--sidebar-border', '--sidebar-ring', '--border',

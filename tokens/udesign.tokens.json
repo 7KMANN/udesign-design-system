@@ -49,6 +49,8 @@
     "popover":           { "$value": "{color.white}" },
     "popover-foreground":{ "$value": "{color.ink}" },
     "backdrop":          { "$description": "Theme-stable modal scrim base.", "$value": "{color.ink}" },
+    "on-dark-photo":     { "$description": "Theme-stable mark over a dark photo, such as a gallery's dots: what reads on the photo, not on the theme.", "$value": "{color.white}" },
+    "on-light-photo":    { "$description": "Theme-stable mark over a light photo, such as a gallery's dots.", "$value": "{color.ink}" },
     "primary":           { "$value": "{color.accent.base}" },
     "primary-foreground":{ "$value": "{color.ink}" },
     "primary-hover":     { "$value": "{color.accent.deep}" },

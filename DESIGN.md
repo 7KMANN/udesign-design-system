@@ -237,6 +237,8 @@ Use `--surface-raised`, `--surface-sunken`, `--surface-overlay`, and `--surface-
 
 `--backdrop` is the theme-stable scrim base behind dialogs and sheets. Apply opacity to the dedicated overlay element. Do not derive a scrim from `--foreground`, which becomes light in dark themes.
 
+`--on-dark-photo` (white) and `--on-light-photo` (ink) are the theme-stable marks over a photo, such as a gallery's dots: they answer the photo under them, not the theme, so a dark theme keeps ink dots on a light photo. `APPROVED 2026-10-27 D-63`
+
 Profile and theme determine the visual treatment. Component code selects only the intent.
 
 ## Interaction states
@@ -460,6 +462,9 @@ One gallery shows a product's photos everywhere: the registry `Gallery` (`galler
 
 - Every photo comes in copies with their widths (`srcSet`, such as 160, 640 and 1200px) for the slide's width (`sizes`), with its own alt text ("Front, Heavy Tee, White"), and its thumbnail is named by its view ("Front", "Back"). In the registry `Gallery`, every photo waits until it is near, the opening one too, so a page of cards never fetches every card's photo at once; `priority` loads the page's main image at once and fetches it first. `dist/ud-gallery.js` writes UDesign Pages' markup, byte for byte as its generator does: its opening photo loads at once and the others wait, since a product page's gallery sits at the top. `APPROVED 2026-10-27 D-61`
 - Nothing moves while it opens: the square slide and the thumbnail row hold their room before Swiper starts, and another set of photos, such as another colour's, opens in the same box on its first photo.
+- A photo with a background of its own fills the square edge to edge, and so does its thumbnail: `fit: "cover"` (static: `data-fit="cover"` on its slide and its thumbnail). In the card's margin it would sit as a box with the card around it. It is cropped to the square and keeps its `focus`, a CSS object-position (the centre by default; "50% 20%" keeps the top). A cut-out, such as a mockup on a transparent background, keeps the default, `contain`: all of it, inside the margin, on the card. Which photo is which is the page's to say: the gallery never guesses. `APPROVED 2026-10-27 D-63`
+- Over a covered photo the dots take the colour that reads on what most of the photo under them is: white (`--on-dark-photo`) on a dark photo, ink (`--on-light-photo`) on a light one, read from the photo once it has loaded (`data-tone` on `.ud-gallery-main`). On the card they keep the theme's. A photo from another origin without CORS cannot be read and keeps the theme's dots. `APPROVED 2026-10-27 D-63`
+- A covered photo can be seen whole, since the square crops it: a quiet button in the square's top corner ("Voir la photo entière", a small disc of the card in a touch target, shown only on a covered photo) opens it as it is, the whole photo as large as the screen allows, over the backdrop, with nothing around it but a button to close. It opens at once on the copy the slide shows and takes the widest copy once loaded. Escape, a click anywhere and the close button close it; the focus comes back to the button. `APPROVED 2026-10-27 D-63`
 - The photo moves on `--motion-duration-standard`, at once under reduced motion. The dots report the position; a swipe, the arrows on a mouse, the thumbnails and the arrow keys move it.
 - The arrow keys move only the gallery that has the focus, else the one under the pointer, never every gallery on screen, and Page Up and Page Down scroll the page. A widget that handles the arrows itself, such as `ChoiceGroup`, stops them before a gallery sees them. `APPROVED 2026-10-26 D-55`
 

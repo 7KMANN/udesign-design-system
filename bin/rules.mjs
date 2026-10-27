@@ -31,7 +31,7 @@ const PRIMITIVES = /(?:^|[\\/])(?:components[\\/]ui|registry[\\/][\w-]+[\\/]ui)[
 // The static classes of dist/tokens.css that carry their own :active rule. Only these lend a
 // primitive its press, not any ud- class (tests/checker.test.mjs keeps the list in step with
 // css/components.css).
-export const PRESSED_CLASSES = ['ud-btn', 'ud-pressable', 'ud-gallery-thumb'];
+export const PRESSED_CLASSES = ['ud-btn', 'ud-pressable', 'ud-gallery-thumb', 'ud-gallery-whole', 'ud-gallery-view-close'];
 const WEARS_PRESS = new RegExp(`className=\\{?(?:cn\\()?\\s*["'\`][^"'\`]*(?<![\\w-])(?:${PRESSED_CLASSES.join('|')})(?![\\w-])`);
 
 const OPERATIONS = /^operations$/;

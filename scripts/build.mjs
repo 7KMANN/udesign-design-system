@@ -47,6 +47,8 @@ const ROLE_VAR = {
   popover: '--popover',
   'popover-foreground': '--popover-foreground',
   backdrop: '--backdrop',
+  'on-dark-photo': '--on-dark-photo',
+  'on-light-photo': '--on-light-photo',
   primary: '--primary',
   'primary-foreground': '--primary-foreground',
   'primary-hover': '--primary-hover',
