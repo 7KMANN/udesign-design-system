@@ -84,19 +84,20 @@ interface Routed {
 const routes = new Map<Document, Set<Routed>>()
 
 // A key a field or another widget handles is not the gallery's.
-function typing(el: Element | null): boolean {
-  return Boolean(el && ((el as HTMLElement).isContentEditable || /^(input|textarea|select)$/i.test(el.nodeName)))
+function typing(el: EventTarget | undefined): boolean {
+  const node = el as HTMLElement | undefined
+  return Boolean(node && (node.isContentEditable || /^(input|textarea|select)$/i.test(node.nodeName ?? "")))
 }
 
 function route(event: KeyboardEvent): void {
   if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
   if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return
-  const doc = event.currentTarget as Document
-  const active = doc.activeElement
-  if (typing(active)) return
-  const galleries = [...(routes.get(doc) ?? [])]
+  // Where the key went, through any shadow root: the document sees only the host as its focus.
+  const path = event.composedPath()
+  if (typing(path[0])) return
+  const galleries = [...(routes.get(event.currentTarget as Document) ?? [])]
   // The gallery that has the focus, else the one under the pointer; never every gallery on screen.
-  const target = galleries.find((g) => active !== null && g.root.contains(active)) ?? galleries.find((g) => g.pointer)
+  const target = galleries.find((g) => path.includes(g.root)) ?? galleries.find((g) => g.pointer)
   if (!target || target.swiper.destroyed) return
   event.preventDefault()
   const forward = (event.key === "ArrowRight") !== Boolean(target.swiper.rtlTranslate)
@@ -128,7 +129,11 @@ export function routeGalleryKeys(root: HTMLElement, swiper: Swiper): () => void 
     doc.addEventListener("keydown", route)
   }
   galleries.add(entry)
+  let done = false
   return () => {
+    // Once only: a second call would find the document's current set gone and drop its listener.
+    if (done) return
+    done = true
     root.removeEventListener("pointerenter", enter)
     root.removeEventListener("pointerleave", leave)
     galleries.delete(entry)

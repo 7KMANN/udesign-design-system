@@ -102,17 +102,18 @@ on screen; Page Up and Page Down scroll the page. */
 	}
 	var routes = /* @__PURE__ */ new Map();
 	function typing(el) {
-		return Boolean(el && (el.isContentEditable || /^(input|textarea|select)$/i.test(el.nodeName)));
+		var _node$nodeName;
+		const node = el;
+		return Boolean(node && (node.isContentEditable || /^(input|textarea|select)$/i.test((_node$nodeName = node.nodeName) !== null && _node$nodeName !== void 0 ? _node$nodeName : "")));
 	}
 	function route(event) {
 		var _routes$get, _galleries$find;
 		if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
 		if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-		const doc = event.currentTarget;
-		const active = doc.activeElement;
-		if (typing(active)) return;
-		const galleries = [...(_routes$get = routes.get(doc)) !== null && _routes$get !== void 0 ? _routes$get : []];
-		const target = (_galleries$find = galleries.find((g) => active !== null && g.root.contains(active))) !== null && _galleries$find !== void 0 ? _galleries$find : galleries.find((g) => g.pointer);
+		const path = event.composedPath();
+		if (typing(path[0])) return;
+		const galleries = [...(_routes$get = routes.get(event.currentTarget)) !== null && _routes$get !== void 0 ? _routes$get : []];
+		const target = (_galleries$find = galleries.find((g) => path.includes(g.root))) !== null && _galleries$find !== void 0 ? _galleries$find : galleries.find((g) => g.pointer);
 		if (!target || target.swiper.destroyed) return;
 		event.preventDefault();
 		if (event.key === "ArrowRight" !== Boolean(target.swiper.rtlTranslate)) target.swiper.slideNext();
@@ -146,7 +147,10 @@ on screen; Page Up and Page Down scroll the page. */
 			doc.addEventListener("keydown", route);
 		}
 		galleries.add(entry);
+		let done = false;
 		return () => {
+			if (done) return;
+			done = true;
 			root.removeEventListener("pointerenter", enter);
 			root.removeEventListener("pointerleave", leave);
 			galleries.delete(entry);
@@ -212,6 +216,7 @@ on screen; Page Up and Page Down scroll the page. */
 			on: { slideChange: () => sync() }
 		});
 		const unroute = routeGalleryKeys(el, swiper);
+		let gone = false;
 		sync();
 		const mounted = {
 			swiper,
@@ -240,9 +245,11 @@ on screen; Page Up and Page Down scroll the page. */
 				sync();
 			},
 			destroy() {
+				if (gone) return;
+				gone = true;
 				unroute();
 				swiper.destroy(true, true);
-				delete el.udGallery;
+				if (el.udGallery === mounted) delete el.udGallery;
 			}
 		};
 		el.udGallery = mounted;

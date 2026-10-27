@@ -29,7 +29,7 @@ export interface GalleryProps extends Omit<React.HTMLAttributes<HTMLDivElement>,
   priority?: boolean
   /** Screen-reader words. By default the document's language: English when <html lang> starts with "en", else French. */
   messages?: GalleryMessages
-  /** Called with the index of the photo shown, after a swipe, a key, an arrow or a thumbnail. */
+  /** Called with the index of the photo shown once it moves: a swipe, a key, an arrow, a thumbnail or another start. Not for the photo it opens on. */
   onShow?: (index: number) => void
 }
 
@@ -73,7 +73,8 @@ const GallerySet = React.forwardRef<HTMLDivElement, GalleryProps>(
         on: {
           slideChange: (s) => {
             setShown(s.activeIndex)
-            onShowLatest.current?.(s.activeIndex)
+            // Swiper reports the photo it opens on while it starts: that is not a move.
+            if (s.initialized) onShowLatest.current?.(s.activeIndex)
           },
         },
       })

@@ -89,6 +89,53 @@ test("moves the gallery in focus, else the one under the pointer, and leaves Pag
   assert.deepEqual(moves(), ["prev", "next"], "a field keeps its arrows")
 })
 
+// Review M1: the document sees a shadow root's host as the focus, not the field inside it.
+test("leaves its arrows to a field inside a shadow root, the pointer resting on a gallery", () => {
+  const window = page(page("").udGallery.markup(["a.jpg", "b.jpg"], "Tee", 0) + '<div id="host"></div>')
+  const shadow = window.document.getElementById("host").attachShadow({ mode: "open" })
+  shadow.innerHTML = '<input aria-label="Nom" value="Tee">'
+  const field = shadow.querySelector("input")
+  window.document.querySelector(".ud-gallery").dispatchEvent(new window.Event("pointerenter"))
+  field.focus()
+  const event = new window.KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, composed: true, cancelable: true })
+  field.dispatchEvent(event)
+  assert.equal(window.made[0].moves.join(","), "", "the gallery stays")
+  assert.equal(event.defaultPrevented, false, "the caret moves")
+})
+
+// Review M10: a gallery that is gone, the pointer last over it, must not keep the keys from the others.
+test("a destroyed gallery leaves the keys to the others", () => {
+  const html = (id) => `<div id="${id}">` + page("").udGallery.markup(["a.jpg", "b.jpg"], "Tee", 0) + "</div>"
+  const window = page(html("one") + html("two"))
+  const [, two] = window.made
+  const [first, second] = [...window.document.querySelectorAll(".ud-gallery")]
+  first.dispatchEvent(new window.Event("pointerenter"))
+  first.udGallery.destroy()
+  first.remove() // a node taken out of the page hears no pointerleave
+  second.dispatchEvent(new window.Event("pointerenter"))
+  window.document.body.dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true }))
+  assert.equal(two.moves.join(","), "next")
+})
+
+// Review M2: UDesign Pages' destroy tolerated a second call; a stale handle must not undo what replaced it.
+test("destroy is safe to call twice, even after another gallery mounts", () => {
+  const html = (id) => `<div id="${id}">` + page("").udGallery.markup(["a.jpg", "b.jpg"], "Tee", 0) + "</div>"
+  const window = page(html("one"))
+  const el = window.document.querySelector("#one .ud-gallery")
+  const stale = el.udGallery
+  stale.destroy()
+  window.document.body.insertAdjacentHTML("beforeend", html("two"))
+  const other = window.document.querySelector("#two .ud-gallery")
+  window.udGallery(other)
+  const again = window.udGallery(el)
+  stale.destroy()
+  assert.equal(el.udGallery, again, "the gallery mounted again keeps its handle")
+  assert.notEqual(again.swiper.destroyed, true)
+  other.dispatchEvent(new window.Event("pointerenter"))
+  window.document.body.dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true }))
+  assert.equal(window.made[1].moves.join(","), "next", "the keys still reach the other gallery")
+})
+
 test("keeps the thumbnails in step and its API: show, setPhotos, destroy", () => {
   const window = page(page("").udGallery.markup(["https://example.test/a.jpg", "https://example.test/b.jpg"], "Tee", 0, ["Devant", "Dos"]))
   const el = window.document.querySelector(".ud-gallery")

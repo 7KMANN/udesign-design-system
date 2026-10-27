@@ -4,7 +4,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
 import { Gallery, type GalleryPhoto } from "@/components/ui/gallery"
-import { GALLERY_MESSAGES, galleryOptions } from "@/components/ui/gallery-core"
+import { GALLERY_MESSAGES, galleryOptions, routeGalleryKeys } from "@/components/ui/gallery-core"
 
 // jsdom lays nothing out, so Swiper measures 0 and never slides here: what a gallery shows and how
 // the keys reach it are measured in Chromium (tests/e2e/components.spec.ts). This holds the markup,
@@ -138,5 +138,57 @@ describe("the gallery's keys", () => {
     act(() => screen.getByRole("radio", { name: "M" }).focus())
     fireEvent.keyDown(screen.getByRole("radio", { name: "M" }), { key: "ArrowRight" })
     expect(moved).toBe(0)
+  })
+
+  // Review M10: an unmounted gallery the pointer last rested on must not keep the keys from the others.
+  it("leaves the keys to the others once a gallery unmounts", () => {
+    const b = <Gallery key="b" data-testid="b" photos={photos("Cap", ["Front", "Side"])} />
+    const { rerender } = render(
+      <main>
+        <Gallery key="a" data-testid="a" photos={photos("Tee", ["Front", "Back"])} />
+        {b}
+      </main>,
+    )
+    const moved: string[] = []
+    const swiper = (screen.getByTestId("b").querySelector(".swiper") as HTMLElement & { swiper: { slideNext: () => void } }).swiper
+    swiper.slideNext = () => moved.push("b next")
+    fireEvent.pointerEnter(screen.getByTestId("a"))
+    rerender(<main>{b}</main>)
+    fireEvent.pointerEnter(screen.getByTestId("b"))
+    fireEvent.keyDown(document.body, { key: "ArrowRight" })
+    expect(moved).toEqual(["b next"])
+  })
+
+  // Review M2: undoing a route twice must not drop the listener another gallery now shares.
+  it("undoes a route once, however often it is called", () => {
+    const [a, b] = [document.createElement("div"), document.createElement("div")]
+    document.body.append(a, b)
+    const moved: string[] = []
+    const fake = (id: string) => ({ destroyed: false, rtlTranslate: false, slideNext: () => moved.push(`${id} next`), slidePrev: () => moved.push(`${id} prev`) }) as unknown as Parameters<typeof routeGalleryKeys>[1]
+    const undoA = routeGalleryKeys(a, fake("a"))
+    undoA()
+    const undoB = routeGalleryKeys(b, fake("b"))
+    undoA()
+    fireEvent.pointerEnter(b)
+    fireEvent.keyDown(document.body, { key: "ArrowRight" })
+    expect(moved).toEqual(["b next"])
+    undoB()
+    a.remove()
+    b.remove()
+  })
+})
+
+// Review M8: Swiper reports the photo a gallery opens on while it starts; that is not a move.
+describe("onShow", () => {
+  it("is called for a move, not for the photo the gallery opens on, under StrictMode too", () => {
+    const shown: number[] = []
+    const { container } = render(
+      <React.StrictMode>
+        <Gallery photos={photos("Tee", ["Front", "Back", "Side"])} start={2} onShow={(i) => shown.push(i)} />
+      </React.StrictMode>,
+    )
+    expect(shown, "opening on the third photo").toEqual([])
+    act(() => (container.querySelector(".ud-gallery-thumb") as HTMLElement).click())
+    expect(shown).toEqual([0])
   })
 })

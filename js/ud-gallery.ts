@@ -131,6 +131,7 @@ function mount(el: GalleryElement): Mounted {
     on: { slideChange: () => sync() },
   })
   const unroute = routeGalleryKeys(el, swiper)
+  let gone = false
   sync()
 
   const mounted: Mounted = {
@@ -160,9 +161,12 @@ function mount(el: GalleryElement): Mounted {
       sync()
     },
     destroy() {
+      // Safe twice, as UDesign Pages' was: a stale handle must not undo a gallery mounted since.
+      if (gone) return
+      gone = true
       unroute()
       swiper!.destroy(true, true)
-      delete el.udGallery
+      if (el.udGallery === mounted) delete el.udGallery
     },
   }
   el.udGallery = mounted
