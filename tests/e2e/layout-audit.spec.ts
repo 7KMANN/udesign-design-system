@@ -197,8 +197,10 @@ test("static header and footer: one row a touch target high with or without the 
 })
 
 // D-56: a short head and its first band meet at --space-8 on each side, about 64px at every
-// width, where two full paddings made 129px on a desktop.
-for (const viewport of viewports) {
+// width, where two full paddings made 129px on a desktop. A full padding is clamp(32px, 8vw, 64px):
+// 32px on a phone as well, so the 600px run (48px) is the one that shows a phone-sized edge.
+const edges = [viewports[0], { name: "600px", width: 600, height: 900 }, viewports[1]]
+for (const viewport of edges) {
   test(`presentation reference screen, ${viewport.name}: the head meets its first band at 64px`, async ({ page }) => {
     await page.setViewportSize(viewport)
     await page.goto("/examples.html?screen=presentation")
@@ -213,7 +215,7 @@ for (const viewport of viewports) {
 }
 
 test("static sections: a compact edge is --space-8 at every width", async ({ page }) => {
-  for (const width of [375, 1440]) {
+  for (const width of [375, 600, 1440]) {
     await page.setViewportSize({ width, height: 900 })
     await page.goto("/examples.html")
     await page.setContent(`<!doctype html><html data-design="presentation"><head><link rel="stylesheet" href="/dist/tokens.css"></head>
@@ -221,7 +223,7 @@ test("static sections: a compact edge is --space-8 at every width", async ({ pag
       <section class="ud-page-section ud-page-section-band ud-page-section-compact-top" id="band"><h2 class="ud-h2">Articles</h2></section></body></html>`, { waitUntil: "load" })
     const padding = (id: string, side: string) => page.locator(`#${id}`).evaluate((el, s) => parseFloat(getComputedStyle(el).getPropertyValue(`padding-${s}`)), side)
     expect([await padding("head", "bottom"), await padding("band", "top")], `${width}px`).toEqual([32, 32])
-    expect(await padding("head", "top"), "the other edge keeps the full padding").toBeCloseTo(width < 800 ? 32 : 64, 0)
+    expect(await padding("head", "top"), "the other edge keeps the full padding").toBeCloseTo(Math.min(Math.max(32, width * 0.08), 64), 0)
   }
 })
 
