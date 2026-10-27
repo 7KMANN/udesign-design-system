@@ -127,7 +127,7 @@ The direct tagged URL works without the namespace only for an item that uses no 
 npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.3.0/public/r/core.json
 ```
 
-Without the namespace, adding an item that uses another stops before it writes a file. shadcn looks `@udesign` up in its public directory of registries, finds none, and ends with `Unknown registry "@udesign". Make sure it is defined in components.json`, followed by the `registries` block to add. shadcn 3.5.0 stops one step earlier today, on `Failed to parse registries index`, because that directory changed format. Either way, add the namespace above and run the command again. Set it yourself rather than leaving it to that directory: shadcn writes into `components.json` whatever registry the directory lists under a missing name, and UDesign's is not listed there.
+Without the namespace, adding an item that uses another makes shadcn look `@udesign` up in its public directory of registries. Where the directory lists none, the install stops before it writes a file, with `Unknown registry "@udesign". Make sure it is defined in components.json` and the `registries` block to add: add the namespace above and run the command again. Where the directory lists one, shadcn writes that registry into `components.json` and takes the item's dependencies from it, whoever publishes it. So set the namespace yourself before you add an item: the tag you choose is then the release you get. The install test holds both cases against a stand-in for the directory.
 
 Available base items:
 

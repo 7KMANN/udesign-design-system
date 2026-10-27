@@ -14,6 +14,8 @@ const fixture = fs.mkdtempSync(path.join(os.tmpdir(), "udesign-registry-"))
 const bare = fs.mkdtempSync(path.join(os.tmpdir(), "udesign-registry-bare-"))
 let server
 const served = new Set()
+const asked = []
+let elsewhere = () => ""
 const expectedFiles = [
   "button",
   "badge",
@@ -100,9 +102,12 @@ const text = (file) => fs.readFileSync(file, "utf8").replaceAll("\r\n", "\n")
 try {
   // Every item this release builds, as a consumer's @udesign namespace would serve it.
   server = http.createServer((request, response) => {
-    // A public directory of registries that lists no @udesign, for the run that asks shadcn to look there.
-    if (request.url === "/registries.json") {
-      response.writeHead(200, { "content-type": "application/json" }).end("{}")
+    asked.push(request.url ?? "")
+    // Stand-ins for shadcn's public directory of registries, so no run reaches the live one: one
+    // lists no @udesign, the other lists one at a registry that holds nothing.
+    const directory = { "/registries.json": {}, "/listed/registries.json": { "@udesign": elsewhere() } }[request.url ?? ""]
+    if (directory) {
+      response.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify(directory))
       return
     }
     const item = /^\/([a-z-]+)\.json$/.exec(request.url ?? "")?.[1]
@@ -120,6 +125,7 @@ try {
   const address = server.address()
   assert.ok(address && typeof address === "object", "registry test server did not bind")
   const registry = `http://127.0.0.1:${address.port}`
+  elsewhere = () => `${registry}/elsewhere/{name}.json`
 
   application(fixture, { "@udesign": `${registry}/{name}.json` })
   application(bare, {})
@@ -171,21 +177,24 @@ try {
     }
   }
 
-  // Without the namespace, an item that uses another stops before writing anything. shadcn first
-  // looks @udesign up in its public directory of registries: against a directory that lists none it
-  // names the namespace to add; against today's directory, 3.5.0 stops on its format instead. The
-  // README's install section says both.
+  // Without the namespace, an item that uses another makes shadcn look @udesign up in its public
+  // directory of registries, here a stand-in (REGISTRY_URL), so the runs are offline and the same each
+  // time. The README's install section says both outcomes.
   const output = (error) => `${error.stdout}${error.stderr}`
+  // A directory that lists none: the install stops before writing a file, and names the namespace.
   await assert.rejects(
     shadcn(["add", `${registry}/alert.json`, "--cwd", bare, "--yes"], { REGISTRY_URL: registry }),
     (error) => /Unknown registry "@udesign"/.test(output(error)),
     "an unconfigured @udesign must stop the install and name the namespace",
   )
-  await assert.rejects(
-    shadcn(["add", `${registry}/alert.json`, "--cwd", bare, "--yes"]),
-    (error) => /registr/i.test(output(error)),
-    "an unconfigured @udesign must stop the install against the public directory too",
-  )
+  assert.ok(!fs.existsSync(path.join(bare, "components")), "a stopped install must not write a file")
+  // A directory that lists one, whoever runs it: shadcn writes it into components.json and asks it for
+  // the item's badge. This one holds nothing, so the install stops after the write.
+  asked.length = 0
+  await assert.rejects(shadcn(["add", `${registry}/alert.json`, "--cwd", bare, "--yes"], { REGISTRY_URL: `${registry}/listed` }))
+  const written = JSON.parse(fs.readFileSync(path.join(bare, "components.json"), "utf8"))
+  assert.equal(written.registries?.["@udesign"], elsewhere(), "shadcn writes the directory's @udesign into components.json")
+  assert.ok(asked.includes("/elsewhere/badge.json"), `the badge must be asked of the directory's registry; asked: ${asked.join(", ")}`)
   assert.ok(!fs.existsSync(path.join(bare, "components")), "a stopped install must not write a file")
 
   // The gallery: two files into components/ui, its import of the core rewritten to the alias,
