@@ -835,6 +835,12 @@ textarea.ud-input { height: auto; min-height: 6rem; }
   padding-inline: calc(max(0px, (100% - 72rem) / 2) + var(--content-gutter-mobile));
   border-top: 1px solid var(--border);
 }
+/* One rule above the footer (D-60): after a band that ends the page, the band's border is the rule.
+   The band ends main (UDesign Pages' condition), ends main's last block, or sits right before the
+   footer. */
+.ud-page-section-band + .ud-contact-footer,
+main:has(> .ud-page-section-band:last-child) + .ud-contact-footer,
+main:has(> :last-child > .ud-page-section-band:last-child) + .ud-contact-footer { border-top: 0; }
 .ud-contact-footer > * { margin: 0; }
 .ud-contact-footer a {
   display: inline-flex;

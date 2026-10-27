@@ -575,6 +575,27 @@ describe("UDesign page shells", () => {
     expect(screen.getByRole("contentinfo").textContent).toBe("Entreprise exemple")
   })
 
+  // D-60: one rule above the footer. A band marks itself, and the footer drops its own rule after a
+  // band that ends the page (Chromium measures it in tests/e2e/layout-audit.spec.ts).
+  it("marks a band, and leaves the footer's rule to a band that ends the page", () => {
+    const { container } = render(
+      <>
+        <PageSection>Champ</PageSection>
+        <PageSection variant="band">Bande</PageSection>
+        <ContactFooter address="Entreprise exemple" />
+      </>,
+    )
+    const [canvas, band] = [...container.querySelectorAll("section")]
+    expect(canvas).not.toHaveAttribute("data-band")
+    expect(band).toHaveAttribute("data-band", "")
+    expect(screen.getByRole("contentinfo")).toHaveClass(
+      "border-t",
+      "[[data-band]+&]:border-t-0",
+      "[main:has(>[data-band]:last-child)+&]:border-t-0",
+      "[main:has(>:last-child>[data-band]:last-child)+&]:border-t-0",
+    )
+  })
+
   it("marks a numeric table column so each profile can render its figures", () => {
     render(
       <Table>

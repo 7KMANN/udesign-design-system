@@ -5,6 +5,7 @@ import { ChoiceGroup } from '@/components/ui/choice-group';
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from '@/components/ui/description-list';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Gallery, type GalleryPhoto } from '@/components/ui/gallery';
+import { ContactFooter, PageCanvas, PageSection } from '@/components/ui/page-canvas';
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import './index.css';
 
@@ -155,7 +156,29 @@ function Specs() {
   );
 }
 
-const fixtures: Record<string, React.ComponentType> = { choices: Choices, 'choices-phone': ChoicesPhone, 'choice-dialog': ChoiceDialog, galleries: Galleries, specs: Specs };
+// A page's last section and its contact footer, as ?fixture=footer&end= sets them: a band ending main,
+// a band ending main's last block (an article), a band right before the footer, or the page field.
+function Footer() {
+  const end = new URLSearchParams(location.search).get('end') ?? 'canvas';
+  const band = <PageSection variant="band"><h2 className="ud-h2">Articles</h2></PageSection>;
+  const canvas = <PageSection><h2 className="ud-h2">Suivi</h2></PageSection>;
+  const footer = <ContactFooter data-testid="footer" address="Entreprise exemple" phone={{ label: '819 555-0100', href: 'tel:+18195550100' }} />;
+  return (
+    <PageCanvas>
+      {end === 'sibling' ? (
+        <>{canvas}{band}</>
+      ) : (
+        <main>
+          {canvas}
+          {end === 'band' ? band : end === 'nested' ? <article>{canvas}{band}</article> : canvas}
+        </main>
+      )}
+      {footer}
+    </PageCanvas>
+  );
+}
+
+const fixtures: Record<string, React.ComponentType> = { choices: Choices, footer: Footer, 'choices-phone': ChoicesPhone, 'choice-dialog': ChoiceDialog, galleries: Galleries, specs: Specs };
 const Fixture = fixtures[new URLSearchParams(location.search).get('fixture') ?? ''] ?? (() => <p>Unknown fixture</p>);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

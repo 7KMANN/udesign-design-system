@@ -38,6 +38,8 @@ const PageSection = React.forwardRef<HTMLElement, PageSectionProps>(
   ({ children, className, compact, variant = "canvas", ...props }, ref) => (
     <section
       ref={ref}
+      // ContactFooter reads data-band: a page that ends with a band keeps one rule, the band's.
+      data-band={variant === "band" ? "" : undefined}
       className={cn(
         sectionPadding[compact ?? "none"],
         variant === "band" && "border-y border-[var(--border)] bg-[var(--card)]",
@@ -86,10 +88,16 @@ export interface ContactFooterProps extends React.HTMLAttributes<HTMLElement> {
 
 // The end of a presentation page (D-53): the business's public contact over a hairline, on the
 // sections' column. The phone and the email are links a thumb can reach, with a press and a ring.
+// One rule above it (D-60): after a band that ends the page, the band's border is the rule, so the
+// footer draws none. The band ends main (UDesign Pages' condition), ends main's last block, or sits
+// right before the footer. Whole class names, so Tailwind finds each one.
+const afterBand =
+  "[[data-band]+&]:border-t-0 [main:has(>[data-band]:last-child)+&]:border-t-0 [main:has(>:last-child>[data-band]:last-child)+&]:border-t-0"
+
 const ContactFooter = React.forwardRef<HTMLElement, ContactFooterProps>(({ address, className, email, phone, ...props }, ref) => {
   const links = [phone, email].filter((link): link is ContactLink => Boolean(link))
   return (
-    <footer ref={ref} className={cn("border-t border-[var(--border)] py-[clamp(var(--space-4),4vw,var(--space-6))]", className)} {...props}>
+    <footer ref={ref} className={cn("border-t border-[var(--border)] py-[clamp(var(--space-4),4vw,var(--space-6))]", afterBand, className)} {...props}>
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-6 px-[var(--content-gutter-mobile)] sm:px-[var(--space-8)]">
         <p className="ud-label">{address}</p>
         {links.length ? (

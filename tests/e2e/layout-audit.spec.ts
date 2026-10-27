@@ -196,6 +196,39 @@ test("static header and footer: one row a touch target high with or without the 
   expect(await height('a[href^="tel:"]')).toBeGreaterThanOrEqual(44)
 })
 
+// D-60: one rule above the footer. A page that ends with a band keeps the band's bottom border and
+// the footer draws none of its own, where it drew a second (Boutique's move to v3.3.0, gap 1). The
+// band ends main (UDesign Pages' condition), ends main's last block (Boutique's article), or sits
+// right before the footer; a page that ends on its field keeps the footer's rule.
+const pageEnds = [["band", 0], ["nested", 0], ["sibling", 0], ["canvas", 1]] as const
+const borderTop = (el: Element) => parseFloat(getComputedStyle(el).borderTopWidth)
+
+test("ContactFooter leaves its rule to a band that ends the page", async ({ page }) => {
+  for (const [end, rule] of pageEnds) {
+    await page.goto(`/fixtures.html?fixture=footer&end=${end}`)
+    const footer = page.getByTestId("footer")
+    await footer.waitFor({ timeout: 20_000 })
+    expect(await footer.evaluate(borderTop), `${end}: the footer's rule`).toBe(rule)
+    if (!rule) expect(await page.locator("section").last().evaluate((el) => parseFloat(getComputedStyle(el).borderBottomWidth)), `${end}: the band's`).toBe(1)
+  }
+})
+
+test("static sections: ud-contact-footer leaves its rule to a band that ends the page", async ({ page }) => {
+  const section = (band: boolean) => `<section class="ud-page-section${band ? " ud-page-section-band" : ""}"><h2 class="ud-h2">Section</h2></section>`
+  const bodies: Record<string, string> = {
+    band: `<main>${section(false)}${section(true)}</main>`,
+    nested: `<main>${section(false)}<article>${section(false)}${section(true)}</article></main>`,
+    sibling: `${section(false)}${section(true)}`,
+    canvas: `<main>${section(true)}${section(false)}</main>`,
+  }
+  await page.goto("/examples.html")
+  for (const [end, rule] of pageEnds) {
+    await page.setContent(`<!doctype html><html data-design="presentation"><head><link rel="stylesheet" href="/dist/tokens.css"></head>
+      <body class="ud-page-canvas">${bodies[end]}<footer class="ud-contact-footer"><p class="ud-label">Entreprise exemple</p></footer></body></html>`, { waitUntil: "load" })
+    expect(await page.locator(".ud-contact-footer").evaluate(borderTop), `${end}: the footer's rule`).toBe(rule)
+  }
+})
+
 // D-56: a short head and its first band meet at --space-8 on each side, about 64px at every
 // width, where two full paddings made 129px on a desktop. A full padding is clamp(32px, 8vw, 64px):
 // 32px on a phone as well, so the 600px run (48px) is the one that shows a phone-sized edge.
