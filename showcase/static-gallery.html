@@ -19,6 +19,12 @@
         <div id="first"><div class="ud-gallery" data-ud-gallery data-ud-gallery-start="1"><div class="swiper ud-gallery-main"><div class="swiper-wrapper"><div class="swiper-slide"><img src="/gallery/photo-1.svg?w=640" srcset="/gallery/photo-1.svg?w=160 160w, /gallery/photo-1.svg?w=640 640w, /gallery/photo-1.svg?w=1200 1200w" sizes="50vw" alt="Devant, T-shirt exemple, Blanc" draggable="false" loading="lazy"></div><div class="swiper-slide"><img src="/gallery/photo-2.svg?w=640" srcset="/gallery/photo-2.svg?w=160 160w, /gallery/photo-2.svg?w=640 640w, /gallery/photo-2.svg?w=1200 1200w" sizes="50vw" alt="Dos, T-shirt exemple, Blanc" draggable="false"></div><div class="swiper-slide"><img src="/gallery/photo-3.svg?w=640" srcset="/gallery/photo-3.svg?w=160 160w, /gallery/photo-3.svg?w=640 640w, /gallery/photo-3.svg?w=1200 1200w" sizes="50vw" alt="Photo 1, T-shirt exemple, Blanc" draggable="false" loading="lazy"></div></div><div class="swiper-pagination"></div><button type="button" class="swiper-button-prev"></button><button type="button" class="swiper-button-next"></button></div><div class="ud-gallery-thumbs"><button type="button" class="ud-gallery-thumb" aria-label="Devant" aria-pressed="false"><img src="/gallery/photo-1.svg?w=160" alt="" loading="lazy"></button><button type="button" class="ud-gallery-thumb" aria-label="Dos" aria-pressed="true"><img src="/gallery/photo-2.svg?w=160" alt="" loading="lazy"></button><button type="button" class="ud-gallery-thumb" aria-label="Photo 1" aria-pressed="false"><img src="/gallery/photo-3.svg?w=160" alt="" loading="lazy"></button></div></div></div>
         <div id="second"></div>
       </div>
+      <!-- A modal over the galleries, as a cart opens over a product page. -->
+      <button type="button" id="open-cart">Ouvrir le panier</button>
+      <dialog id="cart" aria-labelledby="cart-title">
+        <h2 id="cart-title">Panier</h2>
+        <form method="dialog"><button>Fermer</button></form>
+      </dialog>
     </section>
     <div style="height: 2400px;"></div>
   </main>
@@ -28,6 +34,7 @@
       const holder = document.getElementById('second');
       holder.innerHTML = udGallery.markup(['/gallery/photo-4.svg', '/gallery/photo-1.svg', '/gallery/photo-3.svg'], 'Casquette exemple', 0, ['Devant', 'Côté', 'Dos']);
       udGallery(holder.firstElementChild);
+      document.getElementById('open-cart').addEventListener('click', () => document.getElementById('cart').showModal());
     });
   </script>
 </body>

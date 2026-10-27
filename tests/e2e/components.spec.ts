@@ -71,6 +71,27 @@ for (const build of builds) {
     expect(await shown(b), "the focus wins over the pointer").toBe(nowB)
   })
 
+  // Boutique's case: the pointer rests on a gallery while a modal opens from the keyboard (a Radix
+  // sheet here, a modal <dialog> on the static page). The arrow keys are the modal's.
+  test(`${build.name} gallery: behind an open modal, the gallery the pointer rests on keeps its photo`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    const { a } = await open(page, build.url, build.first, build.second)
+    const start = await shown(a)
+    await a.locator(".ud-gallery-main").hover()
+    await page.getByRole("button", { name: "Ouvrir le panier" }).focus()
+    await page.keyboard.press("Enter")
+    const modal = page.getByRole("dialog", { name: "Panier" })
+    await expect(modal).toBeVisible()
+    await page.keyboard.press("ArrowRight")
+    await page.waitForTimeout(150)
+    expect(await shown(a), "the modal has the keys").toBe(start)
+    await page.keyboard.press("Escape")
+    await expect(modal).toBeHidden()
+    await a.locator(".ud-gallery-main").hover({ position: { x: 24, y: 24 } })
+    await page.keyboard.press("ArrowRight")
+    await expect.poll(() => shown(a), "the modal closed, the pointer's gallery has them again").not.toBe(start)
+  })
+
   test(`${build.name} gallery: Page Down and Page Up scroll the page, the focus in a gallery`, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 })
     const { a } = await open(page, build.url, build.first, build.second)

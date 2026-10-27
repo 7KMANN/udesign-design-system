@@ -4,6 +4,7 @@ import 'swiper/css/bundle';
 import { ChoiceGroup } from '@/components/ui/choice-group';
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from '@/components/ui/description-list';
 import { Gallery, type GalleryPhoto } from '@/components/ui/gallery';
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import './index.css';
 
 const sizes = (n: number) => ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'].slice(0, n).map((s) => ({ value: s, label: s }));
@@ -60,7 +61,8 @@ const photos = (product: string, ids: number[], views: string[]): GalleryPhoto[]
   }));
 
 // Two galleries on one screen and a choice group: the arrow keys move only the gallery in focus or
-// under the pointer, and the group keeps its own. The page is long, so Page Down has somewhere to go.
+// under the pointer, and the group keeps its own. A sheet opens over them, as Boutique's cart does.
+// The page is long, so Page Down has somewhere to go.
 function Galleries() {
   const [size, setSize] = useState<string | null>('M');
   const [colour, setColour] = useState('Blanc');
@@ -73,6 +75,13 @@ function Galleries() {
       </div>
       <ChoiceGroup aria-label="Taille" choices={sizes(5)} value={size} onValueChange={setSize} />
       <ChoiceGroup aria-label="Couleur" choices={[{ value: 'Blanc', label: 'Blanc' }, { value: 'Noir', label: 'Noir' }]} value={colour} onValueChange={(c) => setColour(c)} />
+      <Sheet>
+        <SheetTrigger className="justify-self-start">Ouvrir le panier</SheetTrigger>
+        <SheetContent closeLabel="Fermer">
+          <SheetTitle>Panier</SheetTitle>
+          <SheetDescription>Aucun article pour l’instant.</SheetDescription>
+        </SheetContent>
+      </Sheet>
       <div style={{ height: '150rem' }} />
     </main>
   );
