@@ -12,11 +12,37 @@ const sizes = (n: number) => ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5
 function Choices() {
   const [value, setValue] = useState<string | null>(null);
   const cases: Array<[string, number]> = [['16rem', 5], ['16rem', 6], ['16rem', 7], ['30rem', 6], ['9.5rem', 3], ['20rem', 10]];
+  // Parents whose width comes from their content, where a size container would be 0px wide (review M5).
+  const shrinking: Array<[string, (group: React.ReactNode) => React.ReactNode]> = [
+    ['table-cell', (g) => <table><tbody><tr><td>{g}</td></tr></tbody></table>],
+    ['inline-block', (g) => <div style={{ display: 'inline-block' }}>{g}</div>],
+    ['fit-content', (g) => <div style={{ width: 'fit-content' }}>{g}</div>],
+    ['flex-row', (g) => <div style={{ display: 'flex' }}><div>{g}</div></div>],
+    ['flex-column', (g) => <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}><div>{g}</div></div>],
+    ['grid-auto', (g) => <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr' }}><div>{g}</div><span /></div>],
+    ['absolute', (g) => <div style={{ position: 'relative', height: '7rem' }}><div style={{ position: 'absolute' }}>{g}</div></div>],
+  ];
+  const long = Array.from({ length: 22 }, (_, i) => ({ value: `${i + 1}`, label: `${i + 1}` }));
   return (
     <main className="grid gap-6 p-4">
       {cases.map(([width, n]) => (
         <div key={`${width}-${n}`} style={{ width }} data-testid={`choices-${width}-${n}`}>
           <ChoiceGroup aria-label={`${n} tailles, ${width}`} choices={sizes(n)} value={value} onValueChange={setValue} />
+        </div>
+      ))}
+      {/* Held while it saves: the chosen choice keeps its look; a choice that cannot be had is dashed. */}
+      <div style={{ width: '20rem' }} data-testid="choices-held">
+        <ChoiceGroup aria-label="Taille, en attente" choices={[...sizes(3), { value: 'XL', label: 'XL', disabled: true }]} value="S" disabled />
+      </div>
+      <div style={{ width: '20rem' }} data-testid="choices-open">
+        <ChoiceGroup aria-label="Taille, ouverte" choices={[...sizes(3), { value: 'XL', label: 'XL', disabled: true }]} value="S" />
+      </div>
+      <div style={{ width: '21.4375rem' }} data-testid="choices-long">
+        <ChoiceGroup aria-label="Numéros" choices={long} />
+      </div>
+      {shrinking.map(([name, wrap]) => (
+        <div key={name} data-testid={`choices-in-${name}`}>
+          {wrap(<ChoiceGroup aria-label={`5 tailles, ${name}`} choices={sizes(5)} />)}
         </div>
       ))}
     </main>

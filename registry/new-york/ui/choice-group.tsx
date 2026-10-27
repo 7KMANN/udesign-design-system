@@ -27,9 +27,9 @@ export interface ChoiceGroupProps extends Omit<React.HTMLAttributes<HTMLDivEleme
   note?: React.ReactNode
   /** Words a choice that cannot be had adds to its name. English by default: pass the interface's language (fr-CA first). */
   unavailableLabel?: string
-  /** Disables every choice, for example while the choice saves. */
+  /** Disables every choice, for example while the choice saves. The chosen choice stays chosen. */
   disabled?: boolean
-  /** Submits the value with a form, through a hidden input. */
+  /** Submits the chosen value with a form, as a native radio group does: nothing is posted while nothing is chosen or the group is disabled, never an empty value. */
   name?: string
 }
 
@@ -57,34 +57,38 @@ export const CHOICE_RANGES: ChoiceRange[] = [
 /**
  * The columns for `count` choices in a range. One row when every choice gets 4rem. Otherwise
  * rows of one count, the last at most one shorter, never one choice alone on a row, in the
- * fewest rows. Only where no such rows exist at 4rem does a row get narrower cells, never
- * under the touch target; a lone last choice is left only where nothing else fits.
+ * fewest rows, with cells down to the touch target. Rows of one count give way when they would
+ * take two rows or more over filling the rows, as a long list would: the rows then fill, the
+ * last never alone. One row of touch-sized cells serves when no rows of one count exist, and a
+ * lone last choice is left only where nothing else fits.
  */
 export function choiceColumns(count: number, { fit, most }: ChoiceRange): number {
   if (count <= fit) return Math.max(count, 1)
-  const last = (columns: number) => count - (Math.ceil(count / columns) - 1) * columns
-  const fewestRows = (keep: (columns: number) => boolean) => {
+  const rows = (columns: number) => Math.ceil(count / columns)
+  const last = (columns: number) => count - (rows(columns) - 1) * columns
+  // The most columns, so the fewest rows, that keep a condition, from the widest touch-safe count.
+  const widest = (keep: (columns: number) => boolean) => {
     for (let columns = Math.min(most, count - 1); columns >= 2; columns -= 1) if (keep(columns)) return columns
     return 0
   }
-  return (
-    fewestRows((c) => last(c) >= c - 1 && last(c) >= 2) ||
-    (count <= most ? count : 0) ||
-    fewestRows((c) => last(c) >= 2) ||
-    Math.max(Math.min(most, count), 1)
-  )
+  const even = widest((c) => last(c) >= c - 1 && last(c) >= 2)
+  const filled = widest((c) => last(c) >= 2)
+  if (even && (!filled || rows(even) <= rows(filled) + 1)) return even
+  if (count <= most) return count
+  return filled || Math.max(Math.min(most, count), 1)
 }
 
 const STEP: Record<string, number> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }
 
 // A labelled choice: one label, centred, a control's height. Chosen changes the boundary and the
-// surface, never the colour alone; a choice that cannot be had keeps a readable label.
+// surface, never the colour alone, and keeps them while the group is disabled. A choice that
+// cannot be had is dashed, on the disabled surface, its label still readable.
 const buttonClass =
-  "flex h-[var(--control-height)] min-h-[var(--touch-target-min)] min-w-0 items-center justify-center rounded-[var(--radius)] border border-[var(--border-strong)] bg-[var(--card)] px-1 text-center text-sm font-semibold leading-tight text-[var(--card-foreground)] hover:bg-[var(--interactive-hover)] active:bg-[var(--interactive-pressed)] aria-checked:border-[var(--interactive-selected-border)] aria-checked:bg-[var(--interactive-selected)] aria-checked:text-[var(--interactive-selected-foreground)] aria-checked:ring-1 aria-checked:ring-inset aria-checked:ring-[var(--interactive-selected-border)] disabled:border-dashed disabled:bg-[var(--interactive-disabled)] disabled:text-[var(--interactive-disabled-foreground)]"
+  "flex h-[var(--control-height)] min-h-[var(--touch-target-min)] min-w-0 items-center justify-center rounded-[var(--radius)] border border-[var(--border-strong)] bg-[var(--card)] px-1 text-center text-sm font-semibold leading-tight text-[var(--card-foreground)] hover:bg-[var(--interactive-hover)] active:bg-[var(--interactive-pressed)] aria-checked:border-[var(--interactive-selected-border)] aria-checked:bg-[var(--interactive-selected)] aria-checked:text-[var(--interactive-selected-foreground)] aria-checked:ring-1 aria-checked:ring-inset aria-checked:ring-[var(--interactive-selected-border)] disabled:aria-[checked=false]:bg-[var(--interactive-disabled)] disabled:aria-[checked=false]:text-[var(--interactive-disabled-foreground)] data-[unavailable=true]:border-dashed"
 
 // A swatch: the colour in a touch target, its name for a screen reader. Chosen draws a ring.
 const swatchClass =
-  "inline-flex size-[var(--touch-target-min)] shrink-0 items-center justify-center rounded-full border border-[var(--border-strong)] bg-[var(--card)] hover:bg-[var(--interactive-hover)] active:bg-[var(--interactive-pressed)] aria-checked:border-[var(--interactive-selected-border)] aria-checked:ring-2 aria-checked:ring-[var(--interactive-selected-border)] disabled:border-dashed"
+  "inline-flex size-[var(--touch-target-min)] shrink-0 items-center justify-center rounded-full border border-[var(--border-strong)] bg-[var(--card)] hover:bg-[var(--interactive-hover)] active:bg-[var(--interactive-pressed)] aria-checked:border-[var(--interactive-selected-border)] aria-checked:ring-2 aria-checked:ring-[var(--interactive-selected-border)] disabled:aria-[checked=false]:bg-[var(--interactive-disabled)] data-[unavailable=true]:border-dashed"
 
 const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
   (
@@ -99,6 +103,7 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
       name,
       note,
       onValueChange,
+      style,
       unavailableLabel = "unavailable",
       value: valueProp,
       variant = "button",
@@ -111,8 +116,11 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
     const noteId = React.useId()
     const buttons = React.useRef(new Map<string, HTMLButtonElement>())
 
-    const open = disabled ? [] : choices.filter((c) => !c.disabled)
-    const chosen = value !== null && open.some((c) => c.value === value) ? value : null
+    // The group's disabled holds the choice where it is, as while it saves; only a choice that
+    // cannot be had is never chosen. The keys move among what can be chosen now.
+    const available = choices.filter((c) => !c.disabled)
+    const chosen = value !== null && available.some((c) => c.value === value) ? value : null
+    const open = disabled ? [] : available
     // One Tab stop: the chosen choice, or the first that can be chosen.
     const stop = chosen ?? open[0]?.value
 
@@ -135,13 +143,22 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
       if (next.value !== chosen) choose(next.value)
     }
 
+    // Where the parent's width comes from its content (a table cell, an inline-block), the group,
+    // a size container, would be 0px wide: it asks for one row of its choices instead.
+    const intrinsic = variant === "swatch" ? Math.min(choices.length, 12) * 3.25 - 0.5 : Math.min(choices.length, MAX_COLUMNS) * 4.5 - 0.5
     const columns =
       variant === "button"
         ? (Object.fromEntries(CHOICE_RANGES.map((range, i) => [`--choice-columns-${i + 1}`, choiceColumns(choices.length, range)])) as React.CSSProperties)
         : undefined
 
     return (
-      <div ref={ref} data-slot="choice-group" className={cn("grid w-full min-w-0 gap-2", className)} {...props}>
+      <div
+        ref={ref}
+        data-slot="choice-group"
+        className={cn("grid w-full min-w-0 gap-2", className)}
+        style={{ "--choice-intrinsic": `${Math.max(intrinsic, 2.75)}rem`, ...style } as React.CSSProperties}
+        {...props}
+      >
         <div
           role="radiogroup"
           data-slot="choice-group-items"
@@ -166,6 +183,7 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
                 type="button"
                 role="radio"
                 aria-checked={choice.value === chosen}
+                data-unavailable={unavailable || undefined}
                 disabled={unavailable || disabled}
                 tabIndex={choice.value === stop ? 0 : -1}
                 onClick={() => choose(choice.value)}
@@ -197,7 +215,8 @@ const ChoiceGroup = React.forwardRef<HTMLDivElement, ChoiceGroupProps>(
             {note}
           </p>
         ) : null}
-        {name ? <input type="hidden" name={name} value={chosen ?? ""} /> : null}
+        {/* As a native radio group: nothing is posted while nothing is chosen or the group is disabled. */}
+        {name && chosen !== null ? <input type="hidden" name={name} value={chosen} disabled={disabled} /> : null}
       </div>
     )
   },

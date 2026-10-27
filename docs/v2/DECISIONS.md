@@ -1206,9 +1206,24 @@ queries, so the layout needs no script and no Tailwind container plugin, and hol
 At 375px Boutique's cases come out as its standard says: 5 as 3 + 2, 6 as 3 + 3, 7 as 4 + 3. Below
 9.25rem three choices leave one alone: nothing narrower keeps the touch target.
 
+**Corrected after the review of PR 3:**
+- A disabled group cleared its choice: the chosen size vanished while Boutique's kit rows were held,
+  and the hidden input posted an empty value. The group's `disabled` now holds the choice and its
+  chosen look (the other choices take the disabled surface; only a choice that cannot be had is
+  dashed), and `name` posts as a native radio group: the chosen value, or nothing while nothing is
+  chosen or the group is disabled.
+- Rows of one count made long lists tall and erratic (22 choices at 343px stood in 11 rows of 2). They
+  now give way when they would take two rows more than filling the rows: 22 are 5 + 5 + 5 + 5 + 2, and
+  10 at 13rem are 4 + 4 + 2 rather than five rows of two. Up to 7 choices nothing changes.
+- A size container is 0px wide wherever its parent's width comes from its content (a table cell, an
+  inline-block, fit-content, a content-sized flex or grid item, an absolutely positioned box). The
+  group writes one row of its choices as `contain-intrinsic-inline-size`, so it asks for that width
+  there, and keeps its parent's width everywhere else (Chromium, Firefox and WebKit).
+
 **Rejected:** a static `ud-` class, since the columns and the keys need script; columns from
 Tailwind container variants, whose order Tailwind 3 and 4 do not guarantee; the arrow keys left to
-propagate, which is what moved Boutique's gallery.
+propagate, which is what moved Boutique's gallery; a `min-width` floor for the group, which would push
+it out of a narrow parent.
 
 ### D-50 · Spacing on the roles, ban 33, and the checker's `spacing-role` · `NEEDS-APPROVAL`
 

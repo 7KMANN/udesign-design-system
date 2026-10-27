@@ -20,10 +20,12 @@
  * of a few"). Each width below is where one more 4rem cell fits, 0.5rem apart, and 9.25rem is where
  * three cells keep the 2.75rem touch target. The group writes, for its number of choices, the
  * columns of each range as --choice-columns-1 to --choice-columns-13; CHOICE_RANGES in
- * choice-group.tsx holds the same widths. The group is a size container, so it takes its width
- * from its parent: in a shrink-to-fit place, such as a table cell or a flex row, give it one.
+ * choice-group.tsx holds the same widths. The group is a size container, so its width never comes
+ * from its choices: where its parent's width comes from its content (a table cell, an inline-block,
+ * fit-content, an item sized by its content, an absolutely positioned box), it asks for one row of
+ * its choices, which the group writes as --choice-intrinsic, and lays out in the width it gets.
  */
-[data-slot="choice-group"] { container-type: inline-size; }
+[data-slot="choice-group"] { container-type: inline-size; contain-intrinsic-inline-size: var(--choice-intrinsic, 9.25rem); }
 [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-1, 1), minmax(0, 1fr)); }
 @container (min-width: 8.5rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-2, 1), minmax(0, 1fr)); } }
 @container (min-width: 9.25rem) { [data-slot="choice-group-items"][data-variant="button"] { grid-template-columns: repeat(var(--choice-columns-3, 1), minmax(0, 1fr)); } }

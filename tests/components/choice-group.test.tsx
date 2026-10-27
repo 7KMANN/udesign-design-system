@@ -34,22 +34,34 @@ describe("choiceColumns", () => {
     expect(choiceColumns(13, range(53.5))).toBe(7) // 7 + 6 at the widest range
   })
 
-  it("never leaves a choice alone where another layout keeps the touch target, and never goes under it", () => {
+  it("keeps rows of one count unless they cost two rows over filling, never leaves a choice alone it could help, never goes under the touch target", () => {
     for (const r of CHOICE_RANGES) {
-      for (let n = 1; n <= 16; n += 1) {
+      for (let n = 1; n <= 40; n += 1) {
         const columns = choiceColumns(n, r)
+        const where = `${n} in ${r.from}rem`
         expect(columns).toBeGreaterThanOrEqual(1)
         expect(columns).toBeLessThanOrEqual(Math.min(n, r.most))
-        if (r.from > 0) expect((r.from - (columns - 1) * 0.5) / columns, `${n} in ${r.from}rem`).toBeGreaterThanOrEqual(2.75)
+        if (r.from > 0) expect((r.from - (columns - 1) * 0.5) / columns, where).toBeGreaterThanOrEqual(2.75)
         const { rows: count, last } = rows(n, columns)
+        const candidates = Array.from({ length: Math.max(0, Math.min(r.most, n - 1) - 1) }, (_, i) => i + 2)
         const even = (c: number) => rows(n, c).last >= c - 1 && rows(n, c).last >= 2
-        const evenAt4rem = Array.from({ length: Math.max(0, Math.min(r.fit, n - 1) - 1) }, (_, i) => i + 2).some(even)
-        if (count > 1 && evenAt4rem) expect(even(columns), `${n} in ${r.from}rem: rows of one count, the last at most one shorter`).toBe(true)
+        const fewest = (keep: (c: number) => boolean) => Math.min(Infinity, ...candidates.filter(keep).map((c) => rows(n, c).rows))
+        const evenRows = fewest(even)
+        const filledRows = fewest((c) => rows(n, c).last >= 2)
+        if (count > 1 && evenRows < Infinity && evenRows <= filledRows + 1) expect([even(columns), count], `${where}: rows of one count, the last at most one shorter`).toEqual([true, evenRows])
+        if (count > 1 && filledRows < Infinity) expect(count, `${where}: at most one row more than filling the rows`).toBeLessThanOrEqual(filledRows + 1)
         if (count > 1 && last === 1) {
-          for (let c = 2; c <= Math.min(r.most, n); c += 1) expect(rows(n, c).last, `${n} in ${r.from}rem could avoid a lone choice with ${c}`).toBe(1)
+          for (let c = 2; c <= Math.min(r.most, n); c += 1) expect(rows(n, c).last, `${where} could avoid a lone choice with ${c}`).toBe(1)
         }
       }
     }
+  })
+
+  // Review M6: a long list fills its rows instead of standing in eleven rows of two.
+  it("fills the rows of a long list at a phone's width", () => {
+    const phone = range(17.5) // a 343px group
+    expect([20, 22, 24].map((n) => [choiceColumns(n, phone), rows(n, choiceColumns(n, phone)).rows])).toEqual([[5, 4], [5, 5], [5, 5]])
+    expect(choiceColumns(10, range(13)), "4 + 4 + 2 rather than five rows of two").toBe(4)
   })
 
   it("agrees with the container queries the stylesheet ships", () => {
@@ -57,7 +69,7 @@ describe("choiceColumns", () => {
     const queries = [...css.matchAll(/@container \(min-width: ([\d.]+)rem\) \{ \[data-slot="choice-group-items"\]\[data-variant="button"\] \{ grid-template-columns: repeat\(var\(--choice-columns-(\d+), 1\)/g)]
     expect(queries.map((m) => [Number(m[1]), Number(m[2])])).toEqual(CHOICE_RANGES.slice(1).map((r, i) => [r.from, i + 2]))
     expect(css).toMatch(/\[data-slot="choice-group-items"\]\[data-variant="button"\] \{ grid-template-columns: repeat\(var\(--choice-columns-1, 1\)/)
-    expect(css).toMatch(/\[data-slot="choice-group"\] \{ container-type: inline-size; \}/)
+    expect(css).toMatch(/\[data-slot="choice-group"\] \{ container-type: inline-size; contain-intrinsic-inline-size: var\(--choice-intrinsic, 9\.25rem\); \}/)
   })
 })
 
@@ -101,7 +113,8 @@ describe("ChoiceGroup", () => {
     const xl = screen.getByRole("radio", { name: "XL, non disponible" })
     expect(xl).toBeDisabled()
     expect(xl.firstElementChild).toHaveClass("line-through")
-    expect(xl).toHaveClass("disabled:border-dashed", "disabled:bg-[var(--interactive-disabled)]", "disabled:text-[var(--interactive-disabled-foreground)]")
+    expect(xl).toHaveAttribute("data-unavailable", "true")
+    expect(xl).toHaveClass("data-[unavailable=true]:border-dashed", "disabled:aria-[checked=false]:bg-[var(--interactive-disabled)]", "disabled:aria-[checked=false]:text-[var(--interactive-disabled-foreground)]")
   })
 
   it("moves and chooses with the arrow keys, skipping what cannot be had, and stops them there", async () => {
@@ -175,12 +188,24 @@ describe("ChoiceGroup", () => {
     expect(navy).toHaveAttribute("aria-checked", "true")
   })
 
-  it("disables every choice while the group is disabled, and submits its value with a form", () => {
-    const { rerender } = render(<ChoiceGroup aria-label="Taille" name="size" value="M" choices={sizes("S", "M")} />)
-    expect(document.querySelector<HTMLInputElement>('input[type="hidden"][name="size"]')?.value).toBe("M")
-    rerender(<ChoiceGroup aria-label="Taille" name="size" value="M" disabled choices={sizes("S", "M")} />)
+  // Review I1: the group's disabled holds the choice while it saves; the look is measured in Chromium.
+  it("keeps its choice while disabled, and posts as a native radio group: the value, or nothing", () => {
+    const group = (props: Partial<React.ComponentProps<typeof ChoiceGroup>>) => (
+      <form data-testid="form">
+        <ChoiceGroup aria-label="Taille" name="size" choices={sizes("S", "M", "L")} {...props} />
+      </form>
+    )
+    const posted = () => [...new FormData(screen.getByTestId("form") as HTMLFormElement).entries()]
+    const { rerender } = render(group({ value: "M" }))
+    expect(posted()).toEqual([["size", "M"]])
+    rerender(group({ value: "M", disabled: true }))
     for (const radio of screen.getAllByRole("radio")) expect(radio).toBeDisabled()
+    expect(screen.getAllByRole("radio").map((r) => r.getAttribute("aria-checked"))).toEqual(["false", "true", "false"])
+    expect(screen.getByRole("radio", { name: "M" })).not.toHaveAttribute("data-unavailable")
     expect(screen.getByRole("radio", { name: "M" })).toHaveAccessibleName("M")
+    expect(posted(), "a disabled group posts nothing").toEqual([])
+    rerender(group({ value: null }))
+    expect(posted(), "nothing chosen posts nothing, never an empty value").toEqual([])
   })
 
   it("presses, eases its press under Tailwind 3 and 4, and shows focus", () => {

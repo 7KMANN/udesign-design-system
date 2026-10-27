@@ -220,3 +220,53 @@ for (const [name, open] of [
     expect(await list.locator("dt").first().evaluate((el) => getComputedStyle(el).fontWeight)).toBe("600")
   })
 }
+
+// Review I1: held while it saves, a group keeps its choice's look; only a choice that cannot be had
+// is dashed, and the other choices take the disabled surface.
+test("a held choice group keeps its choice's look, and only a choice that cannot be had is dashed", async ({ page }) => {
+  await page.goto("/fixtures.html?fixture=choices")
+  const token = (name: string) =>
+    page.evaluate((n) => {
+      const probe = document.createElement("div")
+      probe.style.background = `var(${n})`
+      document.body.append(probe)
+      const colour = getComputedStyle(probe).backgroundColor
+      probe.remove()
+      return colour
+    }, name)
+  const [selected, disabled, card] = [await token("--interactive-selected"), await token("--interactive-disabled"), await token("--card")]
+  const look = (group: string, name: string | RegExp) =>
+    page.getByTestId(group).getByRole("radio", typeof name === "string" ? { name, exact: true } : { name }).evaluate((el) => {
+      const s = getComputedStyle(el)
+      return [el.getAttribute("aria-checked"), s.backgroundColor, s.borderTopStyle]
+    })
+  expect(await look("choices-held", "S"), "the held choice").toEqual(["true", selected, "solid"])
+  expect(await look("choices-held", "M"), "the others, held").toEqual(["false", disabled, "solid"])
+  expect(await look("choices-held", /^XL.+unavailable$/), "what cannot be had").toEqual(["false", disabled, "dashed"])
+  expect(await look("choices-open", "S")).toEqual(["true", selected, "solid"])
+  expect(await look("choices-open", "M")).toEqual(["false", card, "solid"])
+  expect(await look("choices-open", /^XL.+unavailable$/)).toEqual(["false", disabled, "dashed"])
+})
+
+// Review M6: a long list fills its rows at a phone's width instead of standing in eleven rows of two.
+test("a choice group of 22 at 343px fills five rows", async ({ page }) => {
+  await page.goto("/fixtures.html?fixture=choices")
+  expect((await layout(page.getByTestId("choices-long"))).rows).toEqual([5, 5, 5, 5, 2])
+})
+
+// Review M5: where the parent's width comes from its content, the group asks for one row of 4rem
+// cells; without contain-intrinsic-inline-size it would collapse to 0px.
+test("a choice group whose parent sizes to its content asks for one row", async ({ page }) => {
+  await page.goto("/fixtures.html?fixture=choices")
+  for (const parent of ["table-cell", "inline-block", "fit-content", "flex-row", "flex-column", "grid-auto", "absolute"]) {
+    const holder = page.getByTestId(`choices-in-${parent}`)
+    const width = (await holder.locator('[data-slot="choice-group"]').boundingBox())!.width
+    expect(width, `${parent}: one row of five 4rem cells`).toBeCloseTo(352, 0)
+    const found = await layout(holder)
+    expect(found.rows, parent).toEqual([5])
+    expect(Math.min(...found.widths), parent).toBeGreaterThanOrEqual(44)
+  }
+  const cell = page.getByTestId("choices-in-table-cell").locator('[data-slot="choice-group"]')
+  await cell.evaluate((el) => el.style.setProperty("contain-intrinsic-inline-size", "none"))
+  expect((await cell.boundingBox())!.width, "the control: a size container sized by its content is 0px").toBeLessThan(1)
+})

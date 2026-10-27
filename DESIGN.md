@@ -444,12 +444,14 @@ Choose `Select` when an option needs more than a line of text, such as an icon o
 
 ### Choosing one of a few
 
-`ChoiceGroup` (`choice-group`) shows one choice as buttons, for a few short options read at a glance: a garment's sizes, a product's options, its colours as swatches (`variant="swatch"`). A long list is a select. `NEEDS-APPROVAL D-49`
+`ChoiceGroup` (`choice-group`) shows one choice as buttons, for a few short options read at a glance: a garment's sizes, a product's options, its colours as swatches (`variant="swatch"`). A long list, past a dozen or so, is a select. `NEEDS-APPROVAL D-49`
 
 - It is a radio group with one Tab stop: the chosen choice, or the first that can be chosen. The arrow keys move and choose, Home and End jump, and the group stops the keys it handles, so a listener on the page, such as a gallery's, never sees them.
 - Each button holds its label alone, centred, `--control-height` high. What the buttons do not carry, such as a surcharge or the sizes a colour cannot be made in, is the note under the group, which the group points at with `aria-describedby`.
 - A choice that cannot be had is disabled, dashed and struck through, and says so in words: `unavailableLabel` follows its label for a screen reader.
-- Its columns are explicit: one row when every choice gets 4rem; otherwise rows of one count, the last at most one shorter, never one choice alone on a row, in the fewest rows; a cell never goes under the touch target. Container queries in `dist/tokens.css` lay them out, so the group needs the stylesheet of its own release, and it takes its width from its parent: in a table cell or a flex row, give it one.
+- A disabled group, such as one whose choice is saving, keeps its choice and its chosen look; the other choices take the disabled surface. With `name` it posts as a native radio group: the chosen value, or nothing while nothing is chosen or the group is disabled.
+- Its columns are explicit: one row when every choice gets 4rem; otherwise rows of one count, the last at most one shorter, never one choice alone on a row, in the fewest rows, unless rows of one count would take two rows more than filling the rows: then the rows fill, the last never alone. A cell never goes under the touch target. Container queries in `dist/tokens.css` lay them out, so the group needs the stylesheet of its own release.
+- It takes the width of its parent, never of its choices. Where the parent's width comes from its content (a table cell, an inline-block, `width: fit-content`, a flex or grid item sized by its content, an absolutely positioned box), the group asks for one row of its choices and lays out in the width it gets.
 
 ### Showing photos
 
