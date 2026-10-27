@@ -8,7 +8,7 @@ Decisions and measurements: `docs/v2/DECISIONS.md` round 19 (D-46 to D-58), from
 
 ### Visible on upgrade
 
-- **`Alert` is not a live region by default.** It rendered `role="status"`, so every banner shown with the page was announced. An alert whose appearance is the news passes `live` (`role="status"`) or `live="assertive"` (`role="alert"`); an explicit `role` still wins. Remove the `role="presentation"` that only kept an alert quiet. Re-add `alert` to pick it up (D-48).
+- **`Alert` is not a live region by default** (proposed; Kaleb decides the default with D-48). It rendered `role="status"`, so every banner shown with the page was announced. An alert whose appearance is the news passes `live` (`role="status"`) or `live="assertive"` (`role="alert"`); an explicit `role` still wins. Remove the `role="presentation"` that only kept an alert quiet. Re-add `alert` to pick it up (D-48).
 - **Page titles follow the screen.** `.ud-display` and `.ud-h1` read `--text-display-fluid` and `--text-h1-fluid`: in `presentation`, 40px and 28px on a phone, 56px and 40px from 800px; `operations` does not move. A presentation page that uses either class without a size of its own gets the smaller title below 800px. To hold one title at its fixed size, set the role on the element: `[--text-h1-fluid:var(--text-h1)]` (D-46).
 - **Headers space on the roles.** `DialogHeader`, `SheetHeader` and `CardHeader` put 8px between a title and its description (was 6px); a dialog's description still starts 4px under the close icon. Re-add `dialog`, `sheet` and `card` (D-50).
 - **`udesign-check` flags spacing off the roles (`spacing-role`, ban 33).** A gap, a stack or a margin between the roles is a finding: 20px, 48px, a stack spaced 2px or 6px. Padding, an icon beside its label, an icon's nudge, a negative margin, `var()` and the primitive folders are left alone (D-50).
@@ -45,7 +45,7 @@ Each item replaces a bridge; move to v3.3.0, re-add the changed registry compone
 
 ### For GlobalVision
 
-- It pins v3.1.2, so nothing changes until it moves. Then `udesign-check` reports 142 `spacing-role` findings in `app`, `components`, `lib` and `hooks`, its only findings: 126 stacks spaced 2px or 6px and 16 gaps from 10px to 80px (`docs/checker-rules.md` has the breakdown; D-50 leaves the 2px and 6px stacks open for Kaleb). Its `alert.tsx` is a local fork with its own default role, so the `Alert` change reaches it only if it re-adds the component. `operations` titles do not move.
+- It pins v3.1.2, so nothing changes until it moves. Then `udesign-check` reports 142 `spacing-role` findings in `app`, `components`, `lib` and `hooks`, its only findings: 126 stacks spaced 2px or 6px and 16 gaps from 10px to 80px (`docs/checker-rules.md` has the breakdown; D-50 leaves the 2px and 6px stacks open for Kaleb). Its `alert.tsx` is a local fork that defaults to `role="alert"`, and 33 of its 58 alerts rely on that default, 15 of them danger alerts shown on a failure. Before it re-adds `alert` or `core`, which replace the fork, it passes `live="assertive"` on those 33 (every `<Alert` with no `role` in `app`, `components`, `lib` and `hooks`), or they stop being announced and nothing fails. Kaleb decides the default with D-48. `operations` titles do not move.
 
 ### For `udesignpages`
 

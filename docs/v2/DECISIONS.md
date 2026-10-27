@@ -1166,20 +1166,31 @@ reason; a static `ud-badge` twin, since no static page has a badge in a narrow c
 ### D-48 · An `Alert` is a live region only when asked · `NEEDS-APPROVAL`
 
 **Question:** `Alert` defaulted to `role="status"`, a live region, so every banner shown with the
-page was also announced as news, and Boutique passes `role="presentation"` on 22 of its 23 alerts to
-keep them quiet. Change the default, or keep it because consumers depend on it?
+page was also announced as news. Should an alert be live by default, or only when asked? Kaleb
+decides the default when he answers this entry.
 
-**Checked:** Boutique relies on the default once (`JoinForm.tsx`, the notice of a closed shop or an
-unreachable server). GlobalVision's `components/ui/alert.tsx` is a local fork that defaults to
-`role="alert"` and passes a role on every alert that must announce, so it sees nothing until it
-re-adds the component. The showcase's one dependency was a test that found the dialog's alert by
-its role.
+**The two consumers pull opposite ways, measured** (corrected after the review of PR 3: the first
+record said GlobalVision passes a role on every alert that must announce, which was false):
+- **Boutique wants quiet banners.** It passes `role="presentation"` on 22 of its 23 alerts, and relies
+  on the live default once (`JoinForm.tsx`, the notice of a closed shop or an unreachable server).
+- **GlobalVision relies on the announcement.** Its `components/ui/alert.tsx` is a local fork that
+  defaults to `role="alert"`, and 33 of its 58 alerts (in `app`, `components`, `lib` and `hooks`) pass
+  no role and so rely on that default, 15 of them danger alerts shown on a failure, such as "Failed
+  to load jobs" in `app/[lang]/maintenance/beszel-update/page.tsx`. Its `components.json` has the
+  `@udesign` registry and `core` installs `alert.tsx`, so re-adding either replaces the fork: with no
+  live default those 33 stop being announced, and nothing fails.
+- The showcase's one dependency was a test that found the dialog's alert by its role.
 
 **Proposed:** no role by default. `live` (or `live="polite"`) gives `role="status"`, and
 `live="assertive"` gives `role="alert"`, for an error that stops the work. A role passed explicitly
 still wins. The alert carries `data-slot="alert"`, the shadcn hook GlobalVision's fork already has.
-**Visible on upgrade:** an alert that should be read when it appears needs `live`; the
-`role="presentation"` workarounds can go.
+Cost: Boutique drops 22 workarounds and adds `live` once; GlobalVision adds `live="assertive"` to 33
+alerts before it re-adds `alert` or `core`.
+
+**The other choice:** a live default (`role="status"` as before, or `role="alert"` as GlobalVision's
+fork), with `live={false}` for a banner shown with the page. Cost: Boutique keeps an opt-out on 22
+alerts, written `live={false}` instead of `role="presentation"`; GlobalVision changes nothing if the
+default is `role="alert"`. Either way the prop stays `live`, so only the default moves.
 
 ### D-49 · `ChoiceGroup` joins the registry · `NEEDS-APPROVAL`
 
