@@ -974,11 +974,12 @@ marker keep their shades. **Rejected:** ink text with the accent moved to tiles,
 
 **Evidence:** issue #1, "Registry findings from building Boutique v1 (v3.1.2)". Each finding was
 reproduced here before it was fixed: in the registry source, in Chromium on the showcase and the
-reference screens, and for the Select cost in a performance trace. None of this round is approved.
-Each entry waits for Kaleb, and the `DESIGN.md` sentence it adds or changes carries
-`NEEDS-APPROVAL` and the entry's number until he answers. Shipped as release candidate v3.2.0.
+reference screens, and for the Select cost in a performance trace. Shipped as release candidate
+v3.2.0 with every entry open. Kaleb approved all eight on 2026-10-26, with round 19 ("Approve,
+alerts quiet"), and the `DESIGN.md` sentence each adds or changes carries `APPROVED 2026-10-26`
+and the entry's number.
 
-### D-38 · A press scale transitions `transform` and `scale` · `NEEDS-APPROVAL`
+### D-38 · A press scale transitions `transform` and `scale` · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** the nine registry controls that press with `active:scale-[var(--motion-press-scale)]`
 transitioned `transform` only. Tailwind 4 compiles `scale-*` to the separate `scale` property, so
@@ -992,7 +993,7 @@ fails on a registry or example class string whose press scale has no transition 
 `tests/component-css.test.mjs` holds the static classes to the same rule. **Not proposed:** a
 checker rule for consumer code. A finding must cite a written ban, and this one has none yet.
 
-### D-39 · A pending `Button` keeps its accessible name · `NEEDS-APPROVAL`
+### D-39 · A pending `Button` keeps its accessible name · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** with `pending`, the label sat in a `visibility: hidden` span to hold the button's
 width. Visibility removes it from the accessibility tree, so a waiting button had no name at all,
@@ -1004,7 +1005,7 @@ and that a pending button needs no `aria-label`. The component test compiles the
 button uses with Tailwind and applies them in jsdom, because jsdom alone applies no Tailwind and
 the old markup would have passed; the showcase test asserts the name in Chromium.
 
-### D-40 · A dialog or sheet can hold or drop its close button · `NEEDS-APPROVAL`
+### D-40 · A dialog or sheet can hold or drop its close button · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** while a dialog's action runs (an order being sent, a launch), its close button must
 not close it. `onOpenChange` could ignore the close, but the button still looked and focused as
@@ -1018,7 +1019,7 @@ calls `onOpenChange(false)`, and the caller decides there. That keeps one owner 
 now", which a prop that also swallowed Escape would split in two. `DESIGN.md` "Dialogs and sheets"
 documents both, and the showcase's held dialog shows the pattern.
 
-### D-41 · The close button's room is the title row's, not the header's · `NEEDS-APPROVAL` · amends Δ-25
+### D-41 · The close button's room is the title row's, not the header's · `APPROVED` Kaleb, 2026-10-26 · amends Δ-25
 
 **Question:** Δ-25 gave the whole header `pr-10` so a long title never runs under the close
 button. The padding also narrowed the description, so a warning block placed in it stopped 40px
@@ -1034,7 +1035,7 @@ tells it through a React context, not a class. Measured in Chromium after the ch
 and the footer share a right edge, and the description clears the icon by 4px or more, in both
 profiles at both widths (`tests/e2e/showcase.spec.ts`).
 
-### D-42 · The shell's rows are explicit at every width · `NEEDS-APPROVAL`
+### D-42 · The shell's rows are explicit at every width · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** below `md`, `AppShell` set no rows, so its two children (toolbar and panes) sat in
 implicit `auto` rows that split a short page's spare height. Measured at 375x812 on the operations
@@ -1048,7 +1049,7 @@ definite height the `1fr` row sizes to its content. Two panes stacked on a phone
 height between them; a single pane takes all of it. The Playwright layout audit measures both
 shells on a short phone page.
 
-### D-43 · `native-select` joins the registry, with a rule for choosing it · `NEEDS-APPROVAL`
+### D-43 · `native-select` joins the registry, with a rule for choosing it · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** an open Radix `Select` sets `pointer-events: none` on `<body>` (so a press meant to
 close the list cannot reach what is under it) and `react-remove-scroll-bar` locks the page scroll
@@ -1071,7 +1072,7 @@ selects, and phones; `Select` when an option needs more than a line of text or t
 the same everywhere. **Not proposed:** a static `ud-` class, since no static page has needed a
 select yet (`FUTURE-WORK.md`, classes on evidence only).
 
-### D-44 · Select controls hover, and every field shows when it is invalid · `NEEDS-APPROVAL`
+### D-44 · Select controls hover, and every field shows when it is invalid · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** `NativeSelect` was to share `SelectTrigger`'s hover and invalid states, and
 `SelectTrigger` had neither. No field had an invalid state either: the showcase's invalid name
@@ -1085,7 +1086,7 @@ field in every state and every surface a field sits on, in all four profile and 
 dark pressed surface, so neither qualifies. `tests/contrast.test.mjs` holds 3:1. `FieldError` keeps carrying the reason
 (ban 11). The variant is `aria-[invalid=true]:`, which Tailwind 3 and 4 both compile.
 
-### D-45 · `dist/tokens.css` registers the scroll lock's property as non-inherited · `NEEDS-APPROVAL`
+### D-45 · `dist/tokens.css` registers the scroll lock's property as non-inherited · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** while a `Select`, `Dialog` or `Sheet` is open, `react-remove-scroll-bar` sets
 `--removed-body-scroll-bar-size` on `body[data-scroll-locked]`. An unregistered custom property
@@ -1122,12 +1123,12 @@ the library's helper classes. Browsers without `@property` ignore the rule and b
 pages' standard, `docs/appearance.md` on Boutique's `feat/appearance-standard`), two items its builder
 added to that list after the brief (D-57, D-58), and one from Kaleb directly (D-56). Each item was read
 in Boutique's bridge and in UDesign Pages where it began, then reproduced here before it changed.
-None of this round is approved. Each entry waits for Kaleb, and the `DESIGN.md` sentence it adds or
-changes carries `NEEDS-APPROVAL` and the entry's number until he answers. Shipped as release
-candidate v3.3.0. French typography, the report's tenth item, belongs to `udesign-docs` and is not
+Kaleb approved all thirteen on 2026-10-26, "Approve, alerts quiet", answering D-48's default and
+D-50's open item in the same words; the `DESIGN.md` sentence each adds or changes carries
+`APPROVED 2026-10-26` and the entry's number. Shipped as release candidate v3.3.0. French typography, the report's tenth item, belongs to `udesign-docs` and is not
 here.
 
-### D-46 · A title follows the screen: fluid title roles · `NEEDS-APPROVAL`
+### D-46 · A title follows the screen: fluid title roles · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** `.ud-display` and `.ud-h1` set literal sizes (56px and 40px in `presentation`) in
 `dist/tokens.css`, outside any cascade layer, so a Tailwind 4 size utility on the same element never
@@ -1148,7 +1149,7 @@ about 1,500 product pages whose `ud-h1` has no clamp, once they sync. **Rejected
 which leaves the inline size in place since the helper still wins; making `--text-display` itself
 fluid, which would change a role's meaning and break the type-shape contract test.
 
-### D-47 · A badge wraps inside its container when asked · `NEEDS-APPROVAL`
+### D-47 · A badge wraps inside its container when asked · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** `Badge` is `whitespace-nowrap`, so a long label in a narrow card ran past the card's
 edge (ban 29), as on Boutique's product tiles at 375px. Boutique wraps it with its own classes
@@ -1163,7 +1164,7 @@ break statuses in two the day GlobalVision re-adds the component. A guard in
 `scripts/test-registry.mjs` keeps one line the default. **Rejected:** wrapping by default, for that
 reason; a static `ud-badge` twin, since no static page has a badge in a narrow card yet.
 
-### D-48 · An `Alert` is a live region only when asked · `NEEDS-APPROVAL`
+### D-48 · An `Alert` is a live region only when asked · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** `Alert` defaulted to `role="status"`, a live region, so every banner shown with the
 page was also announced as news. Should an alert be live by default, or only when asked? Kaleb
@@ -1192,7 +1193,12 @@ fork), with `live={false}` for a banner shown with the page. Cost: Boutique keep
 alerts, written `live={false}` instead of `role="presentation"`; GlobalVision changes nothing if the
 default is `role="alert"`. Either way the prop stays `live`, so only the default moves.
 
-### D-49 · `ChoiceGroup` joins the registry · `NEEDS-APPROVAL`
+**Kaleb, 2026-10-26: "Approve, alerts quiet."** The default is no role, as proposed: an alert is a
+live region only when it passes `live`. So Boutique drops its 22 `role="presentation"` and adds
+`live` once, and GlobalVision passes `live="assertive"` on its 33 alerts that pass no role before it
+re-adds `alert` or `core`.
+
+### D-49 · `ChoiceGroup` joins the registry · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** the registry had no radio group, so Boutique built its own sizes, options and colours
 from `choiceClass`, `radioKeys`, `sizes.ts` and `choices.css`, and UDesign Pages' size buttons have
@@ -1274,7 +1280,7 @@ Boutique `main` 10 (was 17), its `feat/appearance-standard` 2 (was 7), GlobalVis
 `udesignpages` 0, which means not read: its spacing is CSS, which no part of the rule reads
 (`docs/checker-rules.md` has the breakdown).
 
-### D-51 · Nothing empty takes room · `NEEDS-APPROVAL`
+### D-51 · Nothing empty takes room · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** Boutique found idle live regions (an empty `role="status"` waiting for a result) as
 children of containers with a gap: empty, they still take the gap, so a form or a cart footer
@@ -1289,7 +1295,7 @@ operations screen's navigation rendered an empty count beside four sections, ins
 it renders no count now. **Rejected:** hiding an empty region with `display: none`, which takes it
 out of the accessibility tree, so a polite one is not reliably read when its words arrive.
 
-### D-52 · A presentation page's header · `NEEDS-APPROVAL` · amends D-30
+### D-52 · A presentation page's header · `APPROVED` Kaleb, 2026-10-26 · amends D-30
 
 **Question:** each presentation consumer draws its own header. Boutique's standard sets one: the
 lockup at left, at most one action at right ("Ce n’est pas vous ?"), one row at least a touch target
@@ -1305,7 +1311,7 @@ the React one with one action, "Mes commandes", where it showed three navigation
 the static one with none, its catalogue line moved into the first section. **Rejected:** a slot for
 navigation, which the rule leaves to the page.
 
-### D-53 · A public-contact footer · `NEEDS-APPROVAL`
+### D-53 · A public-contact footer · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** UDesign Pages ends every page with UDesign's public contact (about 1,500 pages, by
 hand), and Boutique copied it with its own `contact.ts`. `DESIGN.md` had only `confidential-footer`.
@@ -1317,7 +1323,7 @@ source of truth (for UDesign, `udesign-docs`' ground truth); the design system a
 placeholder data only. **Rejected:** shipping UDesign's contact in the component, which would put
 business data in the design system and a second home for it.
 
-### D-54 · One gallery, in the design system · `NEEDS-APPROVAL`
+### D-54 · One gallery, in the design system · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** UDesign Pages vendors Swiper 14.3.0 with its own `ud-gallery.js` and `ud-gallery.css`
 (about 1,580 pages link them), and Boutique copied the skin verbatim and ported the script to React
@@ -1351,7 +1357,7 @@ press, as it already did for a borrowed variants helper. **Rejected:** a separat
 the skin rewritten in Tailwind utilities, a second source for the same rules; bundling Swiper into
 `dist/ud-gallery.js`, when UDesign Pages already vendors the exact release.
 
-### D-55 · The gallery's keys: the gallery in focus or under the pointer · `NEEDS-APPROVAL`
+### D-55 · The gallery's keys: the gallery in focus or under the pointer · `APPROVED` Kaleb, 2026-10-26
 
 **Question:** two behaviours of `ud-gallery.js` that Boutique found. Swiper's keyboard module
 listens on the document, so with two galleries on screen one arrow key moved both; Boutique turned
@@ -1367,7 +1373,7 @@ Page Down scrolls with the focus in a gallery, and an arrow on a choice group mo
 no photo. **Rejected:** keeping Swiper's listener and toggling it per gallery on focus and hover,
 which leaves two listeners live whenever the focus and the pointer are in different galleries.
 
-### D-56 · A short head meets its first band at `--space-8` · `NEEDS-APPROVAL`
+### D-56 · A short head meets its first band at `--space-8` · `APPROVED` Kaleb, 2026-10-26
 
 **Question (Kaleb, directly):** on a presentation page, a short head section (a title, a greeting,
 one line) followed by a band gets `PageSection`'s full padding twice: 64px under the head, the
@@ -1383,7 +1389,7 @@ other edges keep their padding. Static twins: `ud-page-section-compact-top` and
 measured at 375px and 1440px. **Rejected:** a smaller padding for every section, which would
 flatten the hierarchy that space draws in `presentation` (D-19).
 
-### D-57 · A description list for specifications · `NEEDS-APPROVAL`
+### D-57 · A description list for specifications · `APPROVED` Kaleb, 2026-10-26
 
 **Question (added to Boutique's list after the brief):** UDesign Pages' `.specs`, a `<dl>` on a
 `max-content minmax(0, 1fr)` grid, rows `--space-3` and columns `--space-4` apart, within 72ch, the
@@ -1397,7 +1403,7 @@ value wraps inside its column instead of running past the list (ban 29). Measure
 375px, React and static. **Rejected:** a component that takes the pairs as data, which would decide
 the markup of a value for every consumer.
 
-### D-58 · A skeleton where only phrasing content may go · `NEEDS-APPROVAL`
+### D-58 · A skeleton where only phrasing content may go · `APPROVED` Kaleb, 2026-10-26
 
 **Question (added to Boutique's list after the brief):** `Skeleton` renders a `div`. A price's
 placeholder inside a `Pressable`, a `button` whose content must be phrasing, needs a `span`.

@@ -22,8 +22,9 @@ of each width range written into the page, which its Python generator could do b
 `tests/motion-adoption.test.mjs` catches a press scale whose transition misses `scale` or
 `transform` in the registry, but application code repeats the pattern: Boutique's own
 `Gallery.tsx`, `KitProduct.tsx`, `pickers.tsx` and `SizePicker.tsx` press with a jump under
-Tailwind 4. The same lexical check would fit `udesign-check`. Waits for D-38's approval and a
-numbered ban to cite: a finding must name its rule.
+Tailwind 4. The same lexical check would fit `udesign-check`. D-38 is approved (Kaleb,
+2026-10-26), but its rule sits in `DESIGN.md` "Motion", not in the bans. Waits for a numbered ban
+to cite: a finding must name its rule.
 
 ## Stacked panes on a phone share a short page's spare height (D-42)
 
