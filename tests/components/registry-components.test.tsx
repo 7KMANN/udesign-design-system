@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { Alert } from "@/components/ui/alert"
 import { AppShell, AppShellPane, AppShellPanes, AppShellSidebar, AppShellToolbar } from "@/components/ui/app-shell"
+import { Avatar } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
@@ -717,5 +718,40 @@ describe("NativeSelect", () => {
     )
     expect(screen.getByRole("combobox", { name: "Poste" })).toBeDisabled()
     expect((await axe.run(container)).violations).toEqual([])
+  })
+})
+
+// The avatar signs a name that always stands beside it, so it is decorative: the initial
+// is not announced twice, and it never stands alone.
+describe("Avatar", () => {
+  it("shows the first letter of the first word, uppercased", () => {
+    const { container, rerender } = render(<Avatar name="Justin Côté" />)
+    expect(container.firstElementChild).toHaveTextContent(/^J$/)
+
+    rerender(<Avatar name="élise" />)
+    expect(container.firstElementChild).toHaveTextContent(/^É$/)
+
+    rerender(<Avatar name="  Anabelle Dumas" />)
+    expect(container.firstElementChild).toHaveTextContent(/^A$/)
+  })
+
+  it("is hidden from assistive technology", () => {
+    const { container } = render(<Avatar name="Justin Côté" />)
+    expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true")
+  })
+
+  it("draws the large size larger than the medium one", () => {
+    const { container, rerender } = render(<Avatar name="Justin" />)
+    const md = container.firstElementChild?.className ?? ""
+    rerender(<Avatar name="Justin" size="lg" />)
+    const lg = container.firstElementChild?.className ?? ""
+    expect(md).toContain("size-8")
+    expect(lg).toContain("size-10")
+    expect(lg).not.toBe(md)
+  })
+
+  it("keeps a caller's class", () => {
+    const { container } = render(<Avatar className="shrink-0" name="Justin" />)
+    expect(container.firstElementChild).toHaveClass("shrink-0")
   })
 })

@@ -229,6 +229,15 @@
       "files": [{ "path": "registry/new-york/ui/status-badge.tsx", "type": "registry:component", "target": "components/ui/status-badge.tsx" }]
     },
     {
+      "name": "avatar",
+      "type": "registry:component",
+      "title": "Avatar",
+      "description": "A person's initial in a brand-toned circle, always beside their name, never alone. Decorative.",
+      "docs": "Pass the person's name; the avatar shows the first letter of its first word. It is aria-hidden because the name beside it carries the meaning, so never use it without one. Sizes: md (2rem) and lg (2.5rem). See DESIGN.md.",
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/avatar.tsx", "type": "registry:component", "target": "components/ui/avatar.tsx" }]
+    },
+    {
       "name": "metric-card",
       "type": "registry:component",
       "title": "Metric Card",

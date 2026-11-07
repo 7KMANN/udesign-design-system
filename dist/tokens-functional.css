@@ -490,6 +490,27 @@
   font-variant-numeric: var(--font-numeric-variant);
 }
 
+/* Avatar: a person's initial on the brand tone. Decorative, so it is aria-hidden and
+   always sits beside the name: <span class="ud-avatar" aria-hidden="true">J</span>.
+   ud-avatar-lg is the larger size. */
+.ud-avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border: 1px solid var(--tone-brand-border);
+  border-radius: var(--radius-pill);
+  background: var(--tone-brand-surface);
+  color: var(--tone-brand-foreground);
+  font-size: 0.875rem;
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  user-select: none;
+}
+.ud-avatar-lg { inline-size: 2.5rem; block-size: 2.5rem; font-size: 1rem; }
+
 /* Table. Wrap it so a wide table scrolls instead of widening the page:
    <div class="ud-table-scroll" role="region" aria-label="Orders" tabindex="0">.
    Rows have no press state; a clickable row is a ud-pressable inside a cell.

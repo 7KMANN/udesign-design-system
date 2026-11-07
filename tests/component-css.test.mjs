@@ -47,6 +47,7 @@ const MIRROR = {
   "progress-ring": "motion primitive, renders computed values; no static use",
   "rolling-consistency-chip": "motion primitive over Badge; no static use",
   moment: "gamification, gated behind data-game; no static use",
+  avatar: ["ud-avatar", "ud-avatar-lg"],
   "status-badge": "no generator showed a status; .ud-badge covers the labels generators wrote",
   "metric-card": "no generator wrote one",
   "responsive-collection": "a show/hide wrapper with no surface of its own",
@@ -136,4 +137,19 @@ test("the build appends the stylesheet to both compiled token files", () => {
     const compiled = fs.readFileSync(path.join(root, file), "utf8").replace(/\r\n/g, "\n")
     assert.ok(css && compiled.includes(css.replace(/\r\n/g, "\n")), `${file} does not carry css/components.css; run npm run build`)
   }
+})
+
+test("the avatar is a brand-toned circle, and its large size is larger than its medium one", () => {
+  const size = (selector) => {
+    const rule = rules.find((r) => r.selector === selector)
+    assert.ok(rule, `${selector} rule missing`)
+    return Number(rule.body.match(/(?:^|;|\s)inline-size:\s*([\d.]+)rem/)?.[1])
+  }
+  assert.ok(size(".ud-avatar-lg") > size(".ud-avatar"))
+  const base = rules.find((r) => r.selector === ".ud-avatar")
+  assert.match(base.body, /var\(--tone-brand-surface\)/)
+  assert.match(base.body, /var\(--tone-brand-border\)/)
+  assert.match(base.body, /var\(--tone-brand-foreground\)/)
+  const compiled = fs.readFileSync(path.join(root, "dist/tokens.css"), "utf8")
+  assert.match(compiled, /\.ud-avatar\s*\{/)
 })
