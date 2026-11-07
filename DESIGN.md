@@ -481,7 +481,7 @@ Labels and their values read at a glance, such as a product's specifications, ar
 
 The source registry includes these base components: button, badge, alert, card, input, textarea, select, native-select, choice-group, checkbox, switch, slider, field, description-list, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
 
-The application patterns are icon-button, status-badge, avatar, metric-card, empty-state, responsive-collection, and gallery. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included.
+The application patterns are icon-button, status-badge, avatar, metric-card, empty-state, responsive-collection, and gallery. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included. `avatar` is not in `core`: install it by name, `@udesign/avatar`, as the Boutique does, like the items named next that core leaves out.
 
 The motion primitives - progress-ring, rolling-consistency-chip, and moment - are deliberately excluded from `core`, and so is gallery, which adds swiper to an application's dependencies. See "Motion primitives" above; `moment` in particular is gamification-exclusive and should only land in a repository that has declared `data-game="on"`. `APPROVED 2026-10-26 D-54` for the gallery
 
