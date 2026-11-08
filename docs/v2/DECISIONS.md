@@ -1610,3 +1610,25 @@ to keep; dots read once per gallery, which goes wrong on the next photo.
 - The two roles are new tokens, theme-stable as `--backdrop` is: the component stylesheet may not name a
   primitive (ban 1), and a mark over a photo answers the photo, not the theme.
 
+
+---
+
+## Round 23 - 2026-11-07 (a person's initial beside their name)
+
+**Evidence:** Boutique's payment card is signed by the organizer: a circle with their initial and their name
+beside it, like a sender. No component drew it, so Boutique would have drawn it by hand, as each consumer
+once typed its own logo (D-62). Kaleb approved D-64 on 2026-11-07 ("Approve and release"): the `DESIGN.md`
+entry carries `APPROVED 2026-11-07 D-64`. Shipped as v3.7.0.
+
+### D-64 · A person's initial beside their name · `APPROVED` Kaleb, 2026-11-07
+
+**Question:** a card that is signed by a person needs a mark for who signed it. The name alone reads as a
+label, and each consumer would draw its own circle and its own rule for the letter.
+
+**Proposed:** `Avatar` (registry `avatar`) and its static twin `ud-avatar`: the first initial of the person's
+first word, uppercased with fr-CA rules, in a circle on the brand tone. It is decorative, `aria-hidden="true"`,
+because the person's name is always written beside it and the avatar never stands alone. Two sizes: `md`
+(2rem, the default) and `lg` (2.5rem, `ud-avatar-lg` in the static build). It is installed by name,
+`@udesign/avatar`, and is not in `core`.
+
+**Approved:** "Approve and release", Kaleb, 2026-11-07.
