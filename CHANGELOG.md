@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.7.0 (2026-11-08)
+
+An avatar: a person's initial in a circle beside their name, for a signed card (D-64).
+
 ### Additive
 
 - **`Avatar` and `ud-avatar`** (registry `avatar`; D-64): a person's first initial, uppercased with fr-CA rules, in a circle on the brand tone, to sit beside their name on a signed card. Decorative and `aria-hidden`, since the name is always beside it and it never stands alone. Sizes `md` (2rem, the default) and `lg` (2.5rem, `ud-avatar-lg`). Installed by name, not in `core`.
