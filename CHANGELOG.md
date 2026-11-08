@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.7.1 (2026-11-08)
+
+The avatar draws nothing when a name has no letter, with its tests.
+
+### Fixed
+
+- **`Avatar` draws nothing when the name has no letter**: a name with no letter (empty or only whitespace) no longer renders an empty circle. The React component returns nothing, and the static markup omits the element.
+- **Tests**: the className order and the empty name are covered.
+
 ## 3.7.0 (2026-11-08)
 
 An avatar: a person's initial in a circle beside their name, for a signed card (D-64).

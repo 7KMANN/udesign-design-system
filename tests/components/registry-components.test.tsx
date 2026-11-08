@@ -754,4 +754,25 @@ describe("Avatar", () => {
     const { container } = render(<Avatar className="shrink-0" name="Justin" />)
     expect(container.firstElementChild).toHaveClass("shrink-0")
   })
+
+  // The test alias of cn is a plain join (tailwind-merge is not a dependency here), so what
+  // this holds is the order a consumer's tailwind-merge resolves by: the caller's class
+  // comes after the component's own size, and the last conflicting utility wins.
+  it("puts a caller's size after its own, so the merge lets the caller win", () => {
+    const { container } = render(<Avatar className="size-12" name="Justin" />)
+    const classes = (container.firstElementChild?.className ?? "").split(/\s+/)
+    expect(classes.indexOf("size-12")).toBeGreaterThan(classes.indexOf("size-8"))
+    expect(classes.at(-1)).toBe("size-12")
+  })
+
+  it("draws nothing when there is no letter to show", () => {
+    const { container, rerender } = render(<Avatar name="" />)
+    expect(container).toBeEmptyDOMElement()
+
+    rerender(<Avatar name="   " />)
+    expect(container).toBeEmptyDOMElement()
+
+    rerender(<Avatar name={"\t\n "} size="lg" />)
+    expect(container).toBeEmptyDOMElement()
+  })
 })
