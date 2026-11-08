@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.7.0 (2026-11-08)
+
+An avatar: a person's initial in a circle beside their name, for a signed card (D-64).
+
+### Additive
+
+- **`Avatar` and `ud-avatar`** (registry `avatar`; D-64): a person's first initial, uppercased with fr-CA rules, in a circle on the brand tone, to sit beside their name on a signed card. Decorative and `aria-hidden`, since the name is always beside it and it never stands alone. Sizes `md` (2rem, the default) and `lg` (2.5rem, `ud-avatar-lg`). Installed by name, not in `core`.
+
+### For Boutique
+
+Add `@udesign/avatar` by name and sync the tokens.
+
 ## 3.6.0 (2026-10-27)
 
 A photo with a background of its own fills the gallery's square, the dots read the photo under them, and a quiet button shows a covered photo whole. Decided in `docs/v2/DECISIONS.md` round 22 (D-63), from Kaleb's screenshots of Boutique's item view. Kaleb approved it on 2026-10-27, wording included: the rules it adds to `DESIGN.md` carry `APPROVED 2026-10-27`.

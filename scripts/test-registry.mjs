@@ -30,6 +30,7 @@ const requiredItems = [
   "table",
   "icon-button",
   "status-badge",
+  "avatar",
   "metric-card",
   "empty-state",
   "responsive-collection",
@@ -115,6 +116,7 @@ assert.match(files["badge.tsx"], /export type UDesignTone/)
 assert.match(files["badge.tsx"], /export interface BadgeProps/)
 assert.match(files["badge.tsx"], /tone\?: UDesignTone/)
 assert.match(files["status-badge.tsx"], /export interface StatusBadgeProps/)
+assert.match(files["avatar.tsx"], /export interface AvatarProps/)
 assert.match(files["icon-button.tsx"], /export interface IconButtonProps/)
 assert.match(files["icon-button.tsx"], /label: string/)
 assert.match(files["metric-card.tsx"], /export interface MetricCardProps/)

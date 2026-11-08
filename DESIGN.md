@@ -91,6 +91,9 @@ components:
     fontSize: "11.5px"
     rounded: "{rounded.full}"
     padding: "5px 11px"
+  avatar:
+    rounded: "{rounded.full}"
+    size: 32px
   confidential-footer:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.muted}"
@@ -472,11 +475,13 @@ One gallery shows a product's photos everywhere: the registry `Gallery` (`galler
 
 Labels and their values read at a glance, such as a product's specifications, are a `DescriptionList` (`description-list`, static `ud-description-list`): each label semibold beside its muted value, on a grid as wide as the longest label and the rest, `--space-3` between rows and `--space-4` between the columns, within 72 characters. A long value wraps inside its column. A line without a label is a list, not a description. `APPROVED 2026-10-26 D-57`
 
+**`avatar`** (registry `Avatar`, static `ud-avatar`) is a person's first initial, uppercased with Quebec French rules, in a circle on the brand tone (`--tone-brand-surface`, `-border`, `-foreground`). **Use when** a person's name stands beside it, as a sender is signed: the name is always written next to it and the avatar never stands alone. It is decorative, `aria-hidden="true"`, since the name carries the meaning. Two sizes: `md` (2rem, the default) and `lg` (2.5rem, `ud-avatar-lg`). `APPROVED 2026-11-07 D-64`
+
 ## Registry components
 
 The source registry includes these base components: button, badge, alert, card, input, textarea, select, native-select, choice-group, checkbox, switch, slider, field, description-list, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
 
-The application patterns are icon-button, status-badge, metric-card, empty-state, responsive-collection, and gallery. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included.
+The application patterns are icon-button, status-badge, avatar, metric-card, empty-state, responsive-collection, and gallery. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included. `avatar` is not in `core`: install it by name, `@udesign/avatar`, as a consumer repository does, like the items named next that core leaves out.
 
 The motion primitives - progress-ring, rolling-consistency-chip, and moment - are deliberately excluded from `core`, and so is gallery, which adds swiper to an application's dependencies. See "Motion primitives" above; `moment` in particular is gamification-exclusive and should only land in a repository that has declared `data-game="on"`. `APPROVED 2026-10-26 D-54` for the gallery
 
