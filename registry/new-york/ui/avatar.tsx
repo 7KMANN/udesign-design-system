@@ -20,8 +20,12 @@ function initial(name: string) {
 }
 
 // Decorative: a person's name always stands beside it, so assistive technology reads the
-// name once and skips the letter. Never place it alone.
+// name once and skips the letter. Never place it alone. A name with no letter (empty or
+// only whitespace) draws nothing.
 function Avatar({ name, size = "md", className }: AvatarProps) {
+  const letter = initial(name)
+  // No letter, no circle: an empty one would be a meaningless mark.
+  if (!letter) return null
   return (
     <span
       aria-hidden="true"
@@ -31,7 +35,7 @@ function Avatar({ name, size = "md", className }: AvatarProps) {
         className,
       )}
     >
-      {initial(name)}
+      {letter}
     </span>
   )
 }
