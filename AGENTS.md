@@ -9,6 +9,11 @@
 
 Build to these. Audit against them. The sections below make each one exact.
 
+## Development work: ECHELON
+
+- **Development work** (code, research, systems, decisions) is tracked in ECHELON through the Ask UDesign tools: `echelon_start` begins a session, one `echelon_log` ends it, and `echelon_ask` puts a question to Kaleb or Jules. Rules: [`udesign-docs/platform/echelon.md@v0.14.0`](https://github.com/7KMANN/udesign-docs/blob/v0.14.0/platform/echelon.md).
+- **Code tickets** stay in this repository's GitHub Issues; each issue names its ECHELON item (`ECHELON: ECH-###` in the body) and each pull request cites it (`Refs ECH-###`).
+
 ## The rules, exactly
 
 **1. Feedback floor.** There is no opt-out. The full feedback model
