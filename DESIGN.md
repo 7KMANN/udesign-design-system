@@ -160,10 +160,34 @@ A scenario may change:
 
 - Color assignment, drawn from tokens. A token the system lacks is added through the path below, never written locally.
 - Density, emphasis budget and the size of reactions within the existing motion roles and intensity cap.
+- A default rule of this file or of `AGENTS.md` that its decision names as a departure. A departure holds only inside the scenario, and only as its entry below states it.
 
-A scenario may not change the profile or its shell, accessibility (contrast, targets, focus, reduced motion), the motion roles and intensity cap, tokens-only color, or any numbered ban.
+A scenario may not change the profile or its shell, accessibility (contrast floors, 44px targets, visible focus, and reduced motion: nothing moves), the motion roles and intensity cap, tokens-only color, or any numbered ban.
 
-Ratified scenarios: none yet. Each is listed here with its decision number once approved.
+A scenario is opted into on a region, never on the document: its attribute sits on the root of the surface it adapts (`data-scenario="<name>"`), and `data-design` stays on `<html>`. Its tokens compile only under that attribute, so a surface that does not opt in sees none of them.
+
+Ratified scenarios, each with its decision:
+
+#### Task tool, D-65
+
+For a list someone ticks through all day: everyday tasks, answering questions, following work in progress. Opt in with `data-scenario="task"` on the region root (an `AppShellPane` or the layout around it), inside the `operations` profile. Reference screen: [`examples/task-tool-today.tsx`](examples/task-tool-today.tsx); the showcase page "Task tool" shows the whole tool. `APPROVED 2026-11-15 D-65`
+
+What it changes, as rules:
+
+1. Touchable elements (rows, question cards, the capture field, menus, the toast) take `--task-radius` (6px). Panes and the frame stay square.
+2. Kinds of work take the `--task-cat-*` family: `day`, `business`, `ideas`, `dev`. It is neither a tone (status) nor an entity (record type), and never stands in for either. Two slots stay free under a cap of six.
+3. A category hue may fill a repeated control, the checked `TaskCheck`, and may color text, the list header, on a card or page only. Every hue sits beside its word (ban 11).
+4. The all-clear mark is `--task-tick` (brass). It is not a control. The scenario adds no accent-filled control: its screens spend none.
+5. Counts are set in the body face with tabular figures (`font-variant-numeric: tabular-nums`), not `--font-numeric`. Codes keep `--font-numeric`.
+6. A second-level rail may sit inside the operations pane. The `AppShell` stays.
+7. Under reduced motion a ticked row fades by opacity over `--task-fade-reduced` (120ms) instead of 0ms. Nothing slides; the check appears at once.
+8. Holds that are not motion are tokens: `--task-undo-window` (3s) holds a change before it is sent, and undo inside it sends nothing. `--task-hold` and `--task-leave` alias the `fast` and `standard` motion roles. A countdown drawn over the undo window runs `linear`; `udesign-check` passes exactly that.
+9. A task row is two controls, not one `Pressable`: `TaskCheck` is the row's Tab stop (Space ticks it, Arrow keys move, Enter opens) and the title is a mouse-only button that opens the item.
+10. The tick is the registry `TaskCheck` (`@udesign/task-check`, installed by name): a rounded square of `--task-box` (20px) with a ring and fill in the list's hue and the check drawn as a stroke. The row, not the box, is the hit area.
+11. Comfortable density: rows are `--task-row-height` (48px) and titles are `--text-h3`.
+12. Priority is its own channel: `--task-priority-high`, one hue, top level only, always with its glyph and its words for assistive technology.
+
+Also fixed by D-65: overdue is `--task-overdue` (the warning tone's foreground), the only warning use in the tool. A ticked row leaves at once: the check draws over `--task-hold`, then the row collapses over `--task-leave`; its inner row never changes height. Questions come below the owner's tasks, their extra actions (reply, snooze, reject) behind one "More" control, and agents' questions on Dev items in a block of their own. Not part of the scenario: a quiet color mode, a circle box, a ticked row that stays a moment, compact density.
 
 **Changing the system.** A new scenario, token, variant or rule change goes through these steps in order:
 
@@ -502,7 +526,7 @@ Labels and their values read at a glance, such as a product's specifications, ar
 
 The source registry includes these base components: button, badge, alert, card, input, textarea, select, native-select, choice-group, checkbox, switch, slider, field, description-list, dialog, sheet, tooltip, tabs, table, spinner, skeleton, and pressable.
 
-The application patterns are icon-button, status-badge, avatar, metric-card, empty-state, responsive-collection, and gallery. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included. `avatar` is not in `core`: install it by name, `@udesign/avatar`, like the items named next that core leaves out.
+The application patterns are icon-button, status-badge, avatar, metric-card, empty-state, responsive-collection, and gallery. The page shells are page-canvas (`presentation`) and app-shell (`operations`). The `core` registry item installs the recommended set, shells included. `avatar` is not in `core`: install it by name, `@udesign/avatar`, like the items named next that core leaves out. Neither is `task-check`, the task tool scenario's tick (D-65): install it by name, `@udesign/task-check`, and render it only inside `data-scenario="task"`.
 
 The motion primitives - progress-ring, rolling-consistency-chip, and moment - are deliberately excluded from `core`, and so is gallery, which adds swiper to an application's dependencies. See "Motion primitives" above; `moment` in particular is gamification-exclusive and should only land in a repository that has declared `data-game="on"`. `APPROVED 2026-10-26 D-54` for the gallery
 

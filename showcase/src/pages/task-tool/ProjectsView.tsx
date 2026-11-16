@@ -2,7 +2,8 @@ import * as React from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { Horizon, Item, Project, ProjectStatus } from './data';
 import { Content, str, useLang, useT } from './i18n';
-import { Menu, OwnerMark, rowKeys, TaskCheck } from './parts';
+import { TaskCheck } from '@/components/ui/task-check';
+import { Menu, OwnerMark, rowKeys } from './parts';
 import type { TaskStore } from './store';
 
 export const STATUSES: ProjectStatus[] = ['Not started', 'Working', 'Stuck', 'Done'];
@@ -52,8 +53,10 @@ function ChildRow({ item, store, onOpen }: { item: Item; store: TaskStore; onOpe
         <div className="tt-cell-task" data-cat={item.category} data-checked={checked}>
           <TaskCheck
             ref={checkRef}
+            className="tt-check"
             checked={checked}
-            label={str(item.title, item.origin, lang)}
+            hue={item.category}
+            aria-label={str(item.title, item.origin, lang)}
             onCheckedChange={(value) => store.setProjectStatus(item, value ? 'Done' : 'Working')}
             onKeyDown={(event) => rowKeys(event, open)}
           />

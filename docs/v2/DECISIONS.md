@@ -1632,3 +1632,75 @@ because the person's name is always written beside it and the avatar never stand
 `@udesign/avatar`, and is not in `core`.
 
 **Approved:** "Approve and release", Kaleb, 2026-11-07.
+
+---
+
+## Round 24 - 2026-11-15 (the task tool scenario)
+
+**Evidence:** ECHELON, the owners' task tool in GlobalVision, read as a settings table: square hover blocks
+on every row, statuses and codes on each line, no one-click done. The operations rules applied literally to
+a list ticked through all day produced it. A clickable "Task tool" page in the showcase compared two routes
+and their options; Kaleb reviewed it in a browser, in both themes and at 375px, and approved Route A with
+its options on 2026-11-15, the tick animation included after watching it run. He added one change the same
+day: agents' questions on Dev items reach Today in a block of their own. Work item: ECH-347. Shipped as
+v3.8.0.
+
+### D-65 · Task tool scenario · `APPROVED` Kaleb, 2026-11-15
+
+**Question:** the six rules bind every operations screen the same way, but a list someone ticks through
+fifty times a day needs other color, density and emphasis than a settings page. Should the system grow by
+named adaptations, and is the task tool the first?
+
+**Approved, the mechanism:** the system is a base that grows by scenario. The profile is the theme and
+always governs; a scenario is a named, approved adaptation inside one profile for one kind of surface. It may
+change color assignment (tokens only), density, emphasis budget, reaction size, and the default rules its
+decision names as departures, inside the scenario only. It may not change the profile or its shell,
+accessibility, the motion roles and the intensity cap, or the numbered bans. A region opts in with
+`data-scenario="<name>"` on its root, and its tokens compile only under that attribute. A new scenario,
+token, variant or rule change is built first as a showcase page, shown to Kaleb in a browser in both themes
+and at 375px, and approved there; a written description is not approval. Only then is it recorded here and
+released. Until it is listed in `DESIGN.md` "Scenarios", a product must not adopt it. Text: `AGENTS.md`
+"Scenarios and changing the system", `DESIGN.md` "Scenarios", `README.md` rule 9.
+
+**Approved, the task tool (`data-scenario="task"`):** Route A ("Lists"): colored lists, the rounded-square
+check, comfortable density, a ticked row that leaves at once, a 3 second undo window in which nothing is
+sent, the owner's tasks first on Today with questions below, reply, snooze and reject behind one "More"
+control, agents' questions on Dev items in their own block, and Dev in olive. Its departures from the
+default rules, in order:
+
+1. Touchable elements (rows, question cards, capture field, menus, toast) get `--task-radius: 6px`; panes
+   and frame stay square.
+2. A new color role family `--task-cat-*` for kinds of work; neither tones nor entities.
+3. Category hue as a fill on a repeated control (the checked box) and as text (the list header).
+4. Brass from the accent's family on the all-clear mark, which is not a control; no accent-filled control
+   is added.
+5. Counts in Geist with tabular figures instead of `--font-numeric` mono; codes keep mono.
+6. A second-level rail inside the operations pane.
+7. Reduced motion keeps one 120 ms opacity fade (`--task-fade-reduced`) instead of 0 ms.
+8. A hold that is not motion becomes a token: `--task-undo-window: 3s`; `--task-hold` and `--task-leave`
+   alias the `fast` and `standard` roles.
+9. A task row is two controls (checkbox as Tab stop, mouse-only title button), not one `Pressable`.
+10. A new primitive `TaskCheck`: rounded square, 20 px mark, ring in the list hue, check drawn as a stroke,
+    hit area the row.
+11. Comfortable density: 48 px rows, title at `--text-h3`.
+12. Priority as its own channel: one hue, top level only, always with a glyph.
+
+**Tokens:** `--task-cat-day` #0f7a6c (dark #4fc7b2), `--task-cat-business` #2e5fbf (#7fa6f0),
+`--task-cat-ideas` #b03a86 (#e58ac4), `--task-cat-dev` #6a7414 (#b9c25a), `--task-priority-high` #c4321f
+(#ff8a75), `--task-tick` #8a6230 (#dec5a6), `--task-cat-on` and `--task-tick-on` #ffffff (#1b1b1b),
+`--task-overdue` the warning tone's foreground. Every mark is at least 3:1 on card, page and row hover in
+both themes (lowest: olive 3.80 on light hover); a hue as text is at least 4.5:1 on card and page (lowest:
+olive 4.52 on the light page). Watch item: olive against the success green of a Done cell is 1.12 in
+luminance; they differ by hue.
+
+**Not shipped:** Quiet mode, the circle box, "Stays a moment", compact density, the mock-only translate
+delay, Route B (the planner).
+
+**Approved:** by Kaleb on 2026-11-15, after visual review in the showcase.
+
+### Derived in round 24, not asked
+
+- `udesign-check`'s `raw-motion` passes `linear` in a declaration timed by `var(--task-undo-window)`: the
+  toast's countdown bar draws a hold, and a countdown that eases misstates the time left (departure 8).
+  Nothing else gets that pass.
+- `--task-hit` aliases `--touch-target-min` rather than writing 44px, so it follows the touch floor.

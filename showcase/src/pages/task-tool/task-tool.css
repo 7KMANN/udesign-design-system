@@ -11,78 +11,16 @@
  */
 
 /* ------------------------------------------------------------------ */
-/* Proposed tokens, light                                              */
+/* The scenario's tokens (--task-*) come from dist/tokens.css, reduced  */
+/* motion included. Only the hue of the current row or list is set     */
+/* here, from its data-cat.                                             */
 /* ------------------------------------------------------------------ */
-[data-scenario="task"] {
-  /* Category threads: a family of its own, not --entity-* (taken in
-     GlobalVision) and not --tone-* (statuses). Small marks only. */
-  --task-cat-day: #0f7a6c;
-  --task-cat-business: #2e5fbf;
-  --task-cat-ideas: #b03a86;
-  /* Dev is olive, machine oil. Violet left the family on 2026-11-15: it is
-     the progress tone, and Dev sat beside the violet "Working" cells. */
-  --task-cat-dev: #6a7414;
-  /* Two slots stay free; the family stops at six. */
-  /* Glyph drawn on a filled category or tick. */
-  --task-cat-on: #ffffff;
-
-  /* The all-clear mark: brass, the brand's own thread. */
-  --task-tick: #8a6230;
-  --task-tick-on: #ffffff;
-
-  /* Priority: its own channel. One hue, top level only, always with a glyph. */
-  --task-priority-high: #c4321f;
-
-  /* Overdue: the reserved warning treatment is the existing warning tone. */
-  --task-overdue: var(--tone-warning-foreground);
-  --task-overdue-surface: var(--tone-warning-surface);
-
-  /* Shape and density. */
-  --task-radius: 6px;
-  --task-row-height: 48px;
-  --task-row-font: var(--text-h3);
-  --task-box: 20px;
-  --task-hit: var(--touch-target-min);
-
-  /* Timing. Motion uses --motion-* roles; these two are holds, not motion. */
-  --task-hold: var(--motion-duration-fast);
-  --task-leave: var(--motion-duration-standard);
-  /* A change is sent when its toast closes, 3 s after the last change. Undo
-     inside the window means nothing reached the server. */
-  --task-undo-window: 3s;
-  /* Reduced motion: the one fade that must not collapse to 0ms. */
-  --task-fade-reduced: 120ms;
-
-  /* Hue for the current row or list; set by data-cat below. */
-  --cat: var(--muted-foreground);
-}
-
-/* ------------------------------------------------------------------ */
-/* Proposed tokens, dark                                               */
-/* ------------------------------------------------------------------ */
-:root[data-theme="dark"] [data-scenario="task"] {
-  --task-cat-day: #4fc7b2;
-  --task-cat-business: #7fa6f0;
-  --task-cat-ideas: #e58ac4;
-  --task-cat-dev: #b9c25a;
-  --task-cat-on: #1b1b1b;
-  --task-tick: #dec5a6;
-  --task-tick-on: #1b1b1b;
-  --task-priority-high: #ff8a75;
-}
-
+[data-scenario="task"] { --cat: var(--muted-foreground); }
 [data-scenario="task"] [data-cat="day"] { --cat: var(--task-cat-day); }
 [data-scenario="task"] [data-cat="business"] { --cat: var(--task-cat-business); }
 [data-scenario="task"] [data-cat="ideas"] { --cat: var(--task-cat-ideas); }
 [data-scenario="task"] [data-cat="dev"] { --cat: var(--task-cat-dev); }
 
-/* Reduced motion: no slide; the check appears at once and the row fades. */
-@media (prefers-reduced-motion: reduce) {
-  [data-scenario="task"] {
-    --task-leave: var(--task-fade-reduced);
-    --task-hold: 0ms;
-  }
-}
 .tt-focus:focus-visible {
   outline: 2px solid var(--interactive-focus);
   outline-offset: -2px;
@@ -322,7 +260,7 @@
   border: 0;
   background: transparent;
   color: var(--foreground);
-  font-size: var(--task-row-font);
+  font-size: var(--text-h3);
 }
 .tt-capture input::placeholder { color: var(--muted-foreground); }
 .tt-capture input:focus { outline: none; }
@@ -385,7 +323,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   [data-scenario="task"] .tt-rowwrap[data-phase="leave"] { grid-template-rows: 1fr; }
-  [data-scenario="task"] .tt-rowwrap { transition: opacity var(--task-leave) linear; }
+  [data-scenario="task"] .tt-rowwrap { transition: opacity var(--task-leave) var(--motion-easing-standard); }
 }
 
 .tt-row {
@@ -424,7 +362,7 @@
   border: 0;
   background: transparent;
   color: inherit;
-  font-size: var(--task-row-font);
+  font-size: var(--text-h3);
   text-align: start;
   cursor: pointer;
 }
@@ -493,62 +431,9 @@
 .tt-row:focus-within .tt-owner { opacity: 1; }
 
 /* ------------------------------------------------------------------ */
-/* The tick                                                            */
+/* The tick is the registry TaskCheck; only its place in a row is set   */
+/* here (the panel title and steps below).                             */
 /* ------------------------------------------------------------------ */
-.tt-check {
-  display: grid;
-  place-items: center;
-  inline-size: var(--task-hit);
-  block-size: var(--task-hit);
-  max-block-size: var(--task-row-height);
-  padding: 0;
-  border: 0;
-  border-radius: var(--task-radius);
-  background: transparent;
-  cursor: pointer;
-}
-.tt-check:focus-visible { outline: 2px solid var(--interactive-focus); outline-offset: -2px; }
-.tt-check-box {
-  display: grid;
-  place-items: center;
-  inline-size: var(--task-box);
-  block-size: var(--task-box);
-  border: 2px solid var(--cat);
-  border-radius: 5px;
-  background: transparent;
-  color: var(--task-tick-on);
-  transition:
-    background-color var(--motion-duration-instant) var(--motion-easing-standard),
-    border-color var(--motion-duration-instant) var(--motion-easing-standard),
-    scale var(--motion-duration-instant) var(--motion-easing-standard);
-}
-[data-scenario="task"] .tt-check-box { border-color: var(--cat); color: var(--task-cat-on); }
-.tt-check-box svg {
-  inline-size: 70%;
-  block-size: 70%;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.tt-check-box path {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset var(--motion-duration-fast) var(--motion-easing-standard);
-}
-/* A faint preview of the check on hover, so the target reads as "tick me". */
-@media (hover: hover) {
-  .tt-check:hover .tt-check-box path { stroke-dashoffset: 0; opacity: 0.4; }
-  [data-scenario="task"] .tt-check:hover .tt-check-box { color: var(--cat); }
-}
-.tt-check:active .tt-check-box { scale: var(--motion-press-scale); background: var(--interactive-pressed); }
-[data-scenario="task"] .tt-check[data-state="checked"] .tt-check-box {
-  border-color: var(--cat);
-  background: var(--cat);
-  color: var(--task-cat-on);
-}
-.tt-check[data-state="checked"] .tt-check-box path { stroke-dashoffset: 0; opacity: 1; }
 
 /* ------------------------------------------------------------------ */
 /* Waiting on you                                                      */
@@ -569,7 +454,7 @@
 }
 .tt-ask-who { font-size: 0.75rem; color: var(--muted-foreground); }
 .tt-ask-who strong { color: var(--foreground); font-weight: 600; }
-.tt-ask-q { margin: 0; font-size: var(--task-row-font); font-weight: 500; line-height: 1.4; }
+.tt-ask-q { margin: 0; font-size: var(--text-h3); font-weight: 500; line-height: 1.4; }
 .tt-ask-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .tt-ask-actions button { block-size: 36px; min-height: 36px; }
 .tt-rec {

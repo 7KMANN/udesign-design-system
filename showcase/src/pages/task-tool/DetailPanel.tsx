@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { IconButton } from '@/components/ui/icon-button';
 import type { Item, Lang, Project, Text } from './data';
 import { Content, pick, str, useLang, useT } from './i18n';
-import { DueMark, PriorityMark, TaskCheck, useFocusTrap } from './parts';
+import { TaskCheck } from '@/components/ui/task-check';
+import { DueMark, PriorityMark, useFocusTrap } from './parts';
 import type { TaskStore } from './store';
 
 export type Detail = { type: 'item'; id: string } | { type: 'project'; id: string };
@@ -172,8 +173,10 @@ export function DetailPanel({
             <div className="tt-panel-title" data-checked={checked} data-notick={project || isDev ? true : undefined}>
               {item && !isDev ? (
                 <TaskCheck
+                  className="tt-check"
                   checked={checked}
-                  label={str(item.title, item.origin, lang)}
+                  hue={item.category}
+                  aria-label={str(item.title, item.origin, lang)}
                   onCheckedChange={(value) => {
                     if (item.projectId) store.setProjectStatus(item, value ? 'Done' : 'Working');
                     else if (value) store.complete(item);
@@ -220,7 +223,7 @@ export function DetailPanel({
                 <ul className="tt-subitems">
                   {subItems.map((sub) => (
                     <li key={sub.id} data-checked={sub.done}>
-                      <TaskCheck checked={sub.done} label={str(sub.title, origin, lang)} onCheckedChange={() => store.toggleSubItem(item!.id, sub.id)} />
+                      <TaskCheck className="tt-check" hue={item!.category} checked={sub.done} aria-label={str(sub.title, origin, lang)} onCheckedChange={() => store.toggleSubItem(item!.id, sub.id)} />
                       <Shown text={sub.title} origin={origin} forceOriginal={showOriginal} />
                     </li>
                   ))}
@@ -234,7 +237,7 @@ export function DetailPanel({
                 <ul className="tt-subitems">
                   {projectChildren.map((child) => (
                     <li key={child.id} data-checked={child.projectStatus === 'Done'}>
-                      <TaskCheck checked={child.projectStatus === 'Done'} label={str(child.title, child.origin, lang)} onCheckedChange={(value) => store.setProjectStatus(child, value ? 'Done' : 'Working')} />
+                      <TaskCheck className="tt-check" hue={child.category} checked={child.projectStatus === 'Done'} aria-label={str(child.title, child.origin, lang)} onCheckedChange={(value) => store.setProjectStatus(child, value ? 'Done' : 'Working')} />
                       <Content text={child.title} origin={child.origin} />
                     </li>
                   ))}

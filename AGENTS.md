@@ -72,11 +72,14 @@ styled like a settings panel.
 
 - No approved scenario and no example in `examples/` for what you are building: propose a scenario.
   Do not apply the nearest rule literally and do not improvise a local style.
-- A scenario may change color assignment, density, emphasis budget and reaction size. It may not
-  change the profile or its shell, accessibility, the `--motion-*` roles and the intensity cap, or
-  the bans, and its color is tokens only. A token the scenario lacks is added through the path below.
-- Approved scenarios are listed in `DESIGN.md` "Scenarios". Until one is listed it lives in the
-  showcase only, and a product must not adopt it.
+- A scenario may change color assignment, density, emphasis budget and reaction size, and any
+  default rule its decision names as a departure, inside the scenario only. It may not change the
+  profile or its shell, accessibility, the `--motion-*` roles and the intensity cap, or the bans,
+  and its color is tokens only. A token the scenario lacks is added through the path below.
+- Approved scenarios are listed in `DESIGN.md` "Scenarios", each with its rules. Until one is
+  listed it lives in the showcase only, and a product must not adopt it. A region opts in with
+  `data-scenario="<name>"` on its root; `data-design` stays on `<html>`.
+- Ratified: the task tool (D-65), `data-scenario="task"`, with its tick `@udesign/task-check`.
 - Any new scenario, token, variant or rule change is built first as a showcase page, shown to
   Kaleb in a browser in both themes and at 375px, and approved by him there. A written description
   is not approval. Only then is it recorded as `APPROVED D-nn` and released. How: `DESIGN.md`
@@ -98,9 +101,9 @@ drift, not the code.
 
 1. [`DESIGN.md`](DESIGN.md): "Scenarios", "Emphasis and hierarchy", "Interaction states", "Motion",
    "Components", "Banned design patterns". The rest is reference.
-2. Building a screen: start from [`examples/`](examples/), one reference screen per profile plus
-   one static-HTML page. Copy the part you need; each restraint rule is a comment on the control
-   it governs.
+2. Building a screen: start from [`examples/`](examples/), one reference screen per profile, one
+   static-HTML page, and one per ratified scenario. Copy the part you need; each restraint rule is
+   a comment on the control it governs.
 3. Any change to an interactive element (a button, form, link, row, tab, dialog, filter, upload, or
    navigation item) loads the `interface-responsiveness` skill first, every time. One button
    counts. Source: [`skills/interface-responsiveness/SKILL.md`](https://github.com/7KMANN/udesign-docs/blob/v0.9.0/skills/interface-responsiveness/SKILL.md).

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
 import { ChevronsUp, Clock, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TaskCheck } from '@/components/ui/task-check';
 import type { Item, Question } from './data';
 import { Content, dueLabel, str, useLang, useT } from './i18n';
 import type { Phase, TaskStore } from './store';
@@ -9,30 +9,6 @@ import type { Phase, TaskStore } from './store';
 /** The id of the item open in the detail view, so its row reads as selected. */
 export const SelectedContext = React.createContext<string | null>(null);
 
-/**
- * The tick. A real checkbox (Radix, role="checkbox", Space toggles), drawn
- * as a rounded square. The hit area is the row height, the mark is 20px.
- */
-export const TaskCheck = React.forwardRef<HTMLButtonElement, {
-  checked: boolean;
-  label: string;
-  onCheckedChange: (checked: boolean) => void;
-  onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
-}>(({ checked, label, onCheckedChange, onKeyDown }, ref) => (
-  <CheckboxPrimitive.Root
-    ref={ref}
-    className="tt-check"
-    checked={checked}
-    aria-label={label}
-    onCheckedChange={(value) => onCheckedChange(value === true)}
-    onKeyDown={onKeyDown}
-  >
-    <span className="tt-check-box" aria-hidden="true">
-      <svg viewBox="0 0 16 16"><path d="M3.6 8.4l2.9 2.9 5.9-6.4" pathLength={1} /></svg>
-    </span>
-  </CheckboxPrimitive.Root>
-));
-TaskCheck.displayName = 'TaskCheck';
 
 /** Arrow keys move between ticks in the current scope; Enter opens the item. */
 export function rowKeys(event: React.KeyboardEvent<HTMLElement>, open: () => void) {
@@ -119,7 +95,9 @@ export function TaskRow({
           <TaskCheck
             ref={checkRef}
             checked={checked}
-            label={str(item.title, item.origin, lang)}
+            className="tt-check"
+            hue={item.category}
+            aria-label={str(item.title, item.origin, lang)}
             onCheckedChange={(value) => (value ? store.complete(item) : store.reopen(item))}
             onKeyDown={(event) => rowKeys(event, open)}
           />
