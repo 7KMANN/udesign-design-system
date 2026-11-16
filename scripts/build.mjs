@@ -400,6 +400,77 @@ function formatMomentBlock(baseTree, selector) {
   return L.join('\n');
 }
 
+// Scenarios (D-65): each group under `scenario` compiles only under its own
+// [data-scenario] attribute, never at bare :root, as the moment family stays behind
+// data-game. Its dark values sit under `dark.scenario` and combine with the dark selectors.
+// A reference compiles to the var() of the role it names, so an alias keeps following
+// the profile and the theme it is read in.
+function scenarioReferenceVar(reference) {
+  if (PATH_TO_VAR[reference]) return PATH_TO_VAR[reference];
+  const [family, group, key] = reference.split('.');
+  if (family === 'motion' && group === 'duration' && MOTION_DURATION_VAR[key]) return MOTION_DURATION_VAR[key];
+  if (family === 'responsive' && RESPONSIVE_VAR[group]) return RESPONSIVE_VAR[group];
+  throw new Error(`scenario token references {${reference}}, which has no published custom property`);
+}
+
+function scenarioValue(token) {
+  const value = token.$value;
+  if (typeof value === 'string' && /^\{[^{}]+\}$/.test(value)) return `var(${scenarioReferenceVar(value.slice(1, -1))})`;
+  if (value && typeof value === 'object' && value.hex) return value.hex;
+  if (value && typeof value === 'object' && 'value' in value && 'unit' in value) return `${value.value}${value.unit}`;
+  if (typeof value === 'string' || typeof value === 'number') return String(value);
+  throw new Error(`scenario token has a value the build cannot write: ${JSON.stringify(value)}`);
+}
+
+function scenarioEntries(group, prefix, entries = []) {
+  for (const [key, node] of Object.entries(group ?? {})) {
+    if (key.startsWith('$') || !node || typeof node !== 'object') continue;
+    const name = `${prefix}-${key}`;
+    if ('$value' in node) entries.push([name, node]);
+    else scenarioEntries(node, name, entries);
+  }
+  return entries;
+}
+
+const DARK_SELECTORS = [':root[data-theme="dark"]', '.dark'];
+
+function formatScenarioBlocks(baseTree) {
+  const L = [];
+  for (const [scenario, group] of Object.entries(baseTree.scenario ?? {})) {
+    if (scenario.startsWith('$')) continue;
+    const scope = `[data-scenario="${scenario}"]`;
+    const entries = scenarioEntries(group, `--${scenario}`);
+    L.push(`${scope} {`);
+    L.push(`  /* Scenario "${scenario}": inert without data-scenario="${scenario}" on a region root. */`);
+    for (const [name, token] of entries) L.push(`  ${name}: ${scenarioValue(token)};${descriptionComment(token)}`);
+    L.push('}');
+    const dark = scenarioEntries(baseTree.dark?.scenario?.[scenario], `--${scenario}`);
+    if (dark.length) {
+      L.push('');
+      L.push(`${DARK_SELECTORS.flatMap((selector) => [`${selector} ${scope}`, `${selector}${scope}`]).join(', ')} {`);
+      for (const [name, token] of dark) L.push(`  ${name}: ${scenarioValue(token)};`);
+      L.push('}');
+    }
+    // Reduced motion: a hold reads a motion role and collapses with it; a leave keeps
+    // one short opacity fade instead of 0ms (D-65 departure 7).
+    const names = new Set(entries.map(([name]) => name));
+    const hold = `--${scenario}-hold`;
+    const leave = `--${scenario}-leave`;
+    const fade = `--${scenario}-fade-reduced`;
+    if (names.has(hold) || (names.has(leave) && names.has(fade))) {
+      L.push('');
+      L.push('@media (prefers-reduced-motion: reduce) {');
+      L.push(`  ${scope} {`);
+      if (names.has(hold)) L.push(`    ${hold}: 0ms;`);
+      if (names.has(leave) && names.has(fade)) L.push(`    ${leave}: var(${fade});`);
+      L.push('  }');
+      L.push('}');
+    }
+    L.push('');
+  }
+  return L.join('\n').trimEnd();
+}
+
 function formatReducedMotionBlock(motionSelector, gameSelector) {
   // Two separate rules, not one shared selector list: --moment-intensity-*
   // must stay strictly inside a [data-game="on"] selector even here, or B3's
@@ -503,6 +574,8 @@ StyleDictionary.registerFormat({
       ':root[data-game="on"]',
     ));
     L.push('');
+    L.push(formatScenarioBlocks(baseTree));
+    L.push('');
     L.push(formatTypographyHelpers(baseTree, baseTree));
     L.push('');
     L.push(formatTypographyHelpers(functionalBaseTree, baseTree, [':root[data-design="operations"]', '.design-operations']));
@@ -533,6 +606,8 @@ StyleDictionary.registerFormat({
     L.push(formatMomentBlock(baseTree, ':root[data-game="on"]'));
     L.push('');
     L.push(formatReducedMotionBlock(':root', ':root[data-game="on"]'));
+    L.push('');
+    L.push(formatScenarioBlocks(baseTree));
     L.push('');
     L.push(formatTypographyHelpers(mergedTree, baseTree));
     L.push('');

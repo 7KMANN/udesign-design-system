@@ -1,5 +1,25 @@
 # Changelog
 
+## 3.8.0 (2026-11-16)
+
+Task tool scenario (D-65): task tokens under data-scenario, TaskCheck, an example screen
+
+### Additive
+
+- **Scenarios** (D-65): a named, approved adaptation inside one profile for one kind of surface, opted into on a region with `data-scenario="<name>"`. Rules: `AGENTS.md` "Scenarios and changing the system", `DESIGN.md` "Scenarios", `README.md` rule 9. A new scenario, token, variant or rule change is approved in the showcase before it is recorded or released.
+- **Task tool scenario tokens** (`data-scenario="task"`): `--task-cat-day`, `-business`, `-ideas`, `-dev`, `--task-cat-on`, `--task-priority-high`, `--task-overdue`, `--task-tick`, `--task-tick-on`, `--task-radius`, `--task-row-height`, `--task-box`, `--task-hit`, `--task-hold`, `--task-leave`, `--task-undo-window`, `--task-fade-reduced`. Compiled only under the attribute, with dark values and a reduced-motion rule. Contrast tested in both themes.
+- **`TaskCheck`** (registry `task-check`): the tick of a task row, a rounded square in the list's hue with the check drawn as a stroke. Props `checked`, `onCheckedChange`, `hue`, `aria-label`. Installed by name, not in `core`.
+- **`examples/task-tool-today.tsx`**: the scenario's reference screen.
+- **`udesign-check`**: `raw-motion` passes `linear` in a declaration timed by `var(--task-undo-window)`, the undo countdown.
+
+### Fixed
+
+- `public/r/core.json` and `public/r/lockup.json` carried CRLF line endings inside the lockup's source; rebuilt with LF.
+
+### For GlobalVision
+
+Repin to this release, add `@udesign/task-check` by name, sync the tokens, and put `data-scenario="task"` on the ECHELON layout root.
+
 ## 3.7.1 (2026-11-08)
 
 The avatar draws nothing when a name has no letter, with its tests.

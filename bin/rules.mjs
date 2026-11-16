@@ -176,7 +176,10 @@ function* rawMotion(code) {
     const value = m[1].replace(/var\([^)]*\)/g, '');
     const duration = [...value.matchAll(/(?<![\w.-])(\d*\.?\d+)m?s\b/g)].some((d) => Number(d[1]) !== 0);
     // `linear` is exempt in an infinite loop: a rotation has no other correct curve, and no role names it.
-    const keywords = /(?<![\w-])(ease|ease-in|ease-out|ease-in-out|step-start|step-end)(?![\w-])/.test(value) || (/(?<![\w-])linear(?![\w-])/.test(value) && !/(?<![\w-])infinite(?![\w-])/.test(value));
+    // So is a countdown over the task tool's undo window (D-65): a hold drawn as a draining bar,
+    // not motion, and a countdown that eases misstates the time left.
+    const countdown = /var\(\s*--task-undo-window\s*\)/.test(m[1]);
+    const keywords = /(?<![\w-])(ease|ease-in|ease-out|ease-in-out|step-start|step-end)(?![\w-])/.test(value) || (/(?<![\w-])linear(?![\w-])/.test(value) && !/(?<![\w-])infinite(?![\w-])/.test(value) && !countdown);
     const easing = /cubic-bezier\(|steps\(/.test(value) || keywords;
     if (duration || easing) yield [m.index, `\`${m[0].trim()}\`; use --motion-* roles`];
   }

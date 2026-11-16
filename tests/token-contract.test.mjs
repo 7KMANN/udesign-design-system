@@ -400,3 +400,65 @@ test('emits $description as a trailing comment without disturbing the value', ()
     assert.equal(css.match(/--motion-press-scale:\s*([^;]+);/)?.[1], '0.97');
   }
 });
+
+// --- Scenarios (D-65) ---
+// A scenario adapts one kind of surface. Its tokens exist only where a region opts in with
+// data-scenario, as the moment family exists only behind data-game.
+const TASK_TOKENS = [
+  '--task-cat-day', '--task-cat-business', '--task-cat-ideas', '--task-cat-dev', '--task-cat-on',
+  '--task-priority-high', '--task-overdue', '--task-tick', '--task-tick-on',
+  '--task-radius', '--task-row-height', '--task-box', '--task-hit',
+  '--task-hold', '--task-leave', '--task-undo-window', '--task-fade-reduced',
+];
+const TASK_DARK = [
+  '--task-cat-day', '--task-cat-business', '--task-cat-ideas', '--task-cat-dev', '--task-cat-on',
+  '--task-priority-high', '--task-tick', '--task-tick-on',
+];
+
+test('every task scenario token is emitted inside [data-scenario="task"]', () => {
+  for (const css of [dualCss, functionalCss]) {
+    const light = block(css, '[data-scenario="task"] {');
+    assert.ok(light, 'the [data-scenario="task"] block is missing');
+    for (const name of TASK_TOKENS) assert.match(light, new RegExp(`\\s${name}:`), `${name} missing from the scenario block`);
+    const dark = block(css, ':root[data-theme="dark"] [data-scenario="task"]');
+    assert.ok(dark, 'the dark task scenario block is missing');
+    for (const name of TASK_DARK) assert.match(dark, new RegExp(`\\s${name}:`), `${name} missing from the dark scenario block`);
+  }
+});
+
+test('task scenario tokens never appear outside a [data-scenario="task"] selector', () => {
+  for (const css of [dualCss, functionalCss]) {
+    let found = 0;
+    for (const [, selector, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+      if (!/--task-[a-z-]+\s*:/.test(body)) continue;
+      found += 1;
+      for (const part of selector.split(',')) {
+        assert.match(part, /\[data-scenario="task"\]/, `selector "${part.trim()}" leaks a task scenario token`);
+      }
+    }
+    assert.ok(found >= 3, `expected the light, dark and reduced-motion task blocks, found ${found}`);
+  }
+});
+
+test('task scenario aliases follow the roles they name, and its timing is the motion roles', () => {
+  for (const css of [dualCss, functionalCss]) {
+    const light = block(css, '[data-scenario="task"] {');
+    for (const [name, value] of [
+      ['--task-overdue', 'var(--tone-warning-foreground)'],
+      ['--task-hit', 'var(--touch-target-min)'],
+      ['--task-hold', 'var(--motion-duration-fast)'],
+      ['--task-leave', 'var(--motion-duration-standard)'],
+      ['--task-radius', '6px'],
+      ['--task-row-height', '48px'],
+      ['--task-box', '20px'],
+      ['--task-undo-window', '3s'],
+      ['--task-fade-reduced', '120ms'],
+    ]) assert.equal(light.match(new RegExp(`${name}:\\s*([^;]+);`))?.[1], value, name);
+    const reduced = css.slice(css.lastIndexOf('@media (prefers-reduced-motion: reduce)'));
+    const rule = reduced.match(/\[data-scenario="task"\]\s*\{([^{}]*)\}/)?.[1];
+    assert.ok(rule, 'no reduced-motion rule for the task scenario');
+    assert.match(rule, /--task-hold:\s*0ms;/);
+    assert.match(rule, /--task-leave:\s*var\(--task-fade-reduced\);/);
+    assert.doesNotMatch(rule, /--task-undo-window/, 'the undo window is a hold, not motion: it never collapses');
+  }
+});

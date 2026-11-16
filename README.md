@@ -6,7 +6,7 @@ Do not source brand values from Icitte. It is a separate product line with its o
 
 **License:** proprietary, UDesign Productions only. See [LICENSE.md](LICENSE.md). Public visibility does not grant permission to use the work.
 
-## What ships in 3.7.1
+## What ships in 3.8.0
 
 - A semantic token foundation for light and dark themes.
 - Two profiles, `presentation` and `operations`, pinned once per document. They differ in structure: type scale shape, source of hierarchy, page shell, and figures. Controls keep the 44px touch floor on touch in both; on a desktop mouse a compact control and the operations toolbar go to 36px.
@@ -30,6 +30,7 @@ Before changing this repository:
 6. Run the complete build, contract, component, registry type, showcase, and Playwright checks before release.
 7. Verify light and dark themes in both the presentation and operations profiles, including the 375px preview.
 8. Read [AGENTS.md](AGENTS.md) first. It carries the design rules and routes to [docs/TOOLING-PITFALLS.md](docs/TOOLING-PITFALLS.md) for script failures.
+9. The system grows by scenario. A new scenario, token, variant or rule change is built first as a showcase page, shown to the owner in a browser in both themes and at 375px, and approved there; a written description is not approval. Only then record it in `docs/v2/DECISIONS.md` and release. Until then a product must not adopt it. Steps: [DESIGN.md](DESIGN.md) "Scenarios".
 
 ## Architecture
 
@@ -48,7 +49,7 @@ Pin the Git dependency to a release tag. Do not install from a moving branch.
 ```json
 {
   "dependencies": {
-    "udesign-design-system": "github:7KMANN/udesign-design-system#v3.7.1"
+    "udesign-design-system": "github:7KMANN/udesign-design-system#v3.8.0"
   }
 }
 ```
@@ -102,7 +103,7 @@ Initialize shadcn in the consuming application and add the tagged namespace to `
 ```json
 {
   "registries": {
-    "@udesign": "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.7.1/public/r/{name}.json"
+    "@udesign": "https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.8.0/public/r/{name}.json"
   }
 }
 ```
@@ -124,7 +125,7 @@ An item that uses another one names it as `@udesign/<name>`: `button` uses `spin
 The direct tagged URL works without the namespace only for an item that uses no other one, `core` among them:
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.7.1/public/r/core.json
+npx shadcn@latest add https://raw.githubusercontent.com/7KMANN/udesign-design-system/v3.8.0/public/r/core.json
 ```
 
 Without the namespace, adding an item that uses another makes shadcn look `@udesign` up in its public directory of registries. Where the directory lists none, the install stops before it writes a file, with `Unknown registry "@udesign". Make sure it is defined in components.json` and the `registries` block to add: add the namespace above and run the command again. Where the directory lists one, shadcn writes that registry into `components.json` and takes the item's dependencies from it, whoever publishes it. So set the namespace yourself before you add an item: the tag you choose is then the release you get. The install test holds both cases against a stand-in for the directory.
@@ -289,4 +290,4 @@ git push origin master --tags
 
 ## Showcase
 
-The Vite showcase demonstrates tokens and registry patterns across light and dark themes, both profiles, and responsive widths. It is a review surface, not a substitute for automated interaction, accessibility, and visual regression tests.
+The Vite showcase demonstrates tokens and registry patterns across light and dark themes, both profiles, and responsive widths. It is a review surface, not a substitute for automated interaction, accessibility, and visual regression tests. It is also where a proposed scenario, token or variant is shown for the owner's visual approval before it is recorded or released.

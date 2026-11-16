@@ -238,6 +238,16 @@
       "files": [{ "path": "registry/new-york/ui/avatar.tsx", "type": "registry:component", "target": "components/ui/avatar.tsx" }]
     },
     {
+      "name": "task-check",
+      "type": "registry:ui",
+      "title": "Task check",
+      "description": "The tick of a task row in the task tool scenario (D-65): a rounded square in the list's hue, the check drawn as a stroke. Installed by name, not through core.",
+      "docs": "Render it inside a region with data-scenario=\"task\": it reads the --task-* tokens, which exist nowhere else. Props: checked, onCheckedChange(checked), hue (day, business, ideas or dev) and aria-label (the task's title). The row, not the box, is the hit area: the check is the row's Tab stop and Space ticks it. See DESIGN.md \"Scenarios\".",
+      "dependencies": ["@radix-ui/react-checkbox"],
+      "registryDependencies": ["utils"],
+      "files": [{ "path": "registry/new-york/ui/task-check.tsx", "type": "registry:ui", "target": "components/ui/task-check.tsx" }]
+    },
+    {
       "name": "metric-card",
       "type": "registry:component",
       "title": "Metric Card",

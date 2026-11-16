@@ -372,6 +372,45 @@
   }
 }
 
+[data-scenario="task"] {
+  /* Scenario "task": inert without data-scenario="task" on a region root. */
+  --task-cat-day: #0f7a6c; /* Day-to-day, teal. */
+  --task-cat-business: #2e5fbf; /* Business, cobalt. */
+  --task-cat-ideas: #b03a86; /* Ideas, magenta. */
+  --task-cat-dev: #6a7414; /* Dev, olive. Not violet, which is the progress tone. */
+  --task-cat-on: #ffffff; /* The check glyph on a filled category box. */
+  --task-priority-high: #c4321f; /* High priority, its own channel: one hue, top level only, always with its glyph. */
+  --task-overdue: var(--tone-warning-foreground); /* Overdue: the only warning use in the tool. */
+  --task-tick: #8a6230; /* The all-clear mark, brass from the accent's family. It is not a control. */
+  --task-tick-on: #ffffff; /* A glyph drawn on the brass tick. */
+  --task-radius: 6px; /* Touchable elements: rows, question cards, capture field, menus, toast. Panes and frame stay square. */
+  --task-row-height: 48px; /* Comfortable density. The title sits at --text-h3. */
+  --task-box: 20px; /* The TaskCheck mark. */
+  --task-hit: var(--touch-target-min); /* The TaskCheck target, the touch floor. */
+  --task-hold: var(--motion-duration-fast); /* Check stroke and title strike, the fast motion role. */
+  --task-leave: var(--motion-duration-standard); /* A ticked row collapses out, the standard motion role. */
+  --task-undo-window: 3s; /* A hold, not motion: a change is sent this long after the last change, and undo inside it sends nothing. Never collapses under reduced motion. */
+  --task-fade-reduced: 120ms; /* Under reduced motion a ticked row fades by opacity for this long instead of 0ms. */
+}
+
+:root[data-theme="dark"] [data-scenario="task"], :root[data-theme="dark"][data-scenario="task"], .dark [data-scenario="task"], .dark[data-scenario="task"] {
+  --task-cat-day: #4fc7b2;
+  --task-cat-business: #7fa6f0;
+  --task-cat-ideas: #e58ac4;
+  --task-cat-dev: #b9c25a;
+  --task-cat-on: #1b1b1b;
+  --task-priority-high: #ff8a75;
+  --task-tick: #dec5a6;
+  --task-tick-on: #1b1b1b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-scenario="task"] {
+    --task-hold: 0ms;
+    --task-leave: var(--task-fade-reduced);
+  }
+}
+
 /* Typography helpers */
 .ud-display{font-family:var(--font-display);font-weight:var(--fw-bold);font-size:var(--text-display-fluid);line-height:1.15;letter-spacing:-0.01em}
 .ud-h1{font-family:var(--font-display);font-weight:var(--fw-bold);font-size:var(--text-h1-fluid);line-height:1.2;letter-spacing:-0.005em}

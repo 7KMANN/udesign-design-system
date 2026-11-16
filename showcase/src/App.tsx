@@ -3,8 +3,9 @@ import { Analytics } from './pages/Analytics';
 import { Dashboard } from './pages/Dashboard';
 import { KitchenSink } from './pages/KitchenSink';
 import { Login } from './pages/Login';
+import { TaskTool } from './pages/TaskTool';
 
-type Page = 'system' | 'login' | 'dashboard' | 'analytics';
+type Page = 'system' | 'login' | 'dashboard' | 'analytics' | 'task';
 type Viewport = 'desktop' | 'tablet' | 'mobile';
 type Design = 'presentation' | 'operations';
 type Theme = 'light' | 'dark';
@@ -103,11 +104,20 @@ export default function App() {
 
           <label className="showcase-field">
             <span>Page</span>
-            <select value={activePage} onChange={(event) => setActivePage(event.target.value as Page)}>
+            <select
+              value={activePage}
+              onChange={(event) => {
+                const next = event.target.value as Page;
+                setActivePage(next);
+                // The task tool scenario (D-65) lives inside the operations profile.
+                if (next === 'task') setDesign('operations');
+              }}
+            >
               <option value="system">System matrix</option>
               <option value="login">Form and focus</option>
               <option value="dashboard">Metrics and collection</option>
               <option value="analytics">Charts and entities</option>
+              <option value="task">Task tool</option>
             </select>
           </label>
 
@@ -146,6 +156,7 @@ export default function App() {
           {activePage === 'login' && <Login />}
           {activePage === 'dashboard' && <Dashboard />}
           {activePage === 'analytics' && <Analytics />}
+          {activePage === 'task' && <TaskTool />}
         </div>
       </main>
     </div>
