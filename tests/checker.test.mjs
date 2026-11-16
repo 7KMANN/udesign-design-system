@@ -37,14 +37,17 @@ test('pages built from the shipped component classes report zero findings', () =
 test('each reference screen in examples/ reports zero findings and spends one accent', () => {
   const dir = new URL('../examples/', import.meta.url);
   const names = fs.readdirSync(dir).filter((n) => /\.(tsx|html)$/.test(n));
-  assert.deepEqual(names.sort(), ['operations-queue.tsx', 'presentation-order.tsx', 'static-catalog.html']);
+  assert.deepEqual(names.sort(), ['operations-queue.tsx', 'presentation-order.tsx', 'static-catalog.html', 'task-tool-today.tsx']);
+  // A ratified scenario sets its own emphasis budget (DESIGN.md "Scenarios"). The task tool
+  // (D-65) adds no accent-filled control: its screen spends none.
+  const budget = { 'task-tool-today.tsx': 0 };
   for (const name of names) {
     const text = fs.readFileSync(new URL(name, dir), 'utf8');
     assert.deepEqual(check([{ file: name, text }]), [], name);
     const accents = name.endsWith('.html')
       ? text.match(/class="[^"]*\bud-btn-primary\b/g) ?? []
       : (text.match(/<Button\b(?:=>|[^>])*>/g) ?? []).filter((tag) => !/variant="(?!default")/.test(tag));
-    assert.equal(accents.length, 1, `${name}: ${accents.join(' | ')}`);
+    assert.equal(accents.length, budget[name] ?? 1, `${name}: ${accents.join(' | ')}`);
   }
 });
 
@@ -90,6 +93,17 @@ test('raw-motion flags literal durations and easings in CSS', () => {
     '@theme { --animate-spin: spin var(--motion-loop-spin) linear infinite; }',
   ].join('\n');
   assert.deepEqual(hits('a.css', css), ['raw-motion:6', 'raw-motion:1', 'raw-motion:3', 'raw-motion:4']);
+});
+
+// D-65: the task tool's undo window is a hold, drawn as a draining bar. A countdown runs linear;
+// nothing else gets that pass, and the window's own token cannot carry a literal duration.
+test('raw-motion passes a linear countdown over the task undo window, and only that', () => {
+  const css = [
+    '.timer { animation: drain var(--task-undo-window) linear forwards; }',
+    '.fade { transition: opacity var(--task-leave) linear; }',
+    '.late { animation: drain var(--task-undo-window) 3s linear forwards; }',
+  ].join('\n');
+  assert.deepEqual(hits('a.css', css), ['raw-motion:2', 'raw-motion:3']);
 });
 
 test('raw-motion flags Tailwind duration and easing utilities, not the token forms', () => {
