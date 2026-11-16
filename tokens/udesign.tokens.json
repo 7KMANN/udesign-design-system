@@ -242,8 +242,51 @@
     "intensity-2-scale": { "$type": "number", "$description": "Bounded transform scale for a closure (intensity 2) moment. This is the ceiling - no larger published value exists.", "$value": 1.04 }
   },
 
+  "scenario": {
+    "$description": "Scenario tokens (D-65). A scenario adapts color, density and emphasis for one kind of surface inside a profile. build.mjs compiles each scenario group only under its [data-scenario] attribute, never at bare :root, so a surface that does not opt in sees none of it.",
+    "task": {
+      "$description": "Task tool scenario (D-65): a list ticked through all day. Opted in by data-scenario=\"task\" on the region root, inside the operations profile.",
+      "cat": {
+        "$type": "color",
+        "$description": "Kinds of work, a role family of its own: neither tones (statuses) nor entities (record types). Small marks and the checked box only, each with its word. Two slots stay free under a cap of six.",
+        "day": { "$description": "Day-to-day, teal.", "$value": { "colorSpace": "srgb", "components": [0.059, 0.478, 0.424], "hex": "#0f7a6c" } },
+        "business": { "$description": "Business, cobalt.", "$value": { "colorSpace": "srgb", "components": [0.18, 0.373, 0.749], "hex": "#2e5fbf" } },
+        "ideas": { "$description": "Ideas, magenta.", "$value": { "colorSpace": "srgb", "components": [0.69, 0.227, 0.525], "hex": "#b03a86" } },
+        "dev": { "$description": "Dev, olive. Not violet, which is the progress tone.", "$value": { "colorSpace": "srgb", "components": [0.416, 0.455, 0.078], "hex": "#6a7414" } }
+      },
+      "cat-on": { "$type": "color", "$description": "The check glyph on a filled category box.", "$value": { "colorSpace": "srgb", "components": [1, 1, 1], "hex": "#ffffff" } },
+      "priority-high": { "$type": "color", "$description": "High priority, its own channel: one hue, top level only, always with its glyph.", "$value": { "colorSpace": "srgb", "components": [0.769, 0.196, 0.122], "hex": "#c4321f" } },
+      "overdue": { "$type": "color", "$description": "Overdue: the only warning use in the tool.", "$value": "{tone.warning.foreground}" },
+      "tick": { "$type": "color", "$description": "The all-clear mark, brass from the accent's family. It is not a control.", "$value": { "colorSpace": "srgb", "components": [0.541, 0.384, 0.188], "hex": "#8a6230" } },
+      "tick-on": { "$type": "color", "$description": "A glyph drawn on the brass tick.", "$value": { "colorSpace": "srgb", "components": [1, 1, 1], "hex": "#ffffff" } },
+      "radius": { "$type": "dimension", "$description": "Touchable elements: rows, question cards, capture field, menus, toast. Panes and frame stay square.", "$value": { "value": 6, "unit": "px" } },
+      "row-height": { "$type": "dimension", "$description": "Comfortable density. The title sits at --text-h3.", "$value": { "value": 48, "unit": "px" } },
+      "box": { "$type": "dimension", "$description": "The TaskCheck mark.", "$value": { "value": 20, "unit": "px" } },
+      "hit": { "$type": "dimension", "$description": "The TaskCheck target, the touch floor.", "$value": "{responsive.touch-target-min}" },
+      "hold": { "$type": "duration", "$description": "Check stroke and title strike, the fast motion role.", "$value": "{motion.duration.fast}" },
+      "leave": { "$type": "duration", "$description": "A ticked row collapses out, the standard motion role.", "$value": "{motion.duration.standard}" },
+      "undo-window": { "$type": "duration", "$description": "A hold, not motion: a change is sent this long after the last change, and undo inside it sends nothing. Never collapses under reduced motion.", "$value": { "value": 3, "unit": "s" } },
+      "fade-reduced": { "$type": "duration", "$description": "Under reduced motion a ticked row fades by opacity for this long instead of 0ms.", "$value": { "value": 120, "unit": "ms" } }
+    }
+  },
+
   "dark": {
     "$description": "Dark-mode semantic overrides. These compose with either design profile.",
+    "scenario": {
+      "task": {
+        "cat": {
+          "$type": "color",
+          "day": { "$value": { "colorSpace": "srgb", "components": [0.31, 0.78, 0.698], "hex": "#4fc7b2" } },
+          "business": { "$value": { "colorSpace": "srgb", "components": [0.498, 0.651, 0.941], "hex": "#7fa6f0" } },
+          "ideas": { "$value": { "colorSpace": "srgb", "components": [0.898, 0.541, 0.769], "hex": "#e58ac4" } },
+          "dev": { "$value": { "colorSpace": "srgb", "components": [0.725, 0.761, 0.353], "hex": "#b9c25a" } }
+        },
+        "cat-on": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [0.106, 0.106, 0.106], "hex": "#1b1b1b" } },
+        "priority-high": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [1, 0.541, 0.459], "hex": "#ff8a75" } },
+        "tick": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [0.871, 0.773, 0.651], "hex": "#dec5a6" } },
+        "tick-on": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [0.106, 0.106, 0.106], "hex": "#1b1b1b" } }
+      }
+    },
     "role": {
       "$type": "color",
       "background": { "$value": { "colorSpace": "srgb", "components": [0.09, 0.082, 0.071], "hex": "#171512" } },

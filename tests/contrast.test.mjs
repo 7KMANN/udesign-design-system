@@ -157,3 +157,33 @@ for (const [themeName, tree] of profiles) {
     }
   });
 }
+
+// Task tool scenario (D-65). It lives inside the operations profile, so it is measured on the
+// operations surfaces: the card, the page and the row hover, in both themes.
+const operationsScenario = [
+  ['operations light', functionalLight],
+  ['operations dark', profiles[3][1]],
+];
+const TASK_MARKS = ['scenario.task.cat.day', 'scenario.task.cat.business', 'scenario.task.cat.ideas', 'scenario.task.cat.dev', 'scenario.task.priority-high', 'scenario.task.tick'];
+
+for (const [themeName, tree] of operationsScenario) {
+  test(`${themeName} task marks meet 3:1 on card, page and row hover`, () => {
+    for (const mark of TASK_MARKS) {
+      for (const surface of ['role.card', 'role.background', 'interactive.hover']) {
+        const ratio = contrast(resolveHex(tree, mark), resolveHex(tree, surface));
+        assert(ratio >= 3, `${mark} on ${surface} has ${ratio.toFixed(2)}:1 contrast`);
+      }
+    }
+  });
+
+  test(`${themeName} task hues as text meet 4.5:1 on card and page`, () => {
+    for (const mark of TASK_MARKS) {
+      for (const surface of ['role.card', 'role.background']) assertPair(tree, mark, surface);
+    }
+  });
+
+  test(`${themeName} the check glyph meets 4.5:1 on each fill`, () => {
+    for (const fill of ['day', 'business', 'ideas', 'dev']) assertPair(tree, 'scenario.task.cat-on', `scenario.task.cat.${fill}`);
+    assertPair(tree, 'scenario.task.tick-on', 'scenario.task.tick');
+  });
+}
