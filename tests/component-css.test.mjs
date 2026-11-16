@@ -37,6 +37,7 @@ const MIRROR = {
   gallery: ["ud-gallery", "ud-gallery-main", "ud-gallery-thumbs", "ud-gallery-thumb", "ud-gallery-whole", "ud-gallery-view", "ud-gallery-view-close"],
   "description-list": ["ud-description-list"],
   checkbox: "Radix behaviour, and a native checkbox is ban 9",
+  "task-check": "Radix behaviour, and a native checkbox is ban 9; scenario-only (D-65), no static use",
   switch: "Radix behaviour; no generator wrote one",
   slider: "Radix behaviour, and a native range is ban 9",
   field: "no generator wrote a label, hint and error group; .ud-label covers the label",
