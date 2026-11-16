@@ -30,6 +30,7 @@ Before changing this repository:
 6. Run the complete build, contract, component, registry type, showcase, and Playwright checks before release.
 7. Verify light and dark themes in both the presentation and operations profiles, including the 375px preview.
 8. Read [AGENTS.md](AGENTS.md) first. It carries the design rules and routes to [docs/TOOLING-PITFALLS.md](docs/TOOLING-PITFALLS.md) for script failures.
+9. The system grows by scenario. A new scenario, token, variant or rule change is built first as a showcase page, shown to the owner in a browser in both themes and at 375px, and approved there; a written description is not approval. Only then record it in `docs/v2/DECISIONS.md` and release. Until then a product must not adopt it. Steps: [DESIGN.md](DESIGN.md) "Scenarios".
 
 ## Architecture
 
@@ -289,4 +290,4 @@ git push origin master --tags
 
 ## Showcase
 
-The Vite showcase demonstrates tokens and registry patterns across light and dark themes, both profiles, and responsive widths. It is a review surface, not a substitute for automated interaction, accessibility, and visual regression tests.
+The Vite showcase demonstrates tokens and registry patterns across light and dark themes, both profiles, and responsive widths. It is a review surface, not a substitute for automated interaction, accessibility, and visual regression tests. It is also where a proposed scenario, token or variant is shown for the owner's visual approval before it is recorded or released.

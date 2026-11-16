@@ -7,7 +7,8 @@
 5. One accent-filled control per screen. None on a repeated row, card, or item.
 6. Presented to someone: `presentation` in `PageCanvas`. Operated by someone: `operations` in `AppShell`.
 
-Build to these. Audit against them. The sections below make each one exact.
+Build to these. Audit against them. The sections below make each one exact. They bind by default:
+the system is a base that grows by scenario, see "Scenarios and changing the system".
 
 ## The rules, exactly
 
@@ -31,8 +32,9 @@ Shipped values: [`docs/motion-contract.md`](docs/motion-contract.md).
 - A control repeated per card or list item is `secondary`; in a dense toolbar or table row it is
   `ghost`. However important it feels in isolation.
 - `presentation` may spend one accent-filled control per viewport.
-- In `operations` the accent never appears in chrome, navigation, or any repeated block. It marks
-  the one action that commits work.
+- By default, in `operations` the accent never appears in chrome, navigation, or any repeated
+  block. It marks the one action that commits work. An approved scenario may set its own budget for
+  its surface.
 - Density is a separate axis. A dense, busy `operations` screen is correct, and it still spends one
   accent.
 - Call it **the accent** in code, class names, and copy. Never by a colour name.
@@ -50,8 +52,30 @@ Shipped values: [`docs/motion-contract.md`](docs/motion-contract.md).
   The list and usage notes open the component block in that file.
 - Mark every figure: `TableCell numeric`, or `--font-numeric` with `--font-numeric-variant`.
   Title and heading sizes come from `--text-*`.
-- A screen that is genuinely both: ask the owner. Do not mix.
+- A screen that is genuinely both: ask the owner. Do not mix profiles. A surface that needs
+  different color, density or emphasis inside one profile is a scenario, below.
 - `brand` and `functional` were removed in v3 and select nothing; `udesign-check` flags them.
+
+## Scenarios and changing the system
+
+The six rules are not a complete map; the system is a base that grows, and it accepts upgrades for
+new scenarios and designs. The profile is the theme and always governs. Below it, a **scenario**
+adapts color, density and emphasis for one kind of surface, because a list someone ticks through
+fifty times a day needs different things from a settings page or a notification manager. Applying
+the nearest rule literally to a kind of surface with no scenario is how a task tracker ends up
+styled like a settings panel.
+
+- No approved scenario and no example in `examples/` for what you are building: propose a scenario.
+  Do not apply the nearest rule literally and do not improvise a local style.
+- A scenario may change color assignment, density, emphasis budget and reaction size. It may not
+  change the profile or its shell, accessibility, the `--motion-*` roles and the intensity cap, or
+  the bans, and its color is tokens only. A token the scenario lacks is added through the path below.
+- Approved scenarios are listed in `DESIGN.md` "Scenarios". Until one is listed it lives in the
+  showcase only, and a product must not adopt it.
+- Any new scenario, token, variant or rule change is built first as a showcase page, shown to
+  Kaleb in a browser in both themes and at 375px, and approved by him there. A written description
+  is not approval. Only then is it recorded as `APPROVED D-nn` and released. How: `DESIGN.md`
+  "Scenarios".
 
 ## Auditing ("fix drifted stuff")
 
@@ -67,7 +91,7 @@ drift, not the code.
 
 ## Read next
 
-1. [`DESIGN.md`](DESIGN.md): "Emphasis and hierarchy", "Interaction states", "Motion",
+1. [`DESIGN.md`](DESIGN.md): "Scenarios", "Emphasis and hierarchy", "Interaction states", "Motion",
    "Components", "Banned design patterns". The rest is reference.
 2. Building a screen: start from [`examples/`](examples/), one reference screen per profile plus
    one static-HTML page. Copy the part you need; each restraint rule is a comment on the control
@@ -85,6 +109,8 @@ Version-independent canon. Link at a tag; the latest is listed by `git -C udesig
 
 ## Changing this repository
 
+- A change to tokens, a variant, a scenario or a rule starts as a showcase page and needs
+  Kaleb's visual approval before it is recorded or released (see above).
 - `npm test` stays green. `npm run validate` runs the full pipeline before a release.
 - After editing anything under `registry/new-york/ui/`, run `npm run build:registry`; the registry
   test fails on stale `public/r/` output. Never hand-edit `dist/` or `public/r/`.

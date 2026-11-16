@@ -150,7 +150,28 @@ The presentation profile uses Montserrat for strong display moments, a high-cont
 
 ### Operations profile
 
-The operations profile uses Geist for dense interface typography, a flat type scale, square corners, stronger boundaries, flat surfaces, 12px padding inside cards, dialogs and sheets, and tabular mono figures. Montserrat remains reserved for rare display moments; the UDesign lockup is the logo, drawn as an image, not set in a face.
+The operations profile uses Geist for dense interface typography, a flat type scale, square corners, stronger boundaries, flat surfaces, 12px padding inside cards, dialogs and sheets, and tabular mono figures. Montserrat remains reserved for rare display moments; the UDesign lockup is the logo, drawn as an image, not set in a face. This is the default for an operations surface; a ratified scenario adapts it for one kind of surface.
+
+### Scenarios
+
+The profile is the theme and always governs. A scenario is a named, approved adaptation inside one profile for one kind of surface, because functional work is not one thing: a task list ticked through all day, a notification manager and a settings page need different color, density and emphasis. The rules in this file are the default and stay binding where no scenario applies. For a kind of surface with no ratified scenario and no example in `examples/`, propose a scenario instead of applying the nearest rule literally.
+
+A scenario may change:
+
+- Color assignment, drawn from tokens. A token the system lacks is added through the path below, never written locally.
+- Density, emphasis budget and the size of reactions within the existing motion roles and intensity cap.
+
+A scenario may not change the profile or its shell, accessibility (contrast, targets, focus, reduced motion), the motion roles and intensity cap, tokens-only color, or any numbered ban.
+
+Ratified scenarios: none yet. Each is listed here with its decision number once approved.
+
+**Changing the system.** A new scenario, token, variant or rule change goes through these steps in order:
+
+1. Build it as a page in the showcase: a file in `showcase/src/pages/` added to the `Page` union, the `<option>` list and the render lines of `showcase/src/App.tsx`, or a fixture in `showcase/src/fixtures-main.tsx`. `npm run dev` serves it on port 3000 with toggles for profile, theme and viewport.
+2. Show it to Kaleb in a browser in both themes and at 375px, and get his approval there. A written description is not approval, because the look is the thing being decided.
+3. Record it as `APPROVED date D-nn` in `docs/v2/DECISIONS.md`, then edit tokens, registry and these documents, and release as `README.md` describes.
+
+Until step 3, it lives in the showcase only and a product must not adopt it.
 
 ### Theme behavior
 
@@ -203,7 +224,7 @@ Neutral, info, success, warning, danger, progress, and brand tones each provide:
 - `solid` for high-emphasis fills.
 - `solid-foreground` for content placed on the solid fill.
 
-The canonical shape is `--tone-{name}-{role}`. Use the full family rather than mixing a surface from one tone with text from another. Tones are for statuses only; a category that is not a status uses an entity family.
+The canonical shape is `--tone-{name}-{role}`. Use the full family rather than mixing a surface from one tone with text from another. By default tones are for statuses only; a category that is not a status uses an entity family. A ratified scenario may assign color to the categories its surface needs, through tokens.
 
 Success confirms completion or a healthy condition. Warning identifies a condition that needs attention. Danger identifies failure, destructive action, or an urgent block. Info provides neutral guidance. Progress communicates active work. Brand identifies UDesign or a selected branded action. Neutral covers passive state.
 
@@ -379,7 +400,7 @@ Three generic, domain-flavorless primitives ship in the registry:
 
 ## Emphasis and hierarchy
 
-Emphasis is a budget, counted in accent-filled controls. In the registry an accent-filled control is `Button` with `variant="default"`, which is also what a `Button` with no variant renders. Elsewhere it is any control filled with `--primary`.
+Emphasis is a budget, counted in accent-filled controls. In the registry an accent-filled control is `Button` with `variant="default"`, which is also what a `Button` with no variant renders. Elsewhere it is any control filled with `--primary`. This is the default budget; a ratified scenario may set another for its surface, and a screen with none counts against this one.
 
 - One accent-filled control per screen: not per card, not per section. A modal or side panel gets its own one. `CANON research §7.7 A, D-09`
 - A repeated element never carries the accent: a control that appears once per row, card, or list item is `secondary` or `ghost`, however important it feels in isolation. `CANON research §7.7 A, D-09`
@@ -512,6 +533,7 @@ The showcase must demonstrate:
 - Responsive collections, mobile dialogs, and minimum touch targets.
 - Empty, loading, error, and populated examples where relevant.
 - Motion intensity 1 and 2, in both design profiles and both themes, plus the reduced-motion rendering.
+- Every ratified scenario, on its own page, in both themes and at 375px.
 
 The historical version selector may show a reduced matrix for releases that predate a semantic role. Current unreleased output must cover the complete matrix.
 
