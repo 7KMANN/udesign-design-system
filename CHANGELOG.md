@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.8.0 (2026-11-16)
+
+Task tool scenario (D-65): task tokens under data-scenario, TaskCheck, an example screen
+
 ### Additive
 
 - **Scenarios** (D-65): a named, approved adaptation inside one profile for one kind of surface, opted into on a region with `data-scenario="<name>"`. Rules: `AGENTS.md` "Scenarios and changing the system", `DESIGN.md` "Scenarios", `README.md` rule 9. A new scenario, token, variant or rule change is approved in the showcase before it is recorded or released.
