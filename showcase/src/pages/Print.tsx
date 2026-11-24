@@ -20,7 +20,7 @@ export function Print() {
         </div>
         <p>
           Client PDFs: mockups, font comparisons, labels. Once approved and released, each PDF skill draws its header,
-          footer, type and cards with one kit, from print/print.tokens.json, so they all print the same logo, colours
+          footer, text and cards with one kit, from print/print.tokens.json, so they all print the same logo, colours
           and type. Today each skill draws its own.
         </p>
       </header>

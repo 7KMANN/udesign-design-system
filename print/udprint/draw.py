@@ -189,12 +189,13 @@ class Kit:
             return ty + LEAD_GAP + AFTER_LEAD
         return ty + AFTER_TITLE
 
-    def footer(self, page, note, contact=()):
+    def footer(self, page, note, contact=(), numbered=True):
         """Hairline, the note at left (what the page is: a visual, approximate sizes), the public contact items
-        at right, leaving room for the page number."""
+        at right, leaving room for the page number unless numbered=False (a one-page document)."""
         b = self.box(page)
         self.rule(page, b.x0, b.x1, b.y1 - FOOTER_RULE)
-        start = self._row(page, b.x1 - PAGE_NUMBER_ROOM, b.y1, list(contact), ('fine', 'fine'))
+        right = b.x1 - PAGE_NUMBER_ROOM if numbered else b.x1
+        start = self._row(page, right, b.y1, list(contact), ('fine', 'fine'))
         self.text(page, b.x0, b.y1, self.ellipsize(note, 'fine', start - b.x0 - ITEM_GAP), 'fine')
 
     def page_numbers(self, doc, pattern):

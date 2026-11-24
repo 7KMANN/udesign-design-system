@@ -135,13 +135,18 @@ class ChromeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.kit.box(odd)
 
-    def test_badge_draws_its_method_icon_and_zero_radius_is_allowed(self):
+    def test_badge_draws_its_method_icon(self):
         page, b = self.kit.new_page(self.doc)
         self.kit.badge(page, (b.x0, b.y0, b.x0 + 28, b.y0 + 28), icon='embroidery')
         ink = tuple(round(c, 3) for c in hex_rgb(self.kit.t.color('ink')))
         drawn = [d for d in page.get_drawings() if tuple(round(c, 3) for c in (d.get('fill') or d.get('color') or ())) == ink]
         self.assertTrue(drawn)
-        self.kit.rrect(page, (b.x0, b.y0 + 40, b.x0 + 20, b.y0 + 60), 0, fill='card')
+
+    def test_a_zero_radius_draws_a_square_rectangle(self):
+        page, b = self.kit.new_page(self.doc)
+        self.kit.rrect(page, (b.x0, b.y0, b.x0 + 20, b.y0 + 20), 0, fill='card')
+        items = page.get_drawings()[0]['items']
+        self.assertEqual([i[0] for i in items], ['re'])
 
     def test_text_uses_the_role_size_and_colour(self):
         page, b = self.kit.new_page(self.doc)

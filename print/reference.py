@@ -17,7 +17,7 @@ import pymupdf as fitz  # noqa: E402
 from udprint import Kit  # noqa: E402
 
 COLOURS = [
-    ('paper', 'The page'), ('ink', 'Text'), ('muted', 'Secondary text'), ('hairline', 'Rules, chip edges'),
+    ('paper', 'The page'), ('ink', 'Text'), ('muted', 'Secondary text'), ('hairline', 'Rules, swatch edges'),
     ('field', 'Under a product'), ('field-deep', 'Under a white product'), ('card', 'A decision card'),
     ('accent', 'Tile, badge, tag'),
 ]
@@ -106,7 +106,7 @@ def build(out, png_dir=None):
                          'caption', col, 2):
         kit.text(page, x, y, line, 'caption')
         y += 11
-    kit.text(page, x, y, 'Radii: field %g, card %g, tag %g, chip %g pt.' % tuple(
+    kit.text(page, x, y, 'Radii: field %g, card %g, tag %g, swatch %g pt.' % tuple(
         kit.t.number('radius.' + k) for k in ('field', 'card', 'tag', 'swatch')), 'caption')
     y += 26
     kit.text(page, x, y, 'Departures from the presentation profile', 'label')
@@ -115,7 +115,8 @@ def build(out, png_dir=None):
         y += 13
         kit.text(page, x, y, kit.ellipsize(line, 'body', col), 'body')
 
-    kit.footer(page, 'Reference sheet. Print at 100% to check sizes.', ['udesignproductions.com', '819 481-1022'])
+    kit.footer(page, 'Reference sheet. Print at 100% to check sizes.', ['udesignproductions.com', '819 481-1022'],
+               numbered=False)
     kit.finish(doc, out, 'UDesign print kit')
     pngs = []
     if png_dir:
