@@ -6,3 +6,6 @@ test-results/
 
 # Per-machine preview config
 .claude/launch.json
+
+# The print scenario shows its PDF pages as images in the showcase
+!showcase/public/print/*.png
