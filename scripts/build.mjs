@@ -634,3 +634,14 @@ const sd = new StyleDictionary({
 
 await sd.hasInitialized;
 await sd.buildAllPlatforms();
+
+// Print scenario (D-66): the Python kit with both token files, so a skill vendoring dist/print/udprint at a
+// release tag reads its own copies and never reaches outside its folder.
+const printOut = path.resolve('dist/print/udprint');
+fs.rmSync(path.resolve('dist/print'), { recursive: true, force: true });
+fs.cpSync(path.resolve('print/udprint'), printOut, {
+  recursive: true,
+  filter: (src) => !src.includes('__pycache__') && !src.endsWith('.pyc'),
+});
+fs.copyFileSync(path.resolve('print/print.tokens.json'), path.join(printOut, 'print.tokens.json'));
+fs.copyFileSync(path.resolve('tokens/udesign.tokens.json'), path.join(printOut, 'udesign.tokens.json'));

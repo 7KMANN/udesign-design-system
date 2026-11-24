@@ -1038,3 +1038,27 @@ textarea:focus-visible,
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Print scenario (proposed, ECH-396): pages of a PDF shown at the column's width. */
+.print-sheet {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+}
+
+.print-departures {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.print-departures dt {
+  font-weight: 600;
+}
+
+.print-departures dd {
+  margin: var(--space-1) 0 0;
+  color: var(--muted-foreground);
+}

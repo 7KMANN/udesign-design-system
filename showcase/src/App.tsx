@@ -3,9 +3,10 @@ import { Analytics } from './pages/Analytics';
 import { Dashboard } from './pages/Dashboard';
 import { KitchenSink } from './pages/KitchenSink';
 import { Login } from './pages/Login';
+import { Print } from './pages/Print';
 import { TaskTool } from './pages/TaskTool';
 
-type Page = 'system' | 'login' | 'dashboard' | 'analytics' | 'task';
+type Page = 'system' | 'login' | 'dashboard' | 'analytics' | 'task' | 'print';
 type Viewport = 'desktop' | 'tablet' | 'mobile';
 type Design = 'presentation' | 'operations';
 type Theme = 'light' | 'dark';
@@ -118,6 +119,7 @@ export default function App() {
               <option value="dashboard">Metrics and collection</option>
               <option value="analytics">Charts and entities</option>
               <option value="task">Task tool</option>
+              <option value="print">Print</option>
             </select>
           </label>
 
@@ -157,6 +159,7 @@ export default function App() {
           {activePage === 'dashboard' && <Dashboard />}
           {activePage === 'analytics' && <Analytics />}
           {activePage === 'task' && <TaskTool />}
+          {activePage === 'print' && <Print />}
         </div>
       </main>
     </div>
