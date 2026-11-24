@@ -1,6 +1,6 @@
-"""Print tokens: tokens/print.tokens.json resolved against tokens/udesign.tokens.json.
+"""Print tokens: print/print.tokens.json resolved against tokens/udesign.tokens.json.
 
-In this repository the two files are read from tokens/. A release copies them next to this module
+In this repository the two files are read from print/ and tokens/. A release copies both next to this module
 (dist/print/udprint/), so a vendored kit reads its own copies and never reaches outside its folder.
 """
 import json
@@ -9,14 +9,16 @@ import re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _REF = re.compile(r'^\{([^{}]+)\}$')
+_SOURCES = {'print.tokens.json': os.path.join(HERE, '..'),
+            'udesign.tokens.json': os.path.join(HERE, '..', '..', 'tokens')}
 
 
 def _path(name):
-    for d in (HERE, os.path.join(HERE, '..', '..', 'tokens')):
+    for d in (HERE, _SOURCES[name]):
         p = os.path.join(d, name)
         if os.path.isfile(p):
-            return p
-    raise FileNotFoundError('%s not found next to udprint or in tokens/' % name)
+            return os.path.normpath(p)
+    raise FileNotFoundError('%s is neither next to udprint nor in the repository' % name)
 
 
 def _get(tree, dotted):
@@ -73,6 +75,9 @@ class Tokens:
 
     def roles(self):
         return [k for k in self.print_tree['type'] if not k.startswith('$')]
+
+    def formats(self):
+        return [k for k in self.print_tree['page'] if not k.startswith('$')]
 
     def page(self, fmt):
         keys = ('width', 'height', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left')

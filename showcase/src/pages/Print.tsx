@@ -1,6 +1,6 @@
 // Proposed print scenario (ECH-396), shown here for the owner's approval before anything is recorded or
 // released. The pages are drawn by the Python kit in print/udprint: `python3 print/reference.py` writes
-// the reference sheet, and the header comparison comes from the client mockup built with and without it.
+// the reference sheet; the header comparison is the Parea mockup built with today's header and with the kit's.
 // A printed page has one theme and one size, so the theme and viewport controls do not change it.
 
 const DEPARTURES = [
@@ -19,8 +19,9 @@ export function Print() {
           <h1>Print</h1>
         </div>
         <p>
-          Client PDFs: mockups, font comparisons, labels. One kit draws the chrome from tokens/print.tokens.json, so
-          every PDF skill prints the same logo, colours and type.
+          Client PDFs: mockups, font comparisons, labels. Once approved and released, each PDF skill draws its header,
+          footer, type and cards with one kit, from print/print.tokens.json, so they all print the same logo, colours
+          and type. Today each skill draws its own.
         </p>
       </header>
 
@@ -28,10 +29,10 @@ export function Print() {
         <div className="section-heading">
           <div>
             <p className="section-index">Reference</p>
-            <h2 id="print-sheet-heading">Every token and primitive</h2>
+            <h2 id="print-sheet-heading">Logo, colours, text roles and surfaces</h2>
           </div>
           <p>
-            Drawn by the kit itself. <a href="print/print-reference.pdf">Open the PDF</a> and print it at 100 % to
+            Drawn by the kit itself. <a href="print/print-reference.pdf">Open the PDF</a> and print it at 100% to
             check sizes.
           </p>
         </div>

@@ -1,8 +1,9 @@
 # Print kit (proposed, ECH-396)
 
 The print scenario for client PDFs: mockups, font comparisons, box labels. One Python package, `udprint`,
-draws their chrome (header with the official logo, text roles, field, card, badge, tag, footer, page
-numbers) from `print/print.tokens.json`, which resolves against `tokens/udesign.tokens.json`.
+draws their chrome (header with the official logo, text roles, field, card, badge and method icon, tag,
+footer, page numbers) from `print/print.tokens.json`, which resolves against `tokens/udesign.tokens.json`.
+The print tokens stay out of `tokens/` because the CSS build reads every file there.
 
 Status: a proposal shown in the showcase ("Print (proposed)"). Nothing here is released, and no product
 adopts it, until the owner approves it there and it is recorded as a decision in `docs/v2/DECISIONS.md`.

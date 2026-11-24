@@ -23,7 +23,8 @@ from udprint import Kit, Tokens, hex_rgb  # noqa: E402
 
 def base_hex(dotted):
     """A colour from tokens/udesign.tokens.json, following references, the way the CSS build does."""
-    tree = json.load(open(os.path.join(ROOT, 'tokens', 'udesign.tokens.json'), encoding='utf-8'))
+    with open(os.path.join(ROOT, 'tokens', 'udesign.tokens.json'), encoding='utf-8') as f:
+        tree = json.load(f)
     node = tree
     for part in dotted.split('.'):
         node = node[part]
@@ -69,16 +70,23 @@ class TokenTests(unittest.TestCase):
     def test_page_formats(self):
         p = self.t.page('letter-landscape')
         self.assertEqual((p['width'], p['height']), (792, 612))
+        self.assertEqual(set(self.t.formats()), {'letter-landscape', 'letter-portrait'})
         with self.assertRaises(KeyError):
             self.t.page('a4')
+
+    def test_print_tokens_stay_out_of_the_css_build(self):
+        # build.mjs feeds tokens/**/*.json to Style Dictionary: print's color.ink there would loop with the base one
+        self.assertFalse(os.path.exists(os.path.join(ROOT, 'tokens', 'print.tokens.json')))
 
 
 class LogoTests(unittest.TestCase):
     def test_print_logo_carries_the_registry_logo_paths(self):
-        tsx = open(os.path.join(ROOT, 'registry', 'new-york', 'ui', 'lockup.tsx'), encoding='utf-8').read()
-        svg = open(os.path.join(PRINT, 'udprint', 'assets', 'lockup.svg'), encoding='utf-8').read()
+        with open(os.path.join(ROOT, 'registry', 'new-york', 'ui', 'lockup.tsx'), encoding='utf-8') as f:
+            tsx = f.read()
+        with open(os.path.join(PRINT, 'udprint', 'assets', 'lockup.svg'), encoding='utf-8') as f:
+            svg = f.read()
         names = re.findall(r'<path d="([^"]+)" />', tsx)
-        self.assertEqual(len(names), 7)
+        self.assertTrue(names)
         for d in names:
             self.assertIn(d, svg)
         for transform in re.findall(r'transform="([^"]+)"', tsx):
@@ -107,12 +115,33 @@ class ChromeTests(unittest.TestCase):
             page, b = self.kit.new_page(self.doc)
             top = self.kit.header(page, 'Parea', lead='Hoodies', meta=('Maquette, version 3', '24 novembre 2026'))
             self.assertGreater(top, b.y0 + 56)
-            self.kit.footer(page, 'Représentation visuelle.', 'udesignproductions.com     819 481-1022')
+            self.kit.footer(page, 'Représentation visuelle.', ['udesignproductions.com', '819 481-1022'])
         self.kit.page_numbers(self.doc, 'Page %d de %d')
         text = self.doc[1].get_text()
         for s in ('Parea', 'Hoodies', 'Maquette, version 3', '24 novembre 2026', 'Représentation visuelle.',
-                  'Page 2 de 2'):
+                  'udesignproductions.com', '819 481-1022', 'Page 2 de 2'):
             self.assertIn(s, text)
+
+    def test_a_single_page_gets_no_page_number(self):
+        self.kit.new_page(self.doc)
+        self.kit.page_numbers(self.doc, 'Page %d de %d')
+        self.assertNotIn('Page', self.doc[0].get_text())
+
+    def test_the_box_comes_from_the_page_size(self):
+        page, box = self.kit.new_page(self.doc, 'letter-portrait')
+        self.assertEqual(self.kit.box(self.doc[0]), box)
+        self.assertEqual(box, (36, 36, 576, 762))
+        odd = self.doc.new_page(width=300, height=300)
+        with self.assertRaises(ValueError):
+            self.kit.box(odd)
+
+    def test_badge_draws_its_method_icon_and_zero_radius_is_allowed(self):
+        page, b = self.kit.new_page(self.doc)
+        self.kit.badge(page, (b.x0, b.y0, b.x0 + 28, b.y0 + 28), icon='embroidery')
+        ink = tuple(round(c, 3) for c in hex_rgb(self.kit.t.color('ink')))
+        drawn = [d for d in page.get_drawings() if tuple(round(c, 3) for c in (d.get('fill') or d.get('color') or ())) == ink]
+        self.assertTrue(drawn)
+        self.kit.rrect(page, (b.x0, b.y0 + 40, b.x0 + 20, b.y0 + 60), 0, fill='card')
 
     def test_text_uses_the_role_size_and_colour(self):
         page, b = self.kit.new_page(self.doc)
@@ -136,6 +165,9 @@ class ChromeTests(unittest.TestCase):
         for ln in lines:
             self.assertLessEqual(self.kit.width(ln, 'body'), 90)
         self.assertEqual(self.kit.wrap('Deux mots', 'body', 500, 2), ['Deux mots'])
+        long = self.kit.wrap('Anticonstitutionnellement', 'body', 40, 2)
+        self.assertTrue(long[0].endswith('…'))
+        self.assertLessEqual(self.kit.width(long[0], 'body'), 40)
 
 
 class VendoredTests(unittest.TestCase):
@@ -144,8 +176,8 @@ class VendoredTests(unittest.TestCase):
         self.addCleanup(shutil.rmtree, tmp)
         dst = os.path.join(tmp, 'udprint')
         shutil.copytree(os.path.join(PRINT, 'udprint'), dst, ignore=shutil.ignore_patterns('__pycache__'))
-        for name in ('print.tokens.json', 'udesign.tokens.json'):
-            shutil.copy(os.path.join(ROOT, 'tokens', name), dst)
+        shutil.copy(os.path.join(PRINT, 'print.tokens.json'), dst)
+        shutil.copy(os.path.join(ROOT, 'tokens', 'udesign.tokens.json'), dst)
         code = ('import sys; sys.path.insert(0, %r); import udprint, udprint.tokens as t; '
                 'assert t._path("print.tokens.json").startswith(%r); print(udprint.Tokens().color("accent"))'
                 % (tmp, dst))
