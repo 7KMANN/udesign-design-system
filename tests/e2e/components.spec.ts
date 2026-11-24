@@ -279,6 +279,8 @@ for (const build of covered) {
     const view = page.getByRole("dialog", { name: alt })
     await expect(view).toBeVisible()
     // The photo whole: its 4:5 drawn inside the screen, uncropped, and nothing around it but the backdrop.
+    // The dialog's image is a new element: wait for it to load, or its natural size reads 0 by 0.
+    await expect.poll(() => view.locator("img").evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), { message: "the whole photo loaded" }).toBe(true)
     const shown = await view.locator("img").evaluate((img: HTMLImageElement) => {
       const box = img.getBoundingClientRect()
       const s = getComputedStyle(img)
