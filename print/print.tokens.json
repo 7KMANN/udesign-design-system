@@ -1,6 +1,6 @@
 {
   "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
-  "$description": "Print scenario (proposed, ECH-396): PDFs printed or sent to clients, drawn by the Python kit in print/udprint. Presentation profile, light only. References resolve against tokens/udesign.tokens.json. Kept out of tokens/ because the CSS build reads every file there. Lengths are numbers in points (1/72 in), the unit of a PDF page; DTCG dimensions only carry px and rem.",
+  "$description": "Print scenario (D-66): PDFs printed or sent to clients, drawn by the Python kit in print/udprint. Presentation profile, light only. References resolve against tokens/udesign.tokens.json. Kept out of tokens/ because the CSS build reads every file there. Lengths are numbers in points (1/72 in), the unit of a PDF page; DTCG dimensions only carry px and rem.",
   "page": {
     "$type": "number",
     "letter-landscape": {

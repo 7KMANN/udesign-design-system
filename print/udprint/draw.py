@@ -118,10 +118,14 @@ class Kit:
         the margins."""
         p = self.t.page(fmt)
         page = doc.new_page(width=p['width'], height=p['height'])
+        self.use_fonts(page)
+        return page, self.box(page)
+
+    def use_fonts(self, page):
+        """Load the kit's fonts on a page the document made itself, before drawing text on it with the kit."""
         for weight in (500, 600, 700, 900):
             page.insert_font(fontname=self._font_key(weight),
                              fontfile=os.path.join(_FONT_DIR, self.t.resolve('font.file.%d' % weight)))
-        return page, self.box(page)
 
     def box(self, page):
         """The area inside the margins of the print format this page's size belongs to."""

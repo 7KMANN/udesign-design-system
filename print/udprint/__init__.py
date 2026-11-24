@@ -1,4 +1,4 @@
-"""udprint: UDesign print documents (proposed print scenario, ECH-396).
+"""udprint: UDesign print documents (print scenario, D-66).
 
     import pymupdf
     from udprint import Kit

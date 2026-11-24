@@ -119,7 +119,7 @@ export default function App() {
               <option value="dashboard">Metrics and collection</option>
               <option value="analytics">Charts and entities</option>
               <option value="task">Task tool</option>
-              <option value="print">Print (proposed)</option>
+              <option value="print">Print</option>
             </select>
           </label>
 

@@ -3,7 +3,7 @@
 
     python3 print/reference.py OUT.pdf [--png DIR]
 
-The showcase page "Print (proposed)" shows this sheet; it is what the owner approves.
+The showcase page "Print" shows this sheet.
 """
 import argparse
 import os
@@ -35,9 +35,9 @@ def build(out, png_dir=None):
     kit = Kit()
     doc = fitz.open()
     page, b = kit.new_page(doc, 'letter-landscape')
-    top = kit.header(page, 'Print kit', lead='Proposed print scenario for client PDFs (ECH-396). Colours, text '
-                     'roles, radii and the logo on this sheet come from print/print.tokens.json.',
-                     meta=('Proposal', '24 November 2026'))
+    top = kit.header(page, 'Print kit', lead='The print scenario for client PDFs (D-66). Colours, text roles, '
+                     'radii and the logo on this sheet come from print/print.tokens.json.',
+                     meta=('D-66', '24 November 2026'))
     gap = kit.t.number('space.gap')
     inset = kit.t.number('space.inset')
     col = (b.x1 - b.x0 - 2 * gap) / 3

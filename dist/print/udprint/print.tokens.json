@@ -1,0 +1,331 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "$description": "Print scenario (D-66): PDFs printed or sent to clients, drawn by the Python kit in print/udprint. Presentation profile, light only. References resolve against tokens/udesign.tokens.json. Kept out of tokens/ because the CSS build reads every file there. Lengths are numbers in points (1/72 in), the unit of a PDF page; DTCG dimensions only carry px and rem.",
+  "page": {
+    "$type": "number",
+    "letter-landscape": {
+      "$description": "The client mockup page. Margins are top, right, bottom, left.",
+      "width": {
+        "$value": 792
+      },
+      "height": {
+        "$value": 612
+      },
+      "margin-top": {
+        "$value": 30
+      },
+      "margin-right": {
+        "$value": 36
+      },
+      "margin-bottom": {
+        "$value": 26
+      },
+      "margin-left": {
+        "$value": 36
+      }
+    },
+    "letter-portrait": {
+      "width": {
+        "$value": 612
+      },
+      "height": {
+        "$value": 792
+      },
+      "margin-top": {
+        "$value": 36
+      },
+      "margin-right": {
+        "$value": 36
+      },
+      "margin-bottom": {
+        "$value": 30
+      },
+      "margin-left": {
+        "$value": 36
+      }
+    }
+  },
+  "color": {
+    "$type": "color",
+    "paper": {
+      "$description": "The page. White paper, not the screen's cream background: cream costs ink and shifts on every printer.",
+      "$value": "{color.white}"
+    },
+    "ink": {
+      "$value": "{role.foreground}"
+    },
+    "muted": {
+      "$value": "{role.muted-foreground}"
+    },
+    "hairline": {
+      "$value": "{role.border}"
+    },
+    "field": {
+      "$description": "The quiet warm field a product sits on.",
+      "$value": "{role.secondary}"
+    },
+    "field-deep": {
+      "$description": "The field under a white or cream product, which would melt into the usual one. Same value as hairline today, a different role.",
+      "$value": "{color.neutral.border}"
+    },
+    "card": {
+      "$description": "A card that names one decision on the page (a decoration, an option). The screen calls this wash role.accent.",
+      "$value": "{role.accent}"
+    },
+    "accent": {
+      "$description": "The accent (role.primary on screen): the logo tile, an icon badge, an option tag. Never a large area.",
+      "$value": "{role.primary}"
+    },
+    "lockup-tile": {
+      "$value": "{color.accent.base}"
+    },
+    "lockup-bars": {
+      "$description": "The official logo's bars are black in every use.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ],
+        "hex": "#000000"
+      }
+    },
+    "lockup-name": {
+      "$description": "The name takes the text colour of the surface (D-62): ink on paper.",
+      "$value": "{role.foreground}"
+    }
+  },
+  "font": {
+    "$description": "Montserrat only, in four weights, shipped with the kit (SIL Open Font License). Departure from the presentation profile's Geist body text: printed client pages keep one face, as the mockups have since 2026-10.",
+    "family": {
+      "$type": "fontFamily",
+      "$value": "{font.family.display}"
+    },
+    "file": {
+      "$type": "string",
+      "500": {
+        "$value": "Montserrat-Medium.ttf"
+      },
+      "600": {
+        "$value": "Montserrat-SemiBold.ttf"
+      },
+      "700": {
+        "$value": "Montserrat-Bold.ttf"
+      },
+      "900": {
+        "$value": "Montserrat-Black.ttf"
+      }
+    }
+  },
+  "type": {
+    "$description": "Text roles: size in points, weight, colour. A page picks a role, never a size.",
+    "title": {
+      "size": {
+        "$type": "number",
+        "$value": 24
+      },
+      "weight": {
+        "$type": "number",
+        "$value": 900
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{color.ink}"
+      }
+    },
+    "heading": {
+      "size": {
+        "$type": "number",
+        "$value": 12
+      },
+      "weight": {
+        "$type": "number",
+        "$value": 700
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{color.ink}"
+      }
+    },
+    "lead": {
+      "$description": "The line under the title.",
+      "size": {
+        "$type": "number",
+        "$value": 10
+      },
+      "weight": {
+        "$type": "number",
+        "$value": 500
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{color.muted}"
+      }
+    },
+    "strong": {
+      "size": {
+        "$type": "number",
+        "$value": 10
+      },
+      "weight": {
+        "$type": "number",
+        "$value": 700
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{color.ink}"
+      }
+    },
+    "body": {
+      "size": {
+        "$type": "number",
+        "$value": 8.5
+      },
+      "weight": {
+        "$type": "number",
+        "$value": 500
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{color.ink}"
+      }
+    },
+    "body-muted": {
+      "size": {
+        "$type": "number",
+        "$value": 8.5
+      },
+      "weight": {
+        "$type": "number",
+        "$value": 500
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{color.muted}"
+      }
+    },
+    "tag": {
+      "$description": "The word inside an option tag.",
+      "size": {
+        "$type": "number",
+        "$value": 8.5
+      },
+      "weight": {
+        "$type": "number",
+        "$value": 700
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{color.ink}"
+      }
+    },
+    "meta": {
+      "$description": "The version line in the header.",
+      "size": {
+        "$type": "number",
+        "$value": 8.5
+      },
+      "weight": {
+        "$type": "number",
+        "$value": 600
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{color.ink}"
+      }
+    },
+    "label": {
+      "$description": "Names a block: Vêtement, Décoration.",
+      "size": {
+        "$type": "number",
+        "$value": 7.5
+      },
+      "weight": {
+        "$type": "number",
+        "$value": 600
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{color.muted}"
+      }
+    },
+    "caption": {
+      "size": {
+        "$type": "number",
+        "$value": 7.5
+      },
+      "weight": {
+        "$type": "number",
+        "$value": 500
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{color.muted}"
+      }
+    },
+    "fine": {
+      "$description": "The footer.",
+      "size": {
+        "$type": "number",
+        "$value": 6.8
+      },
+      "weight": {
+        "$type": "number",
+        "$value": 500
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{color.muted}"
+      }
+    },
+    "fine-strong": {
+      "$description": "The page number.",
+      "size": {
+        "$type": "number",
+        "$value": 6.8
+      },
+      "weight": {
+        "$type": "number",
+        "$value": 700
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{color.ink}"
+      }
+    }
+  },
+  "radius": {
+    "$type": "number",
+    "field": {
+      "$value": 8
+    },
+    "card": {
+      "$value": 7
+    },
+    "tag": {
+      "$value": 5
+    },
+    "swatch": {
+      "$value": 2.2
+    }
+  },
+  "space": {
+    "$type": "number",
+    "gap": {
+      "$description": "Between cards, tiles and columns.",
+      "$value": 14
+    },
+    "inset": {
+      "$description": "Inside a card or tag.",
+      "$value": 8
+    }
+  },
+  "lockup": {
+    "$type": "number",
+    "height": {
+      "$description": "The logo's height in the header; the width follows. 20 pt gives the name about 9 pt capitals, as the typed name had before D-62 reached print.",
+      "$value": 20
+    }
+  }
+}

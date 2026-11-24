@@ -80,6 +80,8 @@ styled like a settings panel.
   listed it lives in the showcase only, and a product must not adopt it. A region opts in with
   `data-scenario="<name>"` on its root; `data-design` stays on `<html>`.
 - Ratified: the task tool (D-65), `data-scenario="task"`, with its tick `@udesign/task-check`.
+- Ratified: print (D-66), client PDFs drawn by the Python kit `udprint` (`print/`, released in
+  `dist/print/udprint/`), not a `data-scenario` region: a PDF has no DOM.
 - Any new scenario, token, variant or rule change is built first as a showcase page, shown to
   Kaleb in a browser in both themes and at 375px, and approved by him there. A written description
   is not approval. Only then is it recorded as `APPROVED D-nn` and released. How: `DESIGN.md`

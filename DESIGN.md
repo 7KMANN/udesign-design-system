@@ -189,6 +189,20 @@ What it changes, as rules:
 
 Also fixed by D-65: overdue is `--task-overdue` (the warning tone's foreground), the only warning use in the tool. A ticked row leaves at once: the check draws over `--task-hold`, then the row collapses over `--task-leave`; its inner row never changes height. Questions come below the owner's tasks, their extra actions (reply, snooze, reject) behind one "More" control, and agents' questions on Dev items in a block of their own. Not part of the scenario: a quiet color mode, a circle box, a ticked row that stays a moment, compact density.
 
+#### Print, D-66
+
+For documents printed or sent as PDF to a client: mockups, font comparisons, box labels. Inside the `presentation` profile. A PDF has no DOM, so there is no `data-scenario` attribute: a document opts in by drawing its chrome with the Python kit `udprint` (`print/`, released in `dist/print/udprint/`), which reads `print/print.tokens.json` resolved against the base tokens. Reference: the showcase page "Print" and `print/reference.py`. `APPROVED 2026-11-24 D-66`
+
+What it changes, as rules:
+
+1. The page is white paper (`color.paper`), not the cream background.
+2. One face: Montserrat in four weights (500, 600, 700, 900), shipped with the kit. A page picks a text role (`title`, `heading`, `lead`, `strong`, `body`, `body-muted`, `meta`, `tag`, `label`, `caption`, `fine`, `fine-strong`), never a size.
+3. Light only, and lengths in points on a fixed page format (`letter-landscape`, `letter-portrait`): no theme switch, no breakpoints.
+4. The header is the official logo (D-62) at `lockup.height` (20 pt), drawn from the file, never typed; the version and date sit at the right, centred on it; then the title and its lead line.
+5. A product sits on `field` (`field-deep` under a white or cream product). A decision (a decoration, an option) is a `card` with the accent `badge` holding its method icon. An option is named by an accent `tag`. The accent never fills a large area.
+6. The footer: a hairline, what the page is at left, the public contact at right, the page number when there is more than one page.
+7. A skill carries its own copy of `dist/print/udprint` pinned to a release tag, with a manifest of the tag and each file's SHA-256 and a test that holds them, so it works where it is installed alone.
+
 **Changing the system.** A new scenario, token, variant or rule change goes through these steps in order:
 
 1. Build it as a page in the showcase: a file in `showcase/src/pages/` added to the `Page` union, the `<option>` list and the render lines of `showcase/src/App.tsx`, or a fixture in `showcase/src/fixtures-main.tsx`. `npm run dev` serves it on port 3000 with toggles for profile, theme and viewport.

@@ -1,5 +1,4 @@
-// Proposed print scenario (ECH-396), shown here for the owner's approval before anything is recorded or
-// released. The pages are drawn by the Python kit in print/udprint: `python3 print/reference.py` writes
+// The print scenario (D-66), approved by Kaleb on 2026-11-24 from this page. The pages are drawn by the Python kit in print/udprint: `python3 print/reference.py` writes
 // the reference sheet; the header comparison is the Parea mockup built with today's header and with the kit's.
 // A printed page has one theme and one size, so the theme and viewport controls do not change it.
 
@@ -15,13 +14,13 @@ export function Print() {
     <div className="preview-page">
       <header className="preview-heading">
         <div>
-          <p className="preview-kicker">Proposed scenario</p>
+          <p className="preview-kicker">Scenario, D-66</p>
           <h1>Print</h1>
         </div>
         <p>
-          Client PDFs: mockups, font comparisons, labels. Once approved and released, each PDF skill draws its header,
-          footer, text and cards with one kit, from print/print.tokens.json, so they all print the same logo, colours
-          and type. Today each skill draws its own.
+          Client PDFs: mockups, font comparisons, labels. Each PDF skill draws its header, footer, text and cards with
+          one kit, udprint, from print/print.tokens.json, so they all print the same logo, colours and type. A skill
+          carries its own copy of the kit, pinned to a release.
         </p>
       </header>
 
@@ -46,7 +45,7 @@ export function Print() {
             <h2 id="print-header-heading">The official logo in the header</h2>
           </div>
           <p>
-            Today the mockup types UDesign beside the tile. The kit draws the official logo (D-62) at 20 pt, which keeps
+            Before D-66 the mockup typed UDesign beside the tile. The kit draws the official logo (D-62) at 20 pt, which keeps
             the name the same size.
           </p>
         </div>

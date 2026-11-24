@@ -1704,3 +1704,46 @@ delay, Route B (the planner).
   toast's countdown bar draws a hold, and a countdown that eases misstates the time left (departure 8).
   Nothing else gets that pass.
 - `--task-hit` aliases `--touch-target-min` rather than writing 44px, so it follows the touch floor.
+
+## Round 25 - 2026-11-24 (the print scenario)
+
+The PDF skills (client mockups, font comparisons, box labels) each drew their own chrome: the mockup typed
+"UDesign" beside its own tile, which D-62 rules out, and hardcoded the presentation colours; the box label
+borrowed the mockup's fonts and fell back to Helvetica. ECH-395 and ECH-396.
+
+### D-66 · Print scenario and its kit · `APPROVED` Kaleb, 2026-11-24
+
+**Question:** should client PDFs take their look from the system, through one kit every PDF skill vendors at
+a release tag, and should the Python that draws the page live here?
+
+**Approved:** a print scenario inside the presentation profile, for documents printed or sent as PDF. Its
+values are `print/print.tokens.json`, resolved against `tokens/udesign.tokens.json`; its kit is `udprint`
+(Python, PyMuPDF only) in `print/`, copied to `dist/print/udprint/` by the build. Kaleb, on where the code
+lives: "yes for the python code thing".
+
+Departures from the presentation profile, inside print only:
+
+1. White paper (`color.white`), not the cream background.
+2. Montserrat for all text, in four weights shipped with the kit; no Geist.
+3. Light only: a printed page has one theme.
+4. Lengths in points on a fixed page (Letter landscape and portrait); no breakpoints, no 375px view.
+5. Approval on the reference sheet and a real document, not in both themes at 375px: the scenario has
+   neither.
+
+**Visible change to existing PDFs:** the header logo is the official file (D-62) at 20 pt, never typed. At
+that height the name keeps the capital height the typed name had. Every colour is unchanged: each resolved
+print colour equals the value the mockup hardcoded, and a test holds it.
+
+**Tokens:** `print/print.tokens.json` (colours paper, ink, muted, hairline, field, field-deep, card, accent,
+lockup-tile, lockup-bars, lockup-name; text roles title 24/900, heading 12/700, lead 10/500, strong 10/700,
+body and body-muted 8.5/500, meta 8.5/600, tag 8.5/700, label 7.5/600, caption 7.5/500, fine 6.8/500,
+fine-strong 6.8/700; radii field 8, card 7, tag 5, swatch 2.2; space gap 14, inset 8; logo height 20). It
+stays out of `tokens/`, which Style Dictionary reads in full: print's `color.ink` would loop with the base one.
+
+**Review:** before approval an independent agent that had not seen the work reviewed the pages, copy and code
+twice for machine-generated tells and professionalism, at Kaleb's request ("pass it though a objective AI
+checkere as i dont want them to have ai artifacts or ai slop, needs to be professional"). Its findings were
+fixed or answered.
+
+**Approved:** by Kaleb on 2026-11-24, after review of the reference sheet and the header before and after
+("Then i Approuve").

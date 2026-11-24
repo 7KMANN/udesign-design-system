@@ -176,6 +176,24 @@ class ChromeTests(unittest.TestCase):
 
 
 class VendoredTests(unittest.TestCase):
+    def test_the_built_copy_matches_its_sources(self):
+        built = os.path.join(ROOT, 'dist', 'print', 'udprint')
+        if not os.path.isdir(built):
+            self.skipTest('run npm run build first')
+        src = os.path.join(PRINT, 'udprint')
+        pairs = [(os.path.join(built, 'print.tokens.json'), os.path.join(PRINT, 'print.tokens.json')),
+                 (os.path.join(built, 'udesign.tokens.json'), os.path.join(ROOT, 'tokens', 'udesign.tokens.json'))]
+        for d, _, files in os.walk(src):
+            if '__pycache__' in d:
+                continue
+            for name in files:
+                if not name.endswith('.pyc'):
+                    p = os.path.join(d, name)
+                    pairs.append((os.path.join(built, os.path.relpath(p, src)), p))
+        for b_path, s_path in pairs:
+            with open(b_path, 'rb') as fb, open(s_path, 'rb') as fs:
+                self.assertEqual(fb.read(), fs.read(), os.path.relpath(b_path, ROOT))
+
     def test_a_copy_with_its_token_files_reads_only_its_own_folder(self):
         tmp = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, tmp)
