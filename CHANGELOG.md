@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.9.0 (2026-11-24)
+
+Print scenario (D-66): udprint, the Python kit for client PDFs, in dist/print/udprint
+
 ## 3.8.0 (2026-11-16)
 
 Task tool scenario (D-65): task tokens under data-scenario, TaskCheck, an example screen
